@@ -16,6 +16,9 @@ class LF_ShopPriceList
 	static const float LIST_HEIGHT = 170;	// lf-fixed: leaves the slip, preview, keys and Leave room on the 900-unit sheet
 	static const int SEARCH_POLL_MS = 250;
 	static const int REPLY_TIMEOUT_MS = 5000;
+	//! After a till reply the Cash line keeps the server's figure this long before the poll reads the
+	//! carried cash again, so a replicated change that lands a frame later does not flicker the old figure.
+	static const int REPLY_HOLD_MS = 1000;	// lf-fixed: a UI redraw delay, not a gameplay tunable
 
 	static const string ROW_PREFIX = "Item";
 	static const string ROW_SUFFIX = "Row";
@@ -48,6 +51,10 @@ class LF_ShopPriceList
 	protected bool m_bWaiting;
 	//! The till has a Sell key: some line of this counter has a sell price (a buy-only till shows Pay alone).
 	protected bool m_bSells;
+	//! The cash the Cash line shows; -1 before the first read.
+	protected int m_iShownCash = -1;
+	//! System tick of the last till reply; the poll leaves the Cash line alone for REPLY_HOLD_MS after it.
+	protected int m_iReplyTick;
 	protected string m_sKeySound;
 	protected string m_sTillSound;
 	protected string m_sRefuseSound;
@@ -201,7 +208,8 @@ class LF_ShopPriceList
 		m_bSells = BuysBack(m_Shop.GetShopItems());
 		array<ref LF_UIPart> parts = {};
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", WidgetManager.Translate(m_Shop.GetShopName())));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Cash", CashText(LF_MoneyUtils.GetCash(LF_Utils.GetLocalCharacter()))));
+		m_iShownCash = LF_MoneyUtils.GetCash(LF_Utils.GetLocalCharacter());
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Cash", CashText(m_iShownCash)));
 		if (!m_Shop.GetShopHint().IsEmpty())
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Hint", m_Shop.GetShopHint()));
 
@@ -303,11 +311,16 @@ class LF_ShopPriceList
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The edit box has no change event on the kit, so the list re-reads it a few times a second.
+	//! The edit box has no change event on the kit, so the list re-reads it a few times a second. The
+	//! Cash line follows the carried cash on the same tick, so a paid till shows the new figure as soon
+	//! as the cash change replicates, whether or not the till's reply has come back (re-review N2).
 	protected void PollSearch()
 	{
 		if (!m_Screen || !m_Screen.IsOpen())
 			return;
+
+		if (System.GetTickCount() - m_iReplyTick >= REPLY_HOLD_MS)
+			ShowCash(LF_MoneyUtils.GetCash(LF_Utils.GetLocalCharacter()));
 
 		string filter = m_Screen.GetFieldText("Search");
 		filter.TrimInPlace();
@@ -562,9 +575,8 @@ class LF_ShopPriceList
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(ReplyTimedOut);
 
-		if (m_Screen)
-			m_Screen.SetLine("Cash", CashText(cash));
-
+		m_iReplyTick = System.GetTickCount();
+		ShowCash(cash);
 		SetReceipt(LicenceReceipt(reason, outcome, arg));
 		bool good = reason == LF_EShopRefusal.NONE && (outcome == LF_ELicenceDesk.ISSUED || outcome == LF_ELicenceDesk.APPLIED || outcome == LF_ELicenceDesk.WAITING || outcome == LF_ELicenceDesk.ALREADY_HELD);
 		if (good)
@@ -582,8 +594,10 @@ class LF_ShopPriceList
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(ReplyTimedOut);
 
-		if (m_Screen)
-			m_Screen.SetLine("Cash", CashText(cash));
+		m_iReplyTick = System.GetTickCount();
+		ShowCash(cash);
+		if (ClearsSlipAfter(buy, reason))
+			ClearSlip();
 
 		if (reason != LF_EShopRefusal.NONE)
 		{
@@ -599,6 +613,45 @@ class LF_ShopPriceList
 			SetReceipt(WidgetManager.Translate("#LF-Shop_SoldFor", LF_MoneyFormat.FormatMoney(money)));
 
 		LF_UISound.Play(m_sTillSound);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A paid order is done: the slip empties so the sheet shows the sale went through (re-review N2).
+	//! A refusal or a sale back keeps the slip, so the player can change it and try again.
+	static bool ClearsSlipAfter(bool buy, LF_EShopRefusal reason)
+	{
+		return buy && reason == LF_EShopRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the Cash line must be redrawn: a known carried amount that differs from the one shown.
+	static bool CashLineStale(int shown, int carried)
+	{
+		return carried >= 0 && carried != shown;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowCash(int cash)
+	{
+		if (!m_Screen || !CashLineStale(m_iShownCash, cash))
+			return;
+
+		m_iShownCash = cash;
+		m_Screen.SetLine("Cash", CashText(cash));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ClearSlip()
+	{
+		m_Selected = ResourceName.Empty;
+		m_sSelectedLicence = string.Empty;
+		m_sSelectedName = string.Empty;
+		m_iSelectedPrice = 0;
+		m_iSelectedSell = 0;
+		m_iQuantity = 1;
+		m_Preview.Draw(m_Screen, ResourceName.Empty);
+		ShowSlip();
+		SetSellText("#LF-Shop_SellBack");
 	}
 
 	//------------------------------------------------------------------------------------------------

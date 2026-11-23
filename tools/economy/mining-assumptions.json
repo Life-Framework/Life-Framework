@@ -12,12 +12,12 @@
   "sackUnits": { "iron-ore": 10, "copper-ore": 10, "limestone": 5, "coal": 10 },
   "chains": [
     {
-      "id": "iron-brow-foot", "label": "iron at Coalman's Brow on foot", "recipe": "furnace-iron-mine", "vehicle": "foot",
+      "id": "iron-brow-foot", "label": "iron at Coalman's Brow, bars sold at the dock by car", "recipe": "furnace-iron-mine", "vehicle": "car",
       "gather": { "item": "iron-ore", "units": 20, "perMinute": 4 },
       "reagents": [],
       "buyer": "coalmans_brow_mine", "premiumGood": "BCD1E8CD7F975074", "wholesaleGood": "BCD1E8CD7F975074",
-      "km": { "mineToPlant": 0.02, "plantToBuyer": 0.01, "returnToMine": 0.02 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
-      "note": "the starter loop: six iron rocks, the furnace and the iron buyer all on the brow, 10 to 20 m apart; the 4 minute furnace run (5 bars) and the buyer's purse (40, +24 an hour) hold it in band, the dock wholesale (0.75 km) takes any more"
+      "km": { "mineToPlant": 0.02, "plantToBuyer": 0.8, "returnToMine": 0.8 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
+      "note": "the starter loop (F2 mining): six iron rocks and the furnace on the brow, 10 to 20 m apart; the bars go by car to the iron counter in the dock wholesale warehouse (0.8 km, moved there 2026-11-22), whose premium row (purse 40, +24 an hour) pays first"
     },
     {
       "id": "iron-pickup", "label": "iron by pickup", "recipe": "smelter-iron", "vehicle": "pickup",

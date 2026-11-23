@@ -63,8 +63,10 @@ modded class LF_InventoryUtils
 			}
 		}
 
+		int dropped;
 		while (remainingAmount > 0)
 		{
+			int remainingBefore = remainingAmount;
 			IEntity item = LF_Utils.SpawnEntityPrefab(prefab, storageManager.GetOwner().GetOrigin());
 			if (!item)
 			{
@@ -112,9 +114,36 @@ modded class LF_InventoryUtils
 			{
 				remainingAmount--;
 			}
+
+			// The item stays where it spawned, at the owner's feet: count what it holds so the player is told (N1).
+			if (!inserted)
+				dropped += remainingBefore - remainingAmount;
 		}
 
+		if (dropped > 0)
+			ReportDropped(storageManager.GetOwner(), prefab, dropped);
+
 		return amount - remainingAmount;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "No room on you: Apple Juice x1 is on the ground at your feet."
+	static string DroppedText(ResourceName prefab, int dropped)
+	{
+		string name = "#LF-Gather_Unknown";
+		UIInfo uiInfo = LF_UIInfoUtils.GetInfo(prefab);
+		if (uiInfo && !uiInfo.GetName().IsEmpty())
+			name = uiInfo.GetName();
+
+		return LF_Terms.Text("#LF-Inventory_DroppedAtFeet", LF_Terms.Text(name), dropped.ToString());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A give that did not fit was left on the ground: log it and tell the owner, if a player, where it is.
+	protected static void ReportDropped(IEntity owner, ResourceName prefab, int dropped)
+	{
+		LF_Debug.Warn("Quantity", string.Format("inventory refused %1 x%2: dropped at the feet of %3", prefab, dropped, owner));
+		LF_Utils.NotifyEntity(owner, DroppedText(prefab, dropped), "", 6.0);
 	}
 
 	//------------------------------------------------------------------------------------------------

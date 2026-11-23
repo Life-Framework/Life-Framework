@@ -1972,12 +1972,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4A64CBDDC70A3B14}" {
      Id "LF-ATM_Deposited"
-     Target_en_us "DEPOSITED %1. THANK YOU."
+     Target_en_us "DEPOSITED: %1"
      Comment "ATM terminal status line after a deposit. %1 is the amount."
     }
     CustomStringTableItem "{CAF4A9272F7A5651}" {
      Id "LF-ATM_Dispensed"
-     Target_en_us "PLEASE TAKE YOUR CASH: %1"
+     Target_en_us "TAKE YOUR CASH: %1"
      Comment "ATM terminal status line after a withdrawal. %1 is the amount paid out."
     }
     CustomStringTableItem "{2028FAF6D9D3BF5C}" {
@@ -7767,6 +7767,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Interact_TooFar"
      Target_en_us "Step closer to them."
      Comment "Player interaction refused: the other person is out of reach."
+    }
+    CustomStringTableItem "{218E14C1F987A256}" {
+     Id "LF-Inventory_DroppedAtFeet"
+     Target_en_us "No room on you: %1 x%2 is on the ground at your feet."
+     Comment "Toast when a given item (a press output, a catch, a harvest) did not fit the inventory and was dropped beside the player. %1 = item name, %2 = amount"
     }
     CustomStringTableItem "{7C1E4A92B05D3F18}" {
      Id "LF-ItemName_HouseKeyOf"

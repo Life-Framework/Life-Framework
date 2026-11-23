@@ -39,7 +39,7 @@ Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It
 
 ## Your current objective
 
-The step you are on stays written under your money at the top right ("Next: Mine 3 iron ore"). It flashes gold when it
+The step you are on stays written under your money at the top right ("Next: Mine 15 iron ore"). It flashes gold when it
 changes and stays until the step is done, even after the note fades. After a rejoin the waypoint, the line and the
 step's note come back by themselves. Type `/hud objective off` in chat to hide the line.
 
@@ -57,9 +57,9 @@ marker sits over it for 30 seconds, so you can tell it from the other cars on th
 | Buy a pickaxe | The miners' supply till in the hardware store ($150); skipped if you carry one |
 | Take your car out | Your garage; any car will do (the buyer is down at the dock). Skipped if a car is already out or you own none |
 | Go to the mine | Back up to Coalman's Brow |
-| Mine 3 iron ore | Swing at the rust-veined rocks and pick up the pieces. Every piece levels **Mining**; level 2 opens the coal licence |
-| Smelt a bar | The mine furnace: 3 ore make a bar, about 4 minutes |
-| Sell your bars | The iron counter in the dock wholesale warehouse, $20 a bar |
+| Mine 15 iron ore | Swing at the rust-veined rocks and pick up the pieces, one full furnace load. Every piece levels **Mining**; level 2 opens the coal licence |
+| Smelt your bars | The mine furnace: 3 ore make a bar, so 15 make 5 bars in one 4-minute run |
+| Sell your bars | The iron counter in the dock wholesale warehouse, $20 a bar. The mine adds $180 for your first run, so you finish about $130 ahead after the pickaxe |
 
 The other starters are shorter: the postal van run (a driving licence, the post stand at the parcel kiosk, one run to Meaux and back), lumber (the lumberjack job, an
 axe, a felled tree), fishing (a rod, the nearest water, a fish), the apple harvest (the orchard, 5 apples, a bottle of
