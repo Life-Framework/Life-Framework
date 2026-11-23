@@ -67,6 +67,27 @@ class LF_OrgRights
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The rights a prospect does not get (#4455): the fund (withdraw, spend) and the stash.
+	static int ProspectBarred()
+	{
+		return Bit(LF_EOrganizationPermission.WITHDRAW) | Bit(LF_EOrganizationPermission.SPEND_FUND) | Bit(LF_EOrganizationPermission.USE_STASH);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool BarsProspect(LF_EOrganizationPermission permission)
+	{
+		int bit = Bit(permission);
+		return bit != 0 && (ProspectBarred() & bit) == bit;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A rank's rights with the fund and stash taken out, for a prospect.
+	static int ForProspect(int rights)
+	{
+		return Clean(rights) & (ALL - ProspectBarred());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! "invite,kick" for log lines.
 	static string Describe(int rights)
 	{

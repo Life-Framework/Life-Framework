@@ -4512,17 +4512,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{41B72E8D01F8E68E}" {
      Id "LF-Credits_197"
-     Target_en_us "CONTRABAND LABELS"
+     Target_en_us "LF_UAZ452_Ambulance"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{899288C00EFEEAC6}" {
      Id "LF-Credits_198"
-     Target_en_us "LF_CigaretteCarton_BCR"
+     Target_en_us "LF_S1203_Ambulance"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AB6DB02C0E62EDEF}" {
      Id "LF-Credits_199"
-     Target_en_us "LF_VodkaBottle_BCR"
+     Target_en_us "CONTRABAND LABELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
@@ -4537,12 +4537,32 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{98645FC8B2D9330E}" {
      Id "LF-Credits_200"
-     Target_en_us "WORK-SITE SOUNDS"
+     Target_en_us "LF_CigaretteCarton_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{31D05720B5CD5B48}" {
      Id "LF-Credits_201"
+     Target_en_us "LF_VodkaBottle_BCR"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4D22C5E97B2689AA}" {
+     Id "LF-Credits_202"
+     Target_en_us "WORK-SITE SOUNDS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D12E84B0D1EB5D48}" {
+     Id "LF-Credits_203"
      Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{E5F5B4D1BBEFC2E5}" {
+     Id "LF-Credits_204"
+     Target_en_us "Desk sergeant's five lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{8DF88C3D0E2242BE}" {
+     Id "LF-Credits_205"
+     Target_en_us "Booking typewriter and ink pad stamp sounds"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09A1E735EF193A11}" {
@@ -11601,6 +11621,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-OrgFlag_Name_20"
      Target_en_us "Flag 20"
      Comment "Neutral name of preset gang flag 20; a pack gives the real name."
+    }
+    CustomStringTableItem "{D1325EB69512F8BF}" {
+     Id "LF-OrgProspect_Rank"
+     Target_en_us "Prospect"
+     Comment "Rank shown for a gang member who joined by invite less than 48 hours ago (#4455). No countdown."
+    }
+    CustomStringTableItem "{A033D8712C95A9F9}" {
+     Id "LF-OrgProspect_Refused"
+     Target_en_us "Prospects can't touch the gang fund or the stash yet."
+     Comment "Refusal for a gang prospect at the fund or the stash (#4455)."
     }
     CustomStringTableItem "{5AB8DC50BD7DC910}" {
      Id "LF-OrgRight_BUY_UPGRADE"
