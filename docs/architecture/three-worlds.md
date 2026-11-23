@@ -19,7 +19,7 @@ slice cards are on GitHub (label `slice`); this page covers the design and the o
 |---|---|
 | `test --tier fast`, `--only`/`--red` of LOGIC tests | 1 (as today, `tools/lib/test-world.mjs`) |
 | `test --tier all`, `--only`/`--red` with any WORLD or PERSISTENCE test | 2. Tests named in `tools/test/world-pins.json` boot 3 in a second run until that list is empty. The town tests (`tools/test/town-tests.json`) are in no tier run |
-| `test --town` | 3, one boot, the 12 town tests only (below). `--only <town test>` boots 3 too |
+| `test --town` | 3, one boot, the town tests only (below), then one more boot on the town header for the tests that name a `world` (`playtest-town/parity-data`). `--only <town test>` boots 3 too |
 | Pack tests (`--tier all`, `--tier persistence`, or named with `--only`/`--red`) | 2 under the pack test header, one more boot (below). Never under `--tier fast`, `--core-only`, `--world` or `--town` |
 | `ci`, `wt gate`, `wt ship` suite | as `--tier all`, without the town tests; the pack leg is one more job beside the shards |
 | `e2e` | one pair of boots per world (#1993): 2 for the grid-fixture persistence tests, 3 for the town tests (below), 2 under the pack test header for PERSISTENCE pack tests. `--pre-move` keeps the town pair only |
@@ -44,7 +44,7 @@ test's manual save). `LF_TEST_GRID_WORLD=0` is one playtest pair of the whole ti
 ## Town tests: out of the suite, in one playtest run (#1895)
 
 A test about the town itself needs no fixture, only the town, so it does not belong in a gate that boots
-the grid. Twelve are named in `tools/test/town-tests.json`: `signs/coverage` and the roadmap and e2e
+the grid. Thirteen are named in `tools/test/town-tests.json` (an entry may carry a `world`, a mission header, when a bare DebugWorld boot has nothing to check: `playtest-town/parity-data` boots `LF_PlaytestTown.conf`, so `test --town` runs it in a second boot, `townLegs` in `tools/lib/test-world.mjs`): `signs/coverage` and the roadmap and e2e
 scenarios (`roadmap/contraband|escort|hideout|jailbreak|jailing|jailing-save`, `e2e/narrative-loop`,
 `e2e/pass1-write-save`, `e2e/roadmap-contraband|jailbreak|jailing`). They stay registered (`regen-tests`
 is unchanged); only where they run changes:
