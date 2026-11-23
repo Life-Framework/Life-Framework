@@ -175,6 +175,7 @@ class LF_FellAction : ScriptedUserAction
 		PayXp(uid, kind.m_eClass, yield, yield.m_iLogs, logPrefab);
 		LF_EventBus.Publish(LF_OnTreeFelled.Create(uid, key, kind.m_eClass, kind.m_iSize, yield.m_iLogs));
 		LF_Utils.NotifyEntity(user, "#LF-Lumber_Felled", "", 4.0, yield.m_iLogs.ToString());
+		LF_ToolWear.OnUse(user, LF_ToolBench.KIND_AXE);
 		return LF_FellRefusal.OK;
 	}
 

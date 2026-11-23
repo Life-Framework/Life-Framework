@@ -131,7 +131,8 @@ class LF_OreNodeComponent : ScriptComponent
 	//! \param damage Effective damage the hit zone computed for the tool.
 	//! \param hitPos World hit point. \param hitDir Swing direction (toward the rock).
 	//! \param tool The swung tool, checked against the node row's tool when it names one.
-	int OnToolHit(float damage, vector hitPos, vector hitDir, IEntity tool)
+	//! \param miner Whoever swung it: an accepted hit wears their pickaxe (LF_ToolWear). Null wears nothing.
+	int OnToolHit(float damage, vector hitPos, vector hitDir, IEntity tool, IEntity miner = null)
 	{
 		IEntity owner = GetOwner();
 		if (!IsAuthority())
@@ -159,6 +160,8 @@ class LF_OreNodeComponent : ScriptComponent
 			LF_Debug.Info(FEATURE, string.Format("hit on %1 rock refused: %2 is not %3", m_sNodeId, LF_Utils.GetPrefabName(tool), row.m_ToolPrefab));
 			return 0;
 		}
+
+		LF_ToolWear.OnUse(miner, LF_ToolBench.KIND_PICKAXE);
 
 		if (hitDir.LengthSq() < 0.0001)
 			hitDir = owner.GetOrigin() - hitPos;
