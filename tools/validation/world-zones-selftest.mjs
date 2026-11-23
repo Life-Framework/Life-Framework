@@ -25,7 +25,7 @@ import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
 import { main as gridMain, yardLayer } from "../commands/grid.mjs";
-import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, claimCellIds as claimCellIdsOf, gapSide, inGrid, layerOfSlug, lookArea, mainClaims as mainClaimsOf, openPrClaims, rowLine, worktreeClaims, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
+import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, claimCellIds as claimCellIdsOf, gapSide, inGrid, layerOfSlug, lookArea, mainClaimBlobs, mainClaims as mainClaimsOf, openPrClaims, rowLine, worktreeClaims, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
 import { carriedFiles, checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
@@ -406,6 +406,39 @@ try {
     ok(nogit.claims.length === 0 && /could not list the worktrees/.test(nogit.note), `no git is a note, not a throw (got ${nogit.note})`);
     put(sibTree, `${CELLS_DIR}/broken.json`, "{ not json");
     ok(worktreeClaims(mainTree).claims.length === 1, "an unreadable claim file in a sibling is skipped");
+
+    // Merged, freed and duplicated claims are not claims in flight (2026-11-23: 3966 "claimed", 0 free, from 919 worktrees).
+    // A claim merged by a --no-ff PR and freed on main afterwards; a plain `git log -- cells/` prunes the side branch.
+    rmSync(join(sibTree, CELLS_DIR, "broken.json"));
+    const merged = JSON.stringify({ slug: "slice-merged", cell: "c1r1", layer: layerOfSlug("slice-merged"), rows: 0, created: "2026-11-01" });
+    git(mainTree, "checkout", "-q", "-b", "feature");
+    put(mainTree, `${CELLS_DIR}/slice-merged.json`, merged);
+    git(mainTree, "add", "-A");
+    git(mainTree, "commit", "-q", "-m", "claim");
+    git(mainTree, "checkout", "-q", "main");
+    put(mainTree, "other.txt", "x");
+    git(mainTree, "add", "-A");
+    git(mainTree, "commit", "-q", "-m", "other");
+    git(mainTree, "merge", "-q", "--no-ff", "-m", "merge feature", "feature");
+    git(mainTree, "rm", "-q", `${CELLS_DIR}/slice-merged.json`);
+    git(mainTree, "commit", "-q", "-m", "Grid: free stale slice cells");
+    ok(mainClaimBlobs(mainTree, { ref: "main" }).size >= 1, "mainClaimBlobs finds a claim a merge added and main freed");
+    // stale copies of the merged claim in three checkouts (a detached look checkout, warm-pool copies)
+    const extra = [];
+    for (const n of ["look-viewer", "warm-1", "warm-2"]) {
+      const t = join(dir, n);
+      git(mainTree, "worktree", "add", "-q", "--detach", t);
+      put(t, `${CELLS_DIR}/slice-merged.json`, merged);
+      put(t, `${CELLS_DIR}/slice-live.json`, JSON.stringify({ slug: "slice-live", cell: "c2r2", rows: 0 }));
+      extra.push(t);
+    }
+    let live = worktreeClaims(mainTree, { ref: "main" });
+    ok(!live.claims.some((c) => c.slug === "slice-merged"), `a sibling's copy of a claim main merged then freed is free (got ${JSON.stringify(live.claims.map((c) => c.slug))})`);
+    ok(live.claims.filter((c) => c.slug === "slice-live").length === 1, "the same claim held by three worktrees counts once");
+    ok(live.claims.some((c) => c.slug === "building-bank"), "a claim main never held still counts");
+    // without the history (the red state: no origin/main to read) every copy counts, three times
+    live = worktreeClaims(mainTree, { ref: "no-such-ref" });
+    ok(live.claims.some((c) => c.slug === "slice-merged"), "red proof: with no history the stale claim is counted");
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
