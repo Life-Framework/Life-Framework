@@ -1,0 +1,72 @@
+GenericEntity {
+ ID "C3D367D511C50BEC"
+ components {
+  MeshObject "{39292FCC7A8D6728}" {
+   Object "{827CD0B3816D10CD}Assets/Props/Civilian/NoticeBoardCork_01/NoticeBoard_Motor_Pool.xob"
+  }
+  RigidBody "{EA5A2BB11855BF54}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_PoliceCarPoolComponent "{A58F7104644916E4}" {
+  }
+  ActionsManagerComponent "{7C8D6D653F7243C5}" {
+   ActionContexts {
+    UserActionContext "{E04F2F18E468EAED}" {
+     ContextName "default"
+     Position PointInfo "{61060FD651FB7866}" {
+      Offset 0 0 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_PoliceCarPoolDrawAction "{BEDF0744BB81F1B8}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B650BA0BEB0ADFD0}" {
+      Name "#LF-CarPool_Take"
+     }
+     "Sort Priority" 0
+     m_iSlot 0
+    }
+    LF_PoliceCarPoolDrawAction "{D54D5B618856B517}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{CB290FD03388A043}" {
+      Name "#LF-CarPool_Take"
+     }
+     "Sort Priority" 1
+     m_iSlot 1
+    }
+    LF_PoliceCarPoolDrawAction "{D5D9F6BFDF09BEC0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{82252118EA2A2E21}" {
+      Name "#LF-CarPool_Take"
+     }
+     "Sort Priority" 2
+     m_iSlot 2
+    }
+    LF_PoliceCarPoolDrawAction "{41FD30F43BACE69B}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8944B994D3011C78}" {
+      Name "#LF-CarPool_Take"
+     }
+     "Sort Priority" 3
+     m_iSlot 3
+    }
+   }
+  }
+  RplComponent "{1752DC02CBB347B4}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+}

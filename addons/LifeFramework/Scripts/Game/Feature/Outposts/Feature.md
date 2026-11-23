@@ -26,7 +26,8 @@ outpost's traders do not serve an on-duty officer. A player who wants the stock 
   award on the one underworld track and sets a per-outpost "known here" flag (`LF_OutpostStanding`, save
   section `outpoststanding`). Nothing reads the flag yet. A crate Buy (`LF_OutpostStock.Buy`) calls
   `LF_OutpostStanding.OnSale` after the cash and the item have moved; a refused buy awards nothing.
-- Not yet: the placed outpost prefab and the north site (later cards).
+- The contraband buyer (`LF_OutpostBuyer.c`, #4225): crates at 10 to 20% above the fence, up to a buyer-demand purse per outpost; refuses on-duty officers, books standing on a sale.
+- Not yet: the placed outpost prefab, the buyer table and the north site (later cards).
 
 ## Dependencies
 
