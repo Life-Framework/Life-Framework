@@ -1,0 +1,13 @@
+GenericEntity : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et" {
+ ID "473A848D505EC104"
+ components {
+  MeshObject "{59908096775F151D}" {
+   Materials {
+    MaterialAssignClass "{1BD4F91837277879}" {
+     SourceMaterial "None"
+     AssignedMaterial "{BAC46536675E629B}Prefabs/Tools/Tiers/LF_Tool_Axe_Worn.emat"
+    }
+   }
+  }
+ }
+}

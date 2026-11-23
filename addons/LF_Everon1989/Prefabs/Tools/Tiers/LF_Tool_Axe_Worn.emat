@@ -1,0 +1,4 @@
+MatPBRBasic {
+ Color 1.2 0.816 0.576 1
+ BCRMap "{DCEEC5CF4B5CB8DC}Assets/Tools/Axe/Data/Axe_BCR.edds"
+}

@@ -1,0 +1,13 @@
+GenericEntity : "{0327968D17D249FD}Prefabs/Items/Fishing/LF_FishingRod.et" {
+ ID "882DF16910A9076F"
+ components {
+  MeshObject "{DB9AEA85B40D5D8E}" {
+   Materials {
+    MaterialAssignClass "{48B063D61CD58FA7}" {
+     SourceMaterial "FishingRod"
+     AssignedMaterial "{1474799A2E6CDD7F}Prefabs/Tools/Tiers/LF_Tool_Rod_Worn.emat"
+    }
+   }
+  }
+ }
+}
