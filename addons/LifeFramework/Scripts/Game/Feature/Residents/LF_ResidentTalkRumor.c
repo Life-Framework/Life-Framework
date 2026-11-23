@@ -149,7 +149,7 @@ class LF_DialogueHook_HeardAnything : LF_DialogueHook
 	//! The key this giver is counted under: its resident id, else its kind.
 	protected string GiverKey(IEntity npc, string giver)
 	{
-		string residentId = LF_ResidentSpawner.ResidentIdOf(npc);
+		string residentId = LF_ResidentTalk.MemoryIdOf(npc);
 		if (!residentId.IsEmpty())
 			return residentId;
 
@@ -157,11 +157,11 @@ class LF_DialogueHook_HeardAnything : LF_DialogueHook
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How the giver feels about the player; a giver with no resident memory counts as neutral, so it
-	//! tells no crime rumor.
+	//! How the giver feels about the player; a giver with no resident row and no standing id (#4595)
+	//! counts as neutral, so it tells no crime rumor.
 	protected string TierFor(IEntity npc, string uid)
 	{
-		string residentId = LF_ResidentSpawner.ResidentIdOf(npc);
+		string residentId = LF_ResidentTalk.MemoryIdOf(npc);
 		if (residentId.IsEmpty())
 			return LF_ResidentMemory.TIER_NEUTRAL;
 

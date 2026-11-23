@@ -178,6 +178,50 @@ AudioClass {
    outState 35851
    outStatePort 79879
   }
+  SoundClass {
+   id 107529
+   name "SOUND_DLG_ROLE_FENCE_EVERON_REFUSE_DRILL"
+   version 5
+   tl 680 1400
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 209938
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 108553
+   name "SOUND_DLG_ROLE_FENCE_EVERON_SELL_DRILL"
+   version 5
+   tl 680 1680
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 210962
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
  }
  mixers {
   MixerClass {
@@ -208,6 +252,14 @@ AudioClass {
       }
       ConnectionClass connection {
        id 106505
+       port 65
+      }
+      ConnectionClass connection {
+       id 107529
+       port 65
+      }
+      ConnectionClass connection {
+       id 108553
        port 65
       }
      }
@@ -485,6 +537,100 @@ AudioClass {
     23 0
    }
   }
+  ShaderClass {
+   id 209938
+   name "SOUND_DLG_ROLE_FENCE_EVERON_REFUSE_DRILL"
+   version 5
+   tl 432 1400
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 312324
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 210962
+   name "SOUND_DLG_ROLE_FENCE_EVERON_SELL_DRILL"
+   version 5
+   tl 432 1680
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 313348
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
  }
  amplitudes {
   AmplitudeClass : "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf" {
@@ -577,6 +723,30 @@ AudioClass {
     }
    }
   }
+  BankLocalClass {
+   id 312324
+   name "DLG_ROLE_FENCE_EVERON_REFUSE_DRILL"
+   version 7
+   tl 150 1400
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{243D020E53A6AFA2}Sounds/Dialogue/role_fence_everon/role_fence_everon_refuse_drill.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 313348
+   name "DLG_ROLE_FENCE_EVERON_SELL_DRILL"
+   version 7
+   tl 150 1680
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{67C4CBB5C5F06F7C}Sounds/Dialogue/role_fence_everon/role_fence_everon_sell_drill.wav"
+    }
+   }
+  }
  }
  spatialities {
   SpatialityClass : "{68C6E66C2A370788}Sounds/_SharedData/Configs/Spatiality/Spatiality_Signal_Update.conf" {
@@ -631,6 +801,14 @@ AudioClass {
       }
       ConnectionClass connection {
        id 106505
+       port 5
+      }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
+      ConnectionClass connection {
+       id 108553
        port 5
       }
      }
@@ -688,6 +866,14 @@ AudioClass {
        id 106505
        port 5
       }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
+      ConnectionClass connection {
+       id 108553
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -741,6 +927,14 @@ AudioClass {
       }
       ConnectionClass connection {
        id 106505
+       port 5
+      }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
+      ConnectionClass connection {
+       id 108553
        port 5
       }
      }

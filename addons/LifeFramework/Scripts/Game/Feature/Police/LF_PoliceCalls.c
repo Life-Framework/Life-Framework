@@ -250,16 +250,58 @@ class LF_PoliceCalls
 
 	//------------------------------------------------------------------------------------------------
 	//! The oldest call nobody holds yet whose minimum rank this rank meets (#2479: the board's take), or null.
+	//! A low-priority call (its caller was charged for false reports today, LF_CallAbuse) comes after every
+	//! normal call, however old (#4585).
 	static LF_PoliceCall OldestOpenFor(int rank)
 	{
+		LF_PoliceCall lowPriority;
 		array<ref LF_PoliceCall> calls = Calls();
 		for (int i = 0; i < calls.Count(); i++)
 		{
-			if (!calls[i].m_bClosed && calls[i].m_sOfficerUid.IsEmpty() && rank >= calls[i].m_iMinRank)
-				return calls[i];
+			LF_PoliceCall call = calls[i];
+			if (call.m_bClosed || !call.m_sOfficerUid.IsEmpty() || rank < call.m_iMinRank)
+				continue;
+
+			if (!call.m_bLowPriority)
+				return call;
+
+			if (!lowPriority)
+				lowPriority = call;
 		}
 
-		return null;
+		return lowPriority;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The open call this officer took at the board nearest to where they stand (#4585: the car radio closes
+	//! it; an officer may hold more than one), or null. A call whose scene has no point counts as farthest.
+	static LF_PoliceCall HeldBy(string officerUid, vector officerPosition)
+	{
+		if (officerUid.IsEmpty())
+			return null;
+
+		LF_PoliceCall nearest;
+		float nearestDistance;
+		array<ref LF_PoliceCall> calls = Calls();
+		for (int i = 0; i < calls.Count(); i++)
+		{
+			LF_PoliceCall call = calls[i];
+			if (call.m_bClosed || call.m_sOfficerUid != officerUid)
+				continue;
+
+			float distance = float.MAX;
+			vector scene;
+			if (LF_PoliceCallBoardAction.CallOrigin(call, scene))
+				distance = vector.DistanceXZ(officerPosition, scene);
+
+			if (!nearest || distance < nearestDistance)
+			{
+				nearest = call;
+				nearestDistance = distance;
+			}
+		}
+
+		return nearest;
 	}
 
 	//------------------------------------------------------------------------------------------------

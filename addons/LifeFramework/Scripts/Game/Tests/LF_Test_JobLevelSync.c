@@ -42,7 +42,7 @@ class LF_Test_JobLevelSync : LF_Test
 
 		LF_TestJobLevelRecorder recorder = new LF_TestJobLevelRecorder();
 		LF_EventBus.Subscribe(LF_OnJobLevelChanged, recorder);
-		LF_JobLevels.AddXp(UID, LF_JobLevels.JOB_DELIVERY, 499, "quest test");
+		LF_JobLevels.AddXp(UID, LF_JobLevels.JOB_DELIVERY, 99, "quest test");
 		ctx.EqualStr("", recorder.m_sLog, "xp below the next threshold publishes no level change");
 		LF_JobLevels.AddXp(UID, LF_JobLevels.JOB_DELIVERY, 1, "quest test");
 		ctx.EqualStr(UID + ":DELIVERY:1>2;", recorder.m_sLog, "a quest's xp that raises the DELIVERY level publishes the change");
