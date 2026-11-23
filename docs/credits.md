@@ -227,8 +227,10 @@ Repainted vehicle bodies and door plates written by `tools\cli livery build`.
 | LF_UAZ469_Police | Derived from Bohemia Interactive `UAZ469_Body_CIV_BLUE.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Police repaint and door plates for the UAZ469 | `addons/LF_Everon1989/Assets/Liveries/UAZ469/` |
 | LF_S105_Police | Derived from Bohemia Interactive `S105Body_mat_beige.emat` (Arma Public License, base-game asset) | Police repaint for the S105 | `addons/LF_Everon1989/Assets/Liveries/S105/` |
 | LF_UAZ469_Rebel | Derived from Bohemia Interactive `UAZ469_Body_CIV_BLUE.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Rebel mud-and-olive repaint and hand-painted door number for the UAZ469 | `addons/LF_Everon1989/Assets/Liveries/UAZ469/` |
-| LF_Ural4320_Rebel | Derived from Bohemia Interactive `Ural_4320_Body_CIV_Forest.emat` (Arma Public License, base-game asset) | Rebel mud-and-olive repaint for the Ural4320 | `addons/LF_Everon1989/Assets/Liveries/Ural4320/` |
+| LF_Ural4320_Rebel | Derived from Bohemia Interactive `Ural_4320_Body_CIV_Forest.emat`, `SignWall_01_90x45`, `CamoNet_PalletMRE`, `CamoNet_PalletAmmo_Soviet` and the camo-net materials CS1 (Arma Public License, base-game asset) | Rebel mud-and-olive repaint for the Ural4320, with a hand-painted door number and camo nets over the bed (LF_Ural4320_RebelKit) | `addons/LF_Everon1989/Assets/Liveries/Ural4320/` |
 | LF_S1203_Police | Derived from Bohemia Interactive `S1203_body.emat` (Arma Public License, base-game asset) | Police repaint for the S1203 | `addons/LF_Everon1989/Assets/Liveries/S1203/` |
+| LF_UAZ452_Ambulance | Derived from Bohemia Interactive `uaz452_body_VAI.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | White ambulance repaint and AMBULANCE side plates for the UAZ452 | `addons/LF_Everon1989/Assets/Liveries/UAZ452/` |
+| LF_S1203_Ambulance | Derived from Bohemia Interactive `S1203_body.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | White ambulance repaint with red stripe and AMBULANCE side plates for the S1203 | `addons/LF_Everon1989/Assets/Liveries/S1203/` |
 
 ## Contraband labels
 

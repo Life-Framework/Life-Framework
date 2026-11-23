@@ -11,7 +11,7 @@ class LF_ResidentSlot
 	int m_iStartMinute;
 	string m_sRole;
 	string m_sKind;
-	//! The one place of the kind (LF_Places id), or empty for the nearest (#3231).
+	//! The one place of the kind (LF_Places id), or empty for the nearest (#3231 home, #4560 work).
 	string m_sPlaceId;
 	string m_sAnchor;
 	string m_sActivity;
@@ -141,7 +141,10 @@ class LF_ResidentTimetable
 				placeId = def.m_sHomePlaceId;
 			}
 			else if (role == ROLE_WORK)
+			{
 				kind = def.m_sWorkKind;
+				placeId = def.m_sWorkPlaceId;
+			}
 			else
 				return Refuse(id, string.Format("line %1 says place '%2', not home or work", entry.m_sTime, entry.m_sPlace));
 

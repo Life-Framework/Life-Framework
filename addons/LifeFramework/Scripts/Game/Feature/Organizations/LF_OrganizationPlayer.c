@@ -175,6 +175,22 @@ class LF_OrganizationPlayer
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The ledger notice for a refused withdrawal (#4546): the prospect words for a gang prospect,
+	//! otherwise the clerk's generic refusal.
+	static string WithdrawRefusalKey(string characterId)
+	{
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
+		if (org)
+		{
+			string prospect = LF_OrgProspect.RefusalFor(org, characterId, LF_EOrganizationPermission.WITHDRAW);
+			if (!prospect.IsEmpty())
+				return prospect;
+		}
+
+		return "#LF-Org_CashRefused";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool WithdrawCash(IEntity user, int amount)
 	{
 		if (!user)

@@ -7,7 +7,7 @@
 //! resident's prefab loads, every home and work kind is a kind this pack's places register or its place
 //! templates name, every timetable parses and covers the whole 24 h, and the names are pack `#` keys.
 //! A site resident (a work-site foreman, #4237: home kind `Workplace`, a place id, no anchor) stands at the
-//! site's place origin, so it needs no anchor and does not count toward the Saint-Philippe cast of six to twelve.
+//! site's place origin, so it needs no anchor and does not count toward the Saint-Philippe cast of six to twenty (the shop cast of #4475 and #4560 grew it).
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronResidents : LF_Test
 {
@@ -22,7 +22,7 @@ class LF_Test_EveronResidents : LF_Test
 		array<string> kinds = {
 			"Spawn", "Clerk", "LicenceDesk", "Bank", "BankVault", "BankCounter", "TownBoard", "MapBoard",
 			"ClothingCounter", "GunCounter", "StoreCounter", "CafeTable", "HostelBed", "House", "FuelTill",
-			"ParcelDepot", "PubBar", "Hall", "Dock", "FishCounter", "Garage", SITE_KIND
+			"ParcelDepot", "PubBar", "Hall", "Dock", "FishCounter", "Garage", "BarberChair", SITE_KIND
 		};
 		return kinds.Find(kind) != -1;
 	}
@@ -77,7 +77,7 @@ class LF_Test_EveronResidents : LF_Test
 				townCast++;
 		}
 
-		ctx.True(townCast >= 6 && townCast <= 12, string.Format("Saint-Philippe has six to twelve town residents, site foremen apart (has %1)", townCast));
+		ctx.True(townCast >= 6 && townCast <= 20, string.Format("Saint-Philippe has six to twenty town residents, site foremen apart (has %1)", townCast));
 
 		// The named cast the card asks for.
 		array<string> cast = { "cafe_owner", "old_man", "night_shift", "teller", "store_clerk", "neighbour_anselme", "neighbour_mireille" };
@@ -136,7 +136,8 @@ class LF_Test_EveronResidents : LF_Test
 
 			foreach (LF_ResidentEntryDef entry : def.m_aTimetable)
 			{
-				bool siteStand = def.m_sHomeKind == SITE_KIND && entry.m_sAnchor.IsEmpty();
+				// An empty anchor is the place origin: a site foreman stands there all day, a shop keeper at home when every anchor of the house is taken (#4560).
+				bool siteStand = entry.m_sAnchor.IsEmpty();
 				ctx.True(siteStand || entry.m_sAnchor == "counter" || entry.m_sAnchor == "bench" || entry.m_sAnchor.IndexOf("door") == 0, string.Format("%1 line %2 stands on a known anchor ('%3')", id, entry.m_sTime, entry.m_sAnchor));
 				ctx.True(entry.m_sActivity == "serve" || entry.m_sActivity == "sit" || entry.m_sActivity == "loiter" || entry.m_sActivity == "idle", string.Format("%1 line %2 does a known activity ('%3')", id, entry.m_sTime, entry.m_sActivity));
 			}

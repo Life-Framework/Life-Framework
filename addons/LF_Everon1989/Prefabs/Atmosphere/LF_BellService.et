@@ -1,0 +1,10 @@
+GenericEntity {
+ ID "24E043FE7690BEDB"
+ components {
+  LF_CalendarCarrierComponent "{8CB939099B78B7C0}" {
+   m_sOperationId "calendar_service"
+   m_sSoundProject "{87649C882DF328FD}Sounds/Calendar/Calendar_BellService.acp"
+   m_fSeconds 15
+  }
+ }
+}

@@ -146,6 +146,13 @@ class LF_TraderSale
 				return Refuse(seller, LF_ETraderSale.NOT_BOUGHT, "the market pays nothing for " + itemPrefab);
 		}
 
+		// Good word (#4409): the seller's perk adds its share to the quote, after the market priced the units.
+		// The curve below moves by the units sold, never by this share.
+		int quoted = totalValue;
+		totalValue = LF_PerkPrice.AdjustFor(seller, itemPrefab, quoted);
+		if (totalValue != quoted)
+			LF_Debug.Info("Trader", string.Format("good word: %1 pays %2 instead of %3", itemPrefab, totalValue, quoted));
+
 		// Pay first, then move the price, then take the item; any failure rolls back what was done.
 		int paid = LF_MoneyUtils.AddCash(seller, totalValue, "trader-sell");
 		if (paid != totalValue)
@@ -225,13 +232,15 @@ class LF_TraderSale
 			return Refuse(seller, LF_ETraderSale.NOT_BOUGHT, "the buyer pays nothing for " + itemPrefab);
 		}
 
-		int paid = LF_MoneyUtils.AddCash(seller, sale.m_iPayout, "trader-sell");
-		if (paid != sale.m_iPayout)
+		// Good word (#4409): a premium buyer pays the perk's share on top of its row; the purse is untouched.
+		int payout = LF_PerkPrice.AdjustFor(seller, itemPrefab, sale.m_iPayout);
+		int paid = LF_MoneyUtils.AddCash(seller, payout, "trader-sell");
+		if (paid != payout)
 		{
 			if (paid > 0)
 				LF_MoneyUtils.RemoveCash(seller, paid, "trader-sell-rollback");
 			LF_BuyerDemandBook.Restore(buyer, itemPrefab, purseBefore);
-			return Refuse(seller, LF_ETraderSale.UNPAYABLE, string.Format("cash payout failed (%1 of %2)", paid, sale.m_iPayout));
+			return Refuse(seller, LF_ETraderSale.UNPAYABLE, string.Format("cash payout failed (%1 of %2)", paid, payout));
 		}
 
 		bool removed = false;
@@ -245,9 +254,9 @@ class LF_TraderSale
 			return Refuse(seller, LF_ETraderSale.NOT_REMOVED, "the item could not be removed");
 		}
 
-		LF_Debug.Info("Trader", string.Format("sold %1 x%2 of %3 to %4 for %5 (refused %6, untrusted=%7)", itemPrefab, sale.m_iAccepted, outputUnits, buyer, sale.m_iPayout, sale.m_iRefused, untrusted));
-		s_iBatchPaid += sale.m_iPayout;
-		Tell(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, sale.m_iPayout.ToString());
+		LF_Debug.Info("Trader", string.Format("sold %1 x%2 of %3 to %4 for %5 (refused %6, untrusted=%7)", itemPrefab, sale.m_iAccepted, outputUnits, buyer, payout, sale.m_iRefused, untrusted));
+		s_iBatchPaid += payout;
+		Tell(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, payout.ToString());
 		LF_QuestArrivalSignals.ReportTraderSale(seller, itemPrefab);
 		// Only what the purse could not hold says "enough"; a part lot just stays with the seller.
 		if (sale.m_iRefused > sale.m_iUnderLot)
@@ -374,8 +383,8 @@ class LF_TraderSale
 		foreach (LF_TraderSellGood row : rows)
 		{
 			goods.Insert(row.m_sPrefab);
-			onePrices.Insert(QuoteUnits(trader, row.m_sPrefab, 1, nowUnix));
-			allPrices.Insert(QuoteUnits(trader, row.m_sPrefab, row.m_iUnits, nowUnix));
+			onePrices.Insert(LF_PerkPrice.AdjustFor(seller, row.m_sPrefab, QuoteUnits(trader, row.m_sPrefab, 1, nowUnix)));
+			allPrices.Insert(LF_PerkPrice.AdjustFor(seller, row.m_sPrefab, QuoteUnits(trader, row.m_sPrefab, row.m_iUnits, nowUnix)));
 		}
 
 		return true;

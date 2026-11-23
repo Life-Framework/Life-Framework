@@ -35,3 +35,14 @@ data is the `outpost` block of [dossier.json](dossier.json); the scout's own pag
 The centre, the plots, the terrain, the water and the picture are measured by the scout. The part spots are read off the
 overhead picture and the free plots; nothing here is a placement. Cards O9 and the town pass seat them with `town fit
 --terrain` and `audit placement`.
+
+## Dressing kit (#4458, #4555)
+
+The camp's 1989 smuggler look is the kit `tools/town/kits/outpost-north.json` (29 rows, vanilla assets only, open ground:
+every row `"mount": "terrain"`), authored in the debug grid and archived as `tools/town/kits/sources/outpost-north.layer`.
+It holds the sandbag gate (4 m opening), the FIA tent for the quartermaster, a canvas cover over the crate spot, a camo net
+shrunk to the two pallets, the fire with three stools and a crate bench, the mechanic canopy over two workbenches, the generator,
+the R161 mast, the table, the barrel, and the flag pole with the vanilla green cloth (`Flag_1_2` with `Flag_1_2_Green.emat`,
+the vanilla green flag prefab's GUID is not in the game's reference index). Six prefab-less rows (`outpost-spot-crate`,
+`-chalk-board`, `-buyer`, `-quartermaster`, `-guard-s`, `-guard-n`) mark where cards #4223, GA-O3 and #4519 put their
+interactables and NPCs. `town fit --terrain` seats it on the site; `town author --reopen outpost-north` rebuilds the grid bay.

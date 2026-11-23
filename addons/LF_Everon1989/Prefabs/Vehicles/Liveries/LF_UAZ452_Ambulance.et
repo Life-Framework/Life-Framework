@@ -1,0 +1,87 @@
+Vehicle : "{43C4AF1EEBD001CE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_ambulance.et" {
+ ID "D83C35899A0BFFD2"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{6502DC1DCDB16EF9}" {
+     SourceMaterial "uaz452_body"
+     AssignedMaterial "{7E15CE83F6B89D9C}Assets/Liveries/UAZ452/LF_UAZ452_Ambulance.emat"
+    }
+   }
+  }
+ }
+ {
+  GenericEntity AmbulanceLetters_L {
+   ID "717C65B242B8B40B"
+   components {
+    Hierarchy "{95330ACA9E6916E2}" {
+    }
+    MeshObject "{984395DFAD1829A2}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{0FA913E1953046A8}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{0AE59C12E697B43E}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{8D402301CEEBFB98}" {
+     m_sSignId "livery_ambulance"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.6 0.03 0.03
+     m_vPaintColor 0.95 0.95 0.93
+     m_vTextColor 0.6 0.03 0.03
+    }
+   }
+   coords -0.98 1.12 -0.9
+   angles 0 -90 0
+   scale 0.7
+  }
+  GenericEntity AmbulanceLetters_R {
+   ID "A58FA920130F9C05"
+   components {
+    Hierarchy "{1C74D09CC076B6AD}" {
+    }
+    MeshObject "{B19C54D8B163CBBD}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{1CB8511D85228713}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{D8C981F287BF891A}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{136813D833BB5DB6}" {
+     m_sSignId "livery_ambulance"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.6 0.03 0.03
+     m_vPaintColor 0.95 0.95 0.93
+     m_vTextColor 0.6 0.03 0.03
+    }
+   }
+   coords 0.98 1.12 -0.9
+   angles 0 90 0
+   scale 0.7
+  }
+ }
+}

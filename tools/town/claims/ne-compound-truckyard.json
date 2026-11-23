@@ -6,7 +6,7 @@
   "kit": "truckyard",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_ne-compound_truckyard.layer",
   "kinds": [
-    "VehicleLot"
+    "TruckLot"
   ],
   "rows": 7,
   "destruction": {
