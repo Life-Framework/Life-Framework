@@ -42,3 +42,11 @@ vanilla open notebook on it and four **Read: <Section>** rows. `Law/LF_LawBookRe
 section (`law_<key>`), answers it from `LF_LawCode.CollectSection`, and paints one line per code with its fine and
 time (jail-only codes show no fine). The page is a board card like the price board, not a menu; the amounts are
 whatever the catalog holds, so the pack's law book is what a player reads.
+
+## Charge sheet paper (L4, #4426)
+
+Booking opens a paper, not an offer. The officer ticks each open report, sees the stacked and
+over-cap rows greyed and the total at the foot, and signs. Client: `LF_ChargeSheetScreen.c`
+(model, screen, harness fixture). Server: `LF_ChargeSheetScreenDesk.c` (open, sign, the two RPCs).
+The paper only previews: the server recomputes from the ticked ids with its own account's rank and
+duty in `LF_BookingDesk.Offer`; a total or rank the client claims is never read.

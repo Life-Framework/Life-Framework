@@ -101,6 +101,18 @@ class LF_PoliceSkill : LF_EventSubscriber
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The cuff hold bar's speed (1 with no perk): the engine adds the time slice times this to the
+	//! progress, so the bar fills in `CuffSeconds`. A remote client reads its own perks from the owner
+	//! sync (LF_PerkSync, #4525).
+	static float CuffSpeed(string officerUid)
+	{
+		if (Has(officerUid, PERK_FAST_CUFF))
+			return 100.0 / CUFF_PERCENT;
+
+		return 1.0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The radar gun's reach in metres: the base range, longer with the long-radar perk.
 	static float RadarRange(string officerUid, float baseMeters)
 	{

@@ -33,6 +33,29 @@ class LF_PerkPickOffer
 }
 
 //------------------------------------------------------------------------------------------------
+//! One paid perk change (#4525): the character, the trade, the pick level and the in-game day number
+//! of the change. Saved in the "tradeperks" section from version 2. Positional in a binary save:
+//! never add, remove or reorder a field.
+class LF_PerkChangeRow
+{
+	string m_sPlayerUid;
+	string m_sTrade;
+	int m_iAtLevel;
+	int m_iDay;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_PerkChangeRow Create(string playerUid, string trade, int atLevel, int day)
+	{
+		LF_PerkChangeRow row = new LF_PerkChangeRow();
+		row.m_sPlayerUid = playerUid;
+		row.m_sTrade = trade;
+		row.m_iAtLevel = atLevel;
+		row.m_iDay = day;
+		return row;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! The perk pick (WK-W8b, #4416). At level 10 of a work trade a character picks one of two passive
 //! perks (LF_PerkEffects), at level 20 one of two more, at the labour office counter. The first pick
 //! at a level is free; changing it costs CHANGE_FEE cash, once an in-game week (decision N10). The
@@ -42,8 +65,11 @@ class LF_PerkPickOffer
 //! not taken. A perk held at the other level is never offered twice, and a level-20 pick needs a
 //! level-10 pick first, so the F2 card's perk list stays in pick-level order.
 //!
-//! The picks live in LF_TradePerks (the "tradeperks" save section). The once-a-week change clock is
-//! session state: a restart lets a character change again (follow-up: save it with the section).
+//! The picks live in LF_TradePerks and the once-a-week change clock here; both are saved in the
+//! "tradeperks" section (LF_TradePerksSavePayload, version 2 added the clock, #4525).
+//!
+//! A change row names its trade (#4525): two trades that both hold a pick each get their own change
+//! row, so the second trade's change is not stuck behind the first's.
 class LF_PerkPick
 {
 	static const string FEATURE = "PerkPick";
@@ -53,7 +79,7 @@ class LF_PerkPick
 	static const int LEVEL_SECOND = 20; // lf-fixed: the work plan's second pick level
 	static const string REASON = "perk_change";
 
-	//! "<uid>|<trade>|<atLevel>" -> in-game day number of the last paid change. Session only.
+	//! "<uid>|<trade>|<atLevel>" -> in-game day number of the last paid change. Saved (tradeperks v2).
 	protected static ref map<string, int> s_mChangedDay;
 	//! Tests: the in-game day number to use instead of the world clock; -1 for the clock.
 	protected static int s_iTestDay = -1;
@@ -135,6 +161,25 @@ class LF_PerkPick
 	//! Server: every offer for a character, read from the level and perk stores.
 	static void Offers(string uid, notnull array<ref LF_PerkPickOffer> into)
 	{
+		OffersWith(uid, false, into);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: every offer for its own character, read from the owner sync (LF_PerkSync levels, the
+	//! picks it wrote into LF_TradePerks). False when no sync arrived yet.
+	static bool OffersSynced(string uid, notnull array<ref LF_PerkPickOffer> into)
+	{
+		into.Clear();
+		if (!LF_PerkSync.Ready(uid))
+			return false;
+
+		OffersWith(uid, true, into);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void OffersWith(string uid, bool synced, notnull array<ref LF_PerkPickOffer> into)
+	{
 		into.Clear();
 		if (uid.IsEmpty())
 			return;
@@ -143,50 +188,27 @@ class LF_PerkPick
 		Trades(trades);
 		foreach (string trade : trades)
 		{
-			OffersFrom(trade, LF_JobLevels.LevelOf(uid, trade), LF_TradePerks.PerkAt(uid, trade, LEVEL_FIRST), LF_TradePerks.PerkAt(uid, trade, LEVEL_SECOND), into);
+			int level;
+			if (synced)
+				level = LF_PerkSync.LevelOf(uid, trade);
+			else
+				level = LF_JobLevels.LevelOf(uid, trade);
+
+			OffersFrom(trade, level, LF_TradePerks.PerkAt(uid, trade, LEVEL_FIRST), LF_TradePerks.PerkAt(uid, trade, LEVEL_SECOND), into);
 		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Client: the offers read from the last F2 sheet the server sent (levels and perks in pick-level
-	//! order). False when the client has no sheet yet.
-	static bool OffersFromSheet(LF_PlayerMenuData data, notnull array<ref LF_PerkPickOffer> into)
-	{
-		into.Clear();
-		if (!data)
-			return false;
-
-		array<string> trades = {};
-		Trades(trades);
-		foreach (string trade : trades)
-		{
-			foreach (LF_PlayerMenuSkill skill : data.m_aSkills)
-			{
-				if (!skill || skill.m_sJob != trade)
-					continue;
-
-				string first;
-				string second;
-				if (skill.m_aPerks.Count() > 0)
-					first = skill.m_aPerks[0];
-				if (skill.m_aPerks.Count() > 1)
-					second = skill.m_aPerks[1];
-
-				OffersFrom(trade, skill.m_iLevel, first, second, into);
-			}
-		}
-
-		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The first offer of a perk at a pick level of one kind (a free take or a paid change), trades in
-	//! counter order; null when none.
-	static LF_PerkPickOffer Find(notnull array<ref LF_PerkPickOffer> offers, int atLevel, string perk, bool change)
+	//! counter order; null when none. A non-empty `trade` takes only that trade's offer (a change row).
+	static LF_PerkPickOffer Find(notnull array<ref LF_PerkPickOffer> offers, int atLevel, string perk, bool change, string trade = string.Empty)
 	{
 		foreach (LF_PerkPickOffer offer : offers)
 		{
-			if (offer.m_iAtLevel == atLevel && offer.m_sPerk == perk && offer.m_bChange == change)
+			if (offer.m_iAtLevel != atLevel || offer.m_sPerk != perk || offer.m_bChange != change)
+				continue;
+
+			if (trade.IsEmpty() || offer.m_sTrade == trade)
 				return offer;
 		}
 
@@ -222,11 +244,62 @@ class LF_PerkPick
 		if (!s_mChangedDay.Find(Key(uid, trade, atLevel), last))
 			return 0;
 
-		int left = last + WEEK_DAYS - Today();
-		if (left < 0)
+		// A world clock that started over after a restart (an earlier date) never locks past a week.
+		return LF_Utils.ClampInt(last + WEEK_DAYS - Today(), 0, WEEK_DAYS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Starts the week lock of a pick level today (a paid change; tests).
+	static void MarkChanged(string uid, string trade, int atLevel)
+	{
+		if (!s_mChangedDay)
+			s_mChangedDay = new map<string, int>();
+
+		s_mChangedDay.Set(Key(uid, trade, atLevel), Today());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every change stamp as rows, for the save.
+	static array<ref LF_PerkChangeRow> ExportChanges()
+	{
+		array<ref LF_PerkChangeRow> rows = new array<ref LF_PerkChangeRow>();
+		if (!s_mChangedDay)
+			return rows;
+
+		foreach (string key, int day : s_mChangedDay)
+		{
+			array<string> parts = {};
+			key.Split("|", parts, false);
+			if (parts.Count() == 3)
+				rows.Insert(LF_PerkChangeRow.Create(parts[0], parts[1], parts[2].ToInt(), day));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replaces the change stamps with the rows (null or empty clears them), so a second load ends in
+	//! the same state. \return How many rows were kept; a row with a missing field is skipped.
+	static int ApplyChanges(array<ref LF_PerkChangeRow> rows)
+	{
+		s_mChangedDay = new map<string, int>();
+		if (!rows)
 			return 0;
 
-		return left;
+		int kept;
+		foreach (LF_PerkChangeRow row : rows)
+		{
+			if (!row || row.m_sPlayerUid.IsEmpty() || row.m_sTrade.IsEmpty() || row.m_iAtLevel <= 0 || row.m_sPlayerUid.Contains("|") || row.m_sTrade.Contains("|"))
+			{
+				LF_Debug.Warn(FEATURE, "a saved perk change row has a missing field and is skipped");
+				continue;
+			}
+
+			s_mChangedDay.Set(Key(row.m_sPlayerUid, row.m_sTrade, row.m_iAtLevel), row.m_iDay);
+			kept++;
+		}
+
+		return kept;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -239,8 +312,9 @@ class LF_PerkPick
 	//! Server only. Takes `perk` at pick level `atLevel` for the user, in the first trade that offers
 	//! it. A first pick is free; a change takes `fee` cash first and is refused inside the week. `change`
 	//! is the kind of row the player used: a take row never charges, a change row never picks for free,
-	//! so a row the client labelled from a stale sheet is refused before any cash moves.
-	static LF_EPerkPickResult Take(IEntity user, int atLevel, string perk, int fee, bool change)
+	//! so a row the client labelled from a stale view is refused before any cash moves. `trade` is the
+	//! trade a change row names; empty takes the first trade that offers the perk.
+	static LF_EPerkPickResult Take(IEntity user, int atLevel, string perk, int fee, bool change, string trade = string.Empty)
 	{
 		if (Replication.IsRunning() && !Replication.IsServer())
 		{
@@ -257,10 +331,10 @@ class LF_PerkPick
 
 		array<ref LF_PerkPickOffer> offers = {};
 		Offers(uid, offers);
-		LF_PerkPickOffer offer = Find(offers, atLevel, perk, change);
+		LF_PerkPickOffer offer = Find(offers, atLevel, perk, change, trade);
 		if (!offer)
 		{
-			LF_Debug.Info(FEATURE, string.Format("%1 refused %2 at level %3: not offered", uid, perk, atLevel));
+			LF_Debug.Info(FEATURE, string.Format("%1 refused %2 at level %3 (trade '%4'): not offered", uid, perk, atLevel, trade));
 			return LF_EPerkPickResult.NOT_OFFERED;
 		}
 
@@ -305,9 +379,7 @@ class LF_PerkPick
 			return LF_EPerkPickResult.TAKEN;
 		}
 
-		if (!s_mChangedDay)
-			s_mChangedDay = new map<string, int>();
-		s_mChangedDay.Set(Key(uid, offer.m_sTrade, atLevel), Today());
+		MarkChanged(uid, offer.m_sTrade, atLevel);
 		LF_Debug.Info(FEATURE, string.Format("%1 changed to %2 in %3 at level %4 for %5", uid, perk, offer.m_sTrade, atLevel, fee));
 		return LF_EPerkPickResult.CHANGED;
 	}
