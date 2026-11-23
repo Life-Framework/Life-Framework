@@ -15736,6 +15736,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Too far away to revive them."
      Comment "Revive refusal: out of range."
     }
+    CustomStringTableItem "{4E1B7A92C60D3F58}" {
+     Id "LF-RoadMap_ItemDesc"
+     Target_en_us "A folded road map of the island. Study it to pencil every settlement onto your own map."
+     Comment "Road map item (#4474): the item description."
+    }
+    CustomStringTableItem "{9D3C05E2B8A41F76}" {
+     Id "LF-RoadMap_ItemName"
+     Target_en_us "Road map"
+     Comment "Road map item (#4474): the item name."
+    }
+    CustomStringTableItem "{2F86B14D7C0A59E3}" {
+     Id "LF-RoadMap_Marked"
+     Target_en_us "You pencil %1 new settlements onto your map."
+     Comment "Road map item (#4474): toast after studying it. %1 = towns new to the player's map."
+    }
+    CustomStringTableItem "{B7054E3A91D2C86F}" {
+     Id "LF-RoadMap_Nothing"
+     Target_en_us "Your map already shows every settlement this one lists."
+     Comment "Road map item (#4474): toast when it adds nothing."
+    }
+    CustomStringTableItem "{51C9A07E3B6D2F84}" {
+     Id "LF-RoadMap_Title"
+     Target_en_us "Road map"
+     Comment "Road map item (#4474): the toast title."
+    }
+    CustomStringTableItem "{C60E83B52A7D194F}" {
+     Id "LF-RoadMap_Use"
+     Target_en_us "Study the road map"
+     Comment "Road map item (#4474): the action that pencils every live town onto the player's map."
+    }
   CustomStringTableItem "{BABA49E2440A6362}" {
    Id "LF-Roadblock_Deploy"
    Target_en_us "Deploy roadblock"
