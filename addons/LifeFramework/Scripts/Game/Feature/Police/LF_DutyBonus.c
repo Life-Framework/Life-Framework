@@ -27,7 +27,8 @@ class LF_DutyBonusLedger : Managed
 //! (LF_DutyPay.PayAtClockOut), never on the spot. The caps keep shift plus bonus under the next civilian
 //! rung (plan "The economy table"): police $100/$100/$100/$95/$70 by rank, medic $40/$50/$50/$40.
 //! Fines and bail are not bonuses: they go to the town treasury and never reach this ledger.
-//! The ledger lives in memory: a server restart mid-shift drops the unpaid bonus (the shift seconds persist).
+//! The ledger is saved in the "dutybonus" section (LF_DutyBonusSavePayload, #4319), so a restart mid-shift
+//! keeps both the unpaid bonus and the hour's count.
 class LF_DutyBonus
 {
 	static const string FEATURE = "DutyBonus";
@@ -204,6 +205,103 @@ class LF_DutyBonus
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: awards an outcome bonus to the account with this persistent id (#4319: the call, booking and
+	//! stolen-car call sites know the officer by uid).
+	//! \return The amount added to the pending bonus (0 when refused or capped).
+	static int AwardUid(string uid, LF_DutyBonusKind kind)
+	{
+		if (uid.IsEmpty())
+		{
+			s_iRefusals++;
+			LF_Debug.Warn(FEATURE, string.Format("bonus %1 refused: no player", typename.EnumToString(LF_DutyBonusKind, kind)));
+			return 0;
+		}
+
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		LF_PlayerAccount account;
+		if (accounts)
+			account = accounts.GetAccount(uid);
+
+		if (!account)
+		{
+			s_iRefusals++;
+			LF_Debug.Warn(FEATURE, string.Format("bonus %1 refused: no account for %2", typename.EnumToString(LF_DutyBonusKind, kind), uid));
+			return 0;
+		}
+
+		return Award(account, kind);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the two uids or character record keys belong to one account (a self-award, #4319). The
+	//! ledger is per account, so an officer's other character counts as the same player.
+	static bool SameAccount(string uidA, string uidB)
+	{
+		if (uidA.IsEmpty() || uidB.IsEmpty())
+			return false;
+
+		if (uidA == uidB)
+			return true;
+
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!accounts)
+			return false;
+
+		LF_PlayerAccount a = accounts.GetFromCache(uidA);
+		LF_PlayerAccount b = accounts.GetFromCache(uidB);
+		return a && b && a.GetPersistentId() == b.GetPersistentId();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Save rows (LF_DutyBonusSavePayload): one per ledger with a pending bonus or an open hour window.
+	static array<ref LF_DutyBonusRow> ExportRows()
+	{
+		array<ref LF_DutyBonusRow> rows = new array<ref LF_DutyBonusRow>();
+		if (!s_mLedgers)
+			return rows;
+
+		foreach (string id, LF_DutyBonusLedger ledger : s_mLedgers)
+		{
+			if (!ledger || id.IsEmpty() || (ledger.m_iPending <= 0 && ledger.m_iWindowEarned <= 0))
+				continue;
+
+			rows.Insert(LF_DutyBonusRow.Create(id, ledger.m_iPending, ledger.m_iWindowStart, ledger.m_iWindowEarned));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replaces every ledger with the saved rows, so a second load ends in the same state. A row with no
+	//! account is skipped; negative amounts read as 0. null clears the ledgers.
+	//! \return The rows applied.
+	static int ApplyRows(array<ref LF_DutyBonusRow> rows)
+	{
+		s_mLedgers = null;
+		if (!rows)
+			return 0;
+
+		int applied = 0;
+		foreach (LF_DutyBonusRow row : rows)
+		{
+			if (!row || row.m_sAccountId.IsEmpty())
+			{
+				LF_Debug.Warn(FEATURE, "skipped a duty bonus row with no account");
+				continue;
+			}
+
+			LF_DutyBonusLedger ledger = new LF_DutyBonusLedger();
+			ledger.m_iPending = LF_Utils.MaxInt(row.m_iPending, 0);
+			ledger.m_iWindowStart = LF_Utils.MaxInt(row.m_iWindowStart, 0);
+			ledger.m_iWindowEarned = LF_Utils.MaxInt(row.m_iWindowEarned, 0);
+			Ledgers().Set(row.m_sAccountId, ledger);
+			applied++;
+		}
+
+		return applied;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The bonus waiting for this account's clock-out.
 	static int Pending(LF_PlayerAccount account)
 	{
@@ -267,6 +365,32 @@ class LF_DutyBonus
 
 		ledger.m_iPending += amount;
 		LF_Debug.Warn(FEATURE, string.Format("bonus $%1 kept for %2's next clock-out", amount, account.GetPersistentId()));
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One saved ledger (section "dutybonus", #4319), keyed by the account's persistent id like the ledger.
+class LF_DutyBonusRow : Managed
+{
+	static const int ROW_VERSION = 1;
+
+	//! Row format, written first. 1 is this shape.
+	int m_iVersion;
+	string m_sAccountId;
+	int m_iPending;
+	int m_iWindowStart;
+	int m_iWindowEarned;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_DutyBonusRow Create(string accountId, int pending, int windowStart, int windowEarned)
+	{
+		LF_DutyBonusRow row = new LF_DutyBonusRow();
+		row.m_iVersion = ROW_VERSION;
+		row.m_sAccountId = accountId;
+		row.m_iPending = pending;
+		row.m_iWindowStart = windowStart;
+		row.m_iWindowEarned = windowEarned;
+		return row;
 	}
 }
 

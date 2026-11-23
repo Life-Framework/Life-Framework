@@ -62,3 +62,10 @@ visibly holding/expelling the product.
 - **Data:** per-bench attributes `m_iWorkUnits` (default 4), `m_fReach`, `m_iMinTickMs`. Recipes come from the recycle config.
 - **Not saved:** a job in progress is lost at world end, like the chop shop; the item left the inventory at Load.
 - **Proof:** `processing/recycler` (WORLD).
+
+## Job XP for batches (#4337)
+
+- **Player sees:** a worker at a furnace, smelter or refinery earns Smelting XP for each finished batch (F2 shows the trade); never Miner XP.
+- **Owner and side:** `LF_ProcessXp.PayBatches` on the server, called by `LF_ProcessAction` (instant run) and `LF_ProcessRun.Deliver` (timed run, when the bars drop).
+- **Data:** `m_sXpAction` on a machine row (`ResourceChains.conf`) names the `jobs.xpAwards` action; empty pays nothing. `smelt_batch` pays SMELTING through `LF_JobLevelSources.AwardSmelting`.
+- **Proof:** `jobs/smelting-xp` (WORLD).
