@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------
-//! One row on the labour office counter (WK-W8b, #4416): "Take Double yield (Miner)" or "Change to
+//! One row on the labour office counter (WK-W8b, #4416), or on a duty board (police, clinic, #4573): "Take Double yield (Miner)" or "Change to
 //! Swift hands (Miner), $500". Each row is one perk at one pick level; a take row shows when that perk
 //! is on offer in some trade (the first in counter order), a change row names its own trade
 //! (`m_sTrade`, #4525), so two trades that both hold a pick each get a change row. A row is a free take or a
@@ -21,6 +21,9 @@ class LF_PerkPickAction : ScriptedUserAction
 
 	[Attribute("", UIWidgets.EditBox, "Trade (job id) a change row serves; empty serves the first trade that offers the perk")]
 	protected string m_sTrade;
+
+	[Attribute("#LF-PerkPick_Title", UIWidgets.EditBox, "Toast title: the place the pick is made (labor office, police station, clinic)")]
+	protected string m_sTitle;
 
 	//! The offer this row showed last, for the name.
 	protected ref LF_PerkPickOffer m_Shown;
@@ -106,7 +109,7 @@ class LF_PerkPickAction : ScriptedUserAction
 		LF_ENotificationType type = LF_ENotificationType.WARNING;
 		if (result == LF_EPerkPickResult.TAKEN || result == LF_EPerkPickResult.CHANGED)
 			type = LF_ENotificationType.SUCCESS;
-		LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-PerkPick_Title", LF_PerkPick.ResultKey(result), 5.0, type, LF_MoneyFormat.FormatMoney(m_iFee));
+		LF_NotificationManagerComponent.NotifyPlayer(playerId, m_sTitle, LF_PerkPick.ResultKey(result), 5.0, type, LF_MoneyFormat.FormatMoney(m_iFee));
 	}
 
 	//------------------------------------------------------------------------------------------------

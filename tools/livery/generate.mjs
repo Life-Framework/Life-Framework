@@ -84,8 +84,9 @@ function checkRow(row) {
   if (row.panels) checkPanels(row);
 }
 
-// panels { sign, paint, ink, rim, at: [{ name, coords: [x, y, z], yaw, scale }] }: plates on fixed body panels,
+// panels { sign, paint, ink, rim, at: [{ name, coords: [x, y, z], yaw, scale, tilt }] }: plates on fixed body panels,
 // in the vehicle's frame. `sign` names an existing sign row; without it the row's door plate sign is used.
+// `tilt` (degrees, optional) leans the plate about its own horizontal axis to lie on a side that slopes in at the top.
 function checkPanels(row) {
   const p = row.panels;
   if (!p.sign && !row.plate) throw new Error(`${row.id}: panels.sign is required when the row has no door plate`);
@@ -98,6 +99,7 @@ function checkPanels(row) {
     names.add(a.name);
     if (!Array.isArray(a.coords) || a.coords.length !== 3 || a.coords.some((n) => typeof n !== "number")) throw new Error(`${row.id}: panel ${a.name} coords must be [x, y, z]`);
     if (typeof a.yaw !== "number" || typeof a.scale !== "number" || a.scale <= 0) throw new Error(`${row.id}: panel ${a.name} needs a number yaw and a positive scale`);
+    if ("tilt" in a && (typeof a.tilt !== "number" || Math.abs(a.tilt) > 45)) throw new Error(`${row.id}: panel ${a.name} tilt must be a number of degrees, at most 45 either way`);
   }
 }
 
@@ -160,7 +162,7 @@ function plateChild(p, at, scale, signId, g, name = "") {
     }
    }
    coords ${at.coords.map(num).join(" ")}
-   angles 0 ${at.yaw} 0
+   angles ${num(at.tilt || 0)} ${at.yaw} 0
    scale ${num(scale)}
   }
 `;

@@ -61,8 +61,11 @@ class LF_PerkChangeRow
 //! at a level is free; changing it costs CHANGE_FEE cash, once an in-game week (decision N10). The
 //! cash is taken before the perk changes and given back if the store refuses.
 //!
-//! The pool at level 10 is double yield or swift hands; at level 20 light touch or the level-10 perk
-//! not taken. A perk held at the other level is never offered twice, and a level-20 pick needs a
+//! A work trade's pool at level 10 is double yield or swift hands; at level 20 light touch, good word
+//! (in a trade whose goods a trader buys, LF_PerkPrice) or the level-10 perk not taken. The duty trades
+//! pick at their own boards (#4573): POLICE fast cuff or long radar at 10 and the other at 20 on the
+//! police dispatch board; MEDIC quick revive or quick aid at 10, steady carry or the other at 20 on
+//! the clinic's. A perk held at the other level is never offered twice, and a level-20 pick needs a
 //! level-10 pick first, so the F2 card's perk list stays in pick-level order.
 //!
 //! The picks live in LF_TradePerks and the once-a-week change clock here; both are saved in the
@@ -78,6 +81,13 @@ class LF_PerkPick
 	static const int LEVEL_FIRST = 10; // lf-fixed: the work plan's first pick level
 	static const int LEVEL_SECOND = 20; // lf-fixed: the work plan's second pick level
 	static const string REASON = "perk_change";
+
+	static const string JOB_POLICE = "POLICE";
+	static const string JOB_MEDIC = "MEDIC";
+	//! The medic perk ids LF_MedicSkill reads (#4433); the police ids are LF_PoliceSkill's.
+	static const string PERK_QUICK_REVIVE = "quick_revive";
+	static const string PERK_QUICK_AID = "quick_aid";
+	static const string PERK_STEADY_CARRY = "steady_carry";
 
 	//! "<uid>|<trade>|<atLevel>" -> in-game day number of the last paid change. Saved (tradeperks v2).
 	protected static ref map<string, int> s_mChangedDay;
@@ -99,7 +109,9 @@ class LF_PerkPick
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The work trades whose gathers the passive perks change, in the order the counter serves them.
+	//! Every trade with a perk pick, in the order the rows serve them: the six work trades of the labour
+	//! office counter, then the duty trades of the police and clinic boards (#4573). The owner sync
+	//! carries the level of each (LF_PerkSync).
 	static void Trades(notnull array<string> into)
 	{
 		into.Clear();
@@ -109,26 +121,43 @@ class LF_PerkPick
 		into.Insert("FISHER");
 		into.Insert("SMELTING");
 		into.Insert("SALVAGE");
+		into.Insert(JOB_POLICE);
+		into.Insert(JOB_MEDIC);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The perks a pick level draws from, before the ones held are taken out.
-	static void Pool(int atLevel, notnull array<string> into)
+	//! The perks a trade's pick level draws from, before the ones held are taken out.
+	static void Pool(string trade, int atLevel, notnull array<string> into)
 	{
 		into.Clear();
-		if (atLevel == LEVEL_FIRST)
+		if (atLevel != LEVEL_FIRST && atLevel != LEVEL_SECOND)
+			return;
+
+		if (trade == JOB_POLICE)
 		{
-			into.Insert(LF_PerkEffects.PERK_DOUBLE_YIELD);
-			into.Insert(LF_PerkEffects.PERK_SWIFT_HANDS);
+			into.Insert(LF_PoliceSkill.PERK_FAST_CUFF);
+			into.Insert(LF_PoliceSkill.PERK_LONG_RADAR);
+			return;
+		}
+
+		if (trade == JOB_MEDIC)
+		{
+			if (atLevel == LEVEL_SECOND)
+				into.Insert(PERK_STEADY_CARRY);
+			into.Insert(PERK_QUICK_REVIVE);
+			into.Insert(PERK_QUICK_AID);
 			return;
 		}
 
 		if (atLevel == LEVEL_SECOND)
 		{
 			into.Insert(LF_PerkEffects.PERK_LIGHT_TOUCH);
-			into.Insert(LF_PerkEffects.PERK_DOUBLE_YIELD);
-			into.Insert(LF_PerkEffects.PERK_SWIFT_HANDS);
+			if (LF_PerkPrice.PaysIn(trade))
+				into.Insert(LF_PerkPrice.PERK_GOOD_WORD);
 		}
+
+		into.Insert(LF_PerkEffects.PERK_DOUBLE_YIELD);
+		into.Insert(LF_PerkEffects.PERK_SWIFT_HANDS);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -147,7 +176,7 @@ class LF_PerkPick
 			return;
 
 		array<string> pool = {};
-		Pool(atLevel, pool);
+		Pool(trade, atLevel, pool);
 		foreach (string perk : pool)
 		{
 			if (perk == current || perk == other)
@@ -411,6 +440,18 @@ class LF_PerkPick
 			return "#LF-PerkPick_Perk_SwiftHands";
 		if (perk == LF_PerkEffects.PERK_LIGHT_TOUCH)
 			return "#LF-PerkPick_Perk_LightTouch";
+		if (perk == LF_PerkPrice.PERK_GOOD_WORD)
+			return "#LF-PerkPick_Perk_GoodWord";
+		if (perk == LF_PoliceSkill.PERK_FAST_CUFF)
+			return "#LF-PerkPick_Perk_FastCuff";
+		if (perk == LF_PoliceSkill.PERK_LONG_RADAR)
+			return "#LF-PerkPick_Perk_LongRadar";
+		if (perk == PERK_QUICK_REVIVE)
+			return "#LF-PerkPick_Perk_QuickRevive";
+		if (perk == PERK_QUICK_AID)
+			return "#LF-PerkPick_Perk_QuickAid";
+		if (perk == PERK_STEADY_CARRY)
+			return "#LF-PerkPick_Perk_SteadyCarry";
 		return perk;
 	}
 }

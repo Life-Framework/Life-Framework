@@ -24,6 +24,110 @@ GenericEntity : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
       "LF_Sign"
      }
     }
+    LF_PerkPickAction "{CD7287041716BAC0}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{E29FAFDDE99F9222}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "fast_cuff"
+     m_sTitle "#LF-PerkPick_TitlePolice"
+    }
+    LF_PerkPickAction "{39B842621CA02B52}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{053F6BEC8E184C42}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "long_radar"
+     m_sTitle "#LF-PerkPick_TitlePolice"
+    }
+    LF_PerkPickAction "{C36DB3B60CEA6580}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{10FEF88284A80318}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "fast_cuff"
+     m_sTitle "#LF-PerkPick_TitlePolice"
+    }
+    LF_PerkPickAction "{DD41C1B69EBB195C}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{624D45DAEB848F99}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "long_radar"
+     m_sTitle "#LF-PerkPick_TitlePolice"
+    }
+    LF_PerkPickAction "{239D2CDF30864A1B}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{9B9335F30A7503CC}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "fast_cuff"
+     m_bChange 1
+     m_sTrade "POLICE"
+     m_sTitle "#LF-PerkPick_TitlePolice"
+    }
+    LF_PerkPickAction "{3BAC251208134A83}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{122AE2D2B11DA4C5}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "long_radar"
+     m_bChange 1
+     m_sTrade "POLICE"
+     m_sTitle "#LF-PerkPick_TitlePolice"
+    }
+    LF_PerkPickAction "{14B23B501DA78A4F}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{6059626F3563170A}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "fast_cuff"
+     m_bChange 1
+     m_sTrade "POLICE"
+     m_sTitle "#LF-PerkPick_TitlePolice"
+    }
+    LF_PerkPickAction "{5BF8548553F458FD}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{04092E391A71920B}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "long_radar"
+     m_bChange 1
+     m_sTrade "POLICE"
+     m_sTitle "#LF-PerkPick_TitlePolice"
+    }
    }
   }
  }
