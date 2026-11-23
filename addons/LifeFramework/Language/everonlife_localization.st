@@ -4370,6 +4370,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "LF_VodkaBottle_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
+    CustomStringTableItem "{ADAAD0ACB3D62D04}" {
+     Id "LF-Credits_193"
+     Target_en_us "WORK-SITE SOUNDS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4BC652FE250FB8F9}" {
+     Id "LF-Credits_194"
+     Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
     CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
      Id "LF-Credits_2"
      Target_en_us "Everon Life RPG Framework"
