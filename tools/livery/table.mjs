@@ -12,6 +12,8 @@
 //   enabled   { 2: false } turns a vanilla paint layer off (the S1203 base mask speckles under layer 2)
 //   panels    { sign, paint, ink, rim, at: [{ name, coords, yaw, scale, tilt }] }: plates on fixed body panels, children of
 //             the variant prefab (S105, S1203, UAZ452: doors that are part of the body mesh), #4559
+//   actions   { manager, rows: [{ cls, name, contexts, priority }] }: user-action rows appended to the base prefab's
+//             ActionsManagerComponent (`manager` is its GUID); a base that is ours holds its own rows (#4425)
 //   plate     { text, paint, ink, rim }: a painted plate on each front door (UAZ469) reading text; words
 //             never go in the paint (mask lettering scrambles across UV islands)
 //   credit    { source, license, purpose }: required on every row; it becomes the docs/credits.md row

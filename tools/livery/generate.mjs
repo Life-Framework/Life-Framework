@@ -19,6 +19,8 @@
 //      panels (`panels`): children of the variant prefab itself, each with its own position, yaw and scale.
 //      The build writes them, so a rebuild keeps them; livery-selftest fails when a generated file on disk
 //      differs from what the build writes (a hand edit the next build would drop).
+//   6. User actions on a variant whose base is not ours (`actions`): rows appended to the base's ActionsManagerComponent,
+//      written by the build for the same reason (the S105 police car's "Run plate", #4425).
 //
 // Every file lands in the pack (colours are what this server is). GUIDs are derived from the livery id and
 // the part name, so a rebuild writes the same GUIDs and two liveries never share one (checkUnique).
@@ -82,6 +84,36 @@ function checkRow(row) {
     for (const k of ["paint", "ink", "rim"]) color(p[k] || []);
   }
   if (row.panels) checkPanels(row);
+  if (row.actions) checkActions(row);
+}
+
+// actions { manager, rows: [{ cls, name, contexts, priority }] }: user-action rows appended to the ActionsManagerComponent the
+// row's base prefab declares (`manager` is that component's GUID), written by the build so a rebuild keeps them. A base that is
+// itself ours (LF_UAZ469_Police.et) carries its rows in its own file instead and needs none here.
+function checkActions(row) {
+  const a = row.actions;
+  if (!/^[0-9A-F]{16}$/.test(a.manager || "")) throw new Error(`${row.id}: actions.manager must be the base's ActionsManagerComponent GUID (16 hex digits), got "${a.manager}"`);
+  if (!Array.isArray(a.rows) || !a.rows.length) throw new Error(`${row.id}: actions.rows must list at least one action`);
+  for (const r of a.rows) {
+    if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(r.cls || "")) throw new Error(`${row.id}: an action needs a class name, got "${r.cls}"`);
+    if (!/^#[A-Za-z0-9_.-]+$/.test(r.name || "")) throw new Error(`${row.id}: action ${r.cls} needs a #Key name, got "${r.name}"`);
+    if (!Array.isArray(r.contexts) || !r.contexts.length || r.contexts.some((c) => !/^[a-z0-9_]+$/.test(c))) throw new Error(`${row.id}: action ${r.cls} needs a list of context names`);
+    if (typeof r.priority !== "number") throw new Error(`${row.id}: action ${r.cls} needs a number priority`);
+  }
+}
+
+function actionsManager(row, g) {
+  if (!row.actions) return "";
+  const rows = row.actions.rows.map((r, i) => `    ${r.cls} "{${g(`action-${i}`)}}" {
+     ParentContextList {
+${r.contexts.map((c) => `      "${c}"\n`).join("")}     }
+     UIInfo UIInfo "{${g(`action-${i}-ui`)}}" {
+      Name "${r.name}"
+     }
+     "Sort Priority" ${r.priority}
+    }
+`).join("");
+  return `  ActionsManagerComponent "{${row.actions.manager}}" {\n   additionalActions + {\n${rows}   }\n  }\n`;
 }
 
 // panels { sign, paint, ink, rim, at: [{ name, coords: [x, y, z], yaw, scale, tilt }] }: plates on fixed body panels,
@@ -223,7 +255,7 @@ export function planLivery(row, vanilla) {
     panels = ` {\n${p.at.map((a) => plateChild(p, a, a.scale, p.sign || signId, (k) => g(`panel-${a.name}-${k}`), a.name)).join("")} }\n`;
   }
   add("vehicle", `${PREFABS}/LF_${id}.et`, g("vehicle"),
-    `${cls} : "${row.base}" {\n ID "${g("vehicle-id")}"\n components {\n${meshOverride(v.mesh, v.assign, v.source, ematRef)}${vehSlots} }\n${panels}}\n`);
+    `${cls} : "${row.base}" {\n ID "${g("vehicle-id")}"\n components {\n${meshOverride(v.mesh, v.assign, v.source, ematRef)}${vehSlots}${actionsManager(row, g)} }\n${panels}}\n`);
 
   const c = row.credit;
   const credit = `| LF_${id} | ${c.source} (${c.license}) | ${c.purpose} | \`${PACK}/${ASSETS}/${row.vehicle}/\` |`;
