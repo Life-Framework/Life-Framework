@@ -222,6 +222,11 @@ branch is neither of these:
 - **a branch from before the guard**: listed in `tools/validation/zone-guard-baseline.json`. Every
   `ws/*` branch that existed locally, on origin or as an open PR when the guard landed is listed, so
   running slices keep working. The list never grows.
+- **a `wt sync-base` branch** (`ws/sync-*`), for the town layers it only carries: a layer whose content is
+  byte-identical to a commit of another long-lived origin branch (any origin branch outside `ws/`, the
+  diff base excluded; for a sync into `main`, `release-0.2.1`), where its own `town-` PR already passed
+  this guard. A sync branch's other town edits (its own, or a hand-resolved conflict) still fail
+  (`carriedFiles` in `validate-world-zones.mjs`).
 
 `main` and a detached HEAD outside CI (the push build of `main`) are not checked. A change to a town
 entity that is not a placement (a sign id, a component value) also counts as a town change; it rides

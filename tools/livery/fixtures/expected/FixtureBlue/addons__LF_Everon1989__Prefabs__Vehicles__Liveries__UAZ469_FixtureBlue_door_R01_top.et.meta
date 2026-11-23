@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{381FCA276615A5BE}Prefabs/Vehicles/Liveries/UAZ469_FixtureBlue_door_R01_top.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

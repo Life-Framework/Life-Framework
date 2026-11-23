@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F03AAFDFA72ECA61}Configs/Residents/LF_Rumors.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

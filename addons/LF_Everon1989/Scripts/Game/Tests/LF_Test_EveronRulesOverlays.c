@@ -8,6 +8,8 @@ class LF_Test_EveronRulesOverlays : LF_Test
 {
 	static const ResourceName HANDBOOK_OVERLAY = "{7829FAC0964C207C}Configs/Rules/LF_Handbook_Everon1989.conf";
 	static const ResourceName SLOTS_OVERLAY = "{54BDF6E63A12AC53}Configs/PrefabSlots/LF_PrefabSlots_Everon1989.conf";
+	static const string GANG_RADIO_SLOT = "gang_radio";
+	static const ResourceName GANG_RADIO_PREFAB = "{42646EECFBC540D9}Prefabs/Items/Comms/LF_GangRadio.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -44,7 +46,7 @@ class LF_Test_EveronRulesOverlays : LF_Test
 		ctx.True(Picked(LF_PrefabSlotsConfig.CONFIG_PATH, LF_PrefabSlotsConfig, LF_PrefabSlotsConfig.LIST_NAME, SLOTS_OVERLAY), "the prefab-slot loader picks up its overlay");
 		ctx.False(Picked(LF_PrefabSlotsConfig.CONFIG_PATH, LF_PrefabSlotsConfig, LF_PrefabSlotsConfig.LIST_NAME, HANDBOOK_OVERLAY), "the handbook overlay is not read as a prefab-slot overlay");
 
-		// The stubs change nothing: the core pages and slots are intact.
+		// The overlays keep the core pages and slots; the only slot the pack swaps is the gang radio.
 		LF_HandbookConfig handbook = LF_Handbook.Get();
 		ctx.NotNull(handbook, "the handbook loads under the pack");
 		if (handbook)
@@ -61,12 +63,16 @@ class LF_Test_EveronRulesOverlays : LF_Test
 		{
 			LF_PrefabSlotsConfig layered = LF_PrefabSlotsConfig.LoadCore();
 			layered.ApplyLayers();
-			ctx.Equal(core.m_aSlots.Count(), layered.m_aSlots.Count(), "the empty overlay adds and removes no slot");
+			ctx.Equal(core.m_aSlots.Count(), layered.m_aSlots.Count(), "the pack overlay adds and removes no slot");
 			foreach (LF_PrefabSlot slot : core.m_aSlots)
 			{
 				LF_PrefabSlot got = layered.Find(slot.m_sSlot);
-				if (!got || got.m_Prefab != slot.m_Prefab)
-					ctx.Fail(string.Format("slot '%1' changed under the empty pack overlay", slot.m_sSlot));
+				if (!got)
+					ctx.Fail(string.Format("slot '%1' is missing under the pack overlay", slot.m_sSlot));
+				else if (slot.m_sSlot == GANG_RADIO_SLOT)
+					ctx.True(got.m_Prefab == GANG_RADIO_PREFAB, "the pack swaps the gang_radio slot to its own radio (#4223)");
+				else if (got.m_Prefab != slot.m_Prefab)
+					ctx.Fail(string.Format("slot '%1' changed under the pack overlay", slot.m_sSlot));
 			}
 		}
 	}

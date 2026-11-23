@@ -1,0 +1,29 @@
+Vehicle : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et" {
+ ID "8BA80134B16CB32E"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{64F09BE9246E252A}" {
+     SourceMaterial "UAZ469_Body"
+     AssignedMaterial "{1636F1277D858AB3}Assets/Liveries/UAZ469/LF_UAZ469_FixtureBlue.emat"
+    }
+   }
+  }
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+   Slots {
+    RegisteringComponentSlotInfo Door_L01 {
+     Prefab "{6D5D0B2D80D7DCC3}Prefabs/Vehicles/Liveries/UAZ469_FixtureBlue_door_L01.et"
+    }
+    RegisteringComponentSlotInfo Door_R01 {
+     Prefab "{772783BD7ADAE5E5}Prefabs/Vehicles/Liveries/UAZ469_FixtureBlue_door_R01.et"
+    }
+    RegisteringComponentSlotInfo Door_L02 {
+     Prefab "{0475D8A30EE8758C}Prefabs/Vehicles/Liveries/UAZ469_FixtureBlue_door_L02.et"
+    }
+    RegisteringComponentSlotInfo Door_R02 {
+     Prefab "{9D4FCCFD28046FF2}Prefabs/Vehicles/Liveries/UAZ469_FixtureBlue_door_R02.et"
+    }
+   }
+  }
+ }
+}
