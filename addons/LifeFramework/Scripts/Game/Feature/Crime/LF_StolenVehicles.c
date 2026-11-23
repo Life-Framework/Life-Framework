@@ -329,8 +329,16 @@ class LF_StolenVehicles
 
 		Reports().Remove(vehicleId);
 		LF_Debug.Info(FEATURE, string.Format("recovered %1 plate='%2': back in the garage of %3", vehicleId, report.m_sPlate, report.m_sOwnerUid));
-		LF_EventBus.Publish(LF_OnVehicleRecovered.Create(LF_Utils.GetPlayerUID(officer), report.m_sOwnerUid, vehicleId, report.m_sPlate));
+		string officerUid = LF_Utils.GetPlayerUID(officer);
+		LF_EventBus.Publish(LF_OnVehicleRecovered.Create(officerUid, report.m_sOwnerUid, vehicleId, report.m_sPlate));
 		LF_Utils.NotifyEntity(officer, "#LF-Stolen_Recovered", "#LF-Stolen_CheckTitle", 5.0, report.m_sPlate);
+		// A recovered stolen car earns the officer the $20 duty bonus, paid at clock-out (#4319). An officer
+		// recovering a car their own account owns (any of its characters) earns nothing.
+		if (!LF_DutyBonus.SameAccount(officerUid, report.m_sOwnerUid))
+			LF_DutyBonus.AwardUid(officerUid, LF_DutyBonusKind.STOLEN_CAR);
+		else
+			LF_Debug.Info(FEATURE, string.Format("no duty bonus for %1: they reported %2 themselves", officerUid, vehicleId));
+
 		return true;
 	}
 

@@ -10,15 +10,17 @@ Police are players. There is no roster to wait for in the alpha: anyone can sign
    an M9 pistol with two magazines, the **station car key**, a pager, **handcuffs** and a radio. **Clock out** at the same desk to swap back.
 4. If you die on duty your shift ends; you keep the police gear and your civilian things come back when you respawn.
 
-**Pay** is handed over in **cash when you clock out**, by the second you were on duty.
+**Pay** is handed over in **cash when you clock out**, by the second you were on duty, plus your **bonus**.
 
-| Rank | Pay per hour | Fine limit | On duty to rise |
-|---|---|---|---|
-| Cadet | $900 | $500 | 1 hour |
-| Patrol | $1,008 | $1,000 | 2 hours |
-| Senior Patrol | $1,080 | $2,500 | 4 hours |
-| Sergeant | $1,188 | $4,000 | 8 hours |
-| Lieutenant | $1,260 | $5,000 | top |
+| Rank | Pay per hour | Bonus cap per hour | Fine limit | On duty to rise |
+|---|---|---|---|---|
+| Cadet | $350 | $100 | $500 | 1 hour |
+| Patrol | $375 | $100 | $1,000 | 2 hours |
+| Senior Patrol | $400 | $100 | $2,500 | 4 hours |
+| Sergeant | $425 | $95 | $4,000 | 8 hours |
+| Lieutenant | $450 | $70 | $5,000 | top |
+
+**Bonus:** a call closed as resolved (fine the suspect at the scene) earns **$15**, a suspect booked at the desk **$10**, and a stolen car recovered to its owner **$20** (not your own car). The bonus stops at your rank's cap each hour and is paid with your shift when you clock out. It survives a server restart. Fines go to the town, never to you.
 
 A higher rank also promotes: at the **armoury**, an officer above the new rank can promote you. Higher ranks draw bigger weapons (the M16A2, then the AKS-74U).
 

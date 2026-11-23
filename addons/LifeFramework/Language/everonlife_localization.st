@@ -12837,6 +12837,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Why you want to serve"
      Comment "Police application blank: reason."
     }
+    CustomStringTableItem "{F5DFC610C9A4C8D8}" {
+     Id "LF-PoliceCall_Bonus"
+     Target_en_us "Call closed: resolved. +{currency:sym}%1 bonus, paid when you clock out."
+     Comment "Toast to the officer when fining the call's suspect at the site completes their police call; %1 is the duty bonus added (#4319)"
+    }
     CustomStringTableItem "{95E584A32913873F}" {
      Id "LF-PoliceCall_Paid"
      Target_en_us "Call closed: {currency:sym}%1 cash"
