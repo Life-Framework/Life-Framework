@@ -207,7 +207,18 @@ class LF_ReviveAction : ScriptedUserAction
 	//! The hold began on the acting client: ask the server to show the CPR to everyone (#512).
 	override void OnActionStart(IEntity pUserEntity)
 	{
+		m_fLF_ReviveSpeed = LF_MedicSkill.ReviveSpeed(LF_Utils.GetPlayerUID(pUserEntity));
 		AskAnim(pUserEntity, true);
+	}
+
+	//! The quick-revive perk's bar speed for the medic holding this action (#4433; a remote client
+	//! reads its perk from LF_PerkSync).
+	protected float m_fLF_ReviveSpeed = 1.0;
+
+	//------------------------------------------------------------------------------------------------
+	override float GetActionProgressScript(float fProgress, float timeSlice)
+	{
+		return super.GetActionProgressScript(fProgress, timeSlice * m_fLF_ReviveSpeed);
 	}
 
 	//------------------------------------------------------------------------------------------------
