@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{535AA215AD1ADCBD}Configs/NpcOutfits/LF_Outfit_OutpostGuardGate2.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
