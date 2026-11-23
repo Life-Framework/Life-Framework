@@ -8,11 +8,10 @@ import { arrive, clientBox, newestLog, sessionDir, sessionPaths } from "../sessi
 // `session up --mission island --profile full` session (the world with an AIWorld, so the flocks fly).
 //
 //   square-harbor-life-proof [out]
-//     1. 12:00 on the square: the pigeons sit on the cobbles (picture from the free camera, farther than
-//        their 50 m danger range), then the player walks up to them and they lift off (picture); the client logs
-//        the square bed live.
+//     1. 12:00 on the square: the pigeon flocks sleep (picture from the free camera, the character 90 m off), then the
+//        player walks up to them and they burst up (the client holds visible birds; picture); the client logs the square bed live.
 //     2. 23:00: the square bed stops, the village-night bed live.
-//     3. 12:00 on the quay: the gull flock on the dock apron (picture) and the harbor day bed live.
+//     3. 12:00 on the quay: the gull flock on the dock apron wakes when the player walks up (picture) and the harbor day bed is live.
 //     4. 23:00 on the quay: the harbor night bed live.
 //   Evidence is the client's own [LFDebug:Atmosphere] lines; no coordinate is typed here: every spot is a layer entity.
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -27,6 +26,13 @@ const QUAY = { gulls: "Fit_saint_philippe_dock_harbor_life_gulls", bed: "Fit_sai
 // in range and inside its hours, so both lines prove the bed was chosen).
 export function liveAfter(lines, name, from = 0) {
   return lines.slice(from).some((l) => l.includes(name) && (/^start\b/.test(l) || /is in range at/.test(l)));
+}
+
+// Pure: whether the `flocks` reply (client side) counts birds and some are visible: a placed flock the server never
+// activated keeps all its birds hidden (#4403).
+export function birdsShown(detail) {
+  const m = /\bbirds=(\d+) birdsVisible=(\d+)/.exec(String(detail));
+  return !!m && Number(m[1]) > 0 && Number(m[2]) > 0;
 }
 
 // Pure: whether a `stop` line follows index `from`.
@@ -76,14 +82,17 @@ async function main(args) {
     if (on({ verb: "click", widget: "WelcomeGuideCloseButton" }, 15000).status === "ok") break;
   }
 
-  // A flock lifts when a player is within 50 m (DangerEventRange), and a client only sees entities its character is near: the perched
-  // pictures are taken with the character 60 to 90 m from the flock, the lifted ones right after walking up to it.
-  // 1. The quay at noon: gulls perched on the apron from the warehouse's side, then the character beside the harbor bed.
+  // A placed flock sleeps with its birds hidden (the engine has no perched-and-visible state); the server wakes it when a player's
+  // character walks within 40 m (LF_FlockActivation, #4403): the birds burst up and fly one loop. So the far pictures show no birds,
+  // and the near ones, a second or two after the character arrives, do. The `flocks` verb reads what this client holds.
+  // 1. The quay at noon: from the warehouse's side the flock sleeps, then the character walks up beside the harbor bed.
   on({ verb: "time", hour: 12 }, 15000);
   on({ verb: "stand", entityName: FAR.warehouse, side: "e3" }, 20000);
   wait(7000);
   shot("gulls_apron", quay, 3, 1.4, 3, 12);
   on({ verb: "stand", entityName: QUAY.bed, side: "e30" }, 20000);
+  wait(2500);
+  expect(birdsShown(on({ verb: "flocks", words: ["120"] }, 15000).detail), "12:00 on the quay: walking up to the gulls shows their birds (#4403)");
   shot("gulls_lifted", quay, 7, 4, 7, 12);
   wait(8000);
   expect(liveAfter(lines(), QUAY.bed, 0), "12:00 on the quay: the harbor day bed starts");
@@ -95,12 +104,14 @@ async function main(args) {
   expect(liveAfter(lines(), QUAY.night, mark), "23:00 on the quay: the harbor night bed starts");
   shot("quay_night", quay, 8, 3, 8, 23);
 
-  // 3. The square at noon: pigeons perched from the bank's side, then up to them (within 50 m they lift off).
+  // 3. The square at noon: from the bank's side the flocks sleep, then up to them (within 40 m they burst up).
   on({ verb: "time", hour: 12 }, 15000);
   on({ verb: "stand", entityName: FAR.bank, side: "e3" }, 20000);
   wait(7000);
   shot("pigeons_perched", square, 3, 1.4, 3, 12);
   on({ verb: "stand", entityName: SQUARE.bed, side: "w4" }, 20000);
+  wait(2500);
+  expect(birdsShown(on({ verb: "flocks", words: ["120"] }, 15000).detail), "12:00 on the square: walking up to the pigeons shows their birds (#4403)");
   shot("pigeons_lifted", square, 7, 4, 7, 12);
   wait(6000);
   expect(liveAfter(lines(), SQUARE.bed, 0), "12:00 on the square: the square bed starts");
@@ -122,7 +133,8 @@ function selftest() {
   const lines = ["start Fit_sq at 4 m (radius 34) Atmosphere_Square.acp", "stop Fit_sq (hours)", "Fit_vn is in range at 5 m (radius 54) and got no voice for 5 s: this machine has no sound manager"];
   const layer = "GenericEntity Fit_a {\n components {\n }\n coords 1 2 3\n}\n";
   const ok = liveAfter(lines, "Fit_sq") && !liveAfter(lines, "Fit_sq", 1) && stoppedAfter(lines, 0) && !stoppedAfter(lines, 2)
-    && liveAfter(lines, "Fit_vn", 2) && !liveAfter(lines, "Fit_ha") && coordsOf(layer, "Fit_a")?.z === 3 && coordsOf(layer, "Nope") === null;
+    && liveAfter(lines, "Fit_vn", 2) && !liveAfter(lines, "Fit_ha") && coordsOf(layer, "Fit_a")?.z === 3 && coordsOf(layer, "Nope") === null
+    && birdsShown("world=SCR_AIWorld flocks=2 birds=11 birdsVisible=11 | x") && !birdsShown("world=SCR_AIWorld flocks=2 birds=11 birdsVisible=0 | x") && !birdsShown("error no_character");
   console.log(ok ? "square-harbor-life-proof selftest: OK" : "square-harbor-life-proof selftest: FAIL");
   return ok ? 0 : 1;
 }
