@@ -47,6 +47,7 @@
     "LF_PhoneConfig",
     "LF_PhotoIdCardConfig",
     "LF_PoliceConfig",
+    "LF_PostalRunConfig",
     "LF_PropertyConfig",
     "LF_PrefabSlotsConfig",
     "LF_QualificationConfig",

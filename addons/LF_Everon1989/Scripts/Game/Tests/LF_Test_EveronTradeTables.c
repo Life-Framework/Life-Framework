@@ -1,6 +1,6 @@
 // red-proof: 2026-11-22 `tools\cli test --no-build --red LF_Test_EveronTradeTables`: RED PROOF OK (RedProof() looks up a trade no table names and the tier words under a key no row holds: the tier checks read the raw key back). Green with the 30-level rows via `--only`.
 //! everon/trade-tables (#4181, W1 of the 0.3.0 work scope): every legal trade levels to 30 on one curve. Under the
-//! Everon 1989 header (the pack leg of `tools\cli test`) FARMER, MINER, LUMBERJACK, FISHER and MEDIC each have 29
+//! Everon 1989 header (the pack leg of `tools\cli test`) FARMER, MINER, LUMBERJACK, FISHER, MEDIC, SMELTING and SALVAGE each have 29
 //! thresholds (levels 2 to 30) that rise strictly, level 5 needs about 1.5 h and level 10 about 7 h at 700 XP an
 //! hour, and each of the five tiers has a tier word the UI shows in place of a number (decision N1).
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
@@ -26,7 +26,7 @@ class LF_Test_EveronTradeTables : LF_Test
 		ctx.NotNull(config, "the jobs config loads under the pack header");
 		if (config)
 		{
-			array<string> trades = {"FARMER", "MINER", "LUMBERJACK", "FISHER", "MEDIC"};
+			array<string> trades = {"FARMER", "MINER", "LUMBERJACK", "FISHER", "MEDIC", "SMELTING", "SALVAGE"};
 			foreach (string trade : trades)
 			{
 				CheckTrade(ctx, config, trade);

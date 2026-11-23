@@ -58,7 +58,7 @@ Prices are the ones the alpha server charges. Full shop lists are in [Shops](05-
 **Cars** (alpha price at 80 percent of the list): T601 $560, S105 $800, V2101 $1,440, UAZ469 $2,000, UAZ452 $2,800, S1203 van $3,200,
 M923A1 truck $6,400. You get **50 percent back** if you sell a car back.
 
-**Fines and bills:** a police ticket is $150 to $1,500 and doubles after 30 minutes. A hospital stay after dying costs $150. A medic
+**Fines and bills:** a police ticket is $50 to $800 and doubles after 30 minutes. A hospital stay after dying costs $150. A medic
 reviving you costs $100. A car in the impound costs $200 to get out; a tow costs $150.
 
 ## What you earn

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6C7C1516D4057D05}Configs/Crime/LF_CrimeCatalog_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

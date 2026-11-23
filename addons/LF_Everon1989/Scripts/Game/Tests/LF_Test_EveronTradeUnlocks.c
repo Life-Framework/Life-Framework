@@ -1,6 +1,7 @@
 // red-proof: RedProof() swaps the flagship table for an empty one, so every trade/level pair reports "has no unlock row"; the batched `tools\cli test --no-build --red LF_Test_EveronTradeUnlocks` run records the RED-OK line below.
+// red-proof: observed 2026-11-23: with the header line removed from LF_Everon1989.conf, `tools\cli test --no-build --only LF_Test_EveronTradeUnlocks` failed `- the header lists the trade unlocks table` and `- LF_TradeUnlocks.Get returns every row under the pack header (expected 261, got 0)`; with the line it passes.
 //! #4185: the flagship names one unlock or perk for every level 2 to 30 of every trade, so the
-//! level-up card and F2 can say "Opens: ...". Each row carries a localization key whose pack text
+//! level-up card and F2 can say "Opens: ...", and the pack header lists the table so Get() returns it. Each row carries a localization key whose pack text
 //! resolves, and no trade names the same unlock twice.
 [LF_TestInfo(LF_TestTier.LOGIC, pack: true)]
 class LF_Test_EveronTradeUnlocks : LF_Test
@@ -50,5 +51,21 @@ class LF_Test_EveronTradeUnlocks : LF_Test
 		}
 
 		ctx.Equal(trades.Count() * (LF_TradeUnlocksConfig.LAST_LEVEL - LF_TradeUnlocksConfig.FIRST_LEVEL + 1), config.m_aRows.Count(), "the table holds exactly 29 rows per trade");
+
+		// The header: the layered table the game reads (LF_TradeUnlocks.Get) holds those rows only when
+		// the pack header lists the file (#4185 follow-up: the flagship header left it out and the level-up card was empty).
+		LF_MissionHeader header = LF_MissionHeader.GetCurrent();
+		ctx.NotNull(header, "the pack leg runs under an LF mission header");
+		if (header && header.m_aLF_ConfigOverlays)
+			ctx.True(header.m_aLF_ConfigOverlays.Find(CONFIG_PATH) != -1, "the header lists the trade unlocks table");
+		else
+			ctx.Fail("the header lists no config overlays");
+
+		LF_TradeUnlocksConfig.Reload();
+		LF_TradeUnlocksConfig layered = LF_TradeUnlocksConfig.Get();
+		ctx.NotNull(layered, "the layered trade unlock table loads");
+		if (layered)
+			ctx.Equal(config.m_aRows.Count(), layered.m_aRows.Count(), "LF_TradeUnlocks.Get returns every row under the pack header");
+		LF_TradeUnlocksConfig.Reload();
 	}
 }
