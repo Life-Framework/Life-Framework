@@ -1,0 +1,32 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "1B88D74BBFE982A5"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{7BDC48FD4E998DE1}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 1.4
+      FOV 10
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_VodkaBottle"
+     Description "#LF-Item_VodkaBottleDesc"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 1.1
+     SizeSetupStrategy Volume
+     ItemVolume 900
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{AFDDAEDF81F02E79}Assets/Props/S2/S2_Vodka/S2_Vodka.xob"
+  }
+  LF_VehicleSearchGoodsComponent "{5A7C0E91D2B43F69}" {
+   m_eGoodsClass 2
+  }
+ }
+}
