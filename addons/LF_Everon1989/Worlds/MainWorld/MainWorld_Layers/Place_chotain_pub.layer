@@ -1,0 +1,122 @@
+GenericEntity Fit_chotain_pub_Place {
+ components {
+  LF_PlaceComponent "{43954724202F2C18}" {
+   m_sKind "PubBar"
+   m_sId "chotain.pub"
+  }
+  LF_FittedBuildingComponent "{75E6B160D2B3C695}" {
+  }
+ }
+ coords 7064.3 118.1 6001.8
+}
+GenericEntity Fit_chotain_pub_clear {
+ components {
+  LF_BaseWorldClearComponent "{66B8D95391B6A88D}" {
+   m_sBuilding "{DE43119351D125AC}Prefabs/Structures/Houses/Village/House_Village_E_1L02/House_Village_E_1L02t.et"
+   m_aPrefabs {
+    "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et"
+    "{108B2B2A04700231}Prefabs/Props/Furniture/ClockFloor_01.et"
+    "{147131A9AEAC2176}Prefabs/Props/Decorations/Paintings/PaintingSmall_01_V6.et"
+    "{148E2BA12B48CFBA}Prefabs/Props/Furniture/PlantRoom_04.et"
+    "{172585DCA4F947FE}Prefabs/Props/Furniture/PhoneTable_01_khaki.et"
+    "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et"
+    "{208028C4307E3772}Prefabs/Props/Furniture/ShelfDecorative_01_barewood.et"
+    "{29BA0E995E24468D}Prefabs/Props/Furniture/PlantRoom_03.et"
+    "{2B6D16419B500A87}Prefabs/Props/Furniture/Carpet_02.et"
+    "{313CC1F195E06A6E}Prefabs/Props/Furniture/TVSet_01.et"
+    "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et"
+    "{4BE33BD4C315C615}Prefabs/Props/Civilian/Ashtray_01_Full_base.et"
+    "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et"
+    "{683CCDB93A8312EF}Prefabs/Props/Furniture/BenchKitchen_01/BenchKitchen_01_corner_Green.et"
+    "{7251C9DFEC27E1AB}Prefabs/Props/Furniture/Shelf_01_long.et"
+    "{728DD36004461456}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_B.et"
+    "{910424AC5CABE800}Prefabs/Props/Garbage/Bins/BinInterior_01_red.et"
+    "{937FDADF2A112158}Prefabs/Props/Furniture/CoatRack_03.et"
+    "{97119F9908A3833D}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_C.et"
+    "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et"
+    "{A319C11D446D88B3}Prefabs/Props/Furniture/Dresser_01.et"
+    "{AC98FF880BD0F2C2}Prefabs/Props/Furniture/Chair_01/Chair_01_base.et"
+    "{BA3FC18BC11AE7F8}Prefabs/Props/Furniture/KitchenHood_01.et"
+    "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et"
+   }
+  }
+ }
+ coords 7064.3 118.1 6001.8
+}
+GenericEntity Fit_chotain_pub_bar_counter_1 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 7064.907 118.45 6003.388
+ angleY -41
+}
+GenericEntity Fit_chotain_pub_bar_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 7063.775 118.45 6002.404
+ angleY -41
+}
+GenericEntity Fit_chotain_pub_bar_counter_3 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 7062.643 118.45 6001.42
+ angleY -41
+}
+LF_NpcBaseEntity Fit_chotain_pub_bar_barkeeper : "{4439B0A5C0000003}Configs/Npcs/LF_Npc_Townsfolk_Barkeeper.et" {
+ components {
+  LF_CounterOutletComponent "{4439B0A5C4000001}" {
+   m_sBuyerId "bar_chotain"
+  }
+ }
+ coords 7063.185 118.45 6003.083
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_bar_shelf_1 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 7062.483 118.45 6006.177
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_bar_shelf_2 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 7060.143 118.45 6004.143
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_bar_bottle_1 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7062.884 119.4 6006.326
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_bar_bottle_2 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7062.582 119.4 6006.064
+ angleY 159
+}
+GenericEntity Fit_chotain_pub_bar_bottle_3 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7062.28 119.375 6005.801
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_bar_bottle_4 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7060.543 119.4 6004.293
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_bar_bottle_5 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7060.241 119.4 6004.03
+ angleY 174
+}
+GenericEntity Fit_chotain_pub_bar_bottle_6 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7059.939 119.4 6003.768
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_bar_counter_bottle_1 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7064.002 119.49 6002.601
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_bar_counter_bottle_2 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7062.492 119.49 6001.288
+ angleY -161
+}
+GenericEntity Fit_chotain_pub_bar_stool_1 : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7065.954 118.439 6002.641
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_bar_stool_2 : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7065.048 118.439 6001.854
+ angleY 179
+}
+GenericEntity Fit_chotain_pub_bar_stool_3 : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7064.142 118.439 6001.067
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_bar_stool_4 : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7063.237 118.439 6000.279
+ angleY -151
+}
