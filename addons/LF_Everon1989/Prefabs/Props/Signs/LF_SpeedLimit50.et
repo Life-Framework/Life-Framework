@@ -1,0 +1,11 @@
+GenericEntity : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ ID "6935E35C7268031B"
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "speed_limit_50"
+   m_vRimColor 0.05 0.05 0.05
+   m_vPaintColor 0.97 0.97 0.97
+   m_vTextColor 0.05 0.05 0.05
+  }
+ }
+}

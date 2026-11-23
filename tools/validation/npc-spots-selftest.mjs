@@ -16,7 +16,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { collisions, lineAt, MIN_M, parseLayer, parseResidents, sitCollisions, walkerSpots } from "../lib/npc-spots.mjs";
+import { anchorsOf, collisions, lineAt, MIN_M, parseLayer, parseResidents, placesOf, sitCollisions, spotOf, walkerSpots } from "../lib/npc-spots.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
@@ -86,6 +86,27 @@ r = run("walker on resident", cafe + marker("s0", "sq", 0, 6, 2), conf(day("a", 
 check(!r.ok && /walker sq#0/.test(r.out), "a walker spawning on a resident's anchor fails");
 r = run("markers a hand apart", cafe + marker("s0", "sq", 0, 50, 50) + marker("s1", "sq", 1, 50.3, 50), conf(day("a", ["08:00", "counter", "serve"], ["20:00", "bench2", "idle"])), scene("sq", 2));
 check(!r.ok && /walker sq#0/.test(r.out) && /walker sq#1/.test(r.out), "two spawn markers 0.3 m apart fail");
+
+// An anchor bound to a place by id (#4613): a depot counter 23 m from a barber, both residents on a `counter` line all day.
+// A loose depot counter is claimed by the barber too (the nearest BarberChair place within 30 m): two on one spot.
+const bound = (name, id, placeId, x, z) => anchor(name, id, x, z).replace(`m_sAnchorId "${id}"`, `m_sAnchorId "${id}"\n   m_sPlaceId "${placeId}"`);
+const shopper = (id, kind, placeId) =>
+  `  LF_ResidentDef "{${guid(10)}}" {\n   m_sOp "add"\n   m_sId "${id}"\n   m_sWorkKind "${kind}"\n   m_sWorkPlaceId "${placeId}"\n   m_aTimetable {\n    LF_ResidentEntryDef "{${guid(11)}}" {\n     m_sTime "08:00"\n     m_sPlace "work"\n     m_sAnchor "counter"\n     m_sActivity "serve"\n    }\n   }\n  }\n`;
+const street = place("Depot", "ParcelDepot", "depot", 0, 0) + place("Barber", "BarberChair", "barber", 23, 0);
+const pair = conf(shopper("postmaster", "ParcelDepot", "depot"), shopper("barber", "BarberChair", "barber"));
+r = run("loose counter claimed by both", street + anchor("depot_counter", "counter", 1, 1), pair);
+check(!r.ok && /postmaster/.test(r.out) && /barber/.test(r.out), "a loose depot counter is claimed by the barber too, and the two collide");
+r = run("bound counter", street + bound("depot_counter", "counter", "depot", 1, 1), pair);
+check(r.ok, "a depot counter bound to the depot id is the postmaster's alone, the barber stands at his own origin");
+r = run("each bound", street + bound("depot_counter", "counter", "depot", 1, 1) + bound("barber_counter", "counter", "barber", 22, 1), pair);
+check(r.ok, "each shop's counter bound to its own id passes");
+const ents = parseLayer(street + bound("depot_counter", "counter", "barber", 1, 1) + anchor("loose_near", "bench", 24, 1));
+const [depotP, barberP] = placesOf(ents);
+const anchorsHere = anchorsOf(ents);
+check(anchorsHere.find((x) => x.id === "counter")?.placeId === "barber" && anchorsHere.find((x) => x.id === "bench")?.placeId === "", "a layer anchor reads its m_sPlaceId (empty when loose)");
+check(spotOf(depotP, "counter", anchorsHere, [depotP, barberP]).via.includes("place origin"), "an anchor bound to the barber is never claimed by the depot, although it stands 1 m from it");
+check(spotOf(barberP, "counter", anchorsHere, [depotP, barberP]).via === "depot_counter", "the same anchor is the barber's at any distance");
+check(spotOf(barberP, "bench", anchorsHere, [depotP, barberP]).via === "loose_near", "a loose anchor still goes to the nearest place of the kind");
 
 // Pure helpers.
 const layerEntities = parseLayer(host("clerk", 1.5, 2.5) + anchor("a", "door", 3, 4));
