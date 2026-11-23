@@ -1,4 +1,4 @@
-// red-proof: pending `tools\cli test --no-build --red LF_Test_ShortageNotice`; RedProof() skips the shortage start, so the notice rows stay empty and the "short" assertions fail.
+// red-proof: RED-OK signs/shortage-notice (2026-11-23, `test --red LF_Test_ShortageNotice`: with the hook on the shortage never starts, so "a short clinic prints why, prices and until" (expected 3, got 0) and "a short clinic hangs the paper" fail)
 //! signs/shortage-notice (#4448): the paper on the clinic door follows the clinic's shortage state. Short: three
 //! rows (why, prices, until) and the paper hangs; stocked again: no rows and the paper is gone. The row source
 //! that a prefab names exists and works locally, so no server ask is needed.
