@@ -3564,6 +3564,106 @@ StringTable {
      Target_en_us "VIN tampering"
      Comment "Offence in the Everon law book (#4208)."
     }
+    CustomStringTableItem "{BE1680F8AE6B1FAE}" {
+     Id "LF-OrgFlag_Name_01"
+     Target_en_us "Ember"
+     Comment "Name of preset gang flag 1 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{6817944A14126BD6}" {
+     Id "LF-OrgFlag_Name_02"
+     Target_en_us "Harbor"
+     Comment "Name of preset gang flag 2 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{C49BBCD6BBA48B24}" {
+     Id "LF-OrgFlag_Name_03"
+     Target_en_us "Marrow"
+     Comment "Name of preset gang flag 3 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{B4986C26E3591A2A}" {
+     Id "LF-OrgFlag_Name_04"
+     Target_en_us "Thornfield"
+     Comment "Name of preset gang flag 4 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{F896B5D313898C57}" {
+     Id "LF-OrgFlag_Name_05"
+     Target_en_us "Copperhead"
+     Comment "Name of preset gang flag 5 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{86EB6BD4930EC244}" {
+     Id "LF-OrgFlag_Name_06"
+     Target_en_us "Nightjar"
+     Comment "Name of preset gang flag 6 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{C8BEEB631DDC69EC}" {
+     Id "LF-OrgFlag_Name_07"
+     Target_en_us "Salt"
+     Comment "Name of preset gang flag 7 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{D1DAEDC39758D453}" {
+     Id "LF-OrgFlag_Name_08"
+     Target_en_us "Gallows"
+     Comment "Name of preset gang flag 8 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{95456EF16BD7654F}" {
+     Id "LF-OrgFlag_Name_09"
+     Target_en_us "Lantern"
+     Comment "Name of preset gang flag 9 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{C448DCCBF0454FBB}" {
+     Id "LF-OrgFlag_Name_10"
+     Target_en_us "Ironside"
+     Comment "Name of preset gang flag 10 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{640742821EAC85CC}" {
+     Id "LF-OrgFlag_Name_11"
+     Target_en_us "Cinder"
+     Comment "Name of preset gang flag 11 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{EC71EB3B529F79EF}" {
+     Id "LF-OrgFlag_Name_12"
+     Target_en_us "Vesper"
+     Comment "Name of preset gang flag 12 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{C7A1729027941361}" {
+     Id "LF-OrgFlag_Name_13"
+     Target_en_us "Quarry"
+     Comment "Name of preset gang flag 13 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{79499E7D95E9F211}" {
+     Id "LF-OrgFlag_Name_14"
+     Target_en_us "Rook"
+     Comment "Name of preset gang flag 14 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{23CC866AC4D8AC19}" {
+     Id "LF-OrgFlag_Name_15"
+     Target_en_us "Tidewater"
+     Comment "Name of preset gang flag 15 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{BD5F894A21CC5D50}" {
+     Id "LF-OrgFlag_Name_16"
+     Target_en_us "Brass"
+     Comment "Name of preset gang flag 16 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{D6E7902F6CD109FA}" {
+     Id "LF-OrgFlag_Name_17"
+     Target_en_us "Wolfsbane"
+     Comment "Name of preset gang flag 17 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{6524B266E8A41C71}" {
+     Id "LF-OrgFlag_Name_18"
+     Target_en_us "Ashen"
+     Comment "Name of preset gang flag 18 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{D7239B20E2D1CCB6}" {
+     Id "LF-OrgFlag_Name_19"
+     Target_en_us "Rustler"
+     Comment "Name of preset gang flag 19 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{E039C8EFD45BCF83}" {
+     Id "LF-OrgFlag_Name_20"
+     Target_en_us "Lowtide"
+     Comment "Name of preset gang flag 20 in the 1989 Everon pack."
+    }
     CustomStringTableItem "{894DEDBF2566803F}" {
      Id "LF-OrgWarAnnounce_Accepted"
      Target_en_us "NOTICE: the challenge is answered. War stands between %1."
