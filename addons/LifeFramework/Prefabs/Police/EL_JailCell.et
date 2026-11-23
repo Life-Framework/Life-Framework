@@ -4,7 +4,7 @@ GenericEntity {
   LF_JailCellComponent "{540EBBB989D3A80A}" {
    m_fZoneRadius 8
    m_iSecondsPerWanted 60
-   m_iMaxSeconds 300
+   m_iMaxSeconds 900
    m_iWantedReduction 1
    m_sDoorTargetId "Roadmap_Jail_Door"
   }

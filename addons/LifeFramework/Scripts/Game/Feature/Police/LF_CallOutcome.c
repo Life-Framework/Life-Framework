@@ -24,8 +24,9 @@ modded class LF_PoliceCall
 //! Server: an officer closes a call they hold as resolved, no one found or unfounded (#4203). The
 //! outcome counts only when the officer stands within the call radius of the scene
 //! (LF_PoliceCallPay.SiteOf: the crime's position, else the report's grid square); a far close is
-//! refused with a localized reason and the call stays open. This only records and closes: pay, XP
-//! and the caller's unfounded mark belong to the cards that read LF_PoliceCall.m_iOutcome.
+//! refused with a localized reason and the call stays open. A resolved close earns the officer the $15
+//! duty bonus (LF_DutyBonus, #4319); XP and the caller's unfounded mark belong to the cards that read
+//! LF_PoliceCall.m_iOutcome.
 class LF_CallOutcome
 {
 	static const string FEATURE = "CallOutcome";
@@ -116,6 +117,14 @@ class LF_CallOutcome
 		}
 
 		call.m_iOutcome = outcome;
+		// Only a resolved call earns the $15 duty bonus (#4319); Complete closed the call once, so the bonus is
+		// awarded once. No one found and unfounded earn nothing.
+		// An officer closing the call on their own crime earns nothing.
+		if (outcome == LF_CallOutcomeKind.RESOLVED && !LF_DutyBonus.SameAccount(officerUid, call.m_sSuspectUid))
+			LF_DutyBonus.AwardUid(officerUid, LF_DutyBonusKind.CALL_RESOLVED);
+		else if (outcome == LF_CallOutcomeKind.RESOLVED)
+			LF_Debug.Info(FEATURE, string.Format("no duty bonus for %1: call #%2 is their own crime", officerUid, callId));
+
 		messageKey = ClosedKey(outcome);
 		LF_Debug.Info(FEATURE, string.Format("call #%1 closed %2 by %3", callId, Name(outcome), officerUid));
 		return true;

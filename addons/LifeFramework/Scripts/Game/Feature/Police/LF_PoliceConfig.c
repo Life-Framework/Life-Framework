@@ -14,8 +14,6 @@ class LF_PoliceConfig
 	//! The owner config.json section this class reads (LF_ConfigService).
 	static const string SECTION = "police";
 
-	static const int CALL_REWARD_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
-	static const int CALL_REWARD_MAX = 100000;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const float CALL_RADIUS_MIN = 1;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const float CALL_RADIUS_MAX = 2000;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int RANK_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
@@ -219,9 +217,6 @@ class LF_PoliceConfig
 	[Attribute("2", UIWidgets.Auto, "Spike strips one officer may have deployed at once. Each deployed strip checks for wheels 20 times a second", params: "1 20")]
 	int m_iSpikeStripMaxPerOfficer;
 
-	[Attribute("150", UIWidgets.Auto, "Cash an officer is paid, once, when their fine of a taken police call suspect at the call site completes the call", params: "0 100000")]
-	int m_iCallReward;
-
 	[Attribute("50", UIWidgets.Auto, "Metres from a police call site within which the fine by the officer holding the call completes it", params: "1 2000")]
 	float m_fCallRadius;
 
@@ -342,7 +337,7 @@ class LF_PoliceConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours", "armoryCooldownMinutes", "dutyShiftMaxSeconds", "trialSweepSeconds", "ticketRateWindowSeconds", "ticketRateBurst", "spikeStripMaxPerOfficer", "callReward", "callRadius", "alphaInstantApproval"};
+		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours", "armoryCooldownMinutes", "dutyShiftMaxSeconds", "trialSweepSeconds", "ticketRateWindowSeconds", "ticketRateBurst", "spikeStripMaxPerOfficer", "callRadius", "alphaInstantApproval"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("arrestMinRank", m_iArrestMinRank, RANK_MIN, RANK_MAX);
 		reader.ReadInt("escortMinRank", m_iEscortMinRank, RANK_MIN, RANK_MAX);
@@ -379,7 +374,6 @@ class LF_PoliceConfig
 		reader.ReadInt("ticketRateWindowSeconds", m_iTicketRateWindowSeconds, TICKET_RATE_WINDOW_MIN, TICKET_RATE_WINDOW_MAX);
 		reader.ReadInt("ticketRateBurst", m_iTicketRateBurst, TICKET_RATE_BURST_MIN, TICKET_RATE_BURST_MAX);
 		reader.ReadInt("spikeStripMaxPerOfficer", m_iSpikeStripMaxPerOfficer, SPIKE_STRIP_MAX_MIN, SPIKE_STRIP_MAX_MAX);
-		reader.ReadInt("callReward", m_iCallReward, CALL_REWARD_MIN, CALL_REWARD_MAX);
 		reader.ReadFloat("callRadius", m_fCallRadius, CALL_RADIUS_MIN, CALL_RADIUS_MAX);
 
 		if (!m_aRanks)

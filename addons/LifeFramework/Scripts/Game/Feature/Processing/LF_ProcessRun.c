@@ -211,6 +211,9 @@ class LF_ProcessRun
 			}
 		}
 
+		// The machine's trade pays its XP for the batches too (a furnace pays SMELTING, #4337).
+		LF_ProcessXp.PayBatches(user, job.m_sMachineId, job.m_iBatches);
+
 		LF_Utils.NotifyEntity(user, LF_ProcessAction.ToastText(job.m_aOutputs), "", 4.0);
 	}
 

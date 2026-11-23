@@ -14,6 +14,8 @@ class LF_Test_DutyBonusCap : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
+		// The game mode installs the medic bonus (#4319); the reset below drops it, so put it back at the end.
+		bool wasInstalled = LF_MedicDutyBonus.IsInstalled();
 		LF_DutyBonus.ResetStatics();
 		LF_MedicDutyBonus.ResetStatics();
 
@@ -99,6 +101,8 @@ class LF_Test_DutyBonusCap : LF_Test
 
 		LF_MedicDutyBonus.ResetStatics();
 		LF_DutyBonus.ResetStatics();
+		if (wasInstalled)
+			LF_MedicDutyBonus.Install();
 	}
 
 	//------------------------------------------------------------------------------------------------

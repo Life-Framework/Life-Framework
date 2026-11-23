@@ -292,10 +292,10 @@ the pump says "The tanks are dry. The depot truck is due."
   1. Hold the pickaxe and **swing at an iron rock**. Every few swings a piece of **iron ore** breaks off and drops at your feet; pick it up.
      A rock gives 5 pieces, shrinks as you work it, then crumbles and grows back after about 5 minutes. Each piece is miner XP.
   2. Take the ore to the **furnace** and choose **Smelt iron ore**: **3 ore make 1 iron bar**. One run smelts up to 5 bars in 4 minutes;
-     keep mining while it works, the bars drop at the furnace when it is done.
+     keep mining while it works, the bars drop at the furnace when it is done. Every finished batch is **Smelting** XP, a trade of its own with its own level; it is not Miner XP.
   3. Sell the bars at the **iron counter** in the **wholesale warehouse** at the dock, east of the main counter (**$20 a bar**; it buys 40, then about 24 more an hour). If it says
      it is full, the main wholesale counter buys more (from $20 a bar, falling as you sell).
 * **Pay:** about **$500 an hour**, with nothing to drive. Two players share the six rocks and the furnace comfortably.
 * **Wear:** every swing at a rock wears your pickaxe a little (an axe wears with each tree felled, a fishing rod with each fish landed). A notice tells you when the tool is getting worn, when it is badly worn, and after every use once it is worn out. A worn-out tool still works. The hardware bench repairs it for $12 and a scrap of metal once it is placed in town.
-* **Needs:** the miner job and a pickaxe. Higher miner levels open the coal, copper and smelter work as those sites arrive.
+* **Needs:** the miner job and a pickaxe. Higher miner levels open the coal and copper rocks as those sites arrive. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the smelter wants Smelting level 8, the refinery level 15.
 

@@ -38,7 +38,7 @@ class LF_JailCellComponent : ScriptComponent
 	[Attribute("60", UIWidgets.EditBox, desc: "Sentence seconds added for each wanted level.")]
 	protected int m_iSecondsPerWanted;
 
-	[Attribute("300", UIWidgets.EditBox, desc: "Maximum sentence seconds.")]
+	[Attribute("900", UIWidgets.EditBox, desc: "Maximum sentence seconds. Above 900 (15 online minutes, #4207) it clamps to 900 with a log line.")]
 	protected int m_iMaxSeconds;
 
 	[Attribute("1", UIWidgets.EditBox, desc: "Wanted levels removed when the sentence ends.")]
@@ -64,6 +64,22 @@ class LF_JailCellComponent : ScriptComponent
 
 	//! The first cell placed in the world. LF_Jail.SyncPlacedCell re-applies its door target and origin after a reset.
 	protected static LF_JailCellComponent s_Placed;
+
+	//! No sentence runs past 15 online minutes in the holding cell (#4207).
+	static const int MAX_SENTENCE_SECONDS = 900; // lf-fixed: design rule N5, no sentence runs past 15 online minutes
+
+	//------------------------------------------------------------------------------------------------
+	//! A cell's configured cap, held at MAX_SENTENCE_SECONDS. A higher value logs and clamps.
+	static int ClampMaxSeconds(int seconds)
+	{
+		if (seconds > MAX_SENTENCE_SECONDS)
+		{
+			LF_Debug.Warn("Jail", string.Format("cell max sentence %1 s clamped to %2 s (15 online minutes)", seconds, MAX_SENTENCE_SECONDS));
+			return MAX_SENTENCE_SECONDS;
+		}
+
+		return seconds;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The first placed cell, or null when the world has none. One per world.
@@ -139,7 +155,10 @@ class LF_JailCellComponent : ScriptComponent
 		s_Placed = this;
 		// The jail's boot check finds the cell by component (#1047).
 		LF_Places.Register(LF_Jail.PLACE_KIND, LF_Jail.PLACE_ID, owner);
-		LF_Jail.Configure(m_iSecondsPerWanted, m_iMaxSeconds, m_iWantedReduction, m_fZoneRadius);
+		int maxSeconds = ClampMaxSeconds(m_iMaxSeconds);
+		LF_Jail.Configure(m_iSecondsPerWanted, maxSeconds, m_iWantedReduction, m_fZoneRadius);
+		// The work stations credit in proportion to the cap.
+		LF_JailWork.SetSentenceCap(maxSeconds);
 		ApplyPlacement(owner);
 		LF_Jail.SetReleaseOffset(owner.CoordToParent(m_vReleaseOffset) - owner.GetOrigin());
 
