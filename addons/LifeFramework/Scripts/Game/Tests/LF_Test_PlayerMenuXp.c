@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-22 `tools/cli test --no-build --red LF_Test_PlayerMenuXp,LF_Test_PlayerMenuData`: RED PROOF OK (both fail with the hook on). Green with `--only`.
+// red-proof: #4341 2026-11-23, run on the unfixed SkillKeys: `--only LF_Test_PlayerMenuXp` FAILED (SMELTING and SALVAGE have F2 skill keys), green after. Earlier: observed 2026-11-22 `tools/cli test --no-build --red LF_Test_PlayerMenuXp,LF_Test_PlayerMenuData`: RED PROOF OK (both fail with the hook on). Green with `--only`.
 //! The personal file's XP bar, no world: the level and its span from a job's thresholds (any order),
 //! the share of the bar from the floor to the next level, full at the top of the ladder, empty at the
 //! floor, and the skill row the server builds from a track.
@@ -46,6 +46,21 @@ class LF_Test_PlayerMenuXp : LF_Test
 
 		ctx.EqualFloat(0, LF_PlayerMenuXp.Fraction(100, 100, 300), 0.001, "the bar is empty on reaching a level");
 		ctx.EqualFloat(1, LF_PlayerMenuXp.Fraction(50, 100, 100), 0.001, "a level with no span reads full, never divides by zero");
+
+		// #4341: SMELTING and SALVAGE read their own F2 name and description keys (RedProof(): a job with no rows).
+		array<string> trades = {"SMELTING", "SALVAGE"};
+		foreach (string trade : trades)
+		{
+			string lookup = trade;
+			if (RedProof())
+				lookup = "NO_SUCH_TRADE";
+
+			string nameKey;
+			string descKey;
+			ctx.True(LF_PlayerMenuSheet.SkillKeys(lookup, nameKey, descKey), trade + " has F2 skill keys");
+			ctx.True(nameKey.Contains("Skill_" + trade), trade + " name key");
+			ctx.True(descKey.Contains("SkillDesc_" + trade), trade + " description key");
+		}
 
 		LF_PlayerMenuXp.Span(null, 500, level, floor, next);
 		ctx.Equal(1, level, "a job with no thresholds stays level 1");
