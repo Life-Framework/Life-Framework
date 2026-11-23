@@ -459,6 +459,51 @@ StringTable {
      Target_en_us "Three years ago they walked out of the night with what they could carry. We remember each of them. Stand with us a moment."
      Comment "Dialogue caption, spoken by the anniversary_priest NPC (voiced; tools/assets/dialogue/anniversary_priest). Changing it needs: tools\\cli asset dialogue anniversary_priest"
     }
+    CustomStringTableItem "{650D1E6518498F3C}" {
+     Id "LF-Dialogue_Barkeeper_Buy"
+     Target_en_us "Cartons and vodka, yes. Use the counter, not your mouth. Two cartons a week, a few bottles. More than that and the owner notices."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{8B26882A22293458}" {
+     Id "LF-Dialogue_Barkeeper_Bye"
+     Target_en_us "Mind the step on your way out."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{98172406A7846646}" {
+     Id "LF-Dialogue_Barkeeper_Greet"
+     Target_en_us "Evening. Beer is on the board. If you carry cartons or bottles that never saw a tax stamp, you see me, not the bar. Keep your voice down."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{05465B04D4DCDCA0}" {
+     Id "LF-Dialogue_Barkeeper_Law"
+     Target_en_us "If you wear a badge, I sell beer. Nothing else, and I never saw you. Anyone else, the money is on the counter and nobody was here."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{555A4099D123C72B}" {
+     Id "LF-Dialogue_Barkeeper_Limit"
+     Target_en_us "A bar that sells ten cartons a week is a shop, and a shop gets a visit. When my shelf is full, it is full. Come back next week."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{89B8C4EE047CD189}" {
+     Id "LF-Dialogue_Barkeeper_SayAsk"
+     Target_en_us "Do you buy cartons and vodka?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
+    CustomStringTableItem "{8C06935E1F6474C1}" {
+     Id "LF-Dialogue_Barkeeper_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
+    CustomStringTableItem "{2B4B72011D81B0CE}" {
+     Id "LF-Dialogue_Barkeeper_SayLaw"
+     Target_en_us "What about the law?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
+    CustomStringTableItem "{AB03BC8431143041}" {
+     Id "LF-Dialogue_Barkeeper_SayWhy"
+     Target_en_us "Why only two cartons?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
     CustomStringTableItem "{3E9F5343A58B4851}" {
      Id "LF-Dialogue_CafeOwner_Bye"
      Target_en_us "Come back when you are hungry. Or lonely. It is the same to me."
@@ -1074,6 +1119,131 @@ StringTable {
      Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Gas at the pumps, maps and snacks in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
+    CustomStringTableItem "{B077CD2EC72D3E0D}" {
+     Id "LF-Dialogue_GendarmeEvening_Again"
+     Target_en_us "Anything else, friend? I have a few minutes before the next lap."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{9A132E000BF12343}" {
+     Id "LF-Dialogue_GendarmeEvening_Barn"
+     Target_en_us "People talk about the old barn. I have driven by. A locked door is not a crime, and rumor is not evidence."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{F58E51A3607B0FC0}" {
+     Id "LF-Dialogue_GendarmeEvening_Bell"
+     Target_en_us "The church bell marks my rounds. Six, nine, midnight. If you hear it, I am somewhere near the bank."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{8B08BB7332A5E528}" {
+     Id "LF-Dialogue_GendarmeEvening_Bye"
+     Target_en_us "Good night. Stay out of trouble, and out of the bank after hours."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{169AC9DE186E92B2}" {
+     Id "LF-Dialogue_GendarmeEvening_Courier"
+     Target_en_us "The Courier printed Tuesday's robbery. Most of it is right. Do not repeat the rest."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{1DB93C8F331658CA}" {
+     Id "LF-Dialogue_GendarmeEvening_Greet"
+     Target_en_us "Good evening. I walk the bank and the square at this hour. All quiet so far."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{14F7EA1EAD65B95F}" {
+     Id "LF-Dialogue_GendarmeEvening_Hostel"
+     Target_en_us "A bed at the hostel costs little. A night on a bench costs more, if I find you there."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{ECDE920619CAC2BB}" {
+     Id "LF-Dialogue_GendarmeEvening_Market"
+     Target_en_us "Keep your cash in your pocket at the market. Pickpockets love a crowd and an open bag."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{82AF3FD4143E11BB}" {
+     Id "LF-Dialogue_GendarmeEvening_Mine"
+     Target_en_us "The coal workers head home dusty and tired. Quiet men. They give me no trouble."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{9DE083747C340406}" {
+     Id "LF-Dialogue_GendarmeEvening_More"
+     Target_en_us "Ask what you like. I will answer what I can."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{27A0D2983D936B85}" {
+     Id "LF-Dialogue_GendarmeEvening_More2"
+     Target_en_us "A few things for visitors, then."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{A84B183DAC4AAFD1}" {
+     Id "LF-Dialogue_GendarmeEvening_SayBack"
+     Target_en_us "One more question."
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{751713DCA64A1A08}" {
+     Id "LF-Dialogue_GendarmeEvening_SayBarn"
+     Target_en_us "What do you know about the old barn?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{6D2DC2A2DCD95206}" {
+     Id "LF-Dialogue_GendarmeEvening_SayBell"
+     Target_en_us "What is the bell for?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{FC9B2BBC02C7C74F}" {
+     Id "LF-Dialogue_GendarmeEvening_SayBye"
+     Target_en_us "Good night."
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{462989932C5EFBF1}" {
+     Id "LF-Dialogue_GendarmeEvening_SayCourier"
+     Target_en_us "What about the Courier story?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{DAD4AE7D1860859C}" {
+     Id "LF-Dialogue_GendarmeEvening_SayHostel"
+     Target_en_us "What about the hostel?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{DBCE495F93005D39}" {
+     Id "LF-Dialogue_GendarmeEvening_SayMarket"
+     Target_en_us "Any advice about the market?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{C674296105157724}" {
+     Id "LF-Dialogue_GendarmeEvening_SayMine"
+     Target_en_us "How are the coal workers?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{AF4BB85BD6854839}" {
+     Id "LF-Dialogue_GendarmeEvening_SayMore"
+     Target_en_us "Can I ask you something?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{2F8C85BDFFF20A71}" {
+     Id "LF-Dialogue_GendarmeEvening_SayMore2"
+     Target_en_us "Anything for visitors?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{B9BA3897C3F38472}" {
+     Id "LF-Dialogue_GendarmeEvening_SayTown"
+     Target_en_us "How is the town this evening?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{EA5BBEFD5C6DEFBB}" {
+     Id "LF-Dialogue_GendarmeEvening_SayWho"
+     Target_en_us "Who are you?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme_evening NPC."
+    }
+    CustomStringTableItem "{A3FD0A728230D994}" {
+     Id "LF-Dialogue_GendarmeEvening_Town"
+     Target_en_us "Saint-Philippe is calm after six. A few stray dogs, a few late customers at the cafe. I like it that way."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
+    CustomStringTableItem "{FD670857469F9C3F}" {
+     Id "LF-Dialogue_GendarmeEvening_Who"
+     Target_en_us "Brigadier Carrel, evening patrol. If you need an officer by day, the station on the square keeps the desk."
+     Comment "Dialogue caption, spoken by the gendarme_evening NPC (voiced; tools/assets/dialogue/gendarme_evening). Changing it needs: tools\\cli asset dialogue gendarme_evening"
+    }
     CustomStringTableItem "{632BADA7E940D7F6}" {
      Id "LF-Dialogue_Gendarme_AboutWhat"
      Target_en_us "A routine inspection of a shipment. If you saw anything on these docks tonight, the station on the square takes statements."
@@ -1103,6 +1273,256 @@ StringTable {
      Id "LF-Dialogue_Gendarme_SayWhat"
      Target_en_us "What is going on here?"
      Comment "Dialogue reply the player can pick when talking to the gendarme NPC."
+    }
+    CustomStringTableItem "{1BCC7D8B6BBE5CE7}" {
+     Id "LF-Dialogue_GossipColette_Again"
+     Target_en_us "Was there something else? I am all ears, and not much else."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{E9B555A8922B256C}" {
+     Id "LF-Dialogue_GossipColette_Barn"
+     Target_en_us "The old still barn. Odilon says it is empty at night. It is not. Ask at the cafe, and watch who goes quiet."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{CF488796A49D5413}" {
+     Id "LF-Dialogue_GossipColette_Bell"
+     Target_en_us "The bell is two minutes slow, and has been since spring. I would fix it, but then what would I complain about?"
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{BBA5EE61C5BE50E0}" {
+     Id "LF-Dialogue_GossipColette_Bye"
+     Target_en_us "Go on, then. And if anyone asks, you heard none of this from me."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{563B3E6A681A35F7}" {
+     Id "LF-Dialogue_GossipColette_Courier"
+     Target_en_us "Buy the Courier and read the robbery story twice. Tuesday night, and not one word about the open window."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{9B10C4871AED1839}" {
+     Id "LF-Dialogue_GossipColette_Greet"
+     Target_en_us "Psst. Come closer. Odilon talks too loud, and the walls on this square have ears."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{B31050E8A5FF1FA1}" {
+     Id "LF-Dialogue_GossipColette_Hostel"
+     Target_en_us "The hostel clerk keeps your key warm and your business to himself. A rare thing in this town."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{E7B377565FD86C1D}" {
+     Id "LF-Dialogue_GossipColette_Market"
+     Target_en_us "At the market, the woman with the plums waters down her cider. Buy the apples. Trust the apples."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{D6C641EEF38B3986}" {
+     Id "LF-Dialogue_GossipColette_Mine"
+     Target_en_us "The coal men come into town black to the elbows and spend every dollar by Friday. Lovely tippers."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{78D03EDF949ACCF4}" {
+     Id "LF-Dialogue_GossipColette_More"
+     Target_en_us "Oh, I have plenty. Choose one, and I will whisper it."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{ECCFFB31F9489DE8}" {
+     Id "LF-Dialogue_GossipColette_More2"
+     Target_en_us "More? Greedy. I like that."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{3BC1B89895096279}" {
+     Id "LF-Dialogue_GossipColette_SayBack"
+     Target_en_us "One more thing."
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{30039AC949FAFBD6}" {
+     Id "LF-Dialogue_GossipColette_SayBarn"
+     Target_en_us "What about the old barn?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{EE020E6B27696DB6}" {
+     Id "LF-Dialogue_GossipColette_SayBell"
+     Target_en_us "Is the church bell right?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{CD193C7405632BC5}" {
+     Id "LF-Dialogue_GossipColette_SayBye"
+     Target_en_us "I will keep quiet."
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{FA56944452E9918F}" {
+     Id "LF-Dialogue_GossipColette_SayCourier"
+     Target_en_us "What is in the Courier?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{C9003F66CDAF1CEC}" {
+     Id "LF-Dialogue_GossipColette_SayHostel"
+     Target_en_us "What about the hostel?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{238A279BB3814ECB}" {
+     Id "LF-Dialogue_GossipColette_SayMarket"
+     Target_en_us "Anything about the market?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{2D0AF4393FACE7EC}" {
+     Id "LF-Dialogue_GossipColette_SayMine"
+     Target_en_us "Any news about the mine?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{F0B48F1DF89108EF}" {
+     Id "LF-Dialogue_GossipColette_SayMore"
+     Target_en_us "Tell me something else."
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{9D2A248DB9863195}" {
+     Id "LF-Dialogue_GossipColette_SayMore2"
+     Target_en_us "And what else?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{CD5893AE6D03E4EE}" {
+     Id "LF-Dialogue_GossipColette_SayTown"
+     Target_en_us "What do people say about the town?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{9A0DC65AB94FC891}" {
+     Id "LF-Dialogue_GossipColette_SayWho"
+     Target_en_us "Who are you?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_colette NPC."
+    }
+    CustomStringTableItem "{F92A537A592F0865}" {
+     Id "LF-Dialogue_GossipColette_Town"
+     Target_en_us "Everybody on the square owes somebody. The trick is knowing who, and never saying it before noon."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{FAED2984499FBD1C}" {
+     Id "LF-Dialogue_GossipColette_Who"
+     Target_en_us "Colin Brisset. I mend watches, and every secret in Saint-Philippe is wound a little too tight for my liking."
+     Comment "Dialogue caption, spoken by the gossip_colette NPC (voiced; tools/assets/dialogue/gossip_colette). Changing it needs: tools\\cli asset dialogue gossip_colette"
+    }
+    CustomStringTableItem "{73BD01A0AE5FE6FB}" {
+     Id "LF-Dialogue_GossipOdile_Again"
+     Target_en_us "Anything else? My bench is free."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{31E30A3CBB54FB22}" {
+     Id "LF-Dialogue_GossipOdile_Barn"
+     Target_en_us "They say the old still barn is not empty at night. Lights, and a truck with no plates. I say nothing."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{9B8F09D3BD19796F}" {
+     Id "LF-Dialogue_GossipOdile_Bell"
+     Target_en_us "The church bell rings on the hour, and I set my watch by it. The priest oils the rope himself, you know."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{AE35A380703B6474}" {
+     Id "LF-Dialogue_GossipOdile_Bye"
+     Target_en_us "Come back when you have news. I will pay in coffee. Or in secrets."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{1DC2682EDDBF8AAF}" {
+     Id "LF-Dialogue_GossipOdile_Courier"
+     Target_en_us "The Courier is a dollar at the newsstand. Read it before you talk to anyone, and you will sound clever."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{BFAE8C75DA295408}" {
+     Id "LF-Dialogue_GossipOdile_Greet"
+     Target_en_us "Well now, a new face on the square. Sit, sit. Colin and I see everything from this bench."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{B4E9A16DC6210536}" {
+     Id "LF-Dialogue_GossipOdile_Hostel"
+     Target_en_us "The hostel clerk is kind to strangers. A bed, a key, and a car if you ask nicely. Everyone starts there."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{A38AD2032E8FF08E}" {
+     Id "LF-Dialogue_GossipOdile_Market"
+     Target_en_us "The market is where the apples go. Sell at the stalls, never to the first man who names a price."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{FA8A6007B234B9F1}" {
+     Id "LF-Dialogue_GossipOdile_Mine"
+     Target_en_us "They are digging coal again at East Rise. Hard work, honest pay. My knees say no, thank you."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{5EFB6C56CD3E54D2}" {
+     Id "LF-Dialogue_GossipOdile_More"
+     Target_en_us "There is more, if you have the time. What would you like to hear?"
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{B3B939DA3D98B501}" {
+     Id "LF-Dialogue_GossipOdile_More2"
+     Target_en_us "Still listening? Good. A man needs an audience."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{C169693C40AE1B17}" {
+     Id "LF-Dialogue_GossipOdile_SayBack"
+     Target_en_us "Something else."
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{1A9BF13BE2210F6A}" {
+     Id "LF-Dialogue_GossipOdile_SayBarn"
+     Target_en_us "Heard anything about the old barn?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{3E7ACDD8D7DB4099}" {
+     Id "LF-Dialogue_GossipOdile_SayBell"
+     Target_en_us "Tell me about the church bell."
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{47DD1EA8A51D2B37}" {
+     Id "LF-Dialogue_GossipOdile_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{F695FA1C7F6221C7}" {
+     Id "LF-Dialogue_GossipOdile_SayCourier"
+     Target_en_us "What is in the Courier?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{4D444B9A38D060E1}" {
+     Id "LF-Dialogue_GossipOdile_SayHostel"
+     Target_en_us "Tell me about the hostel."
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{524E29AEEF92A82F}" {
+     Id "LF-Dialogue_GossipOdile_SayMarket"
+     Target_en_us "And the market?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{B4D32B8637C5784D}" {
+     Id "LF-Dialogue_GossipOdile_SayMine"
+     Target_en_us "What about the coal mine?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{B6DED19620C70527}" {
+     Id "LF-Dialogue_GossipOdile_SayMore"
+     Target_en_us "What else do you know?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{8CC536754D0DCAA8}" {
+     Id "LF-Dialogue_GossipOdile_SayMore2"
+     Target_en_us "Go on, tell me more."
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{651B2BC8019D2E25}" {
+     Id "LF-Dialogue_GossipOdile_SayTown"
+     Target_en_us "What is the town like?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{BF433F3ABB9E304D}" {
+     Id "LF-Dialogue_GossipOdile_SayWho"
+     Target_en_us "Who are you?"
+     Comment "Dialogue reply the player can pick when talking to the gossip_odile NPC."
+    }
+    CustomStringTableItem "{06EC029F72DB0226}" {
+     Id "LF-Dialogue_GossipOdile_Town"
+     Target_en_us "Saint-Philippe is small. Everyone knows who paid the baker and who did not, and Colin knows twice as much."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
+    }
+    CustomStringTableItem "{BE4661726B13037E}" {
+     Id "LF-Dialogue_GossipOdile_Who"
+     Target_en_us "Odilon Ferrand, retired from the ferry. Forty years of watching people come and go. Now I watch them stay."
+     Comment "Dialogue caption, spoken by the gossip_odile NPC (voiced; tools/assets/dialogue/gossip_odile). Changing it needs: tools\\cli asset dialogue gossip_odile"
     }
     CustomStringTableItem "{A5BFE7A72F0C053D}" {
      Id "LF-Dialogue_HarbourMaster_Bye"
@@ -4261,12 +4681,12 @@ StringTable {
     }
     CustomStringTableItem "{0DADF7447AB9FD47}" {
      Id "LF-Resident_gossip_colette_Name"
-     Target_en_us "Colette Brisset"
+     Target_en_us "Colin Brisset"
      Comment "Saint-Philippe resident gossip_colette: display name (#4228)."
     }
     CustomStringTableItem "{03A0303E4DB2701C}" {
      Id "LF-Resident_gossip_odile_Name"
-     Target_en_us "Odile Ferrand"
+     Target_en_us "Odilon Ferrand"
      Comment "Saint-Philippe resident gossip_odile: display name (#4228)."
     }
     CustomStringTableItem "{C506DE77282216DB}" {
@@ -6698,6 +7118,11 @@ StringTable {
      Id "LF-TownCard_Work_Title"
      Target_en_us "Couriers wanted"
      Comment "Town board card (work): card title; the prompt reads Read: <title>."
+    }
+    CustomStringTableItem "{4439B0A5C7000001}" {
+     Id "LF-Townsfolk_Barkeeper_Name"
+     Target_en_us "Josselin Vidal"
+     Comment "Townsfolk (crime B5, #4439): the barkeeper's name, the speaker line of his dialogue. The plan's Josette is a man because every character body is male (validate-voice-sex)."
     }
     CustomStringTableItem "{18C4BB2C33CD079A}" {
      Id "LF-Townsfolk_Bruno_Name"

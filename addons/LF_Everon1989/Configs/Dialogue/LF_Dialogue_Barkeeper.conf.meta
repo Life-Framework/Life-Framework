@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{56B1214BB3E57BCF}Configs/Dialogue/LF_Dialogue_Barkeeper.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

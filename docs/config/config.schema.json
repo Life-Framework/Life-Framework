@@ -1982,6 +1982,21 @@
                 "default": -1,
                 "minimum": -1,
                 "maximum": 1000000
+              },
+              "lotId": {
+                "type": "string",
+                "description": "Lot id that sells this row (LF_VehicleLotComponent lot id). Empty: every lot",
+                "default": ""
+              },
+              "capacityClass": {
+                "type": "string",
+                "description": "Capacity class from LF_Capacity (car, pickup, van, truck). Empty: unclassed",
+                "default": ""
+              },
+              "nameKey": {
+                "type": "string",
+                "description": "Localization key of the catalogue row, for a lot that lists this row itself",
+                "default": ""
               }
             },
             "additionalProperties": false

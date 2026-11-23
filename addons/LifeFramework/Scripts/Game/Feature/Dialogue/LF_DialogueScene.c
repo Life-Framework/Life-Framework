@@ -164,6 +164,9 @@ class LF_DialogueScene
 		if (IsOpen())
 			Close("a new conversation starts", true);
 
+		// A guide page left open would sit over the scene and take its confirm key.
+		LF_WelcomeGuideSheet.Hide();
+
 		if (!Open(npc, config))
 			return false;
 
