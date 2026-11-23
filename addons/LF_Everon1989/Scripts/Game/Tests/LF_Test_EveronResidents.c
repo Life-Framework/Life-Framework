@@ -22,7 +22,8 @@ class LF_Test_EveronResidents : LF_Test
 		array<string> kinds = {
 			"Spawn", "Clerk", "LicenceDesk", "Bank", "BankVault", "BankCounter", "TownBoard", "MapBoard",
 			"ClothingCounter", "GunCounter", "StoreCounter", "CafeTable", "HostelBed", "House", "FuelTill",
-			"ParcelDepot", "PubBar", "Hall", "Dock", "FishCounter", "Garage", "BarberChair", SITE_KIND
+			"ParcelDepot", "PubBar", "Hall", "Dock", "FishCounter", "Garage", "BarberChair", SITE_KIND,
+			"HarbourMaster", "Warehouse", "MarketTrader", "WholesaleCounter"
 		};
 		return kinds.Find(kind) != -1;
 	}
@@ -73,7 +74,7 @@ class LF_Test_EveronResidents : LF_Test
 		int townCast = 0;
 		foreach (LF_ResidentDef counted : config.m_aResidents)
 		{
-			if (counted && counted.m_sHomeKind != SITE_KIND)
+			if (counted && counted.m_sHomeKind != SITE_KIND && counted.m_sId.IndexOf("dock_") != 0)
 				townCast++;
 		}
 
@@ -139,7 +140,7 @@ class LF_Test_EveronResidents : LF_Test
 				// An empty anchor is the place origin: a site foreman stands there all day, a shop keeper at home when every anchor of the house is taken (#4560).
 				bool siteStand = entry.m_sAnchor.IsEmpty();
 				ctx.True(siteStand || entry.m_sAnchor == "counter" || entry.m_sAnchor == "bench" || entry.m_sAnchor.IndexOf("door") == 0, string.Format("%1 line %2 stands on a known anchor ('%3')", id, entry.m_sTime, entry.m_sAnchor));
-				ctx.True(entry.m_sActivity == "serve" || entry.m_sActivity == "sit" || entry.m_sActivity == "loiter" || entry.m_sActivity == "idle", string.Format("%1 line %2 does a known activity ('%3')", id, entry.m_sTime, entry.m_sActivity));
+				ctx.True(LF_ResidentWorkLoop.IsWork(entry.m_sActivity) || entry.m_sActivity == "serve" || entry.m_sActivity == "sit" || entry.m_sActivity == "loiter" || entry.m_sActivity == "idle", string.Format("%1 line %2 does a known activity ('%3')", id, entry.m_sTime, entry.m_sActivity));
 			}
 
 			// The name is a pack `#` key that resolves to words.

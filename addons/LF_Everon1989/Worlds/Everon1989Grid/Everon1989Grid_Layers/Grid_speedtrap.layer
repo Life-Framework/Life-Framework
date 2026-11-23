@@ -1,0 +1,106 @@
+// Grid cell c29r0 for speedtrap: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_speedtrap_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 371 0 23
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 375.4 0 23
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 379.8 0 23
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 384.2 0 23
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 388.6 0 23
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 393 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 393 0 28
+ angleY 270
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 393 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 388.6 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 384.2 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 379.8 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 375.4 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_speedtrap_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 371 0 33
+ angleY 90
+}
+GenericEntity Grid_speedtrap_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:speedtrap"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 370.2 0.505 23.6
+ angleY -90
+}
+GenericEntity Grid_speedtrap_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "speedtrap"
+  }
+ }
+ coords 370.3 0 25.5
+ angleY 90
+}
+GenericEntity Grid_speedtrap_R0_1 : "{395925C97F4D53DE}Prefabs/Props/Signs/LF_SpeedLimit30.et" {
+ coords 390.502 0.506 25
+ angleY -90
+}
+GenericEntity Grid_speedtrap_R0_2 : "{2311E06DD41A54BF}Prefabs/Props/Signs/LF_SpeedLimit50.et" {
+ coords 390.502 0.506 28
+ angleY -90
+}
+GenericEntity Grid_speedtrap_R0_3 : "{937A43570DF08420}Prefabs/Props/Signs/LF_SpeedLimit100.et" {
+ coords 390.502 0.506 31
+ angleY -90
+}
+Vehicle Grid_speedtrap_PatrolCar : "{D1C459F87589D01D}Prefabs/Vehicles/Liveries/LF_S105_Police.et" {
+ coords 381.512 0 26.5
+ angleY 90
+}
+GenericEntity Grid_speedtrap_Barrier : "{64C9C1D1C2C1B38D}Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et" {
+ coords 388.502 0.012 27.998
+ angleY 90
+}
+StaticModelEntity Grid_speedtrap_Gravel_1 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 373.568 0.046 31.28
+ scale 0.5
+}
+StaticModelEntity Grid_speedtrap_Gravel_2 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 378.168 0.046 31.28
+ scale 0.5
+}
+StaticModelEntity Grid_speedtrap_Gravel_3 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 382.768 0.046 31.28
+ scale 0.5
+}
+StaticModelEntity Grid_speedtrap_Gravel_4 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 387.368 0.046 31.28
+ scale 0.5
+}

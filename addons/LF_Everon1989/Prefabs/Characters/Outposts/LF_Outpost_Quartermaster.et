@@ -1,10 +1,20 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "97CB14AF9EC964D7"
  components {
+  LF_DialogueComponent "{F1EEFFD01A8721B4}" {
+   m_sDialogueId "outpost_quartermaster"
+  }
   LF_OutpostStockComponent "{24577A0E80D36771}" {
   }
   ActionsManagerComponent "{520EA1D2F659CE02}" {
    ActionContexts + {
+    UserActionContext "{7A6F3E4E6AC15CA4}" {
+     ContextName "Talk"
+     Position PointInfo "{9F643D53F006924C}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
     UserActionContext "{BC29A563414EDAB0}" {
      ContextName "Crate"
      Position PointInfo "{C4183B6DF31F92E9}" {
@@ -14,6 +24,14 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
     }
    }
    additionalActions + {
+    LF_DialogueTalkAction "{D3F58C71DE764479}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{C98D1B6DD5141F79}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
     LF_OutpostStockBuyAction "{C03A008B7EBB8252}" {
      ParentContextList {
       "Crate"

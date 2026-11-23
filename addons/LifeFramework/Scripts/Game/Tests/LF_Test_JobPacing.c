@@ -41,29 +41,32 @@ class LF_Test_JobPacing : LF_Test
 
 		ctx.NotNull(LF_JobsConfig.Get(), "the jobs config loads");
 		ctx.Equal(100, LF_CivilianJob.XpPerRun(), "a run is worth 100 experience");
-		ctx.Equal(5, LF_CivilianJob.RunsToReach(2), "fuel delivery takes five runs");
-		ctx.Equal(15, LF_CivilianJob.RunsToReach(3), "the taxi takes fifteen runs");
+		// The gates are level numbers on the 30-level DELIVERY table (#4596): level 4 is 600 XP, level 6 is 1500 XP.
+		int fuelLevel = LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY);
+		int taxiLevel = LF_CivilianJob.RequiredLevel(LF_EJobType.TAXI);
+		ctx.Equal(6, LF_CivilianJob.RunsToReach(fuelLevel), "fuel delivery takes six runs");
+		ctx.Equal(15, LF_CivilianJob.RunsToReach(taxiLevel), "the taxi takes fifteen runs");
 
 		ctx.True(LF_CivilianJob.SignUp(uid, LF_EJobType.PARCEL), "a new courier signs up");
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			LF_CivilianJob.StartRun(uid, LF_EJobType.PARCEL);
 			LF_CivilianJob.CompleteRun(uid);
 		}
 
-		ctx.Equal(1, LF_CivilianJob.GetLevel(uid), "four parcel runs keep the courier at the first level");
-		ctx.False(LF_CivilianJob.CanSignUp(uid, LF_EJobType.FUEL_DELIVERY), "four runs do not open fuel delivery");
+		ctx.True(LF_CivilianJob.GetLevel(uid) < fuelLevel, "five parcel runs keep the courier below the fuel delivery level");
+		ctx.False(LF_CivilianJob.CanSignUp(uid, LF_EJobType.FUEL_DELIVERY), "five runs do not open fuel delivery");
 
 		LF_CivilianJob.StartRun(uid, LF_EJobType.PARCEL);
 		LF_CivilianJob.CompleteRun(uid);
-		ctx.Equal(2, LF_CivilianJob.GetLevel(uid), "the fifth run opens the next level");
-		ctx.True(LF_CivilianJob.CanSignUp(uid, LF_EJobType.FUEL_DELIVERY), "the fifth run opens fuel delivery");
+		ctx.Equal(fuelLevel, LF_CivilianJob.GetLevel(uid), "the sixth run reaches the fuel delivery level");
+		ctx.True(LF_CivilianJob.CanSignUp(uid, LF_EJobType.FUEL_DELIVERY), "the sixth run opens fuel delivery");
 		ctx.False(LF_CivilianJob.CanSignUp(uid, LF_EJobType.TAXI), "the taxi is still closed");
 
-		ctx.Equal(LF_EJobType.FUEL_DELIVERY, LF_CivilianJob.NewlyOpened(1, 2), "the clerk mentions fuel delivery when it opens");
-		ctx.Equal(LF_EJobType.TAXI, LF_CivilianJob.NewlyOpened(2, 3), "the clerk mentions the taxi when it opens");
-		ctx.Equal(LF_EJobType.UNEMPLOYED, LF_CivilianJob.NewlyOpened(2, 2), "no level change, no message");
-		ctx.Equal(LF_EJobType.UNEMPLOYED, LF_CivilianJob.NewlyOpened(3, 4), "a level past the taxi opens nothing new");
+		ctx.Equal(LF_EJobType.FUEL_DELIVERY, LF_CivilianJob.NewlyOpened(fuelLevel - 1, fuelLevel), "the clerk mentions fuel delivery when it opens");
+		ctx.Equal(LF_EJobType.TAXI, LF_CivilianJob.NewlyOpened(taxiLevel - 1, taxiLevel), "the clerk mentions the taxi when it opens");
+		ctx.Equal(LF_EJobType.UNEMPLOYED, LF_CivilianJob.NewlyOpened(fuelLevel, fuelLevel), "no level change, no message");
+		ctx.Equal(LF_EJobType.UNEMPLOYED, LF_CivilianJob.NewlyOpened(taxiLevel, taxiLevel + 1), "a level past the taxi opens nothing new");
 
 		LF_CivilianJob.ForgetCareer(uid);
 	}

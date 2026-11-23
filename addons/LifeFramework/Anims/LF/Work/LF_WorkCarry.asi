@@ -1,0 +1,14 @@
+AnimSetInstanceSource {
+ Template "{9A43A8BDDF59B93C}Anims/Workspaces/Work/LF_WorkPick.ast"
+ Lines {
+  AnimSetInstanceSource_Line "Work.Pick.In" {
+   Resource "{B75E8B08C9504119}Anims/LF/Work/Work_carry_in.anm"
+  }
+  AnimSetInstanceSource_Line "Work.Pick.Loop" {
+   Resource "{8125B953B7DDD23F}Anims/LF/Work/Work_carry_loop.anm"
+  }
+  AnimSetInstanceSource_Line "Work.Pick.Out" {
+   Resource "{1E6C47B2A51E909B}Anims/LF/Work/Work_carry_out.anm"
+  }
+ }
+}

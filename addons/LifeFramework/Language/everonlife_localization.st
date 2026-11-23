@@ -4657,7 +4657,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AB6DB02C0E62EDEF}" {
      Id "LF-Credits_199"
-     Target_en_us "CONTRABAND LABELS"
+     Target_en_us "LF_S105_Taxi"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
@@ -4672,37 +4672,67 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{98645FC8B2D9330E}" {
      Id "LF-Credits_200"
-     Target_en_us "LF_CigaretteCarton_BCR"
+     Target_en_us "LF_S1203_CompanyBakery"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{31D05720B5CD5B48}" {
      Id "LF-Credits_201"
-     Target_en_us "LF_VodkaBottle_BCR"
+     Target_en_us "LF_S1203_CompanyFactory"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4D22C5E97B2689AA}" {
      Id "LF-Credits_202"
-     Target_en_us "WORK-SITE SOUNDS"
+     Target_en_us "LF_UAZ452_CompanyHardware"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D12E84B0D1EB5D48}" {
      Id "LF-Credits_203"
-     Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Target_en_us "LF_Ural4320_CompanyTimber"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{E5F5B4D1BBEFC2E5}" {
      Id "LF-Credits_204"
-     Target_en_us "Desk sergeant's five lines"
+     Target_en_us "CONTRABAND LABELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8DF88C3D0E2242BE}" {
      Id "LF-Credits_205"
-     Target_en_us "Booking typewriter and ink pad stamp sounds"
+     Target_en_us "LF_CigaretteCarton_BCR"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BE5E5996E3159D99}" {
+     Id "LF-Credits_206"
+     Target_en_us "LF_VodkaBottle_BCR"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3357BDF3A3C49CCF}" {
+     Id "LF-Credits_207"
+     Target_en_us "WORK-SITE SOUNDS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{C1690BAB498831CF}" {
+     Id "LF-Credits_208"
+     Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{92B8B9DD3342AC1A}" {
+     Id "LF-Credits_209"
+     Target_en_us "Desk sergeant's five lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09A1E735EF193A11}" {
      Id "LF-Credits_21"
      Target_en_us "Arma Reforger Tools and the Workbench IDE by Bohemia Interactive build and test the mod."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BCC6DE3AE86E2A44}" {
+     Id "LF-Credits_210"
+     Target_en_us "Booking typewriter and ink pad stamp sounds"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{B77F496979C34298}" {
+     Id "LF-Credits_211"
+     Target_en_us "The north outpost's spoken lines: quartermaster"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B8555A0EF2D6690B}" {
@@ -12711,6 +12741,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Pager_Title"
      Target_en_us "Pager"
      Comment "Title of the pager card."
+    }
+    CustomStringTableItem "{117B8E27179EDAD3}" {
+     Id "LF-Paper_DateLine"
+     Target_en_us "Date %1"
+     Comment "Date line of a printed slip. %1 is the in-game date and time."
+    }
+    CustomStringTableItem "{D625B9E68D445A88}" {
+     Id "LF-Paper_DeliveryLine"
+     Target_en_us "%1: %2 parcel(s), paid {currency:sym}%3"
+     Comment "Delivery note line. %1 item, %2 amount, %3 pay."
+    }
+    CustomStringTableItem "{3D2C43C802AE9DE9}" {
+     Id "LF-Paper_DeliveryTitle"
+     Target_en_us "DELIVERY NOTE"
+     Comment "Title line of a delivery note printed at a parcel hand-in (#4465)."
+    }
+    CustomStringTableItem "{0D96A126A3D70115}" {
+     Id "LF-Paper_ItemGoods"
+     Target_en_us "Goods"
+     Comment "Item name on a weigh slip for a sale at a buyer."
+    }
+    CustomStringTableItem "{391EC1A04E968AA5}" {
+     Id "LF-Paper_ItemGrain"
+     Target_en_us "Grain"
+     Comment "Item name on a weigh slip for a granary unload."
+    }
+    CustomStringTableItem "{597C99C21FB0FA59}" {
+     Id "LF-Paper_ItemParcel"
+     Target_en_us "Parcel"
+     Comment "Item name on a delivery note."
+    }
+    CustomStringTableItem "{49A5BE10D89F3532}" {
+     Id "LF-Paper_ItemShift"
+     Target_en_us "Shift pay"
+     Comment "Item name on a payslip."
+    }
+    CustomStringTableItem "{8F548416892E58B9}" {
+     Id "LF-Paper_PayLine"
+     Target_en_us "%1: %2 shift(s), paid {currency:sym}%3"
+     Comment "Payslip line. %1 item, %2 amount, %3 pay."
+    }
+    CustomStringTableItem "{B026936CA93FA973}" {
+     Id "LF-Paper_PayTitle"
+     Target_en_us "PAYSLIP"
+     Comment "Title line of a payslip printed after a paid shift (#4465)."
+    }
+    CustomStringTableItem "{D4F6FD7E91CBCA75}" {
+     Id "LF-Paper_WeighLine"
+     Target_en_us "%1: %2 lot(s), paid {currency:sym}%3"
+     Comment "Weigh slip line. %1 item, %2 amount, %3 price paid."
+    }
+    CustomStringTableItem "{2C680CA6A955A645}" {
+     Id "LF-Paper_WeighTitle"
+     Target_en_us "WEIGH SLIP"
+     Comment "Title line of a weigh slip printed at a buyer (#4465)."
     }
     CustomStringTableItem "{7D3A91E4C2B8F651}" {
      Id "LF-Parcel_DroppedNearby"

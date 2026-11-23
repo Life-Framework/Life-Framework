@@ -1,11 +1,11 @@
 // red-proof: 2026-11-23 (#4382), with the act skipped (RedProof() on, `cli test --no-build --red LF_Test_ResidentWorkLoop`)
 //   no pose is started, so `a hammer worker plays the hammer pose`, `the pose was started once` and `a sweep worker
-//   falls back to the idle loiter` fail. The RED-OK line is in the PR.
+//   plays the sweep pose` fail. The RED-OK line is in the PR.
 //! residents/work-loop (#4230, #4382): a resident with a work activity (carry, hammer, sweep) holds that job's body
 //! pose. The rule with no world: a name is trimmed and lower-cased, an unknown one is not work, hammer has its own
-//! anim set instance on the work graph and it loads, carry and sweep (no vanilla clip reads as either) have none
-//! and play the plain idle loiter. With a character: Begin starts the hammer pose once, beginning again keeps it, a
-//! sweep line swaps to the idle loiter, a check before the restart time leaves the pose alone, Stop ends it.
+//! anim set instance on the work graph and it loads, carry and sweep play our own (#4396, LF_Test_WorkAnim loads
+//! the clips). With a character: Begin starts the hammer pose once, beginning again keeps it, a
+//! sweep line swaps to the sweep pose, a check before the restart time leaves the pose alone, Stop ends it.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ResidentWorkLoop : LF_Test
 {
@@ -46,8 +46,8 @@ class LF_Test_ResidentWorkLoop : LF_Test
 		}
 
 		ctx.EqualStr(LF_ResidentWorkLoop.HAMMER_POSE, LF_ResidentWorkLoop.PoseOf("hammer"), "hammer has its own pose");
-		ctx.EqualStr("", LF_ResidentWorkLoop.PoseOf("Carry"), "carry has no pose of its own and idles");
-		ctx.EqualStr("", LF_ResidentWorkLoop.PoseOf("sweep"), "sweep has no pose of its own and idles");
+		ctx.EqualStr(LF_WorkAnimPlayer.CARRY_POSE, LF_ResidentWorkLoop.PoseOf("Carry"), "carry has its own pose");
+		ctx.EqualStr(LF_WorkAnimPlayer.SWEEP_POSE, LF_ResidentWorkLoop.PoseOf("sweep"), "sweep has its own pose");
 		ctx.EqualStr("", LF_ResidentWorkLoop.PoseOf("moonwalk"), "an unknown name has no pose");
 
 		ctx.True(Resource.Load(LF_ResidentWorkLoop.HAMMER_POSE).IsValid(), "the hammer pose instance loads");
@@ -75,11 +75,12 @@ class LF_Test_ResidentWorkLoop : LF_Test
 		ctx.Equal(1, LF_ResidentWorkLoop.StartsOf(worker), "the same work starts its pose once");
 		ctx.Equal(1, LF_ResidentWorkLoop.Count(), "one worker is one loop");
 
-		// A job with no pose of its own plays the idle loiter, not a hand signal.
+		// A new job swaps the pose: sweep plays its own clips.
 		if (!RedProof())
 			LF_ResidentWorkLoop.Begin(worker, "sweep");
 
-		ctx.True(LF_ResidentWorkLoop.IsRunning(worker) && LF_ResidentWorkLoop.PlayedPose(worker).IsEmpty(), "a sweep worker falls back to the idle loiter");
+		ctx.True(LF_ResidentWorkLoop.IsRunning(worker), "a sweep worker is running");
+		ctx.EqualStr(LF_WorkAnimPlayer.SWEEP_POSE, LF_ResidentWorkLoop.PlayedPose(worker), "a sweep worker plays the sweep pose");
 		ctx.Equal(1, LF_ResidentWorkLoop.Count(), "a new job replaces the old one");
 
 		LF_ResidentWorkLoop.Stop(worker);
