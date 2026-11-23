@@ -4354,6 +4354,11 @@ StringTable {
      Target_en_us "Seed and feed store"
      Comment "Map POI name (#3515): the seed and feed store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
     }
+    CustomStringTableItem "{791F43A2A03F256C}" {
+     Id "LF-MapPoi_Settlement"
+     Target_en_us "Settlement"
+     Comment "Map POI name (#4655): the Town kind's name. The card adds the nearest named place, so it reads 'Settlement, Meaux'. The road map marks these once heard of."
+    }
     CustomStringTableItem "{7A231C1ED753723E}" {
      Id "LF-MapPoi_Smokehouse"
      Target_en_us "Smokehouse"
