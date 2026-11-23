@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "template": "village",
+  "place": "levie",
+  "status": "approved",
+  "note": "Card #4442 (CR-B9): the village template names its bar slot `pub`; the 0.3.0 barkeeper Josselin Vidal (#4516, buyer id `bar_levie`) stands in it. Only `pub` is needed in 0.3.0; the other slots are tool proposals and are not fitted yet. A proposal: approval is a reviewed PR holding only this file (label town-mapping). `toolscli town map levie --check --template village` passes.",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-23",
+    "buildings": 56,
+    "freePlots": 8
+  },
+  "slots": {
+    "hall": {
+      "building": "b45",
+      "score": 0.842,
+      "why": [
+        "type house",
+        "large: 663 m2, 89.9 m out",
+        "interior yes"
+      ],
+      "alternatives": [
+        {
+          "building": "b32",
+          "score": 0.729
+        },
+        {
+          "building": "b24",
+          "score": 0.689
+        },
+        {
+          "building": "b03",
+          "score": 0.68
+        }
+      ]
+    },
+    "pub": {
+      "building": "b03",
+      "score": 0.728,
+      "why": [
+        "Bar slot (#4442): b03 has 7 known entrances and a walkable ground floor (234 m2, 2 floors, interior yes); the tool proposed b01, whose Furniture prefab has no known entrance",
+        "32.3 m from the centre"
+      ],
+      "alternatives": [
+        {
+          "building": "b02",
+          "score": 0.731
+        },
+        {
+          "building": "b10",
+          "score": 0.709
+        }
+      ]
+    },
+    "shop": {
+      "building": "b02",
+      "score": 0.776,
+      "why": [
+        "type house",
+        "near: 223.1 m2, 30.3 m out",
+        "interior yes"
+      ],
+      "alternatives": [
+        {
+          "building": "b01",
+          "score": 0.793
+        },
+        {
+          "building": "b03",
+          "score": 0.773
+        },
+        {
+          "building": "b10",
+          "score": 0.754
+        }
+      ]
+    },
+    "fuel": {
+      "none": true,
+      "reason": "no building fits (21 x type shed is not one of fuel, 11 x a ruin) and the slot has no plot fallback"
+    },
+    "garage": {
+      "building": "b53",
+      "score": 0.836,
+      "why": [
+        "type garage (first choice)",
+        "far: 48.1 m2, 111 m out"
+      ],
+      "alternatives": [
+        {
+          "building": "b54",
+          "score": 0.816
+        },
+        {
+          "building": "b52",
+          "score": 0.778
+        },
+        {
+          "building": "b36",
+          "score": 0.763
+        }
+      ]
+    },
+    "house": {
+      "building": "b10",
+      "why": [
+        "Moved from b03 when b03 became the bar; 3-floor house with 5 known entrances (not fitted in 0.3.0)"
+      ]
+    },
+    "depot": {
+      "building": "b42",
+      "score": 0.67,
+      "why": [
+        "type farm",
+        "far: 163.1 m2, 88.4 m out"
+      ],
+      "alternatives": [
+        {
+          "building": "b27",
+          "score": 0.622
+        },
+        {
+          "building": "b13",
+          "score": 0.615
+        }
+      ]
+    },
+    "factory": {
+      "none": true,
+      "reason": "no building fits (21 x type shed is not one of industrial, 11 x a ruin) and the slot has no plot fallback"
+    },
+    "farm-plot": {
+      "none": true,
+      "reason": "plot p3 (92 x 20 m) is the free plot that fits, but the village template lists no farm-plot prefab, so there is nothing to place on it; not needed in 0.3.0"
+    },
+    "board": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (house), 19.5 m from the centre; the kit sets it against the kerb"
+      ]
+    },
+    "taxi": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (house), 19.5 m from the centre; the kit sets it against the kerb"
+      ]
+    }
+  }
+}

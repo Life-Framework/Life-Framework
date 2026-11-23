@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{0A01E0922E2EC9BA}Sounds/Dialogue/gossip_odile/Dialogue_gossip_odile.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

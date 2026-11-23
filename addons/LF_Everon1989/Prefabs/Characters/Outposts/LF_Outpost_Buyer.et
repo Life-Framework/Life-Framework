@@ -1,0 +1,43 @@
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ ID "A745505870D6D9A9"
+ components {
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{2986235947D71AF7}" {
+     ContextName "Trade"
+     Position PointInfo "{CABAE5566D48B60D}" {
+      PivotID "Spine5"
+     }
+     Radius 1
+    }
+   }
+   additionalActions + {
+    LF_OutpostBuyerSellAction "{2E2CB3E9516D344C}" {
+     ParentContextList {
+      "Trade"
+     }
+     UIInfo UIInfo "{5FA06E8578F258B3}" {
+      Name "#LF-OutpostBuyer_Sell"
+     }
+    }
+   }
+  }
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Enabled 1
+     Prefab "{5977C0A606B65E6D}Prefabs/Characters/HeadGear/Hat_TruckerCap_01/Hat_TruckerCap_01_moto.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{7F1451790F3D75BD}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_green.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{537FD11C135757AC}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey_Dirty.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
+    }
+   }
+  }
+ }
+}

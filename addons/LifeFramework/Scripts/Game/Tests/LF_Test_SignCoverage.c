@@ -76,7 +76,8 @@ class LF_Test_SignCoverage : LF_Test
 		// house_for_sale: the face of the LF_HouseSaleSign prefab (#3207), placed one per house by a pack or the grid.
 		// taxi_stand: the plate on the LF_TaxiStand prefab, placed in its GridWorld cell (Grid_taxi_stand.layer) only.
 		// bus_timetable: the board on the LF_BusStop prefab, placed with each stop (GridWorld cell bus-stops, the pack island).
-		return id == "mining" || id == "plot_for_sale" || id == "house_for_sale" || id == "chalk_sample" || id == "price_board" || id == "bus_timetable" || id == "taxi_stand";
+		// export_orders: the dock export order board (#4411, LF_ExportOrderBoard), placed in its GridWorld cell until WK-W24_3 puts it on the dock.
+		return id == "export_orders" || id == "mining" || id == "plot_for_sale" || id == "house_for_sale" || id == "chalk_sample" || id == "price_board" || id == "bus_timetable" || id == "taxi_stand";
 	}
 
 	//------------------------------------------------------------------------------------------------

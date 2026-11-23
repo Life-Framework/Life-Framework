@@ -1,0 +1,4534 @@
+{
+ "schema": 1,
+ "place": {
+  "name": "Chotain",
+  "key": "AR-MapLocation_Chotain",
+  "kind": "other",
+  "template": "village",
+  "source": "gazetteer",
+  "slug": "chotain",
+  "x": 7086.131,
+  "y": 129.414,
+  "z": 6012.347
+ },
+ "radius": 120,
+ "generated": {
+  "at": "2026-11-23",
+  "tool": "tools\\cli scout",
+  "command": "tools\\cli scout \"Chotain\"",
+  "view": 60,
+  "gameBuild": "Arma Reforger build 26266485 (installed 2026-11-08)",
+  "world": "Worlds/CoreOnEveron/CoreOnEveron.ent"
+ },
+ "nearbyPlaces": [
+  {
+   "name": "SIX BELLS",
+   "kind": "natural",
+   "distance": 422,
+   "direction": "SE"
+  },
+  {
+   "name": "farm",
+   "kind": "urban",
+   "distance": 452,
+   "direction": "W"
+  },
+  {
+   "name": "La Valette",
+   "kind": "urban",
+   "distance": 503,
+   "direction": "SW"
+  },
+  {
+   "name": "Laruns",
+   "kind": "other",
+   "distance": 667,
+   "direction": "SE"
+  },
+  {
+   "name": "Reed Pond",
+   "kind": "aquatic",
+   "distance": 701,
+   "direction": "SW"
+  }
+ ],
+ "summary": {
+  "buildings": 37,
+  "byType": {
+   "house": 9,
+   "church": 1,
+   "shed": 17,
+   "garage": 5,
+   "townhouse": 2,
+   "farm-small": 2,
+   "shop": 1
+  },
+  "civic": 2,
+  "homes": 11,
+  "ruins": 0,
+  "enterable": 34,
+  "entrances": 58,
+  "doors": 149,
+  "props": 45,
+  "trees": 2031,
+  "roads": 21,
+  "junctions": 13,
+  "freePlots": 8,
+  "waterBodies": 0,
+  "walls": 370,
+  "otherEntities": 367,
+  "portPieces": 12
+ },
+ "terrain": {
+  "min": 109.3,
+  "max": 122.4,
+  "mean": 116.9,
+  "range": 13.1,
+  "flatShare": 0.43,
+  "gentleShare": 0.44,
+  "steepShare": 0.01,
+  "steepest": {
+   "deg": 19.6,
+   "x": 7141.1,
+   "z": 6117.3
+  },
+  "tilt": {
+   "deg": 2.3,
+   "fallsToward": "SE"
+  },
+  "waterShare": 0,
+  "nearestWater": null,
+  "notes": [
+   "ground 109.3 to 122.4 m (13.1 m of relief) within 120 m; mean 116.9 m",
+   "43% of the ground is under 3 degrees, 44% 3 to 8, 1% over 15",
+   "overall the ground falls 2.3 degrees toward the SE",
+   "steepest ground 19.6 degrees at 7141.1, 6117.3"
+  ]
+ },
+ "water": {
+  "bodies": [],
+  "shore": [],
+  "note": "no lake or pond outline in the dump (the sea is read from the ground grid)"
+ },
+ "mainStreet": {
+  "road": "NE-SW road r01",
+  "roadId": "r01",
+  "buildingsAlong": 12,
+  "at": [
+   7044.3,
+   6015.5
+  ],
+  "runs": "NE-SW"
+ },
+ "roads": [
+  {
+   "id": "r01",
+   "name": "NE-SW road r01",
+   "cls": "RoadEntity",
+   "runs": "NE-SW",
+   "points": [
+    [
+     6960.5,
+     5951
+    ],
+    [
+     7020.4,
+     5991.7
+    ],
+    [
+     7094.2,
+     6065.2
+    ],
+    [
+     7116.1,
+     6140.5
+    ]
+   ],
+   "length": 255
+  },
+  {
+   "id": "r02",
+   "name": "NW-SE road r02",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     7189.3,
+     5935.4
+    ],
+    [
+     7164.4,
+     5954.7
+    ],
+    [
+     7160.6,
+     5968
+    ]
+   ],
+   "length": 45.3
+  },
+  {
+   "id": "r03",
+   "name": "N-S road r03",
+   "cls": "RoadEntity",
+   "runs": "N-S",
+   "points": [
+    [
+     7160.5,
+     5965.6
+    ],
+    [
+     7165.5,
+     5970.7
+    ],
+    [
+     7173.6,
+     5988.1
+    ],
+    [
+     7180.7,
+     6009.9
+    ],
+    [
+     7179.5,
+     6038
+    ],
+    [
+     7166.5,
+     6067.6
+    ],
+    [
+     7151,
+     6103.5
+    ],
+    [
+     7112.7,
+     6120.6
+    ]
+   ],
+   "length": 190.8
+  },
+  {
+   "id": "r04",
+   "name": "E-W road r04",
+   "cls": "RoadEntity",
+   "runs": "E-W",
+   "points": [
+    [
+     7152.7,
+     5912
+    ],
+    [
+     7144.9,
+     5913.3
+    ],
+    [
+     7129.6,
+     5914.5
+    ],
+    [
+     7108.7,
+     5910.8
+    ],
+    [
+     7081.2,
+     5898.7
+    ],
+    [
+     7051.7,
+     5886.6
+    ]
+   ],
+   "length": 106.4
+  },
+  {
+   "id": "r05",
+   "name": "N-S road r05",
+   "cls": "RoadEntity",
+   "runs": "N-S",
+   "points": [
+    [
+     7142,
+     5997
+    ],
+    [
+     7147.4,
+     5991.9
+    ],
+    [
+     7159.5,
+     5977.2
+    ],
+    [
+     7160.9,
+     5935
+    ],
+    [
+     7156.8,
+     5904.4
+    ]
+   ],
+   "length": 99.5
+  },
+  {
+   "id": "r06",
+   "name": "NW-SE road r06",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     7074.5,
+     6041
+    ],
+    [
+     7085.4,
+     6030.9
+    ],
+    [
+     7096.2,
+     6020.8
+    ],
+    [
+     7109.9,
+     6013.3
+    ],
+    [
+     7122.2,
+     6011.9
+    ],
+    [
+     7132.6,
+     6006
+    ],
+    [
+     7141.3,
+     5997.6
+    ],
+    [
+     7147.9,
+     5991.8
+    ]
+   ],
+   "length": 90.5
+  },
+  {
+   "id": "r08",
+   "name": "NW-SE road r08",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     7102,
+     6109.4
+    ],
+    [
+     7093.1,
+     6113
+    ],
+    [
+     7085.4,
+     6116.3
+    ]
+   ],
+   "length": 17.9
+  },
+  {
+   "id": "r09",
+   "name": "NE-SW road r09",
+   "cls": "RoadEntity",
+   "runs": "NE-SW",
+   "points": [
+    [
+     7076.9,
+     6136.6
+    ],
+    [
+     7070.1,
+     6123.7
+    ],
+    [
+     7061.1,
+     6110.2
+    ],
+    [
+     7049.3,
+     6094.5
+    ],
+    [
+     7040.1,
+     6084.9
+    ]
+   ],
+   "length": 63.8
+  },
+  {
+   "id": "r10",
+   "name": "NW-SE road r10",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     6988.9,
+     6019.5
+    ],
+    [
+     6976.4,
+     6037.1
+    ],
+    [
+     6962.9,
+     6061.9
+    ]
+   ],
+   "length": 49.8
+  },
+  {
+   "id": "r11",
+   "name": "NE-SW road r11",
+   "cls": "RoadEntity",
+   "runs": "NE-SW",
+   "points": [
+    [
+     7033.3,
+     6011.9
+    ],
+    [
+     7024.8,
+     6004.7
+    ],
+    [
+     7016.6,
+     5997.6
+    ]
+   ],
+   "length": 22
+  },
+  {
+   "id": "r12",
+   "name": "NW-SE road r12",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     7088.2,
+     5949.4
+    ],
+    [
+     7091.6,
+     5945.6
+    ],
+    [
+     7094.5,
+     5942.1
+    ],
+    [
+     7098.1,
+     5937.9
+    ],
+    [
+     7102.1,
+     5933.6
+    ]
+   ],
+   "length": 21.1
+  },
+  {
+   "id": "r13",
+   "name": "NW-SE road r13",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     7104,
+     5935.1
+    ],
+    [
+     7100.6,
+     5938.9
+    ],
+    [
+     7096.4,
+     5943.7
+    ],
+    [
+     7093.5,
+     5947.1
+    ],
+    [
+     7090.1,
+     5951
+    ]
+   ],
+   "length": 21.1
+  },
+  {
+   "id": "r14",
+   "name": "NE-SW road r14",
+   "cls": "RoadEntity",
+   "runs": "NE-SW",
+   "points": [
+    [
+     7123.4,
+     6001.9
+    ],
+    [
+     7121.1,
+     6002
+    ],
+    [
+     7115.3,
+     6000.3
+    ],
+    [
+     7111.1,
+     5996.9
+    ],
+    [
+     7107.1,
+     5994
+    ],
+    [
+     7104,
+     5991.2
+    ],
+    [
+     7100.4,
+     5988
+    ],
+    [
+     7097.8,
+     5985.6
+    ]
+   ],
+   "length": 31.2
+  },
+  {
+   "id": "r15",
+   "name": "NW-SE road r15",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     7099.2,
+     5987.2
+    ],
+    [
+     7096.9,
+     5989.8
+    ],
+    [
+     7095.3,
+     5991.6
+    ],
+    [
+     7092.9,
+     5993.9
+    ]
+   ],
+   "length": 9.2
+  },
+  {
+   "id": "r16",
+   "name": "NW-SE road r16",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     7039.9,
+     5944.6
+    ],
+    [
+     7032.5,
+     5954.8
+    ],
+    [
+     7030.2,
+     5958.1
+    ]
+   ],
+   "length": 16.6
+  },
+  {
+   "id": "r17",
+   "name": "NW-SE road r17",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     7042.5,
+     5946.3
+    ],
+    [
+     7035.3,
+     5956.1
+    ],
+    [
+     7032.1,
+     5960.2
+    ]
+   ],
+   "length": 17.3
+  },
+  {
+   "id": "r18",
+   "name": "NW-SE road r18",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     7004,
+     5978.9
+    ],
+    [
+     7018.3,
+     5960.2
+    ],
+    [
+     7028.5,
+     5945.9
+    ],
+    [
+     7034.3,
+     5937.3
+    ],
+    [
+     7038.1,
+     5933.1
+    ],
+    [
+     7044,
+     5921.3
+    ],
+    [
+     7050.8,
+     5911.8
+    ],
+    [
+     7059.1,
+     5900.5
+    ],
+    [
+     7066.2,
+     5890.7
+    ]
+   ],
+   "length": 108.1
+  },
+  {
+   "id": "r19",
+   "name": "NW-SE road r19",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     7013.4,
+     5986
+    ],
+    [
+     6998.4,
+     6006.2
+    ],
+    [
+     6986.2,
+     6023.6
+    ]
+   ],
+   "length": 46.5
+  },
+  {
+   "id": "r20",
+   "name": "NE-SW road r20",
+   "cls": "RoadEntity",
+   "runs": "NE-SW",
+   "points": [
+    [
+     6969,
+     5997.3
+    ],
+    [
+     6961.2,
+     5993
+    ]
+   ],
+   "length": 8.9
+  },
+  {
+   "id": "r21",
+   "name": "NE-SW road r21",
+   "cls": "RoadEntity",
+   "runs": "NE-SW",
+   "points": [
+    [
+     6960.2,
+     5996.1
+    ],
+    [
+     6968,
+     6000
+    ]
+   ],
+   "length": 8.7
+  },
+  {
+   "id": "r22",
+   "name": "N-S road r22",
+   "cls": "RoadEntity",
+   "runs": "N-S",
+   "points": [
+    [
+     7014.2,
+     5965.7
+    ],
+    [
+     7010.7,
+     5970.3
+    ],
+    [
+     7010,
+     5973.2
+    ],
+    [
+     7010.3,
+     5977.2
+    ],
+    [
+     7012.4,
+     5982.8
+    ],
+    [
+     7016.6,
+     5986.4
+    ]
+   ],
+   "length": 24.3
+  }
+ ],
+ "junctions": [
+  {
+   "x": 7012.9,
+   "z": 5986.6,
+   "roads": [
+    "r01",
+    "r19",
+    "r22"
+   ],
+   "arms": 4,
+   "kind": "crossroads"
+  },
+  {
+   "x": 7161.1,
+   "z": 5966.2,
+   "roads": [
+    "r02",
+    "r03",
+    "r05"
+   ],
+   "arms": 4,
+   "kind": "crossroads"
+  },
+  {
+   "x": 7112.7,
+   "z": 6120.6,
+   "roads": [
+    "r03",
+    "r01"
+   ],
+   "arms": 3,
+   "kind": "t-junction"
+  },
+  {
+   "x": 7004,
+   "z": 5978.9,
+   "roads": [
+    "r18",
+    "r01"
+   ],
+   "arms": 3,
+   "kind": "t-junction"
+  },
+  {
+   "x": 7065.2,
+   "z": 5892.1,
+   "roads": [
+    "r04",
+    "r18"
+   ],
+   "arms": 3,
+   "kind": "t-junction"
+  },
+  {
+   "x": 7014.2,
+   "z": 5965.7,
+   "roads": [
+    "r22",
+    "r18"
+   ],
+   "arms": 3,
+   "kind": "t-junction"
+  },
+  {
+   "x": 7142.2,
+   "z": 5996.8,
+   "roads": [
+    "r05",
+    "r06"
+   ],
+   "arms": 2,
+   "kind": "bend-or-join"
+  },
+  {
+   "x": 6988.9,
+   "z": 6019.5,
+   "roads": [
+    "r10",
+    "r19"
+   ],
+   "arms": 2,
+   "kind": "bend-or-join"
+  },
+  {
+   "x": 7088.2,
+   "z": 5949.4,
+   "roads": [
+    "r12",
+    "r13"
+   ],
+   "arms": 2,
+   "kind": "bend-or-join"
+  },
+  {
+   "x": 7102.1,
+   "z": 5933.6,
+   "roads": [
+    "r12",
+    "r13"
+   ],
+   "arms": 2,
+   "kind": "bend-or-join"
+  },
+  {
+   "x": 7097.8,
+   "z": 5985.6,
+   "roads": [
+    "r14",
+    "r15"
+   ],
+   "arms": 2,
+   "kind": "bend-or-join"
+  },
+  {
+   "x": 7030.2,
+   "z": 5958.1,
+   "roads": [
+    "r16",
+    "r17"
+   ],
+   "arms": 2,
+   "kind": "bend-or-join"
+  },
+  {
+   "x": 6969,
+   "z": 5997.3,
+   "roads": [
+    "r20",
+    "r21"
+   ],
+   "arms": 2,
+   "kind": "bend-or-join"
+  }
+ ],
+ "buildings": [
+  {
+   "prefab": "{DE43119351D125AC}Prefabs/Structures/Houses/Village/House_Village_E_1L02/House_Village_E_1L02t.et",
+   "path": "Prefabs/Structures/Houses/Village/House_Village_E_1L02/House_Village_E_1L02t.et",
+   "stem": "House_Village_E_1L02t",
+   "type": "house",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 7064.3,
+   "y": 118.1,
+   "z": 6001.8,
+   "yaw": 139,
+   "facing": "SE",
+   "scale": 1,
+   "distance": 24.2,
+   "bearing": "SW",
+   "footprint": {
+    "source": "catalog",
+    "w": 20.6,
+    "d": 25.6,
+    "h": 11.5,
+    "area": 527.4,
+    "cx": 7064.3,
+    "cz": 6001.8,
+    "corners": [
+     [
+      7063.68,
+      6018.22
+     ],
+     [
+      7048.13,
+      6004.7
+     ],
+     [
+      7064.92,
+      5985.38
+     ],
+     [
+      7080.47,
+      5998.9
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0,
+   "basement": 5.1,
+   "height": 11.5,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 9 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 12,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7071.8,
+     "y": 118.1,
+     "z": 5989.8,
+     "side": "front",
+     "facing": "SE",
+     "edge": 1.1
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b01"
+  },
+  {
+   "prefab": "{0FD764569422DBA7}Prefabs/Structures/Cultural/Churches/ChurchSmall_E_01/ChurchSmall_E_01.et",
+   "path": "Prefabs/Structures/Cultural/Churches/ChurchSmall_E_01/ChurchSmall_E_01.et",
+   "stem": "ChurchSmall_E_01",
+   "type": "church",
+   "civic": true,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7104.5,
+   "y": 119.1,
+   "z": 6036.6,
+   "yaw": -144,
+   "facing": "SW",
+   "scale": 1,
+   "distance": 30.5,
+   "bearing": "NE",
+   "footprint": {
+    "source": "catalog",
+    "w": 15.5,
+    "d": 22.3,
+    "h": 24,
+    "area": 345.7,
+    "cx": 7104.5,
+    "cz": 6036.6,
+    "corners": [
+     [
+      7117.32,
+      6041.07
+     ],
+     [
+      7104.78,
+      6050.18
+     ],
+     [
+      7091.68,
+      6032.13
+     ],
+     [
+      7104.22,
+      6023.02
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.2,
+   "basement": 0,
+   "height": 24,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 2 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 2,
+   "entrances": [],
+   "entrancesKnown": false,
+   "matched": false,
+   "id": "b02"
+  },
+  {
+   "prefab": "{8590602F727399F4}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_small.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_small.et",
+   "stem": "Shed_02_small",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7064,
+   "y": 117.7,
+   "z": 5984.2,
+   "yaw": -40,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 35.7,
+   "bearing": "SW",
+   "footprint": {
+    "source": "catalog",
+    "w": 3.5,
+    "d": 2.6,
+    "h": 2.7,
+    "area": 9.1,
+    "cx": 7064,
+    "cz": 5984.2,
+    "corners": [
+     [
+      7063.5,
+      5982.08
+     ],
+     [
+      7066.18,
+      5984.33
+     ],
+     [
+      7064.5,
+      5986.32
+     ],
+     [
+      7061.82,
+      5984.07
+     ]
+    ]
+   },
+   "floors": 1,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (1 floor)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7063.1,
+     "y": 117.9,
+     "z": 5982.9,
+     "side": "left",
+     "facing": "SW",
+     "edge": 0.2
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b03"
+  },
+  {
+   "prefab": "{448D2BD96AA205E4}Prefabs/Structures/Houses/Village/HouseAddon_Garage_E_01/HouseAddon_Garage_E_01.et",
+   "path": "Prefabs/Structures/Houses/Village/HouseAddon_Garage_E_01/HouseAddon_Garage_E_01.et",
+   "stem": "HouseAddon_Garage_E_01",
+   "type": "garage",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7116.5,
+   "y": 117.1,
+   "z": 5990.1,
+   "yaw": -40,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 37.6,
+   "bearing": "SE",
+   "footprint": {
+    "source": "catalog",
+    "w": 7,
+    "d": 8.2,
+    "h": 4.6,
+    "area": 57.4,
+    "cx": 7116.91,
+    "cz": 5989.66,
+    "corners": [
+     [
+      7116.86,
+      5984.27
+     ],
+     [
+      7122.23,
+      5988.77
+     ],
+     [
+      7116.96,
+      5995.05
+     ],
+     [
+      7111.59,
+      5990.55
+     ]
+    ],
+    "note": "centred on the engine's bounds (the catalog gives extents only)"
+   },
+   "floors": 1,
+   "firstFloor": 0.3,
+   "basement": 2.6,
+   "height": 4.6,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 3 door entities and a walkable floor (1 floor)"
+   },
+   "doors": 3,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7112.8,
+     "y": 117.4,
+     "z": 5991.3,
+     "side": "front",
+     "facing": "W",
+     "edge": 0.2
+    },
+    {
+     "prefab": "",
+     "x": 7115.5,
+     "y": 117.4,
+     "z": 5993.5,
+     "side": "front",
+     "facing": "N",
+     "edge": 0.3
+    },
+    {
+     "prefab": "",
+     "x": 7120.9,
+     "y": 117.4,
+     "z": 5988.3,
+     "side": "back",
+     "facing": "E",
+     "edge": 0.5
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b04"
+  },
+  {
+   "prefab": "{D424A3CD07F7A6F0}Prefabs/Structures/Houses/Village/House_Village_E_1I08/House_Village_E_1I08t.et",
+   "path": "Prefabs/Structures/Houses/Village/House_Village_E_1I08/House_Village_E_1I08t.et",
+   "stem": "House_Village_E_1I08t",
+   "type": "house",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 7078.5,
+   "y": 116.8,
+   "z": 5975.2,
+   "yaw": 49,
+   "facing": "NE",
+   "scale": 1,
+   "distance": 37.9,
+   "bearing": "S",
+   "footprint": {
+    "source": "catalog",
+    "w": 18.9,
+    "d": 10.2,
+    "h": 10.4,
+    "area": 192.8,
+    "cx": 7078.5,
+    "cz": 5975.2,
+    "corners": [
+     [
+      7068.45,
+      5978.99
+     ],
+     [
+      7080.85,
+      5964.72
+     ],
+     [
+      7088.55,
+      5971.41
+     ],
+     [
+      7076.15,
+      5985.68
+     ]
+    ]
+   },
+   "floors": 3,
+   "firstFloor": 0.2,
+   "basement": 7,
+   "height": 10.4,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 8 door entities and a walkable floor (3 floors)"
+   },
+   "doors": 10,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7087.2,
+     "y": 117.2,
+     "z": 5971.8,
+     "side": "right",
+     "facing": "E",
+     "edge": 0.8
+    },
+    {
+     "prefab": "",
+     "x": 7076.7,
+     "y": 116.8,
+     "z": 5970.9,
+     "side": "back",
+     "facing": "SW",
+     "edge": 0.9
+    },
+    {
+     "prefab": "",
+     "x": 7079,
+     "y": 116.8,
+     "z": 5968.3,
+     "side": "back",
+     "facing": "S",
+     "edge": 0.9
+    },
+    {
+     "prefab": "",
+     "x": 7085.4,
+     "y": 116.8,
+     "z": 5973.8,
+     "side": "front",
+     "facing": "E",
+     "edge": 0.8
+    },
+    {
+     "prefab": "",
+     "x": 7083.1,
+     "y": 116.8,
+     "z": 5976.4,
+     "side": "front",
+     "facing": "E",
+     "edge": 0.9
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b05"
+  },
+  {
+   "prefab": "{27CC3110521583D6}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_v2.et",
+   "path": "Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_v2.et",
+   "stem": "House_Town_E_2I02_v2",
+   "type": "townhouse",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 7108.5,
+   "y": 116.9,
+   "z": 5980.1,
+   "yaw": -40,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 39.2,
+   "bearing": "SE",
+   "footprint": {
+    "source": "catalog",
+    "w": 18.5,
+    "d": 13.4,
+    "h": 16.5,
+    "area": 247.9,
+    "cx": 7108.5,
+    "cz": 5980.1,
+    "corners": [
+     [
+      7105.72,
+      5969.02
+     ],
+     [
+      7119.89,
+      5980.91
+     ],
+     [
+      7111.28,
+      5991.18
+     ],
+     [
+      7097.11,
+      5979.29
+     ]
+    ]
+   },
+   "floors": 3,
+   "firstFloor": 0.3,
+   "basement": 5.7,
+   "height": 16.5,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 13 door entities and a walkable floor (3 floors)"
+   },
+   "doors": 15,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7109.3,
+     "y": 117.2,
+     "z": 5973.4,
+     "side": "back",
+     "facing": "S",
+     "edge": 1
+    },
+    {
+     "prefab": "",
+     "x": 7111.3,
+     "y": 117.2,
+     "z": 5975,
+     "side": "back",
+     "facing": "SE",
+     "edge": 1
+    },
+    {
+     "prefab": "",
+     "x": 7104,
+     "y": 117.2,
+     "z": 5983.8,
+     "side": "front",
+     "facing": "NW",
+     "edge": 0.9
+    },
+    {
+     "prefab": "",
+     "x": 7102,
+     "y": 117.2,
+     "z": 5982.2,
+     "side": "front",
+     "facing": "W",
+     "edge": 0.9
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b06"
+  },
+  {
+   "prefab": "{38A5F3E4578087AB}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01.et",
+   "path": "Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01.et",
+   "stem": "House_Town_E_2I01",
+   "type": "townhouse",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 7048.9,
+   "y": 117.9,
+   "z": 5987.5,
+   "yaw": -40,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 44.7,
+   "bearing": "SW",
+   "footprint": {
+    "source": "catalog",
+    "w": 12.4,
+    "d": 16.8,
+    "h": 15.1,
+    "area": 208.3,
+    "cx": 7049.15,
+    "cz": 5987.3,
+    "corners": [
+     [
+      7049.8,
+      5976.88
+     ],
+     [
+      7059.3,
+      5984.85
+     ],
+     [
+      7048.5,
+      5997.72
+     ],
+     [
+      7039,
+      5989.75
+     ]
+    ],
+    "note": "centred on the engine's bounds (the catalog gives extents only)"
+   },
+   "floors": 3,
+   "firstFloor": 0.2,
+   "basement": 5.5,
+   "height": 15.1,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 11 door entities and a walkable floor (3 floors)"
+   },
+   "doors": 13,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7042.3,
+     "y": 118.1,
+     "z": 5991.5,
+     "side": "front",
+     "facing": "NW",
+     "edge": 0.8
+    },
+    {
+     "prefab": "",
+     "x": 7040.4,
+     "y": 118.1,
+     "z": 5989.9,
+     "side": "front",
+     "facing": "W",
+     "edge": 0.8
+    },
+    {
+     "prefab": "",
+     "x": 7049,
+     "y": 118.1,
+     "z": 5979.5,
+     "side": "left",
+     "facing": "S",
+     "edge": 1
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b07"
+  },
+  {
+   "prefab": "{D61A7F2891D457C6}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_square.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_square.et",
+   "stem": "Shed_02_square",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7099.1,
+   "y": 116.6,
+   "z": 5967.6,
+   "yaw": 138,
+   "facing": "SE",
+   "scale": 1,
+   "distance": 46.6,
+   "bearing": "S",
+   "footprint": {
+    "source": "catalog",
+    "w": 4.4,
+    "d": 3.7,
+    "h": 2.7,
+    "area": 16.3,
+    "cx": 7099.1,
+    "cz": 5967.6,
+    "corners": [
+     [
+      7099.5,
+      5970.45
+     ],
+     [
+      7096.23,
+      5967.5
+     ],
+     [
+      7098.7,
+      5964.75
+     ],
+     [
+      7101.97,
+      5967.7
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (2 floors)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7099.9,
+     "y": 116.8,
+     "z": 5966.5,
+     "side": "front",
+     "facing": "SE",
+     "edge": 0.5
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b08"
+  },
+  {
+   "prefab": "{1F0A3A2A077ED92F}Prefabs/Structures/Houses/Village/House_Village_E_1I02/Furniture/House_Village_E_1I02_Furniture.et",
+   "path": "Prefabs/Structures/Houses/Village/House_Village_E_1I02/Furniture/House_Village_E_1I02_Furniture.et",
+   "stem": "House_Village_E_1I02_Furniture",
+   "type": "house",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 7051.3,
+   "y": 119.6,
+   "z": 6049.3,
+   "yaw": 134,
+   "facing": "SE",
+   "scale": 1,
+   "distance": 50.8,
+   "bearing": "NW",
+   "footprint": {
+    "source": "catalog",
+    "w": 11,
+    "d": 20.5,
+    "h": 11.2,
+    "area": 225.5,
+    "cx": 7051.3,
+    "cz": 6049.3,
+    "corners": [
+     [
+      7047.75,
+      6060.38
+     ],
+     [
+      7040.11,
+      6052.46
+     ],
+     [
+      7054.85,
+      6038.22
+     ],
+     [
+      7062.49,
+      6046.14
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0,
+   "basement": 6,
+   "height": 11.2,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 7 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 7,
+   "entrances": [],
+   "entrancesKnown": false,
+   "matched": false,
+   "id": "b09"
+  },
+  {
+   "prefab": "{6FA58B435F69B179}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V1.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V1.et",
+   "stem": "Shed_02_big_V1",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7065.6,
+   "y": 116.8,
+   "z": 5965.1,
+   "yaw": 49,
+   "facing": "NE",
+   "scale": 1,
+   "distance": 51.5,
+   "bearing": "SW",
+   "footprint": {
+    "source": "catalog",
+    "w": 6.5,
+    "d": 3.7,
+    "h": 2.7,
+    "area": 24.1,
+    "cx": 7065.6,
+    "cz": 5965.1,
+    "corners": [
+     [
+      7062.07,
+      5966.34
+     ],
+     [
+      7066.34,
+      5961.43
+     ],
+     [
+      7069.13,
+      5963.86
+     ],
+     [
+      7064.86,
+      5968.77
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 2 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 2,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7067.6,
+     "y": 116.9,
+     "z": 5965.1,
+     "side": "front",
+     "facing": "E",
+     "edge": 0.4
+    },
+    {
+     "prefab": "",
+     "x": 7063.5,
+     "y": 116.9,
+     "z": 5967.3,
+     "side": "left",
+     "facing": "NW",
+     "edge": 0.2
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b10"
+  },
+  {
+   "prefab": "{03F1BFA3E3AD3E57}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V2.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V2.et",
+   "stem": "Shed_02_big_V2",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7127.9,
+   "y": 116.6,
+   "z": 5980.4,
+   "yaw": -40,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 52.6,
+   "bearing": "SE",
+   "footprint": {
+    "source": "catalog",
+    "w": 7,
+    "d": 3.7,
+    "h": 2.8,
+    "area": 25.9,
+    "cx": 7127.9,
+    "cz": 5980.4,
+    "corners": [
+     [
+      7126.41,
+      5976.73
+     ],
+     [
+      7131.77,
+      5981.23
+     ],
+     [
+      7129.39,
+      5984.07
+     ],
+     [
+      7124.03,
+      5979.57
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.8,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (2 floors)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7125.7,
+     "y": 116.8,
+     "z": 5978.3,
+     "side": "left",
+     "facing": "SW",
+     "edge": 0.4
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b11"
+  },
+  {
+   "prefab": "{B2172573ED15AA82}Prefabs/Structures/Houses/Village/House_Village_E_1L03/House_Village_E_1L03t.et",
+   "path": "Prefabs/Structures/Houses/Village/House_Village_E_1L03/House_Village_E_1L03t.et",
+   "stem": "House_Village_E_1L03t",
+   "type": "house",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 7073.7,
+   "y": 119.9,
+   "z": 6067.3,
+   "yaw": -49,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 56.4,
+   "bearing": "N",
+   "footprint": {
+    "source": "catalog",
+    "w": 25.9,
+    "d": 25.6,
+    "h": 11.4,
+    "area": 663,
+    "cx": 7073.7,
+    "cz": 6067.3,
+    "corners": [
+     [
+      7074.86,
+      6049.13
+     ],
+     [
+      7091.86,
+      6068.68
+     ],
+     [
+      7072.54,
+      6085.47
+     ],
+     [
+      7055.54,
+      6065.92
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0,
+   "basement": 6.5,
+   "height": 11.4,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 11 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 13,
+   "entrances": [],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b12"
+  },
+  {
+   "prefab": "{3299E6F34CE40185}Prefabs/Structures/Agriculture/Greenhouse/Greenhouse_01/Greenhouse_01.et",
+   "path": "Prefabs/Structures/Agriculture/Greenhouse/Greenhouse_01/Greenhouse_01.et",
+   "stem": "Greenhouse_01",
+   "type": "farm-small",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7085.7,
+   "y": 116.5,
+   "z": 5954,
+   "yaw": -130,
+   "facing": "SW",
+   "scale": 1,
+   "distance": 58.3,
+   "bearing": "S",
+   "footprint": {
+    "source": "catalog",
+    "w": 3.8,
+    "d": 4.2,
+    "h": 3,
+    "area": 16,
+    "cx": 7085.7,
+    "cz": 5954,
+    "corners": [
+     [
+      7088.53,
+      5953.89
+     ],
+     [
+      7086.09,
+      5956.81
+     ],
+     [
+      7082.87,
+      5954.11
+     ],
+     [
+      7085.31,
+      5951.19
+     ]
+    ]
+   },
+   "floors": 1,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 3,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (1 floor)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7084.4,
+     "y": 116.8,
+     "z": 5952.4,
+     "side": "front",
+     "facing": "SW",
+     "edge": 0.1
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b13"
+  },
+  {
+   "prefab": "{751E011171780C2E}Prefabs/Structures/Houses/Village/House_Village_E_1I04/House_Village_E_1I04sr.et",
+   "path": "Prefabs/Structures/Houses/Village/House_Village_E_1I04/House_Village_E_1I04sr.et",
+   "stem": "House_Village_E_1I04sr",
+   "type": "house",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 7034.6,
+   "y": 116.9,
+   "z": 5979.9,
+   "yaw": -36,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 60.8,
+   "bearing": "SW",
+   "footprint": {
+    "source": "catalog",
+    "w": 21.1,
+    "d": 11.1,
+    "h": 11.3,
+    "area": 234.2,
+    "cx": 7034.6,
+    "cz": 5979.9,
+    "corners": [
+     [
+      7029.33,
+      5969.21
+     ],
+     [
+      7046.4,
+      5981.61
+     ],
+     [
+      7039.87,
+      5990.59
+     ],
+     [
+      7022.8,
+      5978.19
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0,
+   "basement": 5.1,
+   "height": 11.3,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 9 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 11,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7034.8,
+     "y": 117.1,
+     "z": 5974,
+     "side": "back",
+     "facing": "S",
+     "edge": 0.7
+    },
+    {
+     "prefab": "",
+     "x": 7028.2,
+     "y": 117.1,
+     "z": 5980.8,
+     "side": "front",
+     "facing": "W",
+     "edge": 1
+    },
+    {
+     "prefab": "",
+     "x": 7040.2,
+     "y": 117.1,
+     "z": 5978.7,
+     "side": "back",
+     "facing": "E",
+     "edge": 1.3
+    },
+    {
+     "prefab": "",
+     "x": 7035.5,
+     "y": 116.9,
+     "z": 5986.4,
+     "side": "front",
+     "facing": "N",
+     "edge": 0.8
+    },
+    {
+     "prefab": "",
+     "x": 7038.6,
+     "y": 116.9,
+     "z": 5988.6,
+     "side": "front",
+     "facing": "NE",
+     "edge": 0.8
+    },
+    {
+     "prefab": "",
+     "x": 7044.4,
+     "y": 116.9,
+     "z": 5980.7,
+     "side": "back",
+     "facing": "E",
+     "edge": 0.5
+    },
+    {
+     "prefab": "",
+     "x": 7041.3,
+     "y": 116.9,
+     "z": 5978.5,
+     "side": "back",
+     "facing": "E",
+     "edge": 0.5
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b14"
+  },
+  {
+   "prefab": "{8590602F727399F4}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_small.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_small.et",
+   "stem": "Shed_02_small",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7041.5,
+   "y": 119.9,
+   "z": 6056.8,
+   "yaw": -47,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 63,
+   "bearing": "NW",
+   "footprint": {
+    "source": "catalog",
+    "w": 3.5,
+    "d": 2.6,
+    "h": 2.7,
+    "area": 9.1,
+    "cx": 7041.5,
+    "cz": 6056.8,
+    "corners": [
+     [
+      7041.26,
+      6054.63
+     ],
+     [
+      7043.64,
+      6057.19
+     ],
+     [
+      7041.74,
+      6058.97
+     ],
+     [
+      7039.36,
+      6056.41
+     ]
+    ]
+   },
+   "floors": 1,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (1 floor)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7040.8,
+     "y": 120.1,
+     "z": 6055.4,
+     "side": "left",
+     "facing": "SW",
+     "edge": 0.3
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b15"
+  },
+  {
+   "prefab": "{F08D8E78433D713A}Prefabs/Structures/Houses/Shed/Shed_01/Shed_01.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_01/Shed_01.et",
+   "stem": "Shed_01",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7063.4,
+   "y": 116.5,
+   "z": 5951.8,
+   "yaw": -129,
+   "facing": "SW",
+   "scale": 1,
+   "distance": 64.6,
+   "bearing": "S",
+   "footprint": {
+    "source": "catalog",
+    "w": 3.6,
+    "d": 2.7,
+    "h": 2.7,
+    "area": 9.7,
+    "cx": 7063.4,
+    "cz": 5951.8,
+    "corners": [
+     [
+      7065.58,
+      5951.25
+     ],
+     [
+      7063.32,
+      5954.05
+     ],
+     [
+      7061.22,
+      5952.35
+     ],
+     [
+      7063.48,
+      5949.55
+     ]
+    ]
+   },
+   "floors": 1,
+   "firstFloor": 0,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (1 floor)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7063.2,
+     "y": 116.5,
+     "z": 5950.3,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.2
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b16"
+  },
+  {
+   "prefab": "{678574044F58E1CA}Prefabs/Structures/Houses/Village/House_Mountain_E_1I01/House_Mountain_E_1I01_short.et",
+   "path": "Prefabs/Structures/Houses/Village/House_Mountain_E_1I01/House_Mountain_E_1I01_short.et",
+   "stem": "House_Mountain_E_1I01_short",
+   "type": "house",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 7128.9,
+   "y": 119,
+   "z": 6069.4,
+   "yaw": -75,
+   "facing": "W",
+   "scale": 1,
+   "distance": 71.4,
+   "bearing": "NE",
+   "footprint": {
+    "source": "catalog",
+    "w": 17.5,
+    "d": 11.6,
+    "h": 8.9,
+    "area": 203,
+    "cx": 7128.9,
+    "cz": 6069.4,
+    "corners": [
+     [
+      7132.24,
+      6059.45
+     ],
+     [
+      7136.77,
+      6076.35
+     ],
+     [
+      7125.56,
+      6079.35
+     ],
+     [
+      7121.03,
+      6062.45
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0,
+   "basement": 5.9,
+   "height": 8.9,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 7 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 6,
+   "entrances": [],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b17"
+  },
+  {
+   "prefab": "{CFE8511B2B7E8AAA}Prefabs/Structures/Commercial/Shops/ShopModern_E_01/ShopModern_E_01.et",
+   "path": "Prefabs/Structures/Commercial/Shops/ShopModern_E_01/ShopModern_E_01.et",
+   "stem": "ShopModern_E_01",
+   "type": "shop",
+   "civic": true,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7015,
+   "y": 117.6,
+   "z": 6019.7,
+   "yaw": 49,
+   "facing": "NE",
+   "scale": 1,
+   "distance": 71.5,
+   "bearing": "W",
+   "footprint": {
+    "source": "catalog",
+    "w": 24.4,
+    "d": 19.8,
+    "h": 5.8,
+    "area": 483.1,
+    "cx": 7015,
+    "cz": 6019.7,
+    "corners": [
+     [
+      6999.52,
+      6022.41
+     ],
+     [
+      7015.53,
+      6004
+     ],
+     [
+      7030.48,
+      6016.99
+     ],
+     [
+      7014.47,
+      6035.4
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0,
+   "basement": 6,
+   "height": 5.8,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 8 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 8,
+   "entrances": [],
+   "entrancesKnown": false,
+   "matched": false,
+   "id": "b18"
+  },
+  {
+   "prefab": "{60333F74EE12B52F}Prefabs/Structures/Houses/Village/House_Village_E_1I05/House_Village_E_1I05s.et",
+   "path": "Prefabs/Structures/Houses/Village/House_Village_E_1I05/House_Village_E_1I05s.et",
+   "stem": "House_Village_E_1I05s",
+   "type": "house",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 7088,
+   "y": 119.8,
+   "z": 6088.6,
+   "yaw": -60,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 76.3,
+   "bearing": "N",
+   "footprint": {
+    "source": "catalog",
+    "w": 26.7,
+    "d": 11.2,
+    "h": 10.8,
+    "area": 299,
+    "cx": 7087.82,
+    "cz": 6088.29,
+    "corners": [
+     [
+      7085.99,
+      6073.92
+     ],
+     [
+      7099.34,
+      6097.04
+     ],
+     [
+      7089.65,
+      6102.65
+     ],
+     [
+      7076.3,
+      6079.53
+     ]
+    ],
+    "note": "centred on the engine's bounds (the catalog gives extents only)"
+   },
+   "floors": 2,
+   "firstFloor": 0,
+   "basement": 8.9,
+   "height": 10.8,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 6 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 8,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7078.7,
+     "y": 119.8,
+     "z": 6082.2,
+     "side": "front",
+     "facing": "SW",
+     "edge": 0.7
+    },
+    {
+     "prefab": "",
+     "x": 7080.6,
+     "y": 119.8,
+     "z": 6085.5,
+     "side": "front",
+     "facing": "W",
+     "edge": 0.7
+    },
+    {
+     "prefab": "",
+     "x": 7089,
+     "y": 119.8,
+     "z": 6080.6,
+     "side": "back",
+     "facing": "S",
+     "edge": 0.7
+    },
+    {
+     "prefab": "",
+     "x": 7087.1,
+     "y": 119.8,
+     "z": 6077.3,
+     "side": "back",
+     "facing": "S",
+     "edge": 0.7
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b19"
+  },
+  {
+   "prefab": "{5F00FD9BDAD8C1A5}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Garage.et",
+   "path": "Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Garage.et",
+   "stem": "Workshop_01_Garage",
+   "type": "garage",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7039.3,
+   "y": 120.6,
+   "z": 6073.5,
+   "yaw": 42,
+   "facing": "NE",
+   "scale": 1,
+   "distance": 77,
+   "bearing": "NW",
+   "footprint": {
+    "source": "catalog",
+    "w": 8.3,
+    "d": 5.8,
+    "h": 4.1,
+    "area": 48.1,
+    "cx": 7039.3,
+    "cz": 6073.5,
+    "corners": [
+     [
+      7034.28,
+      6074.12
+     ],
+     [
+      7040.44,
+      6068.57
+     ],
+     [
+      7044.32,
+      6072.88
+     ],
+     [
+      7038.16,
+      6078.43
+     ]
+    ]
+   },
+   "floors": 1,
+   "firstFloor": 0.2,
+   "basement": 2.4,
+   "height": 4.1,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 3 door entities and a walkable floor (1 floor)"
+   },
+   "doors": 3,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7043.1,
+     "y": 120.8,
+     "z": 6072.1,
+     "side": "right",
+     "facing": "E",
+     "edge": 0.4
+    },
+    {
+     "prefab": "",
+     "x": 7040.8,
+     "y": 120.8,
+     "z": 6069.6,
+     "side": "right",
+     "facing": "S",
+     "edge": 0.4
+    },
+    {
+     "prefab": "",
+     "x": 7038.3,
+     "y": 120.8,
+     "z": 6077.4,
+     "side": "left",
+     "facing": "N",
+     "edge": 0.6
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b20"
+  },
+  {
+   "prefab": "{3299E6F34CE40185}Prefabs/Structures/Agriculture/Greenhouse/Greenhouse_01/Greenhouse_01.et",
+   "path": "Prefabs/Structures/Agriculture/Greenhouse/Greenhouse_01/Greenhouse_01.et",
+   "stem": "Greenhouse_01",
+   "type": "farm-small",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7026.7,
+   "y": 116.8,
+   "z": 5961.1,
+   "yaw": 139,
+   "facing": "SE",
+   "scale": 1,
+   "distance": 78.4,
+   "bearing": "SW",
+   "footprint": {
+    "source": "catalog",
+    "w": 3.8,
+    "d": 4.2,
+    "h": 3,
+    "area": 16,
+    "cx": 7026.7,
+    "cz": 5961.1,
+    "corners": [
+     [
+      7026.76,
+      5963.93
+     ],
+     [
+      7023.89,
+      5961.44
+     ],
+     [
+      7026.64,
+      5958.27
+     ],
+     [
+      7029.51,
+      5960.76
+     ]
+    ]
+   },
+   "floors": 1,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 3,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (1 floor)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7028.4,
+     "y": 117.2,
+     "z": 5960,
+     "side": "front",
+     "facing": "SE",
+     "edge": 0.1
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b21"
+  },
+  {
+   "prefab": "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et",
+   "path": "Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et",
+   "stem": "Garage_E_01",
+   "type": "garage",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7018.3,
+   "y": 117.1,
+   "z": 5971.1,
+   "yaw": -36,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 79.3,
+   "bearing": "SW",
+   "footprint": {
+    "source": "catalog",
+    "w": 4.9,
+    "d": 9.9,
+    "h": 3.3,
+    "area": 48.5,
+    "cx": 7017.96,
+    "cz": 5971.55,
+    "corners": [
+     [
+      7018.89,
+      5966.11
+     ],
+     [
+      7022.85,
+      5968.99
+     ],
+     [
+      7017.03,
+      5976.99
+     ],
+     [
+      7013.07,
+      5974.11
+     ]
+    ],
+    "note": "centred on the engine's bounds (the catalog gives extents only)"
+   },
+   "floors": 2,
+   "firstFloor": 0,
+   "basement": 0,
+   "height": 3.3,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 2 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 2,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7015.1,
+     "y": 117.1,
+     "z": 5972.5,
+     "side": "left",
+     "facing": "W",
+     "edge": 0.7
+    },
+    {
+     "prefab": "",
+     "x": 7017.9,
+     "y": 117.1,
+     "z": 5974.5,
+     "side": "right",
+     "facing": "N",
+     "edge": 0.7
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b22"
+  },
+  {
+   "prefab": "{CFF7F6F7042AFFEF}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Main.et",
+   "path": "Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Main.et",
+   "stem": "Workshop_01_Main",
+   "type": "garage",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7047.5,
+   "y": 121,
+   "z": 6082.8,
+   "yaw": 135,
+   "facing": "SE",
+   "scale": 1,
+   "distance": 80.4,
+   "bearing": "NW",
+   "footprint": {
+    "source": "catalog",
+    "w": 12.2,
+    "d": 7.6,
+    "h": 4.1,
+    "area": 92.7,
+    "cx": 7047.5,
+    "cz": 6082.8,
+    "corners": [
+     [
+      7049.13,
+      6089.8
+     ],
+     [
+      7040.5,
+      6081.17
+     ],
+     [
+      7045.87,
+      6075.8
+     ],
+     [
+      7054.5,
+      6084.43
+     ]
+    ]
+   },
+   "floors": 1,
+   "firstFloor": 0.2,
+   "basement": 2.4,
+   "height": 4.1,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 4 door entities and a walkable floor (1 floor)"
+   },
+   "doors": 5,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7047.7,
+     "y": 121.2,
+     "z": 6078.3,
+     "side": "front",
+     "facing": "S",
+     "edge": 0.5
+    },
+    {
+     "prefab": "",
+     "x": 7049.9,
+     "y": 121.2,
+     "z": 6088.2,
+     "side": "left",
+     "facing": "NE",
+     "edge": 0.6
+    },
+    {
+     "prefab": "",
+     "x": 7043.1,
+     "y": 121.2,
+     "z": 6080.3,
+     "side": "right",
+     "facing": "SW",
+     "edge": 1.3
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b23"
+  },
+  {
+   "prefab": "{D61A7F2891D457C6}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_square.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_square.et",
+   "stem": "Shed_02_square",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7061.3,
+   "y": 120.7,
+   "z": 6089,
+   "yaw": -137,
+   "facing": "SW",
+   "scale": 1,
+   "distance": 80.6,
+   "bearing": "N",
+   "footprint": {
+    "source": "catalog",
+    "w": 4.4,
+    "d": 3.7,
+    "h": 2.7,
+    "area": 16.3,
+    "cx": 7061.3,
+    "cz": 6089,
+    "corners": [
+     [
+      7064.17,
+      6088.85
+     ],
+     [
+      7060.95,
+      6091.85
+     ],
+     [
+      7058.43,
+      6089.15
+     ],
+     [
+      7061.65,
+      6086.15
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (2 floors)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7060.2,
+     "y": 120.9,
+     "z": 6088.1,
+     "side": "front",
+     "facing": "SW",
+     "edge": 0.4
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b24"
+  },
+  {
+   "prefab": "{8597237EA3C59701}Prefabs/Structures/Houses/Shed/Shed_03/Shed_03.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_03/Shed_03.et",
+   "stem": "Shed_03",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7134.7,
+   "y": 114.3,
+   "z": 5947.6,
+   "yaw": 67,
+   "facing": "NE",
+   "scale": 1,
+   "distance": 80.9,
+   "bearing": "SE",
+   "footprint": {
+    "source": "catalog",
+    "w": 6.8,
+    "d": 3.9,
+    "h": 3.7,
+    "area": 26.5,
+    "cx": 7134.7,
+    "cz": 5947.6,
+    "corners": [
+     [
+      7131.58,
+      5949.97
+     ],
+     [
+      7134.23,
+      5943.71
+     ],
+     [
+      7137.82,
+      5945.23
+     ],
+     [
+      7135.17,
+      5951.49
+     ]
+    ]
+   },
+   "floors": 0,
+   "firstFloor": null,
+   "basement": 0,
+   "height": 3.7,
+   "interior": {
+    "value": "no",
+    "basis": "catalog: no door entity and no walkable floor"
+   },
+   "doors": 0,
+   "entrances": [],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b25"
+  },
+  {
+   "prefab": "{8597237EA3C59701}Prefabs/Structures/Houses/Shed/Shed_03/Shed_03.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_03/Shed_03.et",
+   "stem": "Shed_03",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7138.1,
+   "y": 114.4,
+   "z": 5949.2,
+   "yaw": -112,
+   "facing": "W",
+   "scale": 1,
+   "distance": 81.8,
+   "bearing": "SE",
+   "footprint": {
+    "source": "catalog",
+    "w": 6.8,
+    "d": 3.9,
+    "h": 3.7,
+    "area": 26.5,
+    "cx": 7138.1,
+    "cz": 5949.2,
+    "corners": [
+     [
+      7141.18,
+      5946.78
+     ],
+     [
+      7138.63,
+      5953.08
+     ],
+     [
+      7135.02,
+      5951.62
+     ],
+     [
+      7137.57,
+      5945.32
+     ]
+    ]
+   },
+   "floors": 0,
+   "firstFloor": null,
+   "basement": 0,
+   "height": 3.7,
+   "interior": {
+    "value": "no",
+    "basis": "catalog: no door entity and no walkable floor"
+   },
+   "doors": 0,
+   "entrances": [],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b26"
+  },
+  {
+   "prefab": "{678574044F58E1CA}Prefabs/Structures/Houses/Village/House_Mountain_E_1I01/House_Mountain_E_1I01_short.et",
+   "path": "Prefabs/Structures/Houses/Village/House_Mountain_E_1I01/House_Mountain_E_1I01_short.et",
+   "stem": "House_Mountain_E_1I01_short",
+   "type": "house",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 7139.3,
+   "y": 114.2,
+   "z": 5941.4,
+   "yaw": -114,
+   "facing": "SW",
+   "scale": 1,
+   "distance": 88.6,
+   "bearing": "SE",
+   "footprint": {
+    "source": "catalog",
+    "w": 17.5,
+    "d": 11.6,
+    "h": 8.9,
+    "area": 203,
+    "cx": 7139.3,
+    "cz": 5941.4,
+    "corners": [
+     [
+      7148.16,
+      5935.77
+     ],
+     [
+      7141.04,
+      5951.75
+     ],
+     [
+      7130.44,
+      5947.03
+     ],
+     [
+      7137.56,
+      5931.05
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0,
+   "basement": 5.9,
+   "height": 8.9,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 7 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 6,
+   "entrances": [],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b27"
+  },
+  {
+   "prefab": "{24BA2E136E8815C2}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_line.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_line.et",
+   "stem": "Shed_02_line",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7149.8,
+   "y": 118.1,
+   "z": 6074.7,
+   "yaw": -171,
+   "facing": "S",
+   "scale": 1,
+   "distance": 89.2,
+   "bearing": "NE",
+   "footprint": {
+    "source": "catalog",
+    "w": 6.6,
+    "d": 2.8,
+    "h": 2.7,
+    "area": 18.5,
+    "cx": 7149.8,
+    "cz": 6074.7,
+    "corners": [
+     [
+      7153.28,
+      6075.57
+     ],
+     [
+      7146.76,
+      6076.6
+     ],
+     [
+      7146.32,
+      6073.83
+     ],
+     [
+      7152.84,
+      6072.8
+     ]
+    ]
+   },
+   "floors": 1,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (1 floor)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7151.5,
+     "y": 118.2,
+     "z": 6073.6,
+     "side": "front",
+     "facing": "SE",
+     "edge": 0.5
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b28"
+  },
+  {
+   "prefab": "{A548C1C5370D0734}Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et",
+   "path": "Prefabs/Structures/Houses/Garage/Garage_E_01/Garage_E_01.et",
+   "stem": "Garage_E_01",
+   "type": "garage",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7150,
+   "y": 118.2,
+   "z": 6078.4,
+   "yaw": -81,
+   "facing": "W",
+   "scale": 1,
+   "distance": 91.9,
+   "bearing": "NE",
+   "footprint": {
+    "source": "catalog",
+    "w": 4.9,
+    "d": 9.9,
+    "h": 3.3,
+    "area": 48.5,
+    "cx": 7149.41,
+    "cz": 6078.48,
+    "corners": [
+     [
+      7153.92,
+      6075.29
+     ],
+     [
+      7154.68,
+      6080.13
+     ],
+     [
+      7144.9,
+      6081.67
+     ],
+     [
+      7144.14,
+      6076.83
+     ]
+    ],
+    "note": "centred on the engine's bounds (the catalog gives extents only)"
+   },
+   "floors": 2,
+   "firstFloor": 0,
+   "basement": 0,
+   "height": 3.3,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 2 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 2,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7146.7,
+     "y": 118.2,
+     "z": 6077.2,
+     "side": "left",
+     "facing": "SW",
+     "edge": 0.7
+    },
+    {
+     "prefab": "",
+     "x": 7147.3,
+     "y": 118.2,
+     "z": 6080.6,
+     "side": "right",
+     "facing": "NW",
+     "edge": 0.7
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b29"
+  },
+  {
+   "prefab": "{6FA58B435F69B179}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V1.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V1.et",
+   "stem": "Shed_02_big_V1",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7126.2,
+   "y": 113.8,
+   "z": 5928.4,
+   "yaw": -23,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 93,
+   "bearing": "SE",
+   "footprint": {
+    "source": "catalog",
+    "w": 6.5,
+    "d": 3.7,
+    "h": 2.7,
+    "area": 24.1,
+    "cx": 7126.2,
+    "cz": 5928.4,
+    "corners": [
+     [
+      7123.93,
+      5925.43
+     ],
+     [
+      7129.91,
+      5927.97
+     ],
+     [
+      7128.47,
+      5931.37
+     ],
+     [
+      7122.49,
+      5928.83
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 2 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 2,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7126.9,
+     "y": 114,
+     "z": 5930.3,
+     "side": "front",
+     "facing": "N",
+     "edge": 0.4
+    },
+    {
+     "prefab": "",
+     "x": 7123.5,
+     "y": 114,
+     "z": 5927,
+     "side": "left",
+     "facing": "SW",
+     "edge": 0.2
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b30"
+  },
+  {
+   "prefab": "{EDBC0E94793BA9F1}Prefabs/Structures/Houses/Village/House_Village_E_1I01/House_Village_E_1I01.et",
+   "path": "Prefabs/Structures/Houses/Village/House_Village_E_1I01/House_Village_E_1I01.et",
+   "stem": "House_Village_E_1I01",
+   "type": "house",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 6993.7,
+   "y": 117.1,
+   "z": 5996.5,
+   "yaw": -126,
+   "facing": "SW",
+   "scale": 1,
+   "distance": 93.7,
+   "bearing": "W",
+   "footprint": {
+    "source": "catalog",
+    "w": 9.9,
+    "d": 12.5,
+    "h": 10.9,
+    "area": 123.8,
+    "cx": 6993.7,
+    "cz": 5996.5,
+    "corners": [
+     [
+      7001.67,
+      5996.17
+     ],
+     [
+      6995.85,
+      6004.18
+     ],
+     [
+      6985.73,
+      5996.83
+     ],
+     [
+      6991.55,
+      5988.82
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.3,
+   "basement": 4.4,
+   "height": 10.9,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 4 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 4,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 6988.6,
+     "y": 117.5,
+     "z": 5997.5,
+     "side": "right",
+     "facing": "W",
+     "edge": 1.2
+    },
+    {
+     "prefab": "",
+     "x": 6992.2,
+     "y": 117.5,
+     "z": 5990.4,
+     "side": "left",
+     "facing": "S",
+     "edge": 0.9
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b31"
+  },
+  {
+   "prefab": "{24BA2E136E8815C2}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_line.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_line.et",
+   "stem": "Shed_02_line",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7020.9,
+   "y": 121.2,
+   "z": 6081.8,
+   "yaw": 135,
+   "facing": "SE",
+   "scale": 1,
+   "distance": 95.3,
+   "bearing": "NW",
+   "footprint": {
+    "source": "catalog",
+    "w": 6.6,
+    "d": 2.8,
+    "h": 2.7,
+    "area": 18.5,
+    "cx": 7020.9,
+    "cz": 6081.8,
+    "corners": [
+     [
+      7022.24,
+      6085.12
+     ],
+     [
+      7017.58,
+      6080.46
+     ],
+     [
+      7019.56,
+      6078.48
+     ],
+     [
+      7024.22,
+      6083.14
+     ]
+    ]
+   },
+   "floors": 1,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (1 floor)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7022.8,
+     "y": 121.3,
+     "z": 6082.5,
+     "side": "front",
+     "facing": "E",
+     "edge": 0.5
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b32"
+  },
+  {
+   "prefab": "{8597237EA3C59701}Prefabs/Structures/Houses/Shed/Shed_03/Shed_03.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_03/Shed_03.et",
+   "stem": "Shed_03",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 6989.7,
+   "y": 117,
+   "z": 6000.8,
+   "yaw": 143,
+   "facing": "SE",
+   "scale": 1,
+   "distance": 97.1,
+   "bearing": "W",
+   "footprint": {
+    "source": "catalog",
+    "w": 6.8,
+    "d": 3.9,
+    "h": 3.7,
+    "area": 26.5,
+    "cx": 6989.7,
+    "cz": 6000.8,
+    "corners": [
+     [
+      6991.24,
+      6004.4
+     ],
+     [
+      6985.81,
+      6000.31
+     ],
+     [
+      6988.16,
+      5997.2
+     ],
+     [
+      6993.59,
+      6001.29
+     ]
+    ]
+   },
+   "floors": 0,
+   "firstFloor": null,
+   "basement": 0,
+   "height": 3.7,
+   "interior": {
+    "value": "no",
+    "basis": "catalog: no door entity and no walkable floor"
+   },
+   "doors": 0,
+   "entrances": [],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b33"
+  },
+  {
+   "prefab": "{03F1BFA3E3AD3E57}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V2.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V2.et",
+   "stem": "Shed_02_big_V2",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7072,
+   "y": 120.7,
+   "z": 6112.9,
+   "yaw": 123,
+   "facing": "SE",
+   "scale": 1,
+   "distance": 101.6,
+   "bearing": "N",
+   "footprint": {
+    "source": "catalog",
+    "w": 7,
+    "d": 3.7,
+    "h": 2.8,
+    "area": 25.9,
+    "cx": 7072,
+    "cz": 6112.9,
+    "corners": [
+     [
+      7072.35,
+      6116.84
+     ],
+     [
+      7068.54,
+      6110.97
+     ],
+     [
+      7071.65,
+      6108.96
+     ],
+     [
+      7075.46,
+      6114.83
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.8,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (2 floors)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7073.5,
+     "y": 120.9,
+     "z": 6115.7,
+     "side": "left",
+     "facing": "NE",
+     "edge": 0.4
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b34"
+  },
+  {
+   "prefab": "{8590602F727399F4}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_small.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_small.et",
+   "stem": "Shed_02_small",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7091.5,
+   "y": 119.2,
+   "z": 6118,
+   "yaw": 24,
+   "facing": "NE",
+   "scale": 1,
+   "distance": 105.8,
+   "bearing": "N",
+   "footprint": {
+    "source": "catalog",
+    "w": 3.5,
+    "d": 2.6,
+    "h": 2.7,
+    "area": 9.1,
+    "cx": 7091.5,
+    "cz": 6118,
+    "corners": [
+     [
+      7089.37,
+      6117.52
+     ],
+     [
+      7092.57,
+      6116.1
+     ],
+     [
+      7093.63,
+      6118.48
+     ],
+     [
+      7090.43,
+      6119.9
+     ]
+    ]
+   },
+   "floors": 1,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (1 floor)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7090,
+     "y": 119.4,
+     "z": 6118.2,
+     "side": "left",
+     "facing": "W",
+     "edge": 0.3
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b35"
+  },
+  {
+   "prefab": "{03F1BFA3E3AD3E57}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V2.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V2.et",
+   "stem": "Shed_02_big_V2",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 7017.9,
+   "y": 114.5,
+   "z": 5931.3,
+   "yaw": 55,
+   "facing": "NE",
+   "scale": 1,
+   "distance": 105.9,
+   "bearing": "SW",
+   "footprint": {
+    "source": "catalog",
+    "w": 7,
+    "d": 3.7,
+    "h": 2.8,
+    "area": 25.9,
+    "cx": 7017.9,
+    "cz": 5931.3,
+    "corners": [
+     [
+      7014.38,
+      5933.11
+     ],
+     [
+      7018.39,
+      5927.37
+     ],
+     [
+      7021.42,
+      5929.49
+     ],
+     [
+      7017.41,
+      5935.23
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.8,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (2 floors)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 7015.9,
+     "y": 114.7,
+     "z": 5933.7,
+     "side": "left",
+     "facing": "NW",
+     "edge": 0.4
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b36"
+  },
+  {
+   "prefab": "{6FA58B435F69B179}Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V1.et",
+   "path": "Prefabs/Structures/Houses/Shed/Shed_02/Shed_02_big_V1.et",
+   "stem": "Shed_02_big_V1",
+   "type": "shed",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 6982.8,
+   "y": 116.5,
+   "z": 5985.3,
+   "yaw": -35,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 106.8,
+   "bearing": "W",
+   "footprint": {
+    "source": "catalog",
+    "w": 6.5,
+    "d": 3.7,
+    "h": 2.7,
+    "area": 24.1,
+    "cx": 6982.8,
+    "cz": 5985.3,
+    "corners": [
+     [
+      6981.2,
+      5981.92
+     ],
+     [
+      6986.52,
+      5985.65
+     ],
+     [
+      6984.4,
+      5988.68
+     ],
+     [
+      6979.08,
+      5984.95
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.1,
+   "basement": 0,
+   "height": 2.7,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 2 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 2,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 6983,
+     "y": 116.7,
+     "z": 5987.2,
+     "side": "front",
+     "facing": "N",
+     "edge": 0.4
+    },
+    {
+     "prefab": "",
+     "x": 6980.4,
+     "y": 116.7,
+     "z": 5983.3,
+     "side": "left",
+     "facing": "SW",
+     "edge": 0.1
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b37"
+  }
+ ],
+ "props": [
+  {
+   "prefab": "{B17E628E5602C093}Prefabs/Structures/Cultural/Calvaries/BelfrySmall_01.et",
+   "stem": "BelfrySmall_01",
+   "kind": "shrine",
+   "x": 7083.3,
+   "y": 117.9,
+   "z": 6012.3,
+   "yaw": 49,
+   "distance": 2.8,
+   "size": [
+    0.8,
+    2.4,
+    0.8
+   ]
+  },
+  {
+   "prefab": "{41CBD4EACE885735}Prefabs/Structures/Infrastructure/Sewage/ManholeCover_E_02/ManholeCover_E_02.et",
+   "stem": "ManholeCover_E_02",
+   "kind": "manhole",
+   "x": 7079.6,
+   "y": 118,
+   "z": 6003.7,
+   "yaw": -40.3,
+   "distance": 10.8,
+   "size": [
+    1.4,
+    0,
+    1.4
+   ]
+  },
+  {
+   "prefab": "{B9003EF716A534D4}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_02/LampStreet_E_02_single.et",
+   "stem": "LampStreet_E_02_single",
+   "kind": "street-lamp",
+   "x": 7086.2,
+   "y": 117.6,
+   "z": 5994.6,
+   "yaw": 42.7,
+   "distance": 17.7,
+   "size": [
+    2.1,
+    8.8,
+    2.2
+   ]
+  },
+  {
+   "prefab": "{7FCD4E7C25D886A8}Prefabs/Structures/Signs/Traffic/SignBusStop_01.et",
+   "stem": "SignBusStop_01",
+   "kind": "bus-shelter",
+   "x": 7085.9,
+   "y": 119.1,
+   "z": 6036.1,
+   "yaw": 138.8,
+   "distance": 23.8,
+   "size": [
+    0.6,
+    2.9,
+    0.7
+   ]
+  },
+  {
+   "prefab": "{B9003EF716A534D4}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_02/LampStreet_E_02_single.et",
+   "stem": "LampStreet_E_02_single",
+   "kind": "street-lamp",
+   "x": 7110.5,
+   "y": 118.5,
+   "z": 6019.5,
+   "yaw": -160,
+   "distance": 25.5,
+   "size": [
+    1.4,
+    8.8,
+    2.4
+   ]
+  },
+  {
+   "prefab": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+   "stem": "BenchStreet_02",
+   "kind": "bench",
+   "x": 7088.1,
+   "y": 119.1,
+   "z": 6040,
+   "yaw": 131.5,
+   "distance": 27.8,
+   "size": [
+    2,
+    1.1,
+    2.1
+   ]
+  },
+  {
+   "prefab": "{09277B76FF010FCB}Prefabs/Structures/Infrastructure/Waterworks/Well_02/Well_02_blue.et",
+   "stem": "Well_02_blue",
+   "kind": "well",
+   "x": 7114.3,
+   "y": 119.1,
+   "z": 6027.7,
+   "yaw": 0,
+   "distance": 32.1,
+   "size": [
+    1.6,
+    1.1,
+    1.6
+   ]
+  },
+  {
+   "prefab": "{614C7CCF23A6FB40}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_03/LampStreet_E_03_single.et",
+   "stem": "LampStreet_E_03_single",
+   "kind": "street-lamp",
+   "x": 7067,
+   "y": 119.2,
+   "z": 6039.2,
+   "yaw": 135.8,
+   "distance": 32.9,
+   "size": [
+    3,
+    11.2,
+    3.1
+   ]
+  },
+  {
+   "prefab": "{41CBD4EACE885735}Prefabs/Structures/Infrastructure/Sewage/ManholeCover_E_02/ManholeCover_E_02.et",
+   "stem": "ManholeCover_E_02",
+   "kind": "manhole",
+   "x": 7053,
+   "y": 118.3,
+   "z": 6010.1,
+   "yaw": 142.1,
+   "distance": 33.2,
+   "size": [
+    1.4,
+    0.1,
+    1.4
+   ]
+  },
+  {
+   "prefab": "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et",
+   "stem": "LampStreet_E_01_6m",
+   "kind": "street-lamp",
+   "x": 7102.6,
+   "y": 119.2,
+   "z": 6045.5,
+   "yaw": 30.3,
+   "distance": 37.1,
+   "size": [
+    1,
+    6.1,
+    1.2
+   ]
+  },
+  {
+   "prefab": "{B9003EF716A534D4}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_02/LampStreet_E_02_single.et",
+   "stem": "LampStreet_E_02_single",
+   "kind": "street-lamp",
+   "x": 7049,
+   "y": 118.1,
+   "z": 6005.7,
+   "yaw": -38,
+   "distance": 37.7,
+   "size": [
+    2,
+    8.8,
+    2.3
+   ]
+  },
+  {
+   "prefab": "{41CBD4EACE885735}Prefabs/Structures/Infrastructure/Sewage/ManholeCover_E_02/ManholeCover_E_02.et",
+   "stem": "ManholeCover_E_02",
+   "kind": "manhole",
+   "x": 7104.2,
+   "y": 119.3,
+   "z": 6046.4,
+   "yaw": -143.7,
+   "distance": 38.6,
+   "size": [
+    1.4,
+    0,
+    1.4
+   ]
+  },
+  {
+   "prefab": "{0E3533EE196F01EC}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_6m.et",
+   "stem": "LampStreet_E_01_6m",
+   "kind": "street-lamp",
+   "x": 7048.6,
+   "y": 118.6,
+   "z": 6026,
+   "yaw": 0,
+   "distance": 39.9,
+   "size": [
+    0.7,
+    6.1,
+    0.7
+   ]
+  },
+  {
+   "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+   "stem": "LampStreet_E_01_4m",
+   "kind": "street-lamp",
+   "x": 7125.5,
+   "y": 119.1,
+   "z": 6022.3,
+   "yaw": 0,
+   "distance": 40.6,
+   "size": [
+    0.7,
+    4.3,
+    0.7
+   ]
+  },
+  {
+   "prefab": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+   "stem": "BenchStreet_02",
+   "kind": "bench",
+   "x": 7045.9,
+   "y": 118.5,
+   "z": 6022.2,
+   "yaw": 137.5,
+   "distance": 41.4,
+   "size": [
+    2.1,
+    1.1,
+    2
+   ]
+  },
+  {
+   "prefab": "{E7E1B1B2B433F80A}Prefabs/Props/Furniture/BenchWooden_02_Worn.et",
+   "stem": "BenchWooden_02_Worn",
+   "kind": "bench",
+   "x": 7054.7,
+   "y": 117.6,
+   "z": 5980.7,
+   "yaw": 141,
+   "distance": 44.6,
+   "size": [
+    2.3,
+    1.1,
+    2
+   ]
+  },
+  {
+   "prefab": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+   "stem": "BenchStreet_02",
+   "kind": "bench",
+   "x": 7040.8,
+   "y": 118.3,
+   "z": 6017.5,
+   "yaw": 137.5,
+   "distance": 45.6,
+   "size": [
+    2.1,
+    1.1,
+    2
+   ]
+  },
+  {
+   "prefab": "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et",
+   "stem": "MarketStand_01_Umbrella",
+   "kind": "market-stand",
+   "x": 7068.1,
+   "y": 116.9,
+   "z": 5967.3,
+   "yaw": 0,
+   "distance": 48.5,
+   "size": [
+    2.4,
+    2.8,
+    2.4
+   ]
+  },
+  {
+   "prefab": "{B5963E922C972A4A}Prefabs/Structures/Infrastructure/Landlines/PhoneBooth_E/PhoneBooth_E_01.et",
+   "stem": "PhoneBooth_E_01",
+   "kind": "phone-booth",
+   "x": 7034.5,
+   "y": 118.4,
+   "z": 6017.2,
+   "yaw": 50.9,
+   "distance": 51.8,
+   "size": [
+    2.3,
+    3.4,
+    2.4
+   ]
+  },
+  {
+   "prefab": "{09277B76FF010FCB}Prefabs/Structures/Infrastructure/Waterworks/Well_02/Well_02_blue.et",
+   "stem": "Well_02_blue",
+   "kind": "well",
+   "x": 7081.9,
+   "y": 116.6,
+   "z": 5960.4,
+   "yaw": 136.1,
+   "distance": 52,
+   "size": [
+    2.2,
+    1.1,
+    2.2
+   ]
+  },
+  {
+   "prefab": "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et",
+   "stem": "BenchStreet_01_green",
+   "kind": "bench",
+   "x": 7122.9,
+   "y": 116.5,
+   "z": 5973.2,
+   "yaw": -42.7,
+   "distance": 53.7,
+   "size": [
+    2,
+    1,
+    2
+   ]
+  },
+  {
+   "prefab": "{B9003EF716A534D4}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_02/LampStreet_E_02_single.et",
+   "stem": "LampStreet_E_02_single",
+   "kind": "street-lamp",
+   "x": 7092.1,
+   "y": 119.8,
+   "z": 6069.6,
+   "yaw": 128.4,
+   "distance": 57.6,
+   "size": [
+    2.3,
+    8.8,
+    2
+   ]
+  },
+  {
+   "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+   "stem": "LampStreet_E_01_4m",
+   "kind": "street-lamp",
+   "x": 7132.3,
+   "y": 119.1,
+   "z": 6047.2,
+   "yaw": 0,
+   "distance": 57.9,
+   "size": [
+    0.7,
+    4.3,
+    0.7
+   ]
+  },
+  {
+   "prefab": "{B9003EF716A534D4}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_02/LampStreet_E_02_single.et",
+   "stem": "LampStreet_E_02_single",
+   "kind": "street-lamp",
+   "x": 7030.7,
+   "y": 117.4,
+   "z": 5991.3,
+   "yaw": -38,
+   "distance": 59.3,
+   "size": [
+    2,
+    8.8,
+    2.3
+   ]
+  },
+  {
+   "prefab": "{41CBD4EACE885735}Prefabs/Structures/Infrastructure/Sewage/ManholeCover_E_02/ManholeCover_E_02.et",
+   "stem": "ManholeCover_E_02",
+   "kind": "manhole",
+   "x": 7028,
+   "y": 117.4,
+   "z": 5990.3,
+   "yaw": 143.3,
+   "distance": 62.1,
+   "size": [
+    1.4,
+    0,
+    1.4
+   ]
+  },
+  {
+   "prefab": "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et",
+   "stem": "BenchStreet_01_green",
+   "kind": "bench",
+   "x": 7024.2,
+   "y": 118.6,
+   "z": 6019.2,
+   "yaw": 48.2,
+   "distance": 62.3,
+   "size": [
+    1.9,
+    1,
+    2
+   ]
+  },
+  {
+   "prefab": "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et",
+   "stem": "BenchStreet_01_green",
+   "kind": "bench",
+   "x": 7022.5,
+   "y": 118.6,
+   "z": 6021.2,
+   "yaw": 50.8,
+   "distance": 64.2,
+   "size": [
+    1.9,
+    1,
+    2.1
+   ]
+  },
+  {
+   "prefab": "{E7E1B1B2B433F80A}Prefabs/Props/Furniture/BenchWooden_02_Worn.et",
+   "stem": "BenchWooden_02_Worn",
+   "kind": "bench",
+   "x": 7069.3,
+   "y": 120.3,
+   "z": 6077,
+   "yaw": -49,
+   "distance": 66.8,
+   "size": [
+    2.1,
+    1.1,
+    2.2
+   ]
+  },
+  {
+   "prefab": "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et",
+   "stem": "BenchStreet_01_green",
+   "kind": "bench",
+   "x": 7032.7,
+   "y": 116.9,
+   "z": 5971.4,
+   "yaw": 143.8,
+   "distance": 67.3,
+   "size": [
+    2.1,
+    1,
+    1.8
+   ]
+  },
+  {
+   "prefab": "{F6AA92F7B23D8A71}Prefabs/Structures/Infrastructure/Naval/Piers/Pier_01.et",
+   "stem": "Pier_01",
+   "kind": "pier-or-dock",
+   "x": 7134.8,
+   "y": 112.7,
+   "z": 6063,
+   "yaw": -74.4,
+   "distance": 70.4,
+   "size": [
+    7.4,
+    10,
+    7.4
+   ]
+  },
+  {
+   "prefab": "{09277B76FF010FCB}Prefabs/Structures/Infrastructure/Waterworks/Well_02/Well_02_blue.et",
+   "stem": "Well_02_blue",
+   "kind": "well",
+   "x": 7035.3,
+   "y": 120.2,
+   "z": 6061.3,
+   "yaw": 49.5,
+   "distance": 70.6,
+   "size": [
+    2.2,
+    1.1,
+    2.2
+   ]
+  },
+  {
+   "prefab": "{09277B76FF010FCB}Prefabs/Structures/Infrastructure/Waterworks/Well_02/Well_02_blue.et",
+   "stem": "Well_02_blue",
+   "kind": "well",
+   "x": 7044.4,
+   "y": 116.8,
+   "z": 5954.9,
+   "yaw": -102.1,
+   "distance": 70.9,
+   "size": [
+    1.9,
+    1.1,
+    1.9
+   ]
+  },
+  {
+   "prefab": "{8DBE697AA61EA7E3}Prefabs/Structures/Civilian/MessageBoard/MessageBoardSmall_01/MessageBoardSmall_01.et",
+   "stem": "MessageBoardSmall_01",
+   "kind": "notice-board",
+   "x": 7015.2,
+   "y": 118.8,
+   "z": 6026.3,
+   "yaw": -40.6,
+   "distance": 72.3,
+   "size": [
+    1,
+    1,
+    0.9
+   ]
+  },
+  {
+   "prefab": "{9AFEA6170EF9055F}Prefabs/Structures/Infrastructure/Naval/Piers/Pier_02.et",
+   "stem": "Pier_02",
+   "kind": "pier-or-dock",
+   "x": 7135.1,
+   "y": 112.5,
+   "z": 6069.1,
+   "yaw": -75.3,
+   "distance": 75,
+   "size": [
+    4.4,
+    10,
+    6.6
+   ]
+  },
+  {
+   "prefab": "{41CBD4EACE885735}Prefabs/Structures/Infrastructure/Sewage/ManholeCover_E_02/ManholeCover_E_02.et",
+   "stem": "ManholeCover_E_02",
+   "kind": "manhole",
+   "x": 7008.2,
+   "y": 117.6,
+   "z": 6029.8,
+   "yaw": -38.9,
+   "distance": 79.9,
+   "size": [
+    1.4,
+    0,
+    1.4
+   ]
+  },
+  {
+   "prefab": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+   "stem": "BenchStreet_02",
+   "kind": "bench",
+   "x": 7134.4,
+   "y": 114,
+   "z": 5940.3,
+   "yaw": -114.2,
+   "distance": 86.7,
+   "size": [
+    1.5,
+    1,
+    2.3
+   ]
+  },
+  {
+   "prefab": "{41CBD4EACE885735}Prefabs/Structures/Infrastructure/Sewage/ManholeCover_E_02/ManholeCover_E_02.et",
+   "stem": "ManholeCover_E_02",
+   "kind": "manhole",
+   "x": 7000.1,
+   "y": 117.4,
+   "z": 5999.5,
+   "yaw": 143.3,
+   "distance": 86.9,
+   "size": [
+    1.4,
+    0,
+    1.4
+   ]
+  },
+  {
+   "prefab": "{41CBD4EACE885735}Prefabs/Structures/Infrastructure/Sewage/ManholeCover_E_02/ManholeCover_E_02.et",
+   "stem": "ManholeCover_E_02",
+   "kind": "manhole",
+   "x": 6998.9,
+   "y": 117.9,
+   "z": 6022.9,
+   "yaw": -129,
+   "distance": 87.9,
+   "size": [
+    1.4,
+    0,
+    1.4
+   ]
+  },
+  {
+   "prefab": "{09277B76FF010FCB}Prefabs/Structures/Infrastructure/Waterworks/Well_02/Well_02_blue.et",
+   "stem": "Well_02_blue",
+   "kind": "well",
+   "x": 7092.8,
+   "y": 119.5,
+   "z": 6104,
+   "yaw": -152.4,
+   "distance": 91.9,
+   "size": [
+    2.1,
+    1.1,
+    2.1
+   ]
+  },
+  {
+   "prefab": "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et",
+   "stem": "BenchStreet_01_green",
+   "kind": "bench",
+   "x": 6992,
+   "y": 117,
+   "z": 6002.5,
+   "yaw": -127.5,
+   "distance": 94.6,
+   "size": [
+    1.9,
+    1,
+    2.1
+   ]
+  },
+  {
+   "prefab": "{B9003EF716A534D4}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_02/LampStreet_E_02_single.et",
+   "stem": "LampStreet_E_02_single",
+   "kind": "street-lamp",
+   "x": 7104.8,
+   "y": 118,
+   "z": 6111.2,
+   "yaw": 109.6,
+   "distance": 100.7,
+   "size": [
+    2.4,
+    8.8,
+    1.4
+   ]
+  },
+  {
+   "prefab": "{B9003EF716A534D4}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_02/LampStreet_E_02_single.et",
+   "stem": "LampStreet_E_02_single",
+   "kind": "street-lamp",
+   "x": 6991,
+   "y": 115.8,
+   "z": 5962.3,
+   "yaw": -38,
+   "distance": 107.4,
+   "size": [
+    2,
+    8.8,
+    2.3
+   ]
+  },
+  {
+   "prefab": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+   "stem": "BenchStreet_02",
+   "kind": "bench",
+   "x": 7086.8,
+   "y": 119.5,
+   "z": 6126.2,
+   "yaw": 35.7,
+   "distance": 113.9,
+   "size": [
+    2.2,
+    1,
+    1.8
+   ]
+  },
+  {
+   "prefab": "{41CBD4EACE885735}Prefabs/Structures/Infrastructure/Sewage/ManholeCover_E_02/ManholeCover_E_02.et",
+   "stem": "ManholeCover_E_02",
+   "kind": "manhole",
+   "x": 6984,
+   "y": 115.5,
+   "z": 5961.5,
+   "yaw": 148.4,
+   "distance": 114.1,
+   "size": [
+    1.4,
+    0,
+    1.4
+   ]
+  },
+  {
+   "prefab": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+   "stem": "BenchStreet_02",
+   "kind": "bench",
+   "x": 7088.8,
+   "y": 119.4,
+   "z": 6128.9,
+   "yaw": -142.2,
+   "distance": 116.6,
+   "size": [
+    2.2,
+    1,
+    1.9
+   ]
+  }
+ ],
+ "propCounts": {
+  "bench": 13,
+  "street-lamp": 12,
+  "pier-or-dock": 2,
+  "bus-shelter": 1,
+  "manhole": 8,
+  "well": 5,
+  "phone-booth": 1,
+  "market-stand": 1,
+  "shrine": 1,
+  "notice-board": 1
+ },
+ "freePlots": {
+  "plots": [
+   {
+    "id": "p1",
+    "x": 7144.1,
+    "z": 6035.3,
+    "width": 48,
+    "depth": 38,
+    "area": 1824,
+    "ground": {
+     "min": 116.8,
+     "max": 119.1
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r06",
+     "distance": 31.2
+    },
+    "nearestBuilding": {
+     "id": "b17",
+     "type": "house",
+     "stem": "House_Mountain_E_1I01_short",
+     "distance": 26.9
+    },
+    "distance": 62.4
+   },
+   {
+    "id": "p2",
+    "x": 6999.1,
+    "z": 6058.3,
+    "width": 26,
+    "depth": 44,
+    "area": 1144,
+    "ground": {
+     "min": 117.7,
+     "max": 121.5
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r10",
+     "distance": 30.1
+    },
+    "nearestBuilding": {
+     "id": "b18",
+     "type": "shop",
+     "stem": "ShopModern_E_01",
+     "distance": 27.6
+    },
+    "distance": 98.4
+   },
+   {
+    "id": "p3",
+    "x": 7074.1,
+    "z": 5925.3,
+    "width": 32,
+    "depth": 34,
+    "area": 1088,
+    "ground": {
+     "min": 111.8,
+     "max": 115.8
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r12",
+     "distance": 26.4
+    },
+    "nearestBuilding": {
+     "id": "b16",
+     "type": "shed",
+     "stem": "Shed_01",
+     "distance": 26.5
+    },
+    "distance": 87.8
+   },
+   {
+    "id": "p4",
+    "x": 7132.1,
+    "z": 5962.3,
+    "width": 48,
+    "depth": 16,
+    "area": 768,
+    "ground": {
+     "min": 113.7,
+     "max": 116.5
+    },
+    "nearestRoad": {
+     "name": "N-S road r05",
+     "distance": 27.9
+    },
+    "nearestBuilding": {
+     "id": "b26",
+     "type": "shed",
+     "stem": "Shed_03",
+     "distance": 11
+    },
+    "distance": 67.9
+   },
+   {
+    "id": "p5",
+    "x": 7125.1,
+    "z": 6093.3,
+    "width": 30,
+    "depth": 22,
+    "area": 660,
+    "ground": {
+     "min": 116.2,
+     "max": 118.7
+    },
+    "nearestRoad": {
+     "name": "N-S road r03",
+     "distance": 19.9
+    },
+    "nearestBuilding": {
+     "id": "b17",
+     "type": "house",
+     "stem": "House_Mountain_E_1I01_short",
+     "distance": 14
+    },
+    "distance": 89.9
+   },
+   {
+    "id": "p6",
+    "x": 7192.1,
+    "z": 6031.3,
+    "width": 12,
+    "depth": 54,
+    "area": 648,
+    "ground": {
+     "min": 112.7,
+     "max": 114.5
+    },
+    "nearestRoad": {
+     "name": "N-S road r03",
+     "distance": 12.3
+    },
+    "nearestBuilding": {
+     "id": "b28",
+     "type": "shed",
+     "stem": "Shed_02_line",
+     "distance": 57.1
+    },
+    "distance": 107.7
+   },
+   {
+    "id": "p7",
+    "x": 7003.1,
+    "z": 5948.3,
+    "width": 22,
+    "depth": 24,
+    "area": 528,
+    "ground": {
+     "min": 114.5,
+     "max": 116.2
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r18",
+     "distance": 19.3
+    },
+    "nearestBuilding": {
+     "id": "b36",
+     "type": "shed",
+     "stem": "Shed_02_big_V2",
+     "distance": 18.9
+    },
+    "distance": 104.8
+   },
+   {
+    "id": "p8",
+    "x": 7024.1,
+    "z": 6097.3,
+    "width": 24,
+    "depth": 22,
+    "area": 528,
+    "ground": {
+     "min": 121.2,
+     "max": 122.4
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r09",
+     "distance": 20.2
+    },
+    "nearestBuilding": {
+     "id": "b32",
+     "type": "shed",
+     "stem": "Shed_02_line",
+     "distance": 12.3
+    },
+    "distance": 105.2
+   }
+  ],
+  "note": "plots are open rectangles at least 10 m on the short side, kept 2.5 m off buildings, 4.5 m off a road's centre line, 2 m off a tree, on ground under 12 degrees; axis aligned, not the best use of the land"
+ },
+ "pictures": [
+  {
+   "role": "overview",
+   "file": "img/overview-top.jpg",
+   "caption": "from above, north up"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-wide.jpg",
+   "caption": "wide, from the south"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob270.jpg",
+   "caption": "from the west"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob000.jpg",
+   "caption": "from the north"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob090.jpg",
+   "caption": "from the east"
+  },
+  {
+   "role": "main-street",
+   "file": "img/main-street-wide.jpg",
+   "caption": "NE-SW road r01 (NE-SW), looking along it"
+  },
+  {
+   "role": "main-street",
+   "file": "img/main-street-ob090.jpg",
+   "caption": "from the east"
+  },
+  {
+   "role": "civic",
+   "building": "b02",
+   "file": "img/civic-b02-wide.jpg",
+   "caption": "church, from the front"
+  },
+  {
+   "role": "civic",
+   "building": "b02",
+   "file": "img/civic-b02-ob090.jpg",
+   "caption": "church, from the east"
+  },
+  {
+   "role": "civic",
+   "building": "b18",
+   "file": "img/civic-b18-wide.jpg",
+   "caption": "shop, from the front"
+  },
+  {
+   "role": "civic",
+   "building": "b18",
+   "file": "img/civic-b18-ob090.jpg",
+   "caption": "shop, from the east"
+  },
+  {
+   "role": "interior",
+   "building": "b02",
+   "file": "img/interior-b02-in000.jpg",
+   "caption": "church, inside (looking 000 deg)"
+  },
+  {
+   "role": "interior",
+   "building": "b02",
+   "file": "img/interior-b02-in090.jpg",
+   "caption": "church, inside (looking 090 deg)"
+  },
+  {
+   "role": "interior",
+   "building": "b02",
+   "file": "img/interior-b02-in270.jpg",
+   "caption": "church, inside (looking 270 deg)"
+  },
+  {
+   "role": "interior",
+   "building": "b02",
+   "file": "img/interior-b02-wide.jpg",
+   "caption": "church, inside (wide)"
+  },
+  {
+   "role": "interior",
+   "building": "b18",
+   "file": "img/interior-b18-in000.jpg",
+   "caption": "shop, inside (looking 000 deg)"
+  },
+  {
+   "role": "interior",
+   "building": "b18",
+   "file": "img/interior-b18-in090.jpg",
+   "caption": "shop, inside (looking 090 deg)"
+  },
+  {
+   "role": "interior",
+   "building": "b18",
+   "file": "img/interior-b18-in270.jpg",
+   "caption": "shop, inside (looking 270 deg)"
+  },
+  {
+   "role": "interior",
+   "building": "b18",
+   "file": "img/interior-b18-wide.jpg",
+   "caption": "shop, inside (wide)"
+  }
+ ],
+ "notes": [
+  "buildings (types, footprints, floors, interiors) are read from the Everon catalog, docs/everon/catalog-buildings.json; 34 of 37 matched an entity of the engine dump, which adds the door positions, and the other 3 have no entrances listed",
+  "12 quay, pier and waterworks pieces are counted, not listed"
+ ]
+}

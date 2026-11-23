@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{FE9442E8FE82DE19}Sounds/Dialogue/gendarme_evening/Dialogue_gendarme_evening.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -71,3 +71,7 @@ that activity is what pays (gathering/processing already feed this funnel).
 `m_bLF_TestUnlockOnDedicated`. `LF_WhitelistManager.IsFactionRestricted` / `IsJobRestricted` then return false,
 which opens the police roster, the job whitelist and the licence whitelist in one place. It logs
 `LF_Debug.Warn` "job gates bypassed (testing)" once. Never on for the flagship: `validate-flagship-job-gates`.
+
+## Export order board (#4411)
+
+`LF_ExportBoard.c`: the board kind `exportboard` and the sign row source `exportorders` over `LF_ExportOrderBook`. `LF_ExportBoardActions.c`: `LF_ExportBoardTakeAction` (one per printed line, slot 0 up) and the take RPC `RpcAsk_LF_ExportTake(orderId)`. Prefab `Prefabs/Props/LF_ExportOrderBoard.et`. The take names the order by id, never the slot. A modded class cannot call a method another folder's modded `SCR_PlayerController` adds, so the post-take refresh is a static on a plain class. Test `jobs/export-board`.
