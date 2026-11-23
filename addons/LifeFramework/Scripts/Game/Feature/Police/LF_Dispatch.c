@@ -18,6 +18,9 @@ class LF_DispatchRecord : Managed
 	//! Number of officers the radio call went to.
 	int m_iRadioed;
 	int m_iSequence;
+	//! A player phoned it in and was charged for false reports today (LF_CallAbuse, #4585): the board tags
+	//! the line. A crime report's call is never tagged.
+	bool m_bLowPriority;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -36,6 +39,9 @@ class LF_Dispatch
 	static const string FIELD_SEPARATOR = "|";
 	static const string RADIO_KEY = "#LF-Dispatch_Radio";
 	static const string RADIO_CALL_KEY = "#LF-Dispatch_RadioCall";
+	//! Board entry flag bits (BuildBoardEntries).
+	static const int FLAG_LOUD = 1;
+	static const int FLAG_LOW_PRIORITY = 2;
 
 	protected static ref array<ref LF_DispatchRecord> s_aLog;
 	protected static int s_iSequence;
@@ -43,6 +49,9 @@ class LF_Dispatch
 	//! cannot carry an EntityID, so the timer carries the number).
 	protected static ref map<int, EntityID> s_mAlarms;
 	protected static int s_iAlarmNumber;
+	//! True while Report publishes a crime report's service call: its uid is the suspect, not a caller, so
+	//! the 911-abuse mark (LF_CallAbuse) never tags it (#4585).
+	protected static bool s_bReportingCrime;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -52,6 +61,7 @@ class LF_Dispatch
 		s_iSequence = 0;
 		s_mAlarms = null;
 		s_iAlarmNumber = 0;
+		s_bReportingCrime = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -96,7 +106,9 @@ class LF_Dispatch
 		call.m_iOnDuty = officers;
 
 		int before = s_iSequence;
+		s_bReportingCrime = true;
 		LF_EventBus.Publish(call);
+		s_bReportingCrime = false;
 		if (s_iSequence == before)
 		{
 			LF_Debug.Error(FEATURE, string.Format("dispatch not logged: no police call subscriber heard %1", offence));
@@ -142,6 +154,7 @@ class LF_Dispatch
 
 		LF_DispatchRecord record = Record(call.m_sSummary, call.m_sClothing, call.m_sVehicle, call.m_sPlace, officers);
 		record.m_sTime = ClockText();
+		record.m_bLowPriority = !s_bReportingCrime && LF_CallAbuse.IsMarked(call.m_sCallerUid);
 		if (officers > 0)
 			record.m_iRadioed = RadioOfficers(record);
 
@@ -224,7 +237,8 @@ class LF_Dispatch
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the dispatch log as board entries, newest first, at most maxLines. Each entry is
-	//! "time|offence|loud|officers|place", resolved into words on the reading client.
+	//! "time|offence|flags|officers|place", resolved into words on the reading client. flags is a bit
+	//! set: FLAG_LOUD for the loud alarm, FLAG_LOW_PRIORITY for a caller charged for false reports.
 	static void BuildBoardEntries(int maxLines, notnull array<string> outEntries)
 	{
 		outEntries.Clear();
@@ -240,11 +254,14 @@ class LF_Dispatch
 			if (!record)
 				continue;
 
-			int loud = 0;
+			int flags = 0;
 			if (record.m_bLoud)
-				loud = 1;
+				flags |= FLAG_LOUD;
 
-			outEntries.Insert(string.Format("%1|%2|%3|%4|%5", record.m_sTime, record.m_sOffence, loud, record.m_iOfficers, record.m_sPlace));
+			if (record.m_bLowPriority)
+				flags |= FLAG_LOW_PRIORITY;
+
+			outEntries.Insert(string.Format("%1|%2|%3|%4|%5", record.m_sTime, record.m_sOffence, flags, record.m_iOfficers, record.m_sPlace));
 		}
 	}
 
@@ -268,13 +285,18 @@ class LF_Dispatch
 			place += FIELD_SEPARATOR + fields[i];
 		}
 
+		int flags = fields[2].ToInt();
 		string outcome;
-		if (fields[2] == "1")
+		if (flags & FLAG_LOUD)
 			outcome = WidgetManager.Translate("#LF-Dispatch_BoardLoud");
 		else
 			outcome = WidgetManager.Translate("#LF-Dispatch_BoardRadioed", fields[3]);
 
-		return WidgetManager.Translate("#LF-Dispatch_BoardLine", fields[0], LF_WantedBoard.ResolveKey(fields[1]), PlaceText(place), outcome);
+		string line = WidgetManager.Translate("#LF-Dispatch_BoardLine", fields[0], LF_WantedBoard.ResolveKey(fields[1]), PlaceText(place), outcome);
+		if (flags & FLAG_LOW_PRIORITY)
+			line = WidgetManager.Translate("#LF-Dispatch_BoardTagged", line, WidgetManager.Translate(LF_CallAbuse.LOW_PRIORITY_KEY));
+
+		return line;
 	}
 
 	//------------------------------------------------------------------------------------------------

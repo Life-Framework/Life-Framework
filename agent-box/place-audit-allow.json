@@ -329,6 +329,11 @@
       "match": "^Fit_saint_philippe_square_life_pigeons_[ab] ",
       "kind": "displaced",
       "why": "A bird flock (SCR_Bird) is a flock the engine moves: it spawns at its row (y equals the terrain here, 0 m over the ground) and the probe finds the flock entity wherever it has wandered, so the audit's position match fails. Rows stand on the cobbles beside the chess table (#4479)."
+    },
+    {
+      "match": "^Fit_saint_philippe_dock_harbor_life_gulls ",
+      "kind": "displaced",
+      "why": "The same bird flock (SCR_Bird) the engine moves: the seagull flock spawns at its row on the dock apron (y 1.59, 0 m over the ground) and the probe finds the flock entity wherever it has wandered (#4586)."
     }
   ]
 }

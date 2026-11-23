@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "bank-beat",
+  "building": "b79",
+  "shared": true,
+  "kit": "bank-beat",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_bank-beat.layer",
+  "kinds": [],
+  "rows": 2,
+  "destruction": {
+    "mode": "needs-hook",
+    "reason": "a vanilla building stands in the terrain and the slot has no place marker to carry LF_FittedBuildingComponent (D15)"
+  },
+  "date": "2026-11-23"
+}
