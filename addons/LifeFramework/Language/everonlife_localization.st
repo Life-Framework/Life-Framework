@@ -9189,6 +9189,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Lawless area"
      Comment "Toast title when the player enters or leaves a lawless zone."
     }
+    CustomStringTableItem "{3A7C91E5D2B40F68}" {
+     Id "LF-LevelUpCard_Opens"
+     Target_en_us "Opens: %1"
+     Comment "Level-up HUD card (#4404). %1 = what the new level opens, the trade unlock text."
+    }
     CustomStringTableItem "{AFDD3C3A428C4C18}" {
      Id "LF-Level_Bonus"
      Target_en_us "Yield +%1% | Sale price +%2%"

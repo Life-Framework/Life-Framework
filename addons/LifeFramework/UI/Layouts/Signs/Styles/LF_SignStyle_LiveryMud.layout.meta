@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{E9EDC26C6D77BAC8}UI/Layouts/Signs/Styles/LF_SignStyle_LiveryMud.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass PS5 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}
