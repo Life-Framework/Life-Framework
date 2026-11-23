@@ -1,0 +1,45 @@
+GenericEntity Town_saint_philippe {
+ components {
+  LF_PlaceComponent "{AE8CDECAA112DB41}" {
+   m_sKind "Town"
+   m_sId "town.saint-philippe"
+  }
+ }
+ coords 4480 13.6 10715
+}
+GenericEntity Town_meaux {
+ components {
+  LF_PlaceComponent "{BE10F05746F61A04}" {
+   m_sKind "Town"
+   m_sId "town.meaux"
+  }
+ }
+ coords 4520.45 14.178 9467.976
+}
+GenericEntity Town_montignac {
+ components {
+  LF_PlaceComponent "{127A0219B3DA80D3}" {
+   m_sKind "Town"
+   m_sId "town.montignac"
+  }
+ }
+ coords 4773.455 164.342 7094.566
+}
+GenericEntity Town_chotain {
+ components {
+  LF_PlaceComponent "{575B1B64E9F1C6C1}" {
+   m_sKind "Town"
+   m_sId "town.chotain"
+  }
+ }
+ coords 7086.131 129.414 6012.347
+}
+GenericEntity Town_levie {
+ components {
+  LF_PlaceComponent "{C0707128CF36EB89}" {
+   m_sKind "Town"
+   m_sId "town.levie"
+  }
+ }
+ coords 7464.442 142.167 4738.911
+}
