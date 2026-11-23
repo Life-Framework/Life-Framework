@@ -6,7 +6,11 @@
 class LF_PostalRunConfig
 {
 	static const ResourceName CONFIG_PATH = "{3F7A1C5E9B2D4086}Configs/Jobs/LF_PostalRun.conf";
-	static const ResourceName DEFAULT_VAN = "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et";
+	//! The name pack overlay log lines use; there is no owner section.
+	static const string OVERLAY_NAME = "postalrun";
+	static const float MIN_DISTANCE_LOW = 50;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float MIN_DISTANCE_HIGH = 20000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const ResourceName DEFAULT_VAN ="{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et";
 
 	[Attribute("4", UIWidgets.Auto, "Postal run: mail sacks loaded at the home office and unloaded at the far one, one action each", params: "1 20")]
 	int m_iSacks;
@@ -77,7 +81,42 @@ class LF_PostalRunConfig
 			s_Config = CreateDefault();
 		}
 
+		s_Config.ApplyLayers();
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lays each pack overlay of this class over the core values, in load order (LF_ConfigOverlay).
+	void ApplyLayers()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_PostalRunConfig, OVERLAY_NAME, resources, names);
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer(), names[i]);
+			LF_Debug.Info("Jobs", string.Format("postal run: pack overlay %1 changed %2 fields (far office at least %3 m)", names[i], changed, m_fMinDistance));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Copies the fields one pack overlay writes directly. Only the office distance is a pack's to
+	//! set; a value outside the schema range is refused and logged, the earlier value stays.
+	//! \return Fields changed.
+	int ApplyPackContainer(notnull BaseContainer root, string source)
+	{
+		float value;
+		if (!root.IsVariableSetDirectly("m_fMinDistance") || !root.Get("m_fMinDistance", value))
+			return 0;
+
+		if (value < MIN_DISTANCE_LOW || value > MIN_DISTANCE_HIGH)
+		{
+			LF_Debug.Error("Jobs", string.Format("postal run: %1 sets m_fMinDistance %2, outside %3 to %4; keeping %5", source, value, MIN_DISTANCE_LOW, MIN_DISTANCE_HIGH, m_fMinDistance));
+			return 0;
+		}
+
+		m_fMinDistance = value;
+		return 1;
 	}
 
 	//------------------------------------------------------------------------------------------------

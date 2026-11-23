@@ -328,6 +328,7 @@ class LF_JobsConfig
 			changed += LF_ConfigOverlay.ApplyContainerList(new LF_JobXpAwardList(this), root, "m_aXpAwards", names[i], claims);
 			changed += LF_ConfigOverlay.ApplyContainerList(new LF_JobLicenceGateList(this), root, "m_aLicenceGates", names[i], claims);
 			changed += LF_ConfigOverlay.ApplyContainerList(new LF_JobRunPayList(this), root, "m_aRunPays", names[i], claims);
+			changed += ApplyPackRunDistance(root, names[i]);
 			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("jobs: pack overlay %1 changed %2 entries", names[i], changed));
 		}
 
@@ -337,6 +338,27 @@ class LF_JobsConfig
 
 		ApplyOwner(reader, LF_ConfigService.GetOwnerSource());
 		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("jobs: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The one scalar a pack overlay may set directly: `m_fRunMinDistance`, the least start-to-drop
+	//! distance of a delivery run, so a small world (the playtest town) can shrink the core's 300 m.
+	//! A value outside the schema range is refused and logged; the earlier value stays.
+	//! \return 1 when the value changed, else 0.
+	int ApplyPackRunDistance(notnull BaseContainer root, string source)
+	{
+		float value;
+		if (!root.IsVariableSetDirectly("m_fRunMinDistance") || !root.Get("m_fRunMinDistance", value))
+			return 0;
+
+		if (value < RUN_DISTANCE_MIN || value > RUN_DISTANCE_MAX)
+		{
+			LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("jobs: %1 sets m_fRunMinDistance %2, outside %3 to %4; keeping %5", source, value, RUN_DISTANCE_MIN, RUN_DISTANCE_MAX, m_fRunMinDistance));
+			return 0;
+		}
+
+		m_fRunMinDistance = value;
+		return 1;
 	}
 
 	//------------------------------------------------------------------------------------------------
