@@ -1,12 +1,12 @@
 // red-proof: RedProof() drops the pack table, so the Cadet draws no car and every assertion below fails (`tools\cli test --no-build --red LF_Test_EveronRankFleet`).
 //! PO-R1 (#4205) in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the police car pool
-//! hands the Cadet the beige S105 and Patrol and up the UAZ469 police car, and refuses the Cadet the UAZ in words.
+//! hands the Cadet the white police S105 and Patrol and up the white UAZ469 with POLICE door plates (#4352), and refuses the Cadet the UAZ in words.
 //! The ladder is the core's layered with `LF_Police_Everon1989.conf`; the cars are `LF_RankFleet_Everon1989.conf`.
 [LF_TestInfo(LF_TestTier.LOGIC, pack: true)]
 class LF_Test_EveronRankFleet : LF_Test
 {
-	protected static const ResourceName SMALL_CAR = "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et";
-	protected static const ResourceName PATROL_CAR = "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et";
+	protected static const ResourceName SMALL_CAR = "{D1C459F87589D01D}Prefabs/Vehicles/Liveries/LF_S105_Police.et";
+	protected static const ResourceName PATROL_CAR = "{C61DA18B80835A63}Prefabs/Vehicles/Liveries/LF_UAZ469_Police.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -39,8 +39,8 @@ class LF_Test_EveronRankFleet : LF_Test
 		int cadet = RankIndex("patrol");
 		int patrol = RankIndex("senior");
 		ctx.True(cadet >= 0 && patrol > cadet, "the pack ladder has the Cadet and Patrol rungs");
-		ctx.True(LF_RankFleet.CarFor(cadet) == SMALL_CAR, "the Cadet draws the beige S105");
-		ctx.True(LF_RankFleet.CarFor(patrol) == PATROL_CAR, "Patrol draws the UAZ469 police car");
+		ctx.True(LF_RankFleet.CarFor(cadet) == SMALL_CAR, "the Cadet draws the white police S105");
+		ctx.True(LF_RankFleet.CarFor(patrol) == PATROL_CAR, "Patrol draws the police-livery UAZ469");
 		array<string> upper = { "senior_patrol", "sergeant", "lieutenant" };
 		foreach (string id : upper)
 		{
