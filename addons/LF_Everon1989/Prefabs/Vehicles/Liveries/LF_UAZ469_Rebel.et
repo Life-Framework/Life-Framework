@@ -1,0 +1,29 @@
+Vehicle : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
+ ID "070111F52E498936"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{64F09BE9246E252A}" {
+     SourceMaterial "UAZ469_Body"
+     AssignedMaterial "{9E9B799E5FEB65D1}Assets/Liveries/UAZ469/LF_UAZ469_Rebel.emat"
+    }
+   }
+  }
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+   Slots {
+    RegisteringComponentSlotInfo Door_L01 {
+     Prefab "{E7B18AE7BF184CC9}Prefabs/Vehicles/Liveries/UAZ469_Rebel_door_L01.et"
+    }
+    RegisteringComponentSlotInfo Door_R01 {
+     Prefab "{41D3127168ED31C6}Prefabs/Vehicles/Liveries/UAZ469_Rebel_door_R01.et"
+    }
+    RegisteringComponentSlotInfo Door_L02 {
+     Prefab "{F66C127D86978C49}Prefabs/Vehicles/Liveries/UAZ469_Rebel_door_L02.et"
+    }
+    RegisteringComponentSlotInfo Door_R02 {
+     Prefab "{2E474226CB153890}Prefabs/Vehicles/Liveries/UAZ469_Rebel_door_R02.et"
+    }
+   }
+  }
+ }
+}
