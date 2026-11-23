@@ -1,4 +1,5 @@
 // tools/validation/validate-world-zones.mjs
+// inputs: tools/grid/cells/*.json, addons/LifeFramework/Worlds/GridWorld/**, addons/LifeFramework/Worlds/DebugWorld/**, addons/LF_Everon1989/Worlds/Everon1989Grid/**, addons/LF_Everon1989/Worlds/Everon1989Town/**, tools/validation/zone-guard-baseline.json
 //
 // The world zones (docs/architecture/world-zones.md, three-worlds.md).
 //
@@ -20,13 +21,15 @@
 //    `town-` (branch ws/town-<chapter>). Slices put their world props in a grid cell with
 //    `tools\cli grid place`. Branches that existed when the guard landed are listed in
 //    tools/validation/zone-guard-baseline.json and keep working; the list never grows.
+//    A `wt sync-base` branch (ws/sync-*) is exempt only for town layers it carries unchanged from another
+//    long-lived origin branch (carriedFiles: the blob exists on that branch's own history, where its town- PR
+//    passed this guard); any other town edit on a sync branch still fails.
 //    The branch is GITHUB_HEAD_REF in CI, else the checked-out branch; main and a detached HEAD
 //    outside CI are not checked. The change set is the diff against the merge base with origin/main,
 //    untracked files included.
 // red-proof: tools/validation/world-zones-selftest.mjs plants a slice that edits Street_Hospital.layer,
 // two claims on one cell, a grid prop outside its cell, a Grid_ layer in DebugWorld and a changed annex
 // entity in DebugWorld, and asserts each is reported.
-// inputs: tools/grid/cells/*.json, addons/LifeFramework/Worlds/GridWorld/**, addons/LifeFramework/Worlds/DebugWorld/**, addons/LF_Everon1989/Worlds/Everon1989Grid/**, addons/LF_Everon1989/Worlds/Everon1989Town/**, tools/validation/zone-guard-baseline.json
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -35,6 +38,7 @@ import { fileURLToPath } from "node:url";
 import { FRAME_CELL, authoringBays, claimCellIds, claimRect, isAuthoringCell, isAuthoringClaim, isBayClaim, isFrameClaim, latticeRect } from "../grid/lattice.mjs";
 import { DEBUG_LAYERS, GRID_LAYERS, PACK_GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
 
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const BASELINE = "tools/validation/zone-guard-baseline.json";
 export const TOWN_PASS = /^town-/;
 
@@ -208,14 +212,58 @@ export function checkFreeze({ files, baseText, nowText }) {
   return { errors };
 }
 
-// The guard on a change set: { branch, files: [path], baseline: [branch] } -> { skipped?, town, errors }.
-export function checkGuard({ branch, files, baseline }) {
+// A `wt sync-base` branch (ws/sync-<base>-<stamp>) merges one long-lived branch into another and only
+// carries edits that already passed this guard in their own town- PR on that branch.
+export const SYNC_BRANCH = /^sync-/;
+
+// The town files of a sync branch that are carried, not authored: the file's content in the tree is
+// byte-identical to the file at some commit of another long-lived origin branch (any origin branch outside
+// ws/, the diff base excluded; for a sync into main, release-0.2.1). A blob nobody committed on a long-lived
+// branch (a slice's own edit hidden in a sync branch, or a hand-resolved conflict) is not carried and fails.
+// `diffBase` is the ref the change set is diffed against (origin/main, or the PR's base in CI).
+export function carriedFiles(root, files, diffBase = syncDiffBase(root)) {
+  const refs = (git(root, ["for-each-ref", "refs/remotes/origin", "--format=%(refname:short)"]) || "")
+    .split(/\r?\n/)
+    .filter((r) => r && r !== "origin" && r !== "origin/HEAD" && !r.startsWith("origin/ws/") && r !== diffBase);
+  const carried = new Set();
+  for (const f of files) {
+    const path = f.replace(/\\/g, "/");
+    const mine = existsSync(join(root, path)) ? (git(root, ["hash-object", "--", path]) || "").trim() : "";
+    const blobAt = (rev) => {
+      const out = git(root, ["rev-parse", "--verify", "--quiet", `${rev}:${path}`]);
+      return out ? out.trim() : "";
+    };
+    const found = refs.some((ref) => {
+      const commits = (git(root, ["rev-list", `${diffBase}..${ref}`, "--", path]) || "").split(/\r?\n/).filter(Boolean);
+      return [ref, ...commits].some((rev) => blobAt(rev) === mine);
+    });
+    if (found) carried.add(f);
+  }
+  return carried;
+}
+
+// The ref a change set is diffed against: the PR's own base in CI (see baseRef on release-0.2.1), else origin/main.
+function syncDiffBase(root) {
+  const base = process.env.GITHUB_BASE_REF;
+  if (!base || base === "main" || !/^[A-Za-z0-9._/-]+$/.test(base)) return "origin/main";
+  return git(root, ["rev-parse", "--verify", "--quiet", `origin/${base}`]) ? `origin/${base}` : "origin/main";
+}
+
+// The guard on a change set: { branch, files: [path], baseline: [branch], carried? } -> { skipped?, town, errors }.
+// `carried(files)` -> Set of town files a sync-base branch carries from another long-lived branch; read
+// from git only for a sync branch with a town change (tests pass their own).
+export function checkGuard({ branch, files, baseline, carried = (fs) => carriedFiles(REPO_ROOT, fs) }) {
   if (!branch || branch === "main" || branch === "HEAD") return { skipped: `branch ${branch || "unknown"}`, town: [], errors: [] };
   const slug = branch.replace(/^ws\//, "");
-  const town = files.filter((f) => zoneOfPath(f) === "town");
+  let town = files.filter((f) => zoneOfPath(f) === "town");
   if (TOWN_PASS.test(slug)) return { skipped: `town-placement pass (${slug})`, town, errors: [] };
   if (baseline.includes(branch)) return { skipped: `${branch} predates the guard (zone-guard-baseline.json)`, town, errors: [] };
-  const errors = town.map((f) => `${f}: a town layer. Slices place world props in a grid cell (tools\\cli grid place <slug> <prefab>...); town layers change only in a town-placement pass, a worktree whose slug starts with town- (docs/architecture/world-zones.md)`);
+  if (SYNC_BRANCH.test(slug) && town.length) {
+    const own = carried(town);
+    town = town.filter((f) => !own.has(f));
+    if (!town.length) return { skipped: `sync-base branch (${slug}): every town layer is carried from another long-lived branch`, town, errors: [] };
+  }
+  const errors = town.map((f) => `${f}: a town layer. Slices place world props in a grid cell (tools\\cli grid place <slug> <prefab>...); town layers change only in a town-placement pass, a worktree whose slug starts with town- (docs/architecture/world-zones.md)${SYNC_BRANCH.test(slug) ? "; a sync-base branch may only carry a town layer exactly as another long-lived branch has it (a hand-resolved conflict needs a town- worktree)" : ""}`);
   return { town, errors };
 }
 
