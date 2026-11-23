@@ -6730,8 +6730,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{544D193A3E8A461A}" {
      Id "LF-Handset_CallPolice"
-     Target_en_us "Radio the {police}"
-     Comment "Radio set action: call the police."
+     Target_en_us "Radio for an officer"
+     Comment "Radio set action: call the police. The engine renders a prefab action name itself, so the text holds no term placeholder (validate-term-sinks)."
     }
     CustomStringTableItem "{0350E5CBCEDFF757}" {
      Id "LF-Handset_CallTaxi"
@@ -8155,8 +8155,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B343B39B5EC2F09D}" {
      Id "LF-Item_HandsetRadio_Description"
-     Target_en_us "A handheld set. Calls a cab, a doctor or the {police} from wherever you stand, for a small fee."
-     Comment "Item description of the radio set."
+     Target_en_us "A handheld set. Calls a cab, a doctor or an officer from wherever you stand, for a small fee."
+     Comment "Item description of the radio set. The engine renders a prefab description itself, so the text holds no term placeholder (validate-term-sinks)."
     }
     CustomStringTableItem "{3A87AA0CD67A55F9}" {
      Id "LF-Item_HandsetRadio_Name"
@@ -14578,8 +14578,8 @@ CustomStringTableItem "{44869271883D0402}" {
   }
   CustomStringTableItem "{3655F9540576258C}" {
    Id "LF-Roadblock_Description"
-   Target_en_us "Folding roadblock kit: a barrier and four cones. Drop it at the roadside and deploy it across the road; pick any piece up to fold the set away. On-duty {police} only."
-   Comment "Inventory description of the police roadblock kit."
+   Target_en_us "Folding roadblock kit: a barrier and four cones. Drop it at the roadside and deploy it across the road; pick any piece up to fold the set away. On-duty officers only."
+   Comment "Inventory description of the police roadblock kit. The engine renders a prefab description itself, so the text holds no term placeholder (validate-term-sinks)."
   }
   CustomStringTableItem "{986CA09EB5046245}" {
    Id "LF-Roadblock_Name"
