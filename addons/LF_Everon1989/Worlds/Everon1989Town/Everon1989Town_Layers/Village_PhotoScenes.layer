@@ -5,11 +5,6 @@ LF_NpcBaseEntity PhotoScene_Police_Officer : "{284C8FEA46778B5E}Prefabs/Characte
 LF_NpcBaseEntity PhotoScene_Bank_Robber : "{456A790DEA281D4F}Prefabs/Characters/Npcs/Outfits/LF_Npc_Robber_1.et" {
  coords 195.3 -0.005 256.969
 }
-GenericEntity PhotoScene_Bank_Drill : "{4FF102B4CE9B0ED3}Prefabs/Items/Fence/LF_Drill.et" {
- coords 196.7 0.526 258.5
- angles 0 -90 0
- scale 0.9
-}
 LF_NpcBaseEntity PhotoScene_Hospital_Doctor : "{C001B9088678C653}Prefabs/Characters/Npcs/Outfits/LF_Npc_Medic_1.et" {
  coords 269.201 -0.005 250.85
  angles 0 -27.369 0
