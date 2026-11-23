@@ -2549,6 +2549,196 @@ StringTable {
      Target_en_us "The orchard is a short drive out of Saint-Philippe. Pick the apples, press them into juice. Juice pays best here."
      Comment "Pack patch of the role_trader dialogue's line where (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
     }
+    CustomStringTableItem "{BF70A798F94ADAF2}" {
+     Id "LF-Dialogue_RumorsBar_BarCarlot"
+     Target_en_us "The car lot in town sells beaters cheap. Check the tires before you sign anything."
+     Comment "Dialogue caption, spoken by the rumors_bar NPC (voiced; tools/assets/dialogue/rumors_bar). Changing it needs: tools\\cli asset dialogue rumors_bar"
+    }
+    CustomStringTableItem "{70C21B242E89E58C}" {
+     Id "LF-Dialogue_RumorsBar_BarChop"
+     Target_en_us "Cars go into the yard on the hill and parts come out. You can hear the saws from the road. That is all I know, and all I want to."
+     Comment "Dialogue caption, spoken by the rumors_bar NPC (voiced; tools/assets/dialogue/rumors_bar). Changing it needs: tools\\cli asset dialogue rumors_bar"
+    }
+    CustomStringTableItem "{113D4700A9292056}" {
+     Id "LF-Dialogue_RumorsBar_BarFence"
+     Target_en_us "A man buys odd goods behind a barn on the edge of town. Everybody sees who walks out there. Nobody says why."
+     Comment "Dialogue caption, spoken by the rumors_bar NPC (voiced; tools/assets/dialogue/rumors_bar). Changing it needs: tools\\cli asset dialogue rumors_bar"
+    }
+    CustomStringTableItem "{8AD36D9F6B369C83}" {
+     Id "LF-Dialogue_RumorsBar_BarFuel"
+     Target_en_us "There is a fuel stop out on the road. If you run dry past the farms, that is your only hope."
+     Comment "Dialogue caption, spoken by the rumors_bar NPC (voiced; tools/assets/dialogue/rumors_bar). Changing it needs: tools\\cli asset dialogue rumors_bar"
+    }
+    CustomStringTableItem "{15898CE9161AE857}" {
+     Id "LF-Dialogue_RumorsBar_BarHardware"
+     Target_en_us "The hardware store has tools. A man with a pick works faster than a man without one."
+     Comment "Dialogue caption, spoken by the rumors_bar NPC (voiced; tools/assets/dialogue/rumors_bar). Changing it needs: tools\\cli asset dialogue rumors_bar"
+    }
+    CustomStringTableItem "{8278EA4BD20127C0}" {
+     Id "LF-Dialogue_RumorsBar_BarStill"
+     Target_en_us "The old barn off the road is not empty at night. Lights, a truck with no plates, a smell like sour mash. I pour what I pour and keep quiet."
+     Comment "Dialogue caption, spoken by the rumors_bar NPC (voiced; tools/assets/dialogue/rumors_bar). Changing it needs: tools\\cli asset dialogue rumors_bar"
+    }
+    CustomStringTableItem "{CBA77E4CAD994EFE}" {
+     Id "LF-Dialogue_RumorsBar_BarTaxi"
+     Target_en_us "The taxi stand by the square. Drivers hear everything, but they only tell what pays."
+     Comment "Dialogue caption, spoken by the rumors_bar NPC (voiced; tools/assets/dialogue/rumors_bar). Changing it needs: tools\\cli asset dialogue rumors_bar"
+    }
+    CustomStringTableItem "{CC541430B2859300}" {
+     Id "LF-Dialogue_RumorsBar_SayBye"
+     Target_en_us "That is all I wanted."
+     Comment "Dialogue reply the player can pick when talking to the rumors_bar NPC."
+    }
+    CustomStringTableItem "{644D06E6810BD1CA}" {
+     Id "LF-Dialogue_RumorsBar_SayMore"
+     Target_en_us "Go on."
+     Comment "Dialogue reply the player can pick when talking to the rumors_bar NPC."
+    }
+    CustomStringTableItem "{97741DAE168CC201}" {
+     Id "LF-Dialogue_RumorsColin_ColinBlacklake"
+     Target_en_us "The north shore of Black Lake has pike, big ones. Few people bother with it, which is why the pike are big."
+     Comment "Dialogue caption, spoken by the rumors_colin NPC (voiced; tools/assets/dialogue/rumors_colin). Changing it needs: tools\\cli asset dialogue rumors_colin"
+    }
+    CustomStringTableItem "{76D199C81415647E}" {
+     Id "LF-Dialogue_RumorsColin_ColinChess"
+     Target_en_us "Men play chess on the square for small stakes. Sit down, lose gracefully, and they will tell you everything."
+     Comment "Dialogue caption, spoken by the rumors_colin NPC (voiced; tools/assets/dialogue/rumors_colin). Changing it needs: tools\\cli asset dialogue rumors_colin"
+    }
+    CustomStringTableItem "{7F8D08BBA6F068F0}" {
+     Id "LF-Dialogue_RumorsColin_ColinClinic"
+     Target_en_us "The clinic is short of hands, and always has been. If you can stay calm around blood, ask there."
+     Comment "Dialogue caption, spoken by the rumors_colin NPC (voiced; tools/assets/dialogue/rumors_colin). Changing it needs: tools\\cli asset dialogue rumors_colin"
+    }
+    CustomStringTableItem "{E8C2A1B8BE31F19F}" {
+     Id "LF-Dialogue_RumorsColin_ColinCove"
+     Target_en_us "Somebody fishes the cove on the bay every dusk. A quiet type. He comes back with a full bucket and tells nobody where he goes."
+     Comment "Dialogue caption, spoken by the rumors_colin NPC (voiced; tools/assets/dialogue/rumors_colin). Changing it needs: tools\\cli asset dialogue rumors_colin"
+    }
+    CustomStringTableItem "{653A43625E1B6543}" {
+     Id "LF-Dialogue_RumorsColin_ColinPub"
+     Target_en_us "The Chotain pub has a back room. Cards on Friday nights, I am told, and the barkeeper keeps that door himself. I only repair watches."
+     Comment "Dialogue caption, spoken by the rumors_colin NPC (voiced; tools/assets/dialogue/rumors_colin). Changing it needs: tools\\cli asset dialogue rumors_colin"
+    }
+    CustomStringTableItem "{F76431B3459C6B25}" {
+     Id "LF-Dialogue_RumorsColin_ColinRange"
+     Target_en_us "There is a range at the edge of town where people practice. Mind the flags, and mind the neighbors."
+     Comment "Dialogue caption, spoken by the rumors_colin NPC (voiced; tools/assets/dialogue/rumors_colin). Changing it needs: tools\\cli asset dialogue rumors_colin"
+    }
+    CustomStringTableItem "{30426D9B2A810087}" {
+     Id "LF-Dialogue_RumorsColin_ColinSeedfeed"
+     Target_en_us "Seed and feed sells everything a farm needs. Ask the clerk what is moving this week. He tells you if you buy something."
+     Comment "Dialogue caption, spoken by the rumors_colin NPC (voiced; tools/assets/dialogue/rumors_colin). Changing it needs: tools\\cli asset dialogue rumors_colin"
+    }
+    CustomStringTableItem "{558D294E13783FA5}" {
+     Id "LF-Dialogue_RumorsColin_ColinWholesale"
+     Target_en_us "The wholesale counter at the dock buys in bulk. If you have crates to sell, do not take less than the market gives."
+     Comment "Dialogue caption, spoken by the rumors_colin NPC (voiced; tools/assets/dialogue/rumors_colin). Changing it needs: tools\\cli asset dialogue rumors_colin"
+    }
+    CustomStringTableItem "{3CC8029B0D1A31DB}" {
+     Id "LF-Dialogue_RumorsColin_ColinWoodlot"
+     Target_en_us "The woodlot behind the town has trees marked for cutting. A man with an axe can make an honest day of it."
+     Comment "Dialogue caption, spoken by the rumors_colin NPC (voiced; tools/assets/dialogue/rumors_colin). Changing it needs: tools\\cli asset dialogue rumors_colin"
+    }
+    CustomStringTableItem "{4F5050D6563C8611}" {
+     Id "LF-Dialogue_RumorsColin_SayBye"
+     Target_en_us "That is all I wanted."
+     Comment "Dialogue reply the player can pick when talking to the rumors_colin NPC."
+    }
+    CustomStringTableItem "{8463C15F67FE38A6}" {
+     Id "LF-Dialogue_RumorsColin_SayMore"
+     Target_en_us "Go on."
+     Comment "Dialogue reply the player can pick when talking to the rumors_colin NPC."
+    }
+    CustomStringTableItem "{2FA98E3511DAB321}" {
+     Id "LF-Dialogue_RumorsInformant_InfCompound"
+     Target_en_us "The farm compound keeps its gate shut and its dogs loose. A lot of traffic for a farm that grows nothing."
+     Comment "Dialogue caption, spoken by the rumors_informant NPC (voiced; tools/assets/dialogue/rumors_informant). Changing it needs: tools\\cli asset dialogue rumors_informant"
+    }
+    CustomStringTableItem "{13D0C7B4BBF0666A}" {
+     Id "LF-Dialogue_RumorsInformant_InfDock"
+     Target_en_us "The dock warehouse has its lights on after the last boat. Crates go in light and come out heavy. I just walk past."
+     Comment "Dialogue caption, spoken by the rumors_informant NPC (voiced; tools/assets/dialogue/rumors_informant). Changing it needs: tools\\cli asset dialogue rumors_informant"
+    }
+    CustomStringTableItem "{616061E38726C2E8}" {
+     Id "LF-Dialogue_RumorsInformant_InfMast"
+     Target_en_us "Up by the hilltop mast somebody left a camp. Fresh boot prints, a cold fire. You can see the whole valley from there."
+     Comment "Dialogue caption, spoken by the rumors_informant NPC (voiced; tools/assets/dialogue/rumors_informant). Changing it needs: tools\\cli asset dialogue rumors_informant"
+    }
+    CustomStringTableItem "{90DAFE2641C15FF1}" {
+     Id "LF-Dialogue_RumorsInformant_InfScrap"
+     Target_en_us "Cars go into the scrapyard and the plates do not come out. Ask yourself why a scrapyard keeps a night man."
+     Comment "Dialogue caption, spoken by the rumors_informant NPC (voiced; tools/assets/dialogue/rumors_informant). Changing it needs: tools\\cli asset dialogue rumors_informant"
+    }
+    CustomStringTableItem "{4AB04D56317AC0ED}" {
+     Id "LF-Dialogue_RumorsInformant_InfTrucks"
+     Target_en_us "Trucks roll into the north east yard at two in the morning with the lights off. Same trucks, never in daylight."
+     Comment "Dialogue caption, spoken by the rumors_informant NPC (voiced; tools/assets/dialogue/rumors_informant). Changing it needs: tools\\cli asset dialogue rumors_informant"
+    }
+    CustomStringTableItem "{E6ACE3A478F890A8}" {
+     Id "LF-Dialogue_RumorsInformant_SayBye"
+     Target_en_us "That is all I wanted."
+     Comment "Dialogue reply the player can pick when talking to the rumors_informant NPC."
+    }
+    CustomStringTableItem "{7A6D880F3A71A0C0}" {
+     Id "LF-Dialogue_RumorsInformant_SayMore"
+     Target_en_us "Go on."
+     Comment "Dialogue reply the player can pick when talking to the rumors_informant NPC."
+    }
+    CustomStringTableItem "{4401B52D207DA871}" {
+     Id "LF-Dialogue_RumorsOdilon_OdilonChurch"
+     Target_en_us "The church is open to anyone. The bell rings the hour, and the priest knows more about this town than the baker does."
+     Comment "Dialogue caption, spoken by the rumors_odilon NPC (voiced; tools/assets/dialogue/rumors_odilon). Changing it needs: tools\\cli asset dialogue rumors_odilon"
+    }
+    CustomStringTableItem "{7D28371C20A6F641}" {
+     Id "LF-Dialogue_RumorsOdilon_OdilonHarbor"
+     Target_en_us "The harbor master keeps a tally of every crate that lands. Honest work, if you can count and stay awake."
+     Comment "Dialogue caption, spoken by the rumors_odilon NPC (voiced; tools/assets/dialogue/rumors_odilon). Changing it needs: tools\\cli asset dialogue rumors_odilon"
+    }
+    CustomStringTableItem "{A675E383D5256099}" {
+     Id "LF-Dialogue_RumorsOdilon_OdilonMarket"
+     Target_en_us "Set up at the market on a good morning and the whole town buys. Bread, honey, apples, whatever you carry."
+     Comment "Dialogue caption, spoken by the rumors_odilon NPC (voiced; tools/assets/dialogue/rumors_odilon). Changing it needs: tools\\cli asset dialogue rumors_odilon"
+    }
+    CustomStringTableItem "{BEB849D0A13ACB59}" {
+     Id "LF-Dialogue_RumorsOdilon_OdilonMine"
+     Target_en_us "The mine at Coalman's Brow takes anyone with a pick and a strong back. The coal goes down to the power plant on the edge of town."
+     Comment "Dialogue caption, spoken by the rumors_odilon NPC (voiced; tools/assets/dialogue/rumors_odilon). Changing it needs: tools\\cli asset dialogue rumors_odilon"
+    }
+    CustomStringTableItem "{CBC38A74850A7693}" {
+     Id "LF-Dialogue_RumorsOdilon_OdilonOrchard"
+     Target_en_us "Pick apples at the orchard, press them for juice, and the market buys what you carry. I did it myself the summer my knees went."
+     Comment "Dialogue caption, spoken by the rumors_odilon NPC (voiced; tools/assets/dialogue/rumors_odilon). Changing it needs: tools\\cli asset dialogue rumors_odilon"
+    }
+    CustomStringTableItem "{D2BDBDA9EABBE81A}" {
+     Id "LF-Dialogue_RumorsOdilon_OdilonParcel"
+     Target_en_us "The post office wants couriers. Walk a parcel across town, earn a little, and learn every street on the way."
+     Comment "Dialogue caption, spoken by the rumors_odilon NPC (voiced; tools/assets/dialogue/rumors_odilon). Changing it needs: tools\\cli asset dialogue rumors_odilon"
+    }
+    CustomStringTableItem "{24B04451503FB9B1}" {
+     Id "LF-Dialogue_RumorsOdilon_OdilonPond"
+     Target_en_us "There is a pond past the houses where the carp sit lazy at noon. I fished it for years and never needed a boat."
+     Comment "Dialogue caption, spoken by the rumors_odilon NPC (voiced; tools/assets/dialogue/rumors_odilon). Changing it needs: tools\\cli asset dialogue rumors_odilon"
+    }
+    CustomStringTableItem "{21A3C36E77678907}" {
+     Id "LF-Dialogue_RumorsOdilon_OdilonSawmill"
+     Target_en_us "The sawmill is always short a pair of hands. Logs come in from the woodlot, boards go out, and the foreman asks few questions."
+     Comment "Dialogue caption, spoken by the rumors_odilon NPC (voiced; tools/assets/dialogue/rumors_odilon). Changing it needs: tools\\cli asset dialogue rumors_odilon"
+    }
+    CustomStringTableItem "{BD2839E95A2C14B2}" {
+     Id "LF-Dialogue_RumorsOdilon_OdilonSmokehouse"
+     Target_en_us "The smokehouse by the dock pays a fair price for fish. Bring it fresh and nobody will haggle."
+     Comment "Dialogue caption, spoken by the rumors_odilon NPC (voiced; tools/assets/dialogue/rumors_odilon). Changing it needs: tools\\cli asset dialogue rumors_odilon"
+    }
+    CustomStringTableItem "{D678E5A386082763}" {
+     Id "LF-Dialogue_RumorsOdilon_SayBye"
+     Target_en_us "That is all I wanted."
+     Comment "Dialogue reply the player can pick when talking to the rumors_odilon NPC."
+    }
+    CustomStringTableItem "{C053A1041B7B7DA1}" {
+     Id "LF-Dialogue_RumorsOdilon_SayMore"
+     Target_en_us "Go on."
+     Comment "Dialogue reply the player can pick when talking to the rumors_odilon NPC."
+    }
     CustomStringTableItem "{3441F00000000001}" {
      Id "LF-Dialogue_Rumour_SayAsk"
      Target_en_us "Any talk in the cafe lately?"

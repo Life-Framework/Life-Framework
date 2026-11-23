@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7210F7AE6E96724D}Configs/Dialogue/LF_Dialogue_RumorsOdilon.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

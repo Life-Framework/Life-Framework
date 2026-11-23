@@ -34,6 +34,9 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	[Attribute("", desc: "Editor binding: vehicle identifier this lock accepts. Leave empty to auto-generate at spawn.")]
 	protected string m_sDebugIdentifier;
 
+	[Attribute("0", desc: "A service car of this prefab is a medic service car (#4432): it opens for a medic on duty instead of an officer on duty. Off: police.")]
+	protected bool m_bMedicService;
+
 	[Attribute("0", desc: "The engine needs a matching key (or a hotwire, #412) to start. Off keeps the vanilla free start.")]
 	protected bool m_bIgnitionLocked;
 
@@ -312,7 +315,11 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 		if (!m_bServiceVehicle || !user)
 			return false;
 
-		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
+		int state = LF_AccountReplication.GetState(user);
+		if (m_bMedicService)
+			return LF_MedicDuty.IsOnDutyState(state);
+
+		return LF_AccountStateBits.IsOnDutyPolice(state);
 	}
 
 	//------------------------------------------------------------------------------------------------
