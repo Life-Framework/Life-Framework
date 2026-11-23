@@ -118,7 +118,7 @@ GenericEntity Fit_saint_philippe_clinic_lf_sign_fascia : "{4697D9464B596C24}Pref
  angleY 152
 }
 GenericEntity Fit_saint_philippe_clinic_lf_clinic_shortage_notice : "{D747400072C9C9F6}Prefabs/Props/Signs/LF_ClinicShortageNotice.et" {
- coords 4432.918 12.45 10777.499
+ coords 4430.355 12.45 10776.357
  angleY 152
 }
 LF_NpcBaseEntity Fit_saint_philippe_clinic_clinic_doctor : "{C001B9088678C653}Prefabs/Characters/Npcs/Outfits/LF_Npc_Medic_1.et" {
