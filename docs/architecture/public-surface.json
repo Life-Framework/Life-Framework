@@ -74,6 +74,7 @@
     "LF_StallConfig",
     "LF_SpawnHubConfig",
     "LF_SurvivalConfig",
+    "LF_RankFleetConfig",
     "LF_TaxiFareConfig",
     "LF_TradeUnlocksConfig",
     "LF_TermsConfig",

@@ -1,4 +1,4 @@
-// red-proof: RedProof() skips loading the catalogue, so the catalogue assertions fail (RED-OK). Also red on main before this change: 50 rows, 15 hats, 2 boots, 1 backpack and 1 pair of gloves.
+// red-proof: RedProof() skips loading the catalogue, so the catalogue assertions fail (RED-OK). Also red on main before this change: 50 rows, 15 hats, 2 boots, 1 backpack and 1 pair of gloves; and 4 backpacks (not 5) once the veshmeshok row moved to the pack canvas prefab (#4245).
 //! shop/clothing-catalogue: the island clothing outlets (clothing_rack, workwear_counter, surplus_stall) carry
 //! every civilian vanilla wearable the game allows us to sell: each catalogue row they sell has a real prefab
 //! and a price, hats, footwear, gloves and backpacks each have a range, every backpack is priced by its
@@ -81,8 +81,8 @@ class LF_Test_EveronClothingCatalogue : LF_Test
 				footwear++;
 			else if (path.Contains("/Handwear/"))
 				gloves++;
-			else if (path.Contains("/Backpacks/"))
-				backpacks++;
+			else if (path.Contains("/Backpacks/") || item.m_sId.StartsWith("backpack_"))
+				backpacks++; // by id too: backpack_veshmeshok is the pack's canvas prefab, not under /Backpacks/
 		}
 
 		ctx.True(rows >= MIN_ROWS, string.Format("clothing outlets sell at least %1 rows (%2 do)", MIN_ROWS, rows));
