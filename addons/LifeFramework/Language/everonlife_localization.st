@@ -12687,6 +12687,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Pager"
      Comment "Title of the pager card."
     }
+    CustomStringTableItem "{117B8E27179EDAD3}" {
+     Id "LF-Paper_DateLine"
+     Target_en_us "Date %1"
+     Comment "Date line of a printed slip. %1 is the in-game date and time."
+    }
+    CustomStringTableItem "{D625B9E68D445A88}" {
+     Id "LF-Paper_DeliveryLine"
+     Target_en_us "%1: %2 parcel(s), paid {currency:sym}%3"
+     Comment "Delivery note line. %1 item, %2 amount, %3 pay."
+    }
+    CustomStringTableItem "{3D2C43C802AE9DE9}" {
+     Id "LF-Paper_DeliveryTitle"
+     Target_en_us "DELIVERY NOTE"
+     Comment "Title line of a delivery note printed at a parcel hand-in (#4465)."
+    }
+    CustomStringTableItem "{0D96A126A3D70115}" {
+     Id "LF-Paper_ItemGoods"
+     Target_en_us "Goods"
+     Comment "Item name on a weigh slip for a sale at a buyer."
+    }
+    CustomStringTableItem "{391EC1A04E968AA5}" {
+     Id "LF-Paper_ItemGrain"
+     Target_en_us "Grain"
+     Comment "Item name on a weigh slip for a granary unload."
+    }
+    CustomStringTableItem "{597C99C21FB0FA59}" {
+     Id "LF-Paper_ItemParcel"
+     Target_en_us "Parcel"
+     Comment "Item name on a delivery note."
+    }
+    CustomStringTableItem "{49A5BE10D89F3532}" {
+     Id "LF-Paper_ItemShift"
+     Target_en_us "Shift pay"
+     Comment "Item name on a payslip."
+    }
+    CustomStringTableItem "{8F548416892E58B9}" {
+     Id "LF-Paper_PayLine"
+     Target_en_us "%1: %2 shift(s), paid {currency:sym}%3"
+     Comment "Payslip line. %1 item, %2 amount, %3 pay."
+    }
+    CustomStringTableItem "{B026936CA93FA973}" {
+     Id "LF-Paper_PayTitle"
+     Target_en_us "PAYSLIP"
+     Comment "Title line of a payslip printed after a paid shift (#4465)."
+    }
+    CustomStringTableItem "{D4F6FD7E91CBCA75}" {
+     Id "LF-Paper_WeighLine"
+     Target_en_us "%1: %2 lot(s), paid {currency:sym}%3"
+     Comment "Weigh slip line. %1 item, %2 amount, %3 price paid."
+    }
+    CustomStringTableItem "{2C680CA6A955A645}" {
+     Id "LF-Paper_WeighTitle"
+     Target_en_us "WEIGH SLIP"
+     Comment "Title line of a weigh slip printed at a buyer (#4465)."
+    }
     CustomStringTableItem "{7D3A91E4C2B8F651}" {
      Id "LF-Parcel_DroppedNearby"
      Target_en_us "You dropped the parcel. It is on the ground nearby, marked with a glow."

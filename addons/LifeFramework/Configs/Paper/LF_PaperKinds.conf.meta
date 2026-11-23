@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9807AA6AAF28F67B}Configs/Paper/LF_PaperKinds.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
