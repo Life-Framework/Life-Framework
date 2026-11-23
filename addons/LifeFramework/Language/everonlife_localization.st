@@ -3430,6 +3430,111 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You can't cover {currency:sym}%1, so you take the time."
      Comment "Toast to the suspect: cash and bank fall short of the fine; they go to the cell. %1 = the fine in dollars."
     }
+    CustomStringTableItem "{C7F8DEA56AF6FF3E}" {
+     Id "LF-ChargeSheet_Capped"
+     Target_en_us "Your rank limits this fine to {currency:sym}%1."
+     Comment "Note under the total when the rank cap cut the fine. %1 = the cap in dollars."
+    }
+    CustomStringTableItem "{B8446036CAFF4715}" {
+     Id "LF-ChargeSheet_Close"
+     Target_en_us "Close"
+     Comment "Button: put the charge sheet away unsigned."
+    }
+    CustomStringTableItem "{69E3DA5CDB56BD12}" {
+     Id "LF-ChargeSheet_Minutes"
+     Target_en_us "%1 min"
+     Comment "Time on the charge sheet. %1 = minutes."
+    }
+    CustomStringTableItem "{C508E98273CBBFC9}" {
+     Id "LF-ChargeSheet_Money"
+     Target_en_us "{currency:sym}%1"
+     Comment "Money amount on the charge sheet. %1 = dollars."
+    }
+    CustomStringTableItem "{66067AFF1E8DAEE8}" {
+     Id "LF-ChargeSheet_NoSheet"
+     Target_en_us "There is no open charge sheet. Book the suspect again."
+     Comment "Toast: the signature came with no open sheet."
+    }
+    CustomStringTableItem "{D845C156A3BF5987}" {
+     Id "LF-ChargeSheet_None"
+     Target_en_us "None"
+     Comment "Foot of the charge sheet: no fine or no time."
+    }
+    CustomStringTableItem "{C9A056B424C32FB9}" {
+     Id "LF-ChargeSheet_NoneTicked"
+     Target_en_us "Tick at least one charge before you sign."
+     Comment "Toast and note: nothing ticked on the sheet."
+    }
+    CustomStringTableItem "{835F52B991AB4548}" {
+     Id "LF-ChargeSheet_NothingYet"
+     Target_en_us "Nothing is charged until you sign."
+     Comment "Note under the total before anything is ticked."
+    }
+    CustomStringTableItem "{F15EDBFA8B381B38}" {
+     Id "LF-ChargeSheet_OverCap"
+     Target_en_us "Over cap"
+     Comment "Greyed row status: the rank fine cap is already reached. %1 = the cap in dollars."
+    }
+    CustomStringTableItem "{36EB17C89AD9A18C}" {
+     Id "LF-ChargeSheet_Pick"
+     Target_en_us "Tick the charges for this booking, then sign."
+     Comment "Line under the charge sheet heading."
+    }
+    CustomStringTableItem "{E82CC390D85B24C1}" {
+     Id "LF-ChargeSheet_ReadyNote"
+     Target_en_us "Sign to offer the suspect the fine or the time."
+     Comment "Note under the total once a charge is ticked."
+    }
+    CustomStringTableItem "{77A83752D2D25124}" {
+     Id "LF-ChargeSheet_RowBoth"
+     Target_en_us "{currency:sym}%1, %2 min"
+     Comment "Row status: the charge fine and time. %1 = dollars, %2 = minutes."
+    }
+    CustomStringTableItem "{1C7B8A037C80487D}" {
+     Id "LF-ChargeSheet_RowFine"
+     Target_en_us "{currency:sym}%1"
+     Comment "Row status: a fine-only charge. %1 = dollars."
+    }
+    CustomStringTableItem "{BE3A5D08F999C233}" {
+     Id "LF-ChargeSheet_RowJail"
+     Target_en_us "Jail, %1 min"
+     Comment "Row status: a jail-only charge. %1 = minutes."
+    }
+    CustomStringTableItem "{70A741E7B4D11E90}" {
+     Id "LF-ChargeSheet_Sign"
+     Target_en_us "Sign"
+     Comment "Button: sign the charge sheet and send the booking offer."
+    }
+    CustomStringTableItem "{C4B5F5A93D276780}" {
+     Id "LF-ChargeSheet_Stacked"
+     Target_en_us "Stacked"
+     Comment "Greyed row status: another ticked charge of the same group counts instead."
+    }
+    CustomStringTableItem "{0891C336368D2A53}" {
+     Id "LF-ChargeSheet_Tick"
+     Target_en_us "Tick"
+     Comment "Button on an open charge row: add it to the sheet."
+    }
+    CustomStringTableItem "{946CEC656180D415}" {
+     Id "LF-ChargeSheet_Title"
+     Target_en_us "Charge sheet"
+     Comment "Heading of the charge sheet paper the booking officer signs."
+    }
+    CustomStringTableItem "{6A50B06BBA8655E8}" {
+     Id "LF-ChargeSheet_TotalFine"
+     Target_en_us "Total fine"
+     Comment "Foot of the charge sheet: the fine the sheet asks for."
+    }
+    CustomStringTableItem "{E3534A731156B2B9}" {
+     Id "LF-ChargeSheet_TotalTime"
+     Target_en_us "Time in the cell"
+     Comment "Foot of the charge sheet: the time the sheet asks for."
+    }
+    CustomStringTableItem "{45572A2EE371E594}" {
+     Id "LF-ChargeSheet_Untick"
+     Target_en_us "Untick"
+     Comment "Button on a ticked charge row: take it off the sheet."
+    }
     CustomStringTableItem "{294B1C333502C014}" {
      Id "LF-Chess_BlackInCheck"
      Target_en_us "Black to move, in check"
