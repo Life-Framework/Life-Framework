@@ -6055,6 +6055,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Evidence"
      Comment "Toast title for scene evidence."
     }
+    CustomStringTableItem "{6D4D3AC06971B7AB}" {
+     Id "LF-ExportBoard_Label"
+     Target_en_us "%1 x %2 to %3"
+     Comment "Export board line, left: %1 count, %2 goods, %3 destination."
+    }
+    CustomStringTableItem "{549877E1A15E5C3B}" {
+     Id "LF-ExportBoard_Next"
+     Target_en_us "Reach Delivery level 10, then take one order here."
+     Comment "Sign catalog 'next' text of the export order board."
+    }
+    CustomStringTableItem "{4D2F0366855B9C5F}" {
+     Id "LF-ExportBoard_None"
+     Target_en_us "No export orders open"
+     Comment "Export board: the line printed when the book is empty."
+    }
+    CustomStringTableItem "{B8ED2D4329B98696}" {
+     Id "LF-ExportBoard_Take"
+     Target_en_us "Take the order: %1"
+     Comment "Action on the export order board. %1 = the line, e.g. '20 x iron bars to the steamer'."
+    }
+    CustomStringTableItem "{97ECFD4AF3EADE58}" {
+     Id "LF-ExportBoard_Taken"
+     Target_en_us "taken"
+     Comment "Export board: shown for a taken order when the reader does not know the hauler's name."
+    }
+    CustomStringTableItem "{4053BE6CB7189143}" {
+     Id "LF-ExportBoard_Title"
+     Target_en_us "Export orders"
+     Comment "Sign title of the dock export order board."
+    }
+    CustomStringTableItem "{F45CF14B1EA62E15}" {
+     Id "LF-ExportBoard_Value"
+     Target_en_us "{currency:sym}%1 by %2"
+     Comment "Export board line, right, an open order: %1 pay in dollars, %2 deadline (24 h clock)."
+    }
+    CustomStringTableItem "{E694C546DCD90482}" {
+     Id "LF-ExportBoard_ValueTaken"
+     Target_en_us "{currency:sym}%1 by %2 - %3"
+     Comment "Export board line, right, a taken order: %1 pay, %2 deadline, %3 the hauler's name if known else 'taken'."
+    }
+    CustomStringTableItem "{0CD0D32BF7C637E8}" {
+     Id "LF-ExportBoard_What"
+     Target_en_us "Orders from the steamer and the freighters: bring the goods to the crane before the deadline."
+     Comment "Sign catalog 'what' text of the export order board (the face prints the live orders)."
+    }
     CustomStringTableItem "{033372B427C8F462}" {
      Id "LF-ExportOrder_RefuseGone"
      Target_en_us "That order is no longer on the board."
@@ -6084,6 +6129,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-ExportOrder_RefuseTaken"
      Target_en_us "Another hauler already took that order."
      Comment "Export order board: someone else holds the order."
+    }
+    CustomStringTableItem "{74ADDCEE01ADC72A}" {
+     Id "LF-ExportOrder_Taken"
+     Target_en_us "Order taken. Hand it in at the dock crane by %1."
+     Comment "Toast after taking an export order. %1 = the deadline (24 h clock)."
     }
     CustomStringTableItem "{E6E02AC329CA9010}" {
      Id "LF-Farm_CabbageSeeds"
