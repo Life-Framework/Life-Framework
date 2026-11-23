@@ -1,0 +1,38 @@
+{
+  "name": "carry_loop",
+  "about": "Resident carries a box: both hands under it at belly height, elbows tucked, standing at a shoulder-width stance with a slow weight shift and a small lift. The box is a prop the resident holds in the world.",
+  "fps": 30,
+  "frames": 48,
+  "loop": true,
+  "bones": "body",
+  "keys": [
+    {
+      "frame": 0,
+      "hips": [-0.012, -0.04, 0],
+      "turn": { "Spine1": [-4, 0, 0], "Spine3": [-3, 0, 0], "Neck1": [4, 0, 0] },
+      "legs": {
+        "left": { "foot": [-0.13, 0.1, 0.03], "yaw": 8 },
+        "right": { "foot": [0.13, 0.1, 0.0], "yaw": 8 }
+      },
+      "arms": {
+        "right": { "hand": [0.17, 0.98, 0.28], "elbow": [0.36, 0.95, 0.05], "fingers": [-0.4, 0.2, 1], "palm": [-1, 0.1, 0] },
+        "left": { "hand": [-0.17, 0.98, 0.28], "elbow": [-0.36, 0.95, 0.05], "fingers": [0.4, 0.2, 1], "palm": [1, 0.1, 0] }
+      },
+      "curl": { "right": 45, "left": 45 }
+    },
+    {
+      "frame": 24,
+      "hips": [0.016, -0.05, 0.01],
+      "turn": { "Spine1": [-5, 2, 0], "Spine3": [-3, 2, 0], "Neck1": [4, -2, 0] },
+      "legs": {
+        "left": { "foot": [-0.13, 0.1, 0.03], "yaw": 8 },
+        "right": { "foot": [0.13, 0.1, 0.0], "yaw": 8 }
+      },
+      "arms": {
+        "right": { "hand": [0.17, 1.0, 0.29], "elbow": [0.36, 0.97, 0.05], "fingers": [-0.4, 0.2, 1], "palm": [-1, 0.1, 0] },
+        "left": { "hand": [-0.17, 1.0, 0.29], "elbow": [-0.36, 0.97, 0.05], "fingers": [0.4, 0.2, 1], "palm": [1, 0.1, 0] }
+      },
+      "curl": { "right": 45, "left": 45 }
+    }
+  ]
+}
