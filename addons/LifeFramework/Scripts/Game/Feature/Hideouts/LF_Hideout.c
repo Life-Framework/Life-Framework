@@ -816,6 +816,26 @@ class LF_Hideout
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The toast key for a refused stash open (#4546): no owner, the prospect words for a gang
+	//! prospect, otherwise "not a member".
+	static string StashRefusalKey(string characterId, string hideoutId)
+	{
+		string orgId = GetOwner(hideoutId);
+		if (orgId.IsEmpty())
+			return "#LF-HideoutStash_NoOwner";
+
+		LF_Organization org = LF_OrganizationManager.Get(orgId);
+		if (org)
+		{
+			string prospect = LF_OrgProspect.RefusalFor(org, characterId, LF_EOrganizationPermission.USE_STASH);
+			if (!prospect.IsEmpty())
+				return prospect;
+		}
+
+		return "#LF-HideoutStash_NotMember";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool CanProcess(string characterId, string hideoutId)
 	{
 		return EvaluateProcess(characterId, hideoutId, true);

@@ -1,0 +1,16 @@
+{
+  "section": "org_prospects",
+  "class": "LF_OrgProspectSavePayload",
+  "version": 1,
+  "roots": "LF_OrgProspectRow",
+  "records": {
+    "LF_OrgProspectRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterId",
+        "string m_sOrgId",
+        "int m_iJoinedAt"
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{88E315F73AF6FDF6}Sounds/Dialogue/desk_sergeant/Dialogue_desk_sergeant.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

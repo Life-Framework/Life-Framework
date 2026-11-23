@@ -1,0 +1,88 @@
+{
+  "id": "desk_sergeant",
+  "name": "DeskSergeant",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Dialogue_DeskSergeant_Name",
+  "voice": {
+    "id": "pNInz6obpgDQGcFmaJgB",
+    "sex": "male",
+    "name": "Adam - Dominant, Firm",
+    "why": "A firm, flat American baritone: a desk sergeant who has booked ten thousand people and is not impressed. No other NPC uses this voice.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.6,
+      "similarity_boost": 0.75,
+      "style": 0.1,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 900,
+  "hear_range_m": 6,
+  "start": "ticket",
+  "nodes": [
+    {
+      "id": "ticket",
+      "line": "ticket",
+      "options": [
+        {
+          "text": "book",
+          "next": "booking"
+        },
+        {
+          "text": "pay",
+          "next": "pay_now"
+        },
+        {
+          "text": "cell",
+          "next": "cell"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "booking",
+      "line": "booking",
+      "options_from": "ticket"
+    },
+    {
+      "id": "pay_now",
+      "line": "pay_now",
+      "options_from": "ticket"
+    },
+    {
+      "id": "cell",
+      "line": "cell",
+      "options_from": "ticket"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "ticket": {
+      "text": "Paying a ticket? Put it on the counter and I'll stamp it."
+    },
+    "booking": {
+      "text": "Booking? Sign the sheet where it's marked. Name, charge, time. Then the stamp, and it's official."
+    },
+    "pay_now": {
+      "text": "You can pay the fine now and walk out, or serve the time. Cash only. No checks."
+    },
+    "cell": {
+      "text": "The cell is down the hall, second door. Mind the step. Someone will let you out when your time is up."
+    },
+    "bye": {
+      "text": "Good day. Keep your paperwork."
+    }
+  },
+  "replies": {
+    "book": "I'm here to be booked.",
+    "pay": "Can I pay it now?",
+    "cell": "Where do I serve it?",
+    "bye": "That's all. Goodbye."
+  }
+}

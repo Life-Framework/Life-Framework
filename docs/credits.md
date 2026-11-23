@@ -229,6 +229,8 @@ Repainted vehicle bodies and door plates written by `tools\cli livery build`.
 | LF_UAZ469_Rebel | Derived from Bohemia Interactive `UAZ469_Body_CIV_BLUE.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Rebel mud-and-olive repaint and hand-painted door number for the UAZ469 | `addons/LF_Everon1989/Assets/Liveries/UAZ469/` |
 | LF_Ural4320_Rebel | Derived from Bohemia Interactive `Ural_4320_Body_CIV_Forest.emat` (Arma Public License, base-game asset) | Rebel mud-and-olive repaint for the Ural4320 | `addons/LF_Everon1989/Assets/Liveries/Ural4320/` |
 | LF_S1203_Police | Derived from Bohemia Interactive `S1203_body.emat` (Arma Public License, base-game asset) | Police repaint for the S1203 | `addons/LF_Everon1989/Assets/Liveries/S1203/` |
+| LF_UAZ452_Ambulance | Derived from Bohemia Interactive `uaz452_body_VAI.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | White ambulance repaint and AMBULANCE side plates for the UAZ452 | `addons/LF_Everon1989/Assets/Liveries/UAZ452/` |
+| LF_S1203_Ambulance | Derived from Bohemia Interactive `S1203_body.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | White ambulance repaint with red stripe and AMBULANCE side plates for the S1203 | `addons/LF_Everon1989/Assets/Liveries/S1203/` |
 
 ## Contraband labels
 
@@ -244,3 +246,5 @@ English print for the cigarette pack and the vodka bottle (#4383). The brands GA
 | Asset | Source and license | What it is for | Where |
 |---|---|---|---|
 | Work-site sounds: shift whistle, mine tool bed, sawmill tool bed (`Sounds/Work/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-23 on the maintainer's Starter plan, same terms as the taser sounds above (vanilla had no shift whistle or matching loop) | `tools/assets/site-ambience/site-ambience.json` (every generation: prompt, parameters, date) and `addons/LF_Everon1989/Sounds/Work/manifest.json` |
+| Desk sergeant's five lines (`LF_Everon1989/Sounds/Dialogue/desk_sergeant/`) | ElevenLabs text-to-speech, voice "Adam - Dominant, Firm" (ElevenLabs premade). Voice generated with ElevenLabs | https://elevenlabs.io | The maintainer's Starter plan (commercial use allowed). Generated 2026-11-23 | `tools/assets/dialogue/desk_sergeant/elevenlabs.json`, `dialogue.json` |
+| Booking typewriter and ink pad stamp sounds (`LF_Everon1989/Sounds/Police/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-23; the base game has no typewriter or stamp sound | `tools/assets/booking-sfx/sounds.json` |
