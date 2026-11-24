@@ -47,8 +47,17 @@ export function parseEntities(text) {
     const closes = (line.match(/\}/g) ?? []).length;
     const top = stack[stack.length - 1];
     if (h) {
-      const node = { cls: h[1], name: h[2] ?? "", ref: h[3] ?? null, lines: [], children: [], entity: true };
+      const node = { cls: h[1], name: h[2] ?? "", ref: h[3] ?? null, lines: [], children: [], entity: true, grp: /^\s*\$grp\s/.test(raw) };
       nearestEntity(stack).children.push(node);
+      stack.push(node);
+      continue;
+    }
+    // A `$grp LightEntity { LightAmbient { ... } LightUp { ... } }` block holds one entity per member (vanilla lamps write
+    // their lights this way): each member is an entity of the group's class, the group itself is not one (#4763).
+    const member = top.grp ? /^\s*(\w+)\s*\{\s*$/.exec(raw) : null;
+    if (member) {
+      const node = { cls: top.cls, name: member[1], ref: null, lines: [], children: [], entity: true };
+      top.children.push(node);
       stack.push(node);
       continue;
     }
@@ -56,7 +65,15 @@ export function parseEntities(text) {
     for (let i = 0; i < opens; i++) stack.push({ entity: false, children: [] });
     for (let i = 0; i < closes && stack.length > 1; i++) stack.pop();
   }
-  return root.children;
+  return ungroup(root.children);
+}
+
+// A `$grp` node is only a container: its members take its place.
+function ungroup(nodes) {
+  return nodes.flatMap((n) => {
+    n.children = ungroup(n.children);
+    return n.grp ? n.children : [n];
+  });
 }
 
 function nearestEntity(stack) {

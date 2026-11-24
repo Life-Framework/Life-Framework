@@ -60,7 +60,7 @@
     {
       "id": "butcher-counter-1",
       "name": "Butcher_counter_1",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "prefab": "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et",
       "role": "counter",
       "verb": "against wall",
       "offset": [
@@ -71,12 +71,13 @@
       "yaw": 0,
       "wall": "+z",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": 0.037
     },
     {
       "id": "butcher-counter-2",
       "name": "Butcher_counter_2",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "prefab": "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et",
       "role": "counter",
       "verb": "against wall",
       "offset": [
@@ -87,7 +88,8 @@
       "yaw": 0,
       "wall": "+x",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": 0.037
     },
     {
       "id": "butcher-till",
@@ -133,14 +135,15 @@
       "yaw": 90,
       "wall": "-z",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": 0.039
     },
     {
       "id": "butcher-freezer",
       "name": "Butcher_freezer",
       "prefab": "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et",
       "role": "dressing",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         -5.2,
         0.254,
@@ -149,7 +152,8 @@
       "yaw": 90,
       "wall": "-x",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": 0.037
     },
     {
       "id": "butcher-meat-1",
@@ -225,10 +229,10 @@
       ]
     },
     {
-      "id": "butcher-clerk",
-      "name": "Butcher_clerk",
-      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
-      "role": "npc",
+      "id": "anchor-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
       "verb": "on floor",
       "offset": [
         -3.7,
@@ -236,10 +240,17 @@
         2.2
       ],
       "yaw": 0,
-      "class": "LF_NpcBaseEntity",
-      "wall": "+x",
-      "floor": "f0",
-      "attach": "floor"
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
     }
   ],
   "stamp": {

@@ -208,10 +208,10 @@
       "floor": "f0"
     },
     {
-      "id": "clerk",
-      "name": "Shop_Clerk",
-      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
-      "role": "npc",
+      "id": "anchor-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
       "verb": "on floor",
       "offset": [
         2.07,
@@ -219,9 +219,16 @@
         -1.254
       ],
       "yaw": 0,
-      "class": "LF_NpcBaseEntity",
-      "from": "Shops.layer",
-      "wall": "+x",
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
       "floor": "f0"
     },
     {

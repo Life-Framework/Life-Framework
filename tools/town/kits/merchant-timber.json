@@ -34,7 +34,7 @@
   "rows": [
     {
       "id": "timber-counter",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "prefab": "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et",
       "role": "counter",
       "verb": "on floor",
       "offset": [
