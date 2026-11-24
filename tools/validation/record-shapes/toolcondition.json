@@ -1,0 +1,15 @@
+{
+  "section": "toolcondition",
+  "class": "LF_ToolConditionSavePayload",
+  "version": 1,
+  "roots": "LF_StorageToolConditionRecord",
+  "records": {
+    "LF_StorageToolConditionRecord": {
+      "fields": [
+        "string m_sOwnerKey",
+        "string m_sSlot",
+        "array<float> m_aConditions"
+      ]
+    }
+  }
+}

@@ -17900,7 +17900,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C6145C357DAD1FAB}" {
      Id "LF-ToolBench_NoTool"
-     Target_en_us "You have no tool of that kind to work on."
+     Target_en_us "Hold the tool you want worked on in your hands."
      Comment "Bench refusal (#4187)"
     }
     CustomStringTableItem "{6F3046628BDFDFCF}" {
