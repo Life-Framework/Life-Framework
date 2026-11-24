@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{CDD4B5EA82A5D88D}Configs/Signs/LF_SignStyles_Plate.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

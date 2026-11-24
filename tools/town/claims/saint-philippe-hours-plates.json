@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "hours-plates",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b06"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b13"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b20"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b21"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b43"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b88"
+    }
+  ],
+  "kit": "hours-plates",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_hours-plates.layer",
+  "kinds": [],
+  "rows": 6,
+  "date": "2026-11-24"
+}
