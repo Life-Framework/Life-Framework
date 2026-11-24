@@ -22,6 +22,7 @@ const SMELTER = { entity: "Fit_eastcompound_smelter_smelter_furnace", x: 6442.48
 const PROCESS = "LF_ProcessAction";
 const SWINGS_PER_PIECE = 3;
 const RUN_SECONDS = 60;
+const RETRY_VERBS = ["carries", "capture", "look", "seen", "stand", "hold", "state"];
 
 async function runIronChainProof() {
   const h = await import("../harness.mjs");
@@ -37,7 +38,8 @@ async function runIronChainProof() {
     for (let attempt = 0; attempt < 5; attempt++) {
       r = h.sendCommand(spec, Math.max(timeout ?? 8000, cmdFloor));
       console.log(`client 1: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail.slice(0, 260)}`);
-      if (!(r.status === "error" && /^(no_session|capture_busy)/.test(r.detail))) break;
+      // Only a read or a move is asked twice: a `no_session` reply can come after the command ran (a smelt started, a swing swung).
+      if (!(r.status === "error" && /^(no_session|capture_busy)/.test(r.detail) && RETRY_VERBS.includes(spec.verb))) break;
       wait(2500);
     }
     return r;
@@ -194,13 +196,17 @@ async function runIronChainProof() {
   step("7 SMELTING 1 is refused at the smelter, in words", refused.status === "error" && /cannot_perform/.test(refused.detail) && !!refusal && words.length > 20 && !/\d/.test(words), refusal ? `${refusal[1]} = "${words}"` : "no `cannot_perform reason=` line in the server log");
   // The real key press: the client offers the row (levels live on the server), the server refuses and the toast reads the words.
   const pressMark = serverLog().length;
-  on({ verb: "interact", step: "confirm" }, 10000);
-  wait(500);
-  on({ verb: "capture", mode: "ui", name: `${prefix}_6_refused` }, 25000);
   let pressed = false;
-  for (let i = 0; i < 8 && !pressed; i++) {
-    pressed = /refused process at smelter-iron: SMELTING level below 8/.test(serverLog().slice(pressMark));
-    if (!pressed) wait(1000);
+  for (let press = 0; press < 3 && !pressed; press++) {
+    // A loaded client can drop the key: stand at the furnace again (facing it) and press again, up to three times.
+    if (press > 0) { on({ verb: "stand", entityName: SMELTER.entity }); wait(2000); }
+    on({ verb: "interact", step: "confirm" }, 10000);
+    wait(500);
+    if (press === 0) on({ verb: "capture", mode: "ui", name: `${prefix}_6_refused` }, 25000);
+    for (let i = 0; i < 8 && !pressed; i++) {
+      pressed = /refused process at smelter-iron: SMELTING level below 8/.test(serverLog().slice(pressMark));
+      if (!pressed) wait(1000);
+    }
   }
   // The client's own log says what it put on screen: the words, not the key.
   let toasted = false;
