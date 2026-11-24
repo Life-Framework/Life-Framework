@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "template": "outpost",
+  "place": "outpost-north",
+  "status": "approved",
+  "note": "Hand-written for #4675 (the north rebel outpost on the island). The site is the scout's of #4218 (docs/everon/places/outpost-north/site.md): no building stands in 120 m, so the one slot is a hostless plot (#3666) and the camp kit (#4555) anchors on the plot centre with every row resting on the probed ground. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-23",
+    "buildings": 0,
+    "freePlots": 8
+  },
+  "slots": {
+    "camp": {
+      "plot": "p3",
+      "hostless": true,
+      "why": [
+        "free plot p3 (34 x 60 m, ground 3.6 to 11.5 m) is the meadow of the scout's site card, 23 m from the surveyed centre and the only plot that holds the 20 x 20 m camp and keeps every row at least 4 km from the village (the nearest row is about 4.03 km out); p1 on the plateau is flatter but 3.95 km out",
+        "no road within 120 m: a car reaches the gate over the pine floor along the free strip p2 on the plot's west side, and the pines hide the camp from the road"
+      ]
+    }
+  }
+}

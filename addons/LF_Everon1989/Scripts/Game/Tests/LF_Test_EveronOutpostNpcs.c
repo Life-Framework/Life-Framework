@@ -3,12 +3,14 @@
 //! the quartermaster, the contraband buyer, the two gate guards and the mechanic spawns wearing exactly the hat,
 //! torso, legs and boots of its own outfit preset (`LF_Outfit_Outpost*.conf`). The guards carry a VZ-58 in the weapon slot
 //! (held at the low ready, never fired); nobody else carries a weapon. The quartermaster holds the crate (`LF_OutpostStockComponent`
-//! and one Buy row per default stock row), the buyer holds the contraband Sell row, nobody else has either.
+//! and eight Buy rows, the spare ones hidden until a table lists that many rows), the buyer holds the contraband Sell row, nobody else has either.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronOutpostNpcs : LF_Test
 {
 	static const string RIFLE_FILE = "Rifle_VZ58P.et";
 	static const int DEFAULT_STOCK_ROWS = 3;
+	//! Buy rows on the quartermaster prefab: one per stock row of the longest table, the spare ones hide while their index is empty (#4675).
+	static const int BUY_ROWS = 8;
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -127,7 +129,10 @@ class LF_Test_EveronOutpostNpcs : LF_Test
 		{
 			ctx.NotNull(crate, label + " holds the crate stock");
 			if (crate)
-				ctx.Equal(buyRows, crate.GetStock().Count(), label + " lists one Buy row per stock row");
+			{
+				ctx.True(crate.GetStock().Count() > 0, label + " lists stock");
+				ctx.True(crate.GetStock().Count() <= buyRows, label + " has a Buy row for every stock row");
+			}
 		}
 		else
 		{
@@ -142,7 +147,7 @@ class LF_Test_EveronOutpostNpcs : LF_Test
 	{
 		ctx.NotNull(LF_MissionHeader.GetCurrent(), "the pack leg runs under an LF mission header");
 
-		CheckNpc(ctx, "the quartermaster", "{D9C9D205CD9D4A61}Prefabs/Characters/Outposts/LF_Outpost_Quartermaster.et", "{7D77CC710FC9A870}Configs/NpcOutfits/LF_Outfit_OutpostQuartermaster.conf", false, DEFAULT_STOCK_ROWS, 0);
+		CheckNpc(ctx, "the quartermaster", "{D9C9D205CD9D4A61}Prefabs/Characters/Outposts/LF_Outpost_Quartermaster.et", "{7D77CC710FC9A870}Configs/NpcOutfits/LF_Outfit_OutpostQuartermaster.conf", false, BUY_ROWS, 0);
 		CheckNpc(ctx, "the contraband buyer", "{ABD45E880BD19544}Prefabs/Characters/Outposts/LF_Outpost_Buyer.et", "{AA18814E9798F975}Configs/NpcOutfits/LF_Outfit_OutpostBuyer.conf", false, 0, 1);
 		CheckNpc(ctx, "gate guard one", "{C974EBD0B66A34F4}Prefabs/Characters/Outposts/LF_Outpost_GuardGate1.et", "{61996C6AC0CC6BAC}Configs/NpcOutfits/LF_Outfit_OutpostGuardGate1.conf", true, 0, 0);
 		CheckNpc(ctx, "gate guard two", "{6B2180250B983E0F}Prefabs/Characters/Outposts/LF_Outpost_GuardGate2.et", "{535AA215AD1ADCBD}Configs/NpcOutfits/LF_Outfit_OutpostGuardGate2.conf", true, 0, 0);

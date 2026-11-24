@@ -16186,6 +16186,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Dispatch"
      Comment "Title of dispatch toasts."
     }
+    CustomStringTableItem "{83D3279735869111}" {
+     Id "LF-ShiftBoard_NoSite"
+     Target_en_us "This board belongs to no work site."
+     Comment "Shift board line when the board stands at no workplace (#4712)."
+    }
+    CustomStringTableItem "{36443057824AB08E}" {
+     Id "LF-ShiftBoard_None"
+     Target_en_us "Nobody has worked here this week yet."
+     Comment "Shift board line when no XP was earned at the site this week (#4712)."
+    }
+    CustomStringTableItem "{6765440F09DD00A1}" {
+     Id "LF-ShiftBoard_Read"
+     Target_en_us "Read the shift board"
+     Comment "Action on a work site's printed shift board (#4712)."
+    }
+    CustomStringTableItem "{89B6F4DEDEDE2542}" {
+     Id "LF-ShiftBoard_Row"
+     Target_en_us "%1. %2, %3 %4, %5 XP"
+     Comment "One row of the shift board (#4712). %1 = place, %2 = worker name, %3 = trade, %4 = trade level, %5 = XP earned at this site this week. Example: 1. Ada Newcomer, Mining 7, 1,240 XP"
+    }
+    CustomStringTableItem "{F6462EE479F213FD}" {
+     Id "LF-ShiftBoard_Title"
+     Target_en_us "This week's shift board"
+     Comment "Title of a work site's printed shift board (WK-W22, #4712)."
+    }
+    CustomStringTableItem "{BFADD852A420193D}" {
+     Id "LF-ShiftBoard_Unnamed"
+     Target_en_us "A worker"
+     Comment "Shift board name when the server knows no name for a worker (#4712)."
+    }
     CustomStringTableItem "{5B17BCD5B61026B6}" {
      Id "LF-Shop_Browse"
      Target_en_us "Browse goods"

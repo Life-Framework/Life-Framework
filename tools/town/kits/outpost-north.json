@@ -30,62 +30,56 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "A hostless open-ground camp on the north outpost site: no building, so the kit never turns past the dossier yaw. Every row rests on the probed ground (`--terrain`). The six `outpost-spot-*` rows have no prefab: they are the named spots for the crate (#4223), chalk board (GA-O3), buyer, quartermaster and the two gate guards (#4519); a consumer reads their offset and yaw. The gate is a 4 m opening in the sandbag line facing the kit's -x side. Rows are rigid: shift, never stretch."
+    "adapt": "A hostless open-ground camp on the north outpost site: no building, so the kit never turns past the dossier yaw. Every row rests on the probed ground (`--terrain`). Rows are rigid: shift, never stretch. (#4675: the six named spots became the real rows: the chalk board, the quartermaster (the crate), the buyer, the two gate guards and the mechanic, each a placed character the way the shop clerks are, and `outpost-site`, the `LF_OutpostComponent` row that makes the camp a safe zone and the place `north`.)"
   },
   "rows": [
     {
-      "id": "outpost-spot-crate",
-      "name": "Outpost_Spot_Crate",
-      "prefab": null,
+      "id": "outpost-board",
+      "name": "Outpost_ChalkBoard",
+      "prefab": "{6C4AFD9C193BC4EC}Prefabs/Outposts/LF_OutpostBoard.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [
-        0.9,
-        0,
-        9.7
-      ],
-      "yaw": -90,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "offset": [
+        -10.2,
+        0,
+        7.6
+      ],
+      "yaw": 0
     },
     {
-      "id": "outpost-spot-chalk-board",
-      "name": "Outpost_Spot_ChalkBoard",
+      "id": "outpost-site",
+      "name": "Outpost_Site",
       "prefab": null,
       "role": "dressing",
       "verb": "on floor",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
       "offset": [
-        -11.4,
+        -6,
         0,
-        5.5
+        10
       ],
       "yaw": 0,
-      "wall": "free",
-      "floor": "f0",
-      "mount": "terrain"
+      "config": [
+        {
+          "component": "LF_OutpostComponent",
+          "guid": "5E8C31A47D92B6F0",
+          "set": {
+            "m_sOutpostId": "\"north\""
+          },
+          "blocks": []
+        }
+      ]
     },
     {
-      "id": "outpost-spot-buyer",
-      "name": "Outpost_Spot_Buyer",
-      "prefab": null,
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.6,
-        0,
-        12.7
-      ],
-      "yaw": 180,
-      "wall": "free",
-      "floor": "f0",
-      "mount": "terrain"
-    },
-    {
-      "id": "outpost-spot-quartermaster",
-      "name": "Outpost_Spot_Quartermaster",
-      "prefab": null,
-      "role": "dressing",
+      "id": "outpost-npc-quartermaster",
+      "name": "Outpost_Quartermaster",
+      "prefab": "{D9C9D205CD9D4A61}Prefabs/Characters/Outposts/LF_Outpost_Quartermaster.et",
+      "role": "npc",
       "verb": "on floor",
       "offset": [
         -9.1,
@@ -93,38 +87,75 @@
         14.2
       ],
       "yaw": 180,
+      "class": "SCR_ChimeraCharacter",
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"
     },
     {
-      "id": "outpost-spot-guard-s",
-      "name": "Outpost_Spot_GuardS",
-      "prefab": null,
-      "role": "dressing",
+      "id": "outpost-npc-buyer",
+      "name": "Outpost_Buyer",
+      "prefab": "{ABD45E880BD19544}Prefabs/Characters/Outposts/LF_Outpost_Buyer.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -1.6,
+        0,
+        12.7
+      ],
+      "yaw": 180,
+      "class": "SCR_ChimeraCharacter",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-npc-guard-s",
+      "name": "Outpost_GuardGate1",
+      "prefab": "{C974EBD0B66A34F4}Prefabs/Characters/Outposts/LF_Outpost_GuardGate1.et",
+      "role": "npc",
       "verb": "on floor",
       "offset": [
         -2,
         0,
         5.7
       ],
-      "yaw": 0,
+      "yaw": 180,
+      "class": "SCR_ChimeraCharacter",
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"
     },
     {
-      "id": "outpost-spot-guard-n",
-      "name": "Outpost_Spot_GuardN",
-      "prefab": null,
-      "role": "dressing",
+      "id": "outpost-npc-guard-n",
+      "name": "Outpost_GuardGate2",
+      "prefab": "{6B2180250B983E0F}Prefabs/Characters/Outposts/LF_Outpost_GuardGate2.et",
+      "role": "npc",
       "verb": "on floor",
       "offset": [
         -12.2,
         0,
         5.7
       ],
-      "yaw": 0,
+      "yaw": 180,
+      "class": "SCR_ChimeraCharacter",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-npc-mechanic",
+      "name": "Outpost_Mechanic",
+      "prefab": "{D9E78AC61656C5CA}Prefabs/Characters/Outposts/LF_Outpost_Mechanic.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -3.6,
+        0,
+        17.8
+      ],
+      "yaw": 90,
+      "class": "SCR_ChimeraCharacter",
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"
@@ -208,7 +239,8 @@
       "class": "GameEntity",
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.28
     },
     {
       "id": "outpost-generator",
@@ -224,7 +256,8 @@
       "yaw": 90,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.063
     },
     {
       "id": "outpost-mast",
@@ -289,7 +322,8 @@
       "yaw": -90,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.078
     },
     {
       "id": "outpost-pallet-1",
@@ -305,7 +339,8 @@
       "yaw": -90,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.09
     },
     {
       "id": "outpost-pallet-box-1",
@@ -321,7 +356,8 @@
       "yaw": -90,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.118
     },
     {
       "id": "outpost-barrel-1",
@@ -337,7 +373,8 @@
       "yaw": -90,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.046
     },
     {
       "id": "outpost-canvas-cover-crates",
@@ -386,7 +423,8 @@
       "yaw": -90,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.031
     },
     {
       "id": "outpost-stool-n",
@@ -402,7 +440,8 @@
       "yaw": -60,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.038
     },
     {
       "id": "outpost-stool-s",
@@ -418,7 +457,8 @@
       "yaw": -110,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.03
     },
     {
       "id": "outpost-bench-box",
@@ -434,7 +474,8 @@
       "yaw": -75,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.105
     },
     {
       "id": "outpost-workbench-1",
@@ -443,14 +484,15 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.929,
+        -2.6,
         0.001,
         16.302
       ],
       "yaw": -90,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.135
     },
     {
       "id": "outpost-workbench-2",
@@ -466,7 +508,8 @@
       "yaw": -90,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.108
     },
     {
       "id": "outpost-canopy-mechanic",
@@ -507,6 +550,130 @@
         }
       ],
       "floor": "f0"
+    },
+    {
+      "id": "outpost-bed-generator",
+      "name": "Outpost_Bed_generator",
+      "prefab": "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -14.6,
+        0,
+        8.7
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_AmbientEmitterComponent",
+          "guid": "54EF977E52CFEF83",
+          "set": {
+            "m_sSoundProject": "\"{D4A74CE484CF999A}Sounds/Ambience/Outposts/Atmosphere_OutpostGenerator.acp\"",
+            "m_fRadius": "30",
+            "m_fHourFrom": "5",
+            "m_fHourTo": "23",
+            "m_sGroup": "\"outpost_north_generator\"",
+            "m_iPriority": "1"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "outpost-bed-fire",
+      "name": "Outpost_Bed_fire",
+      "prefab": "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5.52,
+        0,
+        10.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_AmbientEmitterComponent",
+          "guid": "54EF977E52CFEF83",
+          "set": {
+            "m_sSoundProject": "\"{8EBDC9701649F251}Sounds/Ambience/Outposts/Atmosphere_OutpostFire.acp\"",
+            "m_fRadius": "24",
+            "m_fHourFrom": "17",
+            "m_fHourTo": "5",
+            "m_sGroup": "\"outpost_north_fire\"",
+            "m_iPriority": "1"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "outpost-bed-radio",
+      "name": "Outpost_Bed_radio",
+      "prefab": "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -9.6,
+        0,
+        17.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_AmbientEmitterComponent",
+          "guid": "54EF977E52CFEF83",
+          "set": {
+            "m_sSoundProject": "\"{A483FD5B3992DD8A}Sounds/Ambience/Outposts/Atmosphere_OutpostRadio.acp\"",
+            "m_fRadius": "20",
+            "m_fHourFrom": "8",
+            "m_fHourTo": "23",
+            "m_sGroup": "\"outpost_north_radio\"",
+            "m_iPriority": "1"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "outpost-bed-wind",
+      "name": "Outpost_Bed_wind",
+      "prefab": "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -6,
+        0,
+        12
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_AmbientEmitterComponent",
+          "guid": "54EF977E52CFEF83",
+          "set": {
+            "m_sSoundProject": "\"{93CF38268BAAEC25}Sounds/Ambience/Outposts/Atmosphere_OutpostWind.acp\"",
+            "m_fRadius": "45",
+            "m_fHourFrom": "21",
+            "m_fHourTo": "5",
+            "m_sGroup": "\"outpost_north_wind\"",
+            "m_iPriority": "1"
+          },
+          "blocks": []
+        }
+      ]
     }
   ]
 }
