@@ -1,0 +1,64 @@
+// Source of the `power-plant-coal` kit (tools/town/kits/power-plant-coal.json): the coal yard at the power plant (#4491), where the East Rise
+// coal ends. Hostless plot beside the plant; every row rests on probed ground (`town fit --terrain`). The buyer is the pack LF_CoalBuyer_Everon1989.et
+// (buyer id `power_plant`, the row in Configs/Market/LF_BuyerDemand_Everon1989.conf); the sign def `power-plant-coal` is in
+// Configs/Signs/LF_Signs_Everon1989/LF_Signs_PowerPlantCoal.conf. The hopper and truck bay are dressing, as at the smelter.
+GenericEntity Coal_Counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords -24 0 4
+ angleY 0
+}
+GenericEntity Coal_Buyer : "{52895A24E4FC994C}Prefabs/Trader/LF_CoalBuyer_Everon1989.et" {
+ coords -24 1.04 4
+ angleY 0
+}
+GenericEntity Coal_Clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords -24 0 2.6
+ angleY 0
+}
+GenericEntity Coal_HeapL : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords -30 0.082 -2
+ angleY 90
+}
+GenericEntity Coal_HeapM : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords -24 0.082 -3.5
+ angleY 0
+}
+GenericEntity Coal_HeapR : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords -18 0.082 -2
+ angleY 270
+}
+GenericEntity Coal_Barrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords -27.5 0 6
+ angleY 25
+}
+GenericEntity Coal_Bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords -28.8 0 7.2
+ angleY 0
+}
+GenericEntity Coal_Tippler : "{8CBA9D089278A4D7}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_tippler.et" {
+ coords -10 0 4
+ angleY 0
+}
+GenericEntity Coal_Bin : "{17ADCDC2721AC2E7}Prefabs/Props/Construction/ContainerMetal_01/ContainerMetal_01_low_grey.et" {
+ coords -10 0 11
+ angleY 0
+}
+GenericEntity Coal_Cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords -9.5 -0.329 7.5
+ angleY 90
+}
+GenericEntity Coal_Truck : "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et" {
+ coords -16.3 0 11
+ angleY 270
+}
+GenericEntity Coal_FloodA : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords -17 0 6.5
+ angleY 160
+}
+GenericEntity Coal_FloodB : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords -6 0 3
+ angleY -160
+}
+GenericEntity Coal_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ coords -29.5 0 10.5
+ angleY 0
+}

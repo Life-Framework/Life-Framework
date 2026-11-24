@@ -149,6 +149,54 @@
       "yaw": 0,
       "floor": "f0",
       "attach": "counter:seed-feed-counter"
+    },
+    {
+      "id": "seed-feed-lamp-1",
+      "name": "SeedFeed_Lamp_1",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -5,
+        2.8,
+        1
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "seed-feed-lamp-2",
+      "name": "SeedFeed_Lamp_2",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -1,
+        2.8,
+        1
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "seed-feed-lamp-3",
+      "name": "SeedFeed_Lamp_3",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        4.5,
+        2.8,
+        0.8
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
     }
   ],
   "stamp": {

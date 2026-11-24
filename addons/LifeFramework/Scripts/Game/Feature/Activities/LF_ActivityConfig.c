@@ -21,7 +21,10 @@ enum LF_EActivityCheck
 	ARRIVE,		//!< The player stands within m_fArriveRadius of the step's target
 	DUTY,		//!< The player is on duty as m_sCheckParam (POLICE or MEDIC)
 	XP,			//!< The player earned m_iCheckCount XP in the job m_sCheckParam since the step started
-	LICENCE		//!< The player holds the licence m_sCheckParam (LF_ELicenseType name)
+	LICENCE,	//!< The player holds the licence m_sCheckParam (LF_ELicenseType name)
+	CREW,		//!< The player is a member of a crew (organization): founded or joined
+	PERK,		//!< The player has picked a trade perk (the labour office counter)
+	FLAG		//!< The player's progression holds the flag m_sCheckParam (e.g. truck_licence, set when the truck check is passed)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -41,7 +44,7 @@ class LF_ActivityStep
 	[Attribute("0", UIWidgets.ComboBox, "How the step is known to be done", "", ParamEnumArray.FromEnum(LF_EActivityCheck))]
 	LF_EActivityCheck m_eCheck;
 
-	[Attribute("", UIWidgets.EditBox, "JOB and XP: the job id; ITEM: the prefab ({GUID}path); DUTY: POLICE or MEDIC; LICENCE: the licence (LF_ELicenseType name)")]
+	[Attribute("", UIWidgets.EditBox, "JOB and XP: the job id; ITEM: the prefab ({GUID}path); DUTY: POLICE or MEDIC; LICENCE: the licence (LF_ELicenseType name); FLAG: the progression flag")]
 	string m_sCheckParam;
 
 	[Attribute("1", UIWidgets.EditBox, "ITEM: how many to carry; XP: how much XP to earn")]
@@ -104,6 +107,18 @@ class LF_ActivityDef : LF_ConfigRecord
 	[Attribute("", UIWidgets.EditBox, "Faction the player must be in (POLICE, MEDIC); empty = any")]
 	string m_sFaction;
 
+	[Attribute("", UIWidgets.EditBox, "Trade gate: a trade (job id) whose level m_iMinTradeLevel reads, or * for the best of any trade but CIVILIAN. Empty = no trade gate")]
+	string m_sTrade;
+
+	[Attribute("0", UIWidgets.EditBox, "Minimum level in m_sTrade to see the activity (0 = no trade gate)")]
+	int m_iMinTradeLevel;
+
+	[Attribute("", UIWidgets.EditBox, "Vehicle gate: owning a vehicle of this capacity class (LF_Capacity: car, pickup, van, truck) or a bigger one. With a trade gate either one opens the activity. Empty = none")]
+	string m_sOwnsClass;
+
+	[Attribute("0", UIWidgets.CheckBox, "Only after a criminal record: the player has completed at least one crime (LF_CrimeRecord)")]
+	bool m_bNeedsRecord;
+
 	[Attribute("", UIWidgets.Object, "The starter steps, in order")]
 	ref array<ref LF_ActivityStep> m_aSteps;
 
@@ -124,6 +139,13 @@ class LF_ActivityDef : LF_ConfigRecord
 			return "CIVILIAN";
 
 		return m_sJob;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a trade level or an owned vehicle opens the activity (the "work" gate).
+	bool HasWorkGate()
+	{
+		return (!m_sTrade.IsEmpty() && m_iMinTradeLevel > 0) || !m_sOwnsClass.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -186,7 +208,7 @@ class LF_ActivityConfig
 			if (step.m_eCheck == LF_EActivityCheck.NONE && (!step.m_aObjectives || step.m_aObjectives.IsEmpty()))
 				return string.Format("activity %1 step %2 has no check and no objective", def.m_sId, step.m_sStepId);
 
-			bool needsParam = step.m_eCheck == LF_EActivityCheck.JOB || step.m_eCheck == LF_EActivityCheck.ITEM || step.m_eCheck == LF_EActivityCheck.DUTY || step.m_eCheck == LF_EActivityCheck.XP || step.m_eCheck == LF_EActivityCheck.LICENCE;
+			bool needsParam = step.m_eCheck == LF_EActivityCheck.JOB || step.m_eCheck == LF_EActivityCheck.ITEM || step.m_eCheck == LF_EActivityCheck.DUTY || step.m_eCheck == LF_EActivityCheck.XP || step.m_eCheck == LF_EActivityCheck.LICENCE || step.m_eCheck == LF_EActivityCheck.FLAG;
 			if (needsParam && step.m_sCheckParam.IsEmpty())
 				return string.Format("activity %1 step %2 checks %3 of nothing", def.m_sId, step.m_sStepId, typename.EnumToString(LF_EActivityCheck, step.m_eCheck));
 
@@ -293,7 +315,7 @@ class LF_ActivityList : LF_ConfigList
 			return 0;
 
 		int changed = 0;
-		array<string> strings = {"m_sNameKey", "m_sPitchKey", "m_sPlaceKind", "m_sPlaceId", "m_sJob", "m_sLicence", "m_sFaction"};
+		array<string> strings = {"m_sNameKey", "m_sPitchKey", "m_sPlaceKind", "m_sPlaceId", "m_sJob", "m_sLicence", "m_sFaction", "m_sTrade", "m_sOwnsClass"};
 		foreach (string field : strings)
 		{
 			if (!container.IsVariableSetDirectly(field))
@@ -314,6 +336,18 @@ class LF_ActivityList : LF_ConfigList
 		if (container.IsVariableSetDirectly("m_iMinLevel"))
 		{
 			def.m_iMinLevel = given.m_iMinLevel;
+			changed++;
+		}
+
+		if (container.IsVariableSetDirectly("m_iMinTradeLevel"))
+		{
+			def.m_iMinTradeLevel = given.m_iMinTradeLevel;
+			changed++;
+		}
+
+		if (container.IsVariableSetDirectly("m_bNeedsRecord"))
+		{
+			def.m_bNeedsRecord = given.m_bNeedsRecord;
 			changed++;
 		}
 
@@ -343,6 +377,10 @@ class LF_ActivityList : LF_ConfigList
 			def.m_sLicence = value;
 		else if (field == "m_sFaction")
 			def.m_sFaction = value;
+		else if (field == "m_sTrade")
+			def.m_sTrade = value;
+		else if (field == "m_sOwnsClass")
+			def.m_sOwnsClass = value;
 	}
 
 	override string Incomplete(notnull LF_ConfigRecord record)

@@ -7,7 +7,7 @@
   "kit": "speed-trap",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_meaux_speedtrap.layer",
   "kinds": [],
-  "rows": 5,
+  "rows": 6,
   "destruction": {
     "mode": "none",
     "reason": "hostless plot: no building stands in the slot"

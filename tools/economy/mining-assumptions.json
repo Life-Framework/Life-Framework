@@ -55,9 +55,9 @@
       "id": "coal-feeder", "label": "coal feeder", "recipe": null, "vehicle": "car",
       "gather": { "item": "coal", "units": 20, "perMinute": 2.5 },
       "reagents": [],
-      "buyer": null, "premiumGood": null, "wholesaleGood": "C2AE9B7E62F0369F", "outputItem": "coal",
+      "buyer": "power_plant", "premiumGood": "C2AE9B7E62F0369F", "wholesaleGood": "C2AE9B7E62F0369F", "outputItem": "coal",
       "km": { "mineToPlant": 0, "plantToBuyer": 3.7, "returnToMine": 3.7 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
-      "note": "East Rise ridge coal sold wholesale in Saint-Philippe (no plant)"
+      "note": "East Rise ridge coal: the power plant coal yard (#4491) pays its $8 premium row first, the rest goes to the wholesale curve"
     }
   ]
 }
