@@ -203,6 +203,11 @@ const inspect = async (prefab) => {
   check(r.code === 1 && /use --cell/.test(r.text), "a Grid_ layer is not a slot");
   r = await run([...args, "--slot", "Nope.layer", "--at", "1,1"], { ...base, branch: "ws/town-draft-x" });
   check(r.code === 1 && /no layer Nope.layer/.test(r.text), "an unknown layer is refused");
+  // An island slot layer holds a hyphen in its place or slot word (Place_coalmans-brow_mine.layer); the name check must let it through (#4713).
+  r = await run([...args, "--slot", "Place_coalmans-brow_mine.layer", "--dry"], { ...base, branch: "ws/town-draft-coalmans-brow-mine", islandLayerExists: () => false });
+  check(r.code === 1 && /no layer Place_coalmans-brow_mine.layer/.test(r.text) && !/takes a layer file name/.test(r.text), `a hyphenated island slot layer name should pass the name check: ${r.text}`);
+  r = await run([...args, "--slot", "Bad name.layer", "--at", "1,1"], { ...base, branch: "ws/town-draft-x" });
+  check(r.code === 1 && /takes a layer file name/.test(r.text), "a layer name with a space is still refused");
   r = await run([...args, "--slot", "Street_Police.layer", "--at", "10,20", "--dry"], { ...base, branch: "ws/town-draft-x" });
   check(r.code === 0 && /centre 10,20/.test(r.text) && /Mapper_Street_Police_M1/.test(r.text) && /nothing written/.test(r.text), `slot mode on a town branch plans the props: ${r.text}`);
   r = await run([...args, "--slot", "Street_Police.layer", "--cell", "c1r1", "--at", "1,1"], { ...base, branch: "ws/town-draft-x" });
