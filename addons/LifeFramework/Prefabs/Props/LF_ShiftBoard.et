@@ -1,0 +1,26 @@
+GenericEntity : "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et" {
+ ID "3C5E71A09B2D4F18"
+ components {
+  RplComponent "{EE01887EC178FCAD}" {
+   Enabled 1
+  }
+  ActionsManagerComponent "{990044CD36070282}" {
+   ActionContexts {
+    UserActionContext "{F98B09FA756AECAD}" {
+     ContextName "default"
+     Position PointInfo "{B9501D3B9FE13E20}" {
+      Offset 0 0.77 -0.1
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_ShiftBoardReadAction "{4B7D20E9A1C63F58}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+ }
+}

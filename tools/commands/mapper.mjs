@@ -228,7 +228,7 @@ async function intoCell(root, P, path, kept, dropped, f, flags, ctx) {
 
 async function intoSlot(root, P, kept, dropped, flags, ctx) {
   const layer = String(flags.slot);
-  if (!/^[A-Za-z0-9_]+\.layer$/.test(layer)) {
+  if (!/^[A-Za-z0-9_-]+\.layer$/.test(layer)) {
     console.log(`mapper: --slot takes a layer file name like Street_Police.layer; got ${layer}`);
     return 1;
   }

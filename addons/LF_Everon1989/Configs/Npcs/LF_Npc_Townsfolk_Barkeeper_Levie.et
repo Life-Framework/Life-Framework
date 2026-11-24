@@ -1,0 +1,11 @@
+SCR_ChimeraCharacter : "{4439B0A5C0000003}Configs/Npcs/LF_Npc_Townsfolk_Barkeeper.et" {
+ ID "4439B0A5C3000002"
+ components {
+  LF_PlaceComponent "{9586E9865DD637CE}" {
+   m_sId "barkeeper_levie"
+  }
+  LF_CounterOutletComponent "{4439B0A5C4000001}" {
+   m_sBuyerId "bar_levie"
+  }
+ }
+}

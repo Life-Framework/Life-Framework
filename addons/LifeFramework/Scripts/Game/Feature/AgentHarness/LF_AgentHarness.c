@@ -1100,6 +1100,15 @@ class LF_AgentCommand
 	//------------------------------------------------------------------------------------------------
 	//! Menu navigation plus the debug-menu key. Movement keys are refused:
 	//! the harness must not drive the character by injecting WASD.
+	static bool IsKeypadDigit(string actionName)
+	{
+		if (actionName.Length() != 10 || !actionName.StartsWith("LF_Keypad"))
+			return false;
+
+		return "0123456789".IndexOf(actionName.Substring(9, 1)) >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsMenuAction(string actionName)
 	{
 		// The clip stamp key (#1173): the proof presses the real binding.
@@ -1118,6 +1127,9 @@ class LF_AgentCommand
 		if (actionName == "MenuSelect")
 			return true;
 		if (actionName == "LF_OpenDebugMenu")
+			return true;
+		// The digit keys of the menus (the dialogue's reply numbers, the ATM keypad): what a player presses.
+		if (IsKeypadDigit(actionName))
 			return true;
 		// The melee swing: what a player presses to hit a rock or a tree with the held tool.
 		if (actionName == "CharacterMelee")
@@ -1185,6 +1197,10 @@ class LF_AgentHarness
 	protected static const int STAND_REMEMBER_MS = 15000;
 	protected static vector s_vShotAngles;
 	protected static bool s_bShotPose;
+	//! An injected input is held this long and for at least HOLD_FRAMES frames, whichever is longer.
+	static const int HOLD_MS = 300; // lf-fixed: dev-harness input hold
+	static const int HOLD_FRAMES = 3; // lf-fixed: dev-harness input hold
+	protected static int s_iHeldFrames;
 	protected static string s_sHeldAction;
 	protected static float s_fHeldValue;
 	protected static int s_iHeldUntil;
@@ -3545,10 +3561,19 @@ class LF_AgentHarness
 
 		s_sHeldAction = cmd.Arg1;
 		s_fHeldValue = value;
-		s_iHeldUntil = System.GetTickCount() + 300;
+		s_iHeldUntil = System.GetTickCount() + HOLD_MS;
+		s_iHeldFrames = 0;
 		input.SetActionValue(cmd.Arg1, value);
 		LF_Debug.Log(FEATURE, string.Format("input %1", cmd.Arg1));
 		WriteResult(cmd.Id, "ok", cmd.Arg1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while an injected input is still held: its time has not run out, or fewer than HOLD_FRAMES
+	//! frames have seen it.
+	static bool HoldActive(int nowMs, int untilMs, int framesHeld)
+	{
+		return nowMs < untilMs || framesHeld < HOLD_FRAMES;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3563,10 +3588,14 @@ class LF_AgentHarness
 
 		// The engine resets an injected value at the start of each frame, so a single
 		// SetActionValue never reaches a screen that polls later in the frame. Re-assert it
-		// ahead of every poll until the hold ends, as a real key held a few frames would be.
-		if (System.GetTickCount() < s_iHeldUntil)
+		// ahead of every poll until the hold ends, as a real key held a few frames would be. The hold
+		// lasts HOLD_MS and at least HOLD_FRAMES frames: on a starved client (a frame of 400 ms or more,
+		// a two-client session on a loaded pool) the time alone ran out before the first poll saw the
+		// key, and a dialogue reply was never picked (#4720, #4725, #4683).
+		if (HoldActive(System.GetTickCount(), s_iHeldUntil, s_iHeldFrames))
 		{
 			input.SetActionValue(s_sHeldAction, s_fHeldValue);
+			s_iHeldFrames++;
 			return;
 		}
 

@@ -8,11 +8,11 @@
   "kinds": [
     "TruckLot"
   ],
-  "rows": 7,
+  "rows": 13,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_ne_compound_truckyard_Place"
   },
-  "date": "2026-11-23"
+  "date": "2026-11-24"
 }
