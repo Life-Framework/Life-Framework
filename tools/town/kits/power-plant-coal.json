@@ -171,9 +171,9 @@
       "offset": [
         -24,
         0,
-        -1
+        0.3
       ],
-      "yaw": 0
+      "yaw": 90
     },
     {
       "id": "coal-scale",
@@ -189,7 +189,8 @@
         0,
         3.4
       ],
-      "yaw": 90
+      "yaw": 90,
+      "lift": 0.05
     },
     {
       "id": "coal-fascia",
@@ -219,7 +220,7 @@
         }
       ],
       "lift": 2.45,
-      "scale": 0.7
+      "scale": 0.8
     },
     {
       "id": "coal-heap-l",

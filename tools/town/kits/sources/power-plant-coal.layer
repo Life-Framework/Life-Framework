@@ -87,8 +87,8 @@ GenericEntity Coal_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePla
  angleY 0
 }
 GenericEntity Coal_Hut : "{E30E1250FD927736}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_beige.et" {
- coords -24 0 -1
- angleY 0
+ coords -24 0 0.3
+ angleY 90
 }
 GenericEntity Coal_Scale : "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et" {
  coords -21.4 0 3.4
@@ -97,4 +97,5 @@ GenericEntity Coal_Scale : "{AC76F47F96377547}Prefabs/Props/Agriculture/Weighing
 GenericEntity Coal_Fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  coords -24 2.45 2.28
  angleY 0
+ scale 0.8
 }
