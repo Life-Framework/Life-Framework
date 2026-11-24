@@ -1,0 +1,17 @@
+{
+  "hour": 0,
+  "note": "wakes in the hostel: the welcome pack, nothing else",
+  "cash": 0,
+  "bank": 2000,
+  "policeRank": 0,
+  "medicRank": 0,
+  "levels": {
+    "MINER": 1,
+    "HAULING": 1,
+    "FARMER": 1
+  },
+  "standing": {
+    "UNDERWORLD": 0
+  },
+  "licences": ""
+}

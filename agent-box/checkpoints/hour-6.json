@@ -1,0 +1,17 @@
+{
+  "hour": 6,
+  "note": "banked $5,460 on runs alone; van money, the cigarette run",
+  "cash": 200,
+  "bank": 5460,
+  "policeRank": 0,
+  "medicRank": 0,
+  "levels": {
+    "MINER": 8,
+    "HAULING": 6,
+    "FARMER": 3
+  },
+  "standing": {
+    "UNDERWORLD": 70
+  },
+  "licences": "DRIVING_LICENCE,MINER_COAL,MINER_IRON"
+}
