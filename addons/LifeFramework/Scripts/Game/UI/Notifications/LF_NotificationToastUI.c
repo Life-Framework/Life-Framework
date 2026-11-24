@@ -90,8 +90,12 @@ class LF_NotificationToastUI : ScriptedWidgetComponent
 		m_iShownAtMs = System.GetTickCount();
 		m_bFadingOut = false;
 
+		// No title: the row is hidden, so the message starts at the top of the slip.
 		if (m_wTitle)
+		{
 			m_wTitle.SetText(title);
+			m_wTitle.SetVisible(!title.IsEmpty());
+		}
 
 		if (m_wMessage)
 			m_wMessage.SetText(message);

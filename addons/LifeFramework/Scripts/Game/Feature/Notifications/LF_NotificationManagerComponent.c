@@ -363,6 +363,27 @@ class LF_NotificationManagerComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
+	//! The localization key of the title a toast of this type shows when the sender gave none; empty for
+	//! none (the slip shows its message only). Plain words, never a bracketed tag.
+	static string FallbackTitleKey(LF_ENotificationType type)
+	{
+		switch (type)
+		{
+			case LF_ENotificationType.POLICE_ALERT:
+				return "#LF-Notify_TitlePolice";
+			case LF_ENotificationType.EMS_ALERT:
+				return "#LF-Notify_TitleEms";
+			case LF_ENotificationType.ROBBERY_ALERT:
+				return "#LF-Notify_TitleRobbery";
+			case LF_ENotificationType.SMS_RECEIVED:
+				return "#LF-Notify_TitleSms";
+		}
+
+		// Info, success, warning and error carry their kind in the slip's colour strip: no title row.
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Show notification toast on this machine. Called by the owner-RPC on the local controller.
 	void ShowNotificationToast(string title, string message, float duration, LF_ENotificationType type, string messageArg = "", string slot = "")
 	{
@@ -378,37 +399,14 @@ class LF_NotificationManagerComponent : ScriptComponent
 			}
 		}
 
-		// A toast with no title gets the one for its type, as a localization key translated below.
+		// A toast with no title gets the one for its type (an alert kind), translated here. Most types get
+		// none: the slip then shows its message only.
 		string displayTitle = title;
 		if (title.IsEmpty())
 		{
-			switch (type)
-			{
-				case LF_ENotificationType.POLICE_ALERT:
-					displayTitle = "#LF-Notify_TitlePolice";
-					break;
-				case LF_ENotificationType.EMS_ALERT:
-					displayTitle = "#LF-Notify_TitleEms";
-					break;
-				case LF_ENotificationType.ROBBERY_ALERT:
-					displayTitle = "#LF-Notify_TitleRobbery";
-					break;
-				case LF_ENotificationType.SMS_RECEIVED:
-					displayTitle = "#LF-Notify_TitleSms";
-					break;
-				case LF_ENotificationType.SUCCESS:
-					displayTitle = "#LF-Notify_TitleSuccess";
-					break;
-				case LF_ENotificationType.WARNING:
-					displayTitle = "#LF-Notify_TitleWarning";
-					break;
-				case LF_ENotificationType.ERROR:
-					displayTitle = "#LF-Notify_TitleError";
-					break;
-				default:
-					displayTitle = "#LF-Notify_TitleInfo";
-					break;
-			}
+			displayTitle = FallbackTitleKey(type);
+			if (!displayTitle.IsEmpty())
+				displayTitle = LF_Terms.Text(displayTitle);
 		}
 		else if (displayTitle.StartsWith("#"))
 		{
