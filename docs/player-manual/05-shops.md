@@ -7,11 +7,11 @@ The numbers in the first column are the numbers on the [Saint-Philippe map](maps
 <!-- shops -->
 | # | Shop | What it sells |
 |---|---|---|
-| 20 | **Supermarket** | Water $4, Apple juice $7, Beer $10, Apple $6, Cabbage $5, Plum $5, Crackers $5, Dried meat $14 |
+| 20 | **Supermarket** | Water $4, Apple juice $20, Beer $10, Apple $6, Cabbage $5, Plum $5, Crackers $5, Dried meat $14 |
 | 21 | **General store** | Cabbage seeds $4, Water $3, Apple $6, Crackers $4, Canned meat $8, Canned fish $6, Soda $3, Milk $4, Coffee tin $7, Chocolate bar $3, Pickle jar $5 |
 | 22 | **Bakery** | Bread $4, Crackers $4, Chocolate bar $7, Baguette $3, Croissant $3 |
 | 23 | **Butcher** | Dried meat $14, Canned meat $8, Saucisson $12, Ham $24 |
-| 24 | **Cafe** | Water $3, Apple juice $6, Beer $9, Crackers $4, Apple $6, Dried meat $12 |
+| 24 | **Cafe** | Water $3, Apple juice $20, Beer $9, Crackers $4, Apple $6, Dried meat $12 |
 |  | **Newsagent** | Tourist map $25, Water $3, Newspaper $1, Road Map $15, Magazine $3, Postcard $1, Notebook $4, Pen $2 |
 | 26 | **Pharmacy** | Aspirin $10, Gauze $8, Surgical gauze $8, Tourniquet $25, Tourniquet (Soviet) $25 |
 | 28 | **Hardware store** | Shovel $45, Axe $120, Gravel bag $22, Cement bag $38, Brick $13, Plank $16, Door kit $250, Sandbag $20, Flashlight $40, Handset radio $250, Repair kit $90 |

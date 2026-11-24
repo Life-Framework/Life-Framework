@@ -9,7 +9,7 @@
 // still prints a ladder before the pack rows land and switches to the real rows the moment they do.
 //
 // Not in any config, so stated here and printed: the route (hand haul: a 150 m walk with a log at 1.1 m/s and a
-// 3.4 m/s run back; truck: 6 logs a cycle, 4 cycles an hour), the mix of products a hand hauler cuts, and the sawing
+// 3.4 m/s run back; truck: 6 logs a cycle, a 7.9 min cycle as measured on the island, #4898), the mix of products a hand hauler cuts, and the sawing
 // time per log. A curve falls LINEARLY: one sold unit takes dropPerUnitPct of the base off the price, never below the
 // floor (LF_PriceCurve.DropPerUnit); an hour closes recoverPctPerHour of the gap back to the base. A premium purse
 // holds `cap` units and refills `refillPerHour` an hour; the FIRST hour sells from a full purse, the STEADY hour
@@ -103,7 +103,13 @@ export const LUMBER_ASSUMPTIONS = {
   treeSize: 2, sawSeconds: { plank: 10, post: 8, firewood: 6, board: 15 },
   /** Share of the logs a mixed hand hauler cuts into each product. */
   mix: { plank: 0.5, post: 1 / 6, firewood: 1 / 3 },
-  truck: { logsPerCycle: 6, cyclesPerHour: 4, firewoodShare: 1 / 6 },
+  /**
+   * The truck cycle measured on the island (#4898, `truck-haul-proof --cycles`): fell hardwood on the woodlot stand, load
+   * 6 logs (the 12-unit bed), drive back to the saw, saw them to boards and sell at the timber counter, its spent purse's
+   * overflow at the wholesale counter beside it. Six cycles averaged 7.9 min with the felling holds and the drive. Every
+   * log is sawn to boards (the counter beside the saw buys boards; firewood sells at the bakery in town).
+   */
+  truck: { logsPerCycle: 6, cycleMinutes: 7.9, firewoodShare: 0 },
   /** false: every hour opens at the wholesale base price (the design note). true (--wholesale-carry): the curve carries over and only recovers. */
   carryCurve: false,
 };
@@ -211,11 +217,12 @@ export function computeLoops(inp) {
   const mix = handHaulHour(handHaulLogSeconds(chopSoft, mixSaw, a), a.mix.plank * out.plank, mixTrips, buyer("plank").refillPerHour, a);
   make("hand-mixed", "hand-haul softwood -> planks, posts, firewood", mix.logs, Object.entries(a.mix).map(([k, w]) => [k, mix.logs * w * out[k]]),
     `${Math.round(mix.trips * 10) / 10} plank trips/h; posts and firewood ride in the pockets`);
-  // Truck hardwood: the cycle count is the stated assumption, boards plus firewood from the offcuts.
-  const truckLogs = a.truck.logsPerCycle * a.truck.cyclesPerHour;
+  // Truck hardwood: the measured cycle time sets the logs an hour, sawn to boards (plus any firewood share).
+  const cyclesPerHour = 60 / a.truck.cycleMinutes;
+  const truckLogs = a.truck.logsPerCycle * cyclesPerHour;
   make("truck-hardwood", "truck hardwood -> boards, firewood", truckLogs,
     [["board", truckLogs * (1 - a.truck.firewoodShare) * out.board], ["firewood", truckLogs * a.truck.firewoodShare * out.hardFirewood]],
-    `${a.truck.logsPerCycle} logs a cycle, ${a.truck.cyclesPerHour} cycles an hour`);
+    `${a.truck.logsPerCycle} logs a cycle, a ${a.truck.cycleMinutes} min cycle (${Math.round(cyclesPerHour * 10) / 10} cycles an hour)`);
   void chopHard;
   return loops;
 }
