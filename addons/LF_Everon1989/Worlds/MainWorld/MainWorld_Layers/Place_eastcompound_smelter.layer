@@ -39,7 +39,7 @@ GenericEntity Fit_eastcompound_smelter_smelter_tippler : "{8CBA9D089278A4D7}Pref
  angleY -21
 }
 GenericEntity Fit_eastcompound_smelter_smelter_bin : "{17ADCDC2721AC2E7}Prefabs/Props/Construction/ContainerMetal_01/ContainerMetal_01_low_grey.et" {
- coords 6448.662 162.542 6500.178
+ coords 6448.662 162.512 6500.178
  angleY -21
 }
 GenericEntity Fit_eastcompound_smelter_smelter_cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {

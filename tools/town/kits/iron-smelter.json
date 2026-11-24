@@ -63,7 +63,8 @@
       "yaw": 90,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "scale": 0.9
     },
     {
       "id": "smelter-barrow",
@@ -127,7 +128,8 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": -0.03
     },
     {
       "id": "smelter-cart",
