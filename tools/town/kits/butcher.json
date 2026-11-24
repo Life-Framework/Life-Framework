@@ -352,6 +352,51 @@
       "attach": "shelf:butcher-rack-1"
     },
     {
+      "id": "butcher-chiller-meat-1",
+      "name": "Butcher_chiller_meat_1",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-chiller-1",
+      "offset": [
+        -4.9,
+        0.925,
+        -1.64
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "table:butcher-chiller-1"
+    },
+    {
+      "id": "butcher-chiller-meat-2",
+      "name": "Butcher_chiller_meat_2",
+      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-chiller-1",
+      "offset": [
+        -4.9,
+        0.917,
+        -2.2
+      ],
+      "yaw": 20,
+      "floor": "f0",
+      "attach": "table:butcher-chiller-1"
+    },
+    {
+      "id": "butcher-chiller-meat-3",
+      "name": "Butcher_chiller_meat_3",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-chiller-1",
+      "offset": [
+        -4.9,
+        0.925,
+        -2.76
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "table:butcher-chiller-1"
+    },
+    {
       "id": "butcher-fascia",
       "name": "Butcher_fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
@@ -404,15 +449,15 @@
       "floor": "f0"
     },
     {
-      "id": "butcher-lamp-1",
-      "name": "Butcher_Lamp_1",
-      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "id": "butcher-fill-1",
+      "name": "Butcher_Fill_1",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
       "role": "light",
       "verb": "on floor",
       "offset": [
-        -3,
-        3.95,
-        -4.5
+        -4.3,
+        2.9,
+        2.4
       ],
       "yaw": 0,
       "free": true,
@@ -420,15 +465,15 @@
       "floor": "f0"
     },
     {
-      "id": "butcher-lamp-2",
-      "name": "Butcher_Lamp_2",
-      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "id": "butcher-fill-2",
+      "name": "Butcher_Fill_2",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
       "role": "light",
       "verb": "on floor",
       "offset": [
-        -3,
-        3.95,
-        0
+        -4.3,
+        2.9,
+        0.3
       ],
       "yaw": 0,
       "free": true,
@@ -436,15 +481,31 @@
       "floor": "f0"
     },
     {
-      "id": "butcher-lamp-3",
-      "name": "Butcher_Lamp_3",
-      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "id": "butcher-fill-3",
+      "name": "Butcher_Fill_3",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
       "role": "light",
       "verb": "on floor",
       "offset": [
-        -3,
-        3.95,
-        4.5
+        -4.3,
+        2.9,
+        -1.3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "butcher-fill-4",
+      "name": "Butcher_Fill_4",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -4.3,
+        2.9,
+        -2.8
       ],
       "yaw": 0,
       "free": true,
