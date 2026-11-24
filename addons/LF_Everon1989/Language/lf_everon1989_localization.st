@@ -4479,6 +4479,11 @@ StringTable {
      Target_en_us "Hostel"
      Comment "Map POI kind name (#2247): the hostel."
     }
+    CustomStringTableItem "{2E6ED01670A45CF3}" {
+     Id "LF-MapPoi_LabourOffice"
+     Target_en_us "Labor office"
+     Comment "Map POI name (#4748): the labor office counter in the town hall, where trade perks are picked; public place."
+    }
     CustomStringTableItem "{0C04F4D20CD6B427}" {
      Id "LF-MapPoi_LoggingYard"
      Target_en_us "Logging yard"
@@ -4508,6 +4513,11 @@ StringTable {
      Id "LF-MapPoi_Orchard"
      Target_en_us "Orchard"
      Comment "Map POI name (rc-map-places): the orchard to pick fruit."
+    }
+    CustomStringTableItem "{2D06279FDC639CA5}" {
+     Id "LF-MapPoi_OrgDesk"
+     Target_en_us "Gang registry"
+     Comment "Map POI name (#4748): the Saint-Philippe registry cabin, where the registrar keeps the gang book and the flag wall; public place."
     }
     CustomStringTableItem "{5A7C1E04B93D6F12}" {
      Id "LF-MapPoi_ParcelDepot"
