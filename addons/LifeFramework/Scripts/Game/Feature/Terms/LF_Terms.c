@@ -246,7 +246,7 @@ class LF_Terms
 	//! \param[in] key The string key, "#LF-Ticket_Title".
 	static string Text(string key, string p1 = string.Empty, string p2 = string.Empty, string p3 = string.Empty, string p4 = string.Empty)
 	{
-		string raw = WidgetManager.Translate(key);
+		string raw = WidgetManager.Translate(LF_TextAliases.Resolve(key));
 		string expanded = Expand(raw);
 		if (p1.IsEmpty() && p2.IsEmpty() && p3.IsEmpty() && p4.IsEmpty())
 			return expanded;

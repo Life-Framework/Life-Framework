@@ -83,6 +83,9 @@ async function main(args) {
     wait(800);
   }
 
+  // A resident spawns only with a player within 150 m, so the player is put at the counter anchor first (found by its layer name).
+  on({ verb: "stand", entityName: who.anchor, side: "n2" }, 20000);
+  wait(3000);
   on({ verb: "time", hour: 4.0 }, 15000);
   wait(4000);
   on({ verb: "time", hour: HOUR }, 15000);
@@ -97,6 +100,10 @@ async function main(args) {
   const d = pos && anchor ? flatDistance(pos, anchor) : null;
   console.log(`  ${who.label} at ${HOUR}:00: ${pos ? `${pos.x},${pos.y},${pos.z}` : "not found"}; ${d === null ? "?" : d.toFixed(1)} m from the counter anchor`);
   if (pos) {
+    // Textures and lights stream in over a few seconds after a jump; one throw-away shot and a wait first.
+    wait(15000);
+    on({ verb: "capture", mode: "world", name: `${who.label}_warm`, x: pos.x, y: pos.y + 1, z: pos.z, ox: 3.2, oy: 0.9, oz: 0, hour: HOUR, free: true }, 25000);
+    wait(8000);
     const sides = [["a", 3.2, 0], ["b", 0, 3.2], ["c", -3.2, 0], ["d", 0, -3.2]];
     for (const [tag, ox, oz] of sides) {
       on({ verb: "capture", mode: "world", name: `${who.label}_${tag}`, x: pos.x, y: pos.y + 1, z: pos.z, ox, oy: 0.9, oz, hour: HOUR, free: true }, 25000);

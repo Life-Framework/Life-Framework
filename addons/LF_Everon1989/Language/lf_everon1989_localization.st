@@ -4859,6 +4859,16 @@ StringTable {
      Target_en_us "Saint Philippe"
      Comment "Named place (#1943, town pass #1947): the map label dispatch reads for a robbery away from any sign; LF_NamedPlaces.Nearest."
     }
+    CustomStringTableItem "{3F2132C5DE771A7C}" {
+     Id "LF-PlaytestTown_Arrival_Desc"
+     Target_en_us "Walk to the town hall on the square and talk to the clerk at the desk for your papers."
+     Comment "Playtest town alias of LF-Quest_ArrivalRegister_Desc (#4676): the town has no hostel, a new player spawns on the square."
+    }
+    CustomStringTableItem "{8FFDA0C6A190E452}" {
+     Id "LF-PlaytestTown_Guide_Body1a"
+     Target_en_us "You are new on Everon and carry no papers. Find the town hall on the square in Saint-Philippe and talk to the town clerk: he files your papers, hands you your ID card and a welcome pack, and tells you where your starter car waits."
+     Comment "Playtest town alias of LF-WelcomeGuide_Body1a (#4676): the town has no hostel, a new player spawns on the square."
+    }
     CustomStringTableItem "{D8F9FC9FD0EEAC13}" {
      Id "LF-PoliceApp_Title"
      Target_en_us "Application to the Everon {Police}"

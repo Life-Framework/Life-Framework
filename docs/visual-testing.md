@@ -397,6 +397,25 @@ not load ...` and keeps no pictures. The asset verify/states clothing shots use 
   the clearness test and the next candidate is tried (#814). Something wider than the fan or farther
   than its reach still passes. The obliques and the top view cover the rest.
 
+### Mirror-chrome props in a session picture are a starved client, not a material (#4682)
+
+Playtest round 1 (2026-11-24, two `--profile full` clients) filed the square's pigeons and the mine's iron
+rocks as "polished chrome", and the clerk was chrome in the first frame. All three are assets with
+on-demand textures (hidden until woken, or a pack texture nothing else loads). The HUD in those pictures reads
+`0 fps`: a client that renders about nothing most likely never finishes streaming a texture, and the engine draws
+the not-yet-loaded material as a mirror (not reproduced on a healthy client, so this is the best reading). The prefabs and materials are fine:
+
+- The pigeons are the vanilla `BirdFlock_DomesticPigeon.et` (no override, no mod mesh); the ore is
+  `IronOre.et`, whose `OreVein_Iron.emat` carries its own BCR and NMO textures.
+- `look item` shows both normal (`Prefabs/Resources/Mining/IronOre.et`,
+  `Prefabs/Animals/Birds/Columba_livia_domestica/Columba_livia_domestica.et`).
+- A single `--profile full` client at 30 fps shows the woken pigeons white with grey wings and the iron rocks
+  rust-red and grey, no mirror (2026-11-24, free-camera shots of the woken flock and of the first rocks).
+
+Before filing a chrome prop: read the fps in the picture's top bar and the session's client count. At or near
+`0 fps`, wait for the client to settle or re-shoot with
+`session up --clients 1 --profile full`; only a chrome prop on a client at 20 fps or more is a material bug.
+
 ## Measured (2026-11-11, this PC: 15.6 GB, with a trailer agent's sessions and encodes beside it)
 
 | | `session up --profile full` + `shots area bank` | `look bank` | `look all` (23 areas) |

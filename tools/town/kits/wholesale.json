@@ -5,7 +5,10 @@
   "source": {
     "file": "tools/town/kits/wholesale.json",
     "origin": "building",
-    "frame": "building-local"
+    "frame": "building-local",
+    "also": [
+      "tools/town/kits/sources/cafe.layer"
+    ]
   },
   "scope": "room",
   "building": {
@@ -39,7 +42,7 @@
         "edgeGap": 4.5
       }
     ],
-    "adapt": "The harbour wholesale warehouse (Garage_E_02, 28 x 19 m, one big ground-floor hall with truck bays all round, a mezzanine over the east end that stays). The kit shows the same model as the host, so its offsets are in the building's own frame, front +z. Both buying counters are plank workbenches (the buyers' cash boxes are wooden boxes). The buyer's counter stands mid-hall facing the front bays, the clerk behind it and the chalk price board beside it; the Coalman's Brow iron buyer has its own counter, clerk, platform scale and chalk board east of the wholesale counter (the mine has no till of its own); planks and logs stack along the west wall, ore bins and a barrel row along the back wall, cement and iron on pallets on the east side; work lights hang over the bays. Rows are rigid: shift, never stretch."
+    "adapt": "The harbour wholesale warehouse (Garage_E_02, 28 x 19 m, one big ground-floor hall with truck bays all round, a mezzanine over the east end that stays). The kit shows the same model as the host, so its offsets are in the building's own frame, front +z. Both buying counters are plank workbenches (the buyers' cash boxes are wooden boxes). The buyer's counter stands mid-hall facing the front bays, the clerk behind it and the chalk price board beside it; the Coalman's Brow iron buyer has its own counter, clerk, platform scale and chalk board east of the wholesale counter (the mine has no till of its own); planks and logs stack along the west wall, ore bins and a barrel row along the back wall, cement and iron on pallets on the east side; work lights hang over the bays. Rows are rigid: shift, never stretch. Chandler counter (#4646): a third plank workbench west of the buyer counter, a coil of rope on it and a pile of fishing gear beside it; the ship chandler (Joseph Vidal, resident dock_chandler) takes the `counter` anchor behind it, bound to the dock wholesale place with m_sPlaceId (#4624)."
   },
   "rows": [
     {
@@ -886,6 +889,77 @@
       ],
       "yaw": 0,
       "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chandler-counter",
+      "name": "Chandler_Counter",
+      "prefab": "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        -8,
+        0.049,
+        4.4
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chandler-rope",
+      "name": "Chandler_Rope",
+      "prefab": "{33D5102FA67E1B46}Prefabs/Props/Naval/FishingRope_01.et",
+      "role": "dressing",
+      "verb": "on chandler-counter",
+      "offset": [
+        -8.7,
+        1.01,
+        4.4
+      ],
+      "yaw": 20,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chandler-gear",
+      "name": "Chandler_Gear",
+      "prefab": "{19968B13AD8B3115}Prefabs/Props/Naval/FishingGear_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5.9,
+        0.03,
+        3.2
+      ],
+      "yaw": -20,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "anchor-chandler-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -8,
+        0,
+        3.1
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\"",
+            "m_sPlaceId": "\"saint-philippe-dock.wholesale\""
+          },
+          "blocks": []
+        }
+      ],
       "wall": "free",
       "floor": "f0"
     }
