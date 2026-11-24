@@ -1,0 +1,632 @@
+{
+ "schema": 1,
+ "place": {
+  "name": "xz-5014-8475",
+  "key": null,
+  "kind": null,
+  "source": "coordinates",
+  "slug": "highstone",
+  "x": 5014,
+  "y": 112.7,
+  "z": 8475
+ },
+ "radius": 150,
+ "generated": {
+  "at": "2026-11-24",
+  "tool": "tools\\cli scout",
+  "command": "tools\\cli scout 5014,8475 --radius 150",
+  "view": 60,
+  "gameBuild": "Arma Reforger build 26266485 (installed 2026-11-08)",
+  "world": "Worlds/CoreOnEveron/CoreOnEveron.ent"
+ },
+ "nearbyPlaces": [
+  {
+   "name": "TYRONE RIDGE",
+   "kind": "natural",
+   "distance": 170,
+   "direction": "NW"
+  },
+  {
+   "name": "Gorey",
+   "kind": "urban",
+   "distance": 419,
+   "direction": "SW"
+  },
+  {
+   "name": "Raccoon Rock",
+   "kind": "natural",
+   "distance": 497,
+   "direction": "S"
+  },
+  {
+   "name": "Tyrone",
+   "kind": "other",
+   "distance": 624,
+   "direction": "N"
+  }
+ ],
+ "summary": {
+  "buildings": 1,
+  "byType": {
+   "recreation": 1
+  },
+  "civic": 1,
+  "homes": 0,
+  "ruins": 0,
+  "enterable": 1,
+  "entrances": 0,
+  "doors": 1,
+  "props": 0,
+  "trees": 95,
+  "roads": 2,
+  "junctions": 1,
+  "freePlots": 8,
+  "waterBodies": 1,
+  "walls": 8,
+  "otherEntities": 18,
+  "portPieces": 2
+ },
+ "terrain": {
+  "min": 61.2,
+  "max": 117.4,
+  "mean": 99.8,
+  "range": 56.2,
+  "flatShare": 0.05,
+  "gentleShare": 0.2,
+  "steepShare": 0.37,
+  "steepest": {
+   "deg": 58.7,
+   "x": 5079,
+   "z": 8570
+  },
+  "tilt": {
+   "deg": 8.8,
+   "fallsToward": "SE"
+  },
+  "waterShare": 0,
+  "nearestWater": {
+   "distance": 141.5,
+   "direction": "NE"
+  },
+  "notes": [
+   "ground 61.2 to 117.4 m (56.2 m of relief) within 150 m; mean 99.8 m",
+   "5% of the ground is under 3 degrees, 20% 3 to 8, 37% over 15",
+   "overall the ground falls 8.8 degrees toward the SE",
+   "steepest ground 58.7 degrees at 5079, 8570",
+   "open water (the sea or a lake) is 141.5 m away to the NE"
+  ]
+ },
+ "water": {
+  "bodies": [
+   {
+    "id": "w1",
+    "name": "Lake_Forest1",
+    "kind": "pond",
+    "source": "named-spline",
+    "cx": 5103.3,
+    "cz": 8598.9,
+    "area": 571,
+    "surfaceY": 83.6,
+    "distance": 152.8,
+    "outline": [
+     [
+      5117.9,
+      8601
+     ],
+     [
+      5118.5,
+      8597.8
+     ],
+     [
+      5114.9,
+      8587.6
+     ],
+     [
+      5104.2,
+      8586.4
+     ],
+     [
+      5085.5,
+      8596
+     ],
+     [
+      5093.3,
+      8608.7
+     ],
+     [
+      5102.9,
+      8613.3
+     ],
+     [
+      5107.6,
+      8610
+     ],
+     [
+      5115.1,
+      8604.8
+     ]
+    ]
+   }
+  ],
+  "shore": [
+   {
+    "water": "w1",
+    "x": 5093,
+    "z": 8589.5,
+    "y": 85.5,
+    "facing": "NE",
+    "yaw": 48,
+    "distance": 139.1
+   },
+   {
+    "water": "w1",
+    "x": 5110.7,
+    "z": 8584.8,
+    "y": 84.9,
+    "facing": "NW",
+    "yaw": 333,
+    "distance": 146.3
+   },
+   {
+    "water": "w1",
+    "x": 5087,
+    "z": 8602.9,
+    "y": 86.2,
+    "facing": "E",
+    "yaw": 104,
+    "distance": 147.3
+   },
+   {
+    "water": "w1",
+    "x": 5119,
+    "z": 8591.6,
+    "y": 84.3,
+    "facing": "NW",
+    "yaw": 295,
+    "distance": 156.9
+   },
+   {
+    "water": "w1",
+    "x": 5097.1,
+    "z": 8613.3,
+    "y": 85.1,
+    "facing": "SE",
+    "yaw": 156,
+    "distance": 161.3
+   },
+   {
+    "water": "w1",
+    "x": 5120.7,
+    "z": 8599.4,
+    "y": 84.1,
+    "facing": "W",
+    "yaw": 268,
+    "distance": 163.9
+   }
+  ],
+  "note": "lakes and ponds are the closed outlines of the dump's water shapes (the sea probe cannot see them); the grid, the terrain share and the free plots count the cells inside them as water. Shore points are dry ground 2.5 m outside an outline, not checked against trees or props"
+ },
+ "mainStreet": {
+  "road": "NE-SW road r05",
+  "roadId": "r05",
+  "buildingsAlong": 0,
+  "at": [
+   5008.8,
+   8477.2
+  ],
+  "runs": "NE-SW"
+ },
+ "roads": [
+  {
+   "id": "r05",
+   "name": "NE-SW road r05",
+   "cls": "RoadEntity",
+   "runs": "NE-SW",
+   "points": [
+    [
+     4917.9,
+     8316.6
+    ],
+    [
+     4971.6,
+     8359
+    ],
+    [
+     4984,
+     8418.7
+    ],
+    [
+     5017.6,
+     8498
+    ]
+   ],
+   "length": 215.5
+  },
+  {
+   "id": "r07",
+   "name": "NE-SW road r07",
+   "cls": "RoadEntity",
+   "runs": "NE-SW",
+   "points": [
+    [
+     5017.5,
+     8497.7
+    ],
+    [
+     5020.6,
+     8507.2
+    ],
+    [
+     5021.8,
+     8514.8
+    ],
+    [
+     5026.5,
+     8527.8
+    ],
+    [
+     5036.6,
+     8544.5
+    ],
+    [
+     5042.2,
+     8558.4
+    ],
+    [
+     5051.5,
+     8577.6
+    ],
+    [
+     5063.4,
+     8604.1
+    ],
+    [
+     5071.1,
+     8614.7
+    ]
+   ],
+   "length": 129.4
+  }
+ ],
+ "junctions": [
+  {
+   "x": 5017.6,
+   "z": 8498,
+   "roads": [
+    "r05",
+    "r07"
+   ],
+   "arms": 2,
+   "kind": "bend-or-join"
+  }
+ ],
+ "buildings": [
+  {
+   "prefab": "{9562159FDE627B33}Prefabs/Structures/Recreation/Houses/Cottage_E_01/Cottage_E_01.et",
+   "path": "Prefabs/Structures/Recreation/Houses/Cottage_E_01/Cottage_E_01.et",
+   "stem": "Cottage_E_01",
+   "type": "recreation",
+   "civic": true,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 5111.5,
+   "y": 84.7,
+   "z": 8578.8,
+   "yaw": -30,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 142.4,
+   "bearing": "NE",
+   "footprint": {
+    "source": "catalog",
+    "w": 6,
+    "d": 9.4,
+    "h": 5.1,
+    "area": 56.4,
+    "cx": 5111.37,
+    "cz": 8579.31,
+    "corners": [
+     [
+      5111.12,
+      8573.74
+     ],
+     [
+      5116.32,
+      8576.74
+     ],
+     [
+      5111.62,
+      8584.88
+     ],
+     [
+      5106.42,
+      8581.88
+     ]
+    ],
+    "note": "centred on the engine's bounds (the catalog gives extents only)"
+   },
+   "floors": 1,
+   "firstFloor": 1,
+   "basement": 2.3,
+   "height": 5.1,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (1 floor)"
+   },
+   "doors": 1,
+   "entrances": [],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b01"
+  }
+ ],
+ "props": [],
+ "propCounts": {},
+ "freePlots": {
+  "plots": [
+   {
+    "id": "p1",
+    "x": 4935,
+    "z": 8535,
+    "width": 58,
+    "depth": 84,
+    "area": 4872,
+    "ground": {
+     "min": 106.5,
+     "max": 115.9
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r07",
+     "distance": 89.1
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "recreation",
+     "stem": "Cottage_E_01",
+     "distance": 177.7
+    },
+    "distance": 99.2
+   },
+   {
+    "id": "p2",
+    "x": 4895,
+    "z": 8461,
+    "width": 58,
+    "depth": 32,
+    "area": 1856,
+    "ground": {
+     "min": 101.7,
+     "max": 112.1
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r05",
+     "distance": 98.5
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "recreation",
+     "stem": "Cottage_E_01",
+     "distance": 243.5
+    },
+    "distance": 119.8
+   },
+   {
+    "id": "p3",
+    "x": 4978,
+    "z": 8523,
+    "width": 16,
+    "depth": 112,
+    "area": 1792,
+    "ground": {
+     "min": 111.8,
+     "max": 116.1
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r07",
+     "distance": 44.6
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "recreation",
+     "stem": "Cottage_E_01",
+     "distance": 141.3
+    },
+    "distance": 60
+   },
+   {
+    "id": "p4",
+    "x": 4949,
+    "z": 8431,
+    "width": 66,
+    "depth": 16,
+    "area": 1056,
+    "ground": {
+     "min": 107.1,
+     "max": 111.4
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r05",
+     "distance": 37.1
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "recreation",
+     "stem": "Cottage_E_01",
+     "distance": 216
+    },
+    "distance": 78.5
+   },
+   {
+    "id": "p5",
+    "x": 4926,
+    "z": 8396,
+    "width": 72,
+    "depth": 14,
+    "area": 1008,
+    "ground": {
+     "min": 102.3,
+     "max": 107.8
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r05",
+     "distance": 52.2
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "recreation",
+     "stem": "Cottage_E_01",
+     "distance": 256.6
+    },
+    "distance": 118.3
+   },
+   {
+    "id": "p6",
+    "x": 4956,
+    "z": 8466,
+    "width": 24,
+    "depth": 42,
+    "area": 1008,
+    "ground": {
+     "min": 111.9,
+     "max": 115.9
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r05",
+     "distance": 44.2
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "recreation",
+     "stem": "Cottage_E_01",
+     "distance": 188.9
+    },
+    "distance": 58.7
+   },
+   {
+    "id": "p7",
+    "x": 5008,
+    "z": 8541,
+    "width": 12,
+    "depth": 84,
+    "area": 1008,
+    "ground": {
+     "min": 113.8,
+     "max": 117.3
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r07",
+     "distance": 22.7
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "recreation",
+     "stem": "Cottage_E_01",
+     "distance": 106.6
+    },
+    "distance": 66.3
+   },
+   {
+    "id": "p8",
+    "x": 4991,
+    "z": 8356,
+    "width": 26,
+    "depth": 34,
+    "area": 884,
+    "ground": {
+     "min": 95.1,
+     "max": 100.1
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r05",
+     "distance": 19.6
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "recreation",
+     "stem": "Cottage_E_01",
+     "distance": 248.7
+    },
+    "distance": 121.2
+   }
+  ],
+  "note": "plots are open rectangles at least 10 m on the short side, kept 2.5 m off buildings, 4.5 m off a road's centre line, 2 m off a tree, on ground under 12 degrees; axis aligned, not the best use of the land"
+ },
+ "pictures": [
+  {
+   "role": "overview",
+   "file": "img/overview-top.jpg",
+   "caption": "from above, north up"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-wide.jpg",
+   "caption": "wide, from the south"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob270.jpg",
+   "caption": "from the west"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob000.jpg",
+   "caption": "from the north"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob090.jpg",
+   "caption": "from the east"
+  },
+  {
+   "role": "main-street",
+   "file": "img/main-street-wide.jpg",
+   "caption": "NE-SW road r05 (NE-SW), looking along it"
+  },
+  {
+   "role": "main-street",
+   "file": "img/main-street-ob090.jpg",
+   "caption": "from the east"
+  },
+  {
+   "role": "civic",
+   "building": "b01",
+   "file": "img/civic-b01-wide.jpg",
+   "caption": "recreation, from the front"
+  },
+  {
+   "role": "civic",
+   "building": "b01",
+   "file": "img/civic-b01-ob090.jpg",
+   "caption": "recreation, from the east"
+  },
+  {
+   "role": "interior",
+   "building": "b01",
+   "file": "img/interior-b01-in000.jpg",
+   "caption": "recreation, inside (looking 000 deg)"
+  },
+  {
+   "role": "interior",
+   "building": "b01",
+   "file": "img/interior-b01-in090.jpg",
+   "caption": "recreation, inside (looking 090 deg)"
+  },
+  {
+   "role": "interior",
+   "building": "b01",
+   "file": "img/interior-b01-in270.jpg",
+   "caption": "recreation, inside (looking 270 deg)"
+  },
+  {
+   "role": "interior",
+   "building": "b01",
+   "file": "img/interior-b01-wide.jpg",
+   "caption": "recreation, inside (wide)"
+  }
+ ],
+ "notes": [
+  "buildings (types, footprints, floors, interiors) are read from the Everon catalog, docs/everon/catalog-buildings.json; 1 of 1 matched an entity of the engine dump, which adds the door positions",
+  "2 quay, pier and waterworks pieces are counted, not listed"
+ ]
+}

@@ -4479,6 +4479,11 @@ StringTable {
      Target_en_us "Hostel"
      Comment "Map POI kind name (#2247): the hostel."
     }
+    CustomStringTableItem "{2E6ED01670A45CF3}" {
+     Id "LF-MapPoi_LabourOffice"
+     Target_en_us "Labor office"
+     Comment "Map POI name (#4748): the labor office counter in the town hall, where trade perks are picked; public place."
+    }
     CustomStringTableItem "{0C04F4D20CD6B427}" {
      Id "LF-MapPoi_LoggingYard"
      Target_en_us "Logging yard"
@@ -4509,6 +4514,11 @@ StringTable {
      Target_en_us "Orchard"
      Comment "Map POI name (rc-map-places): the orchard to pick fruit."
     }
+    CustomStringTableItem "{2D06279FDC639CA5}" {
+     Id "LF-MapPoi_OrgDesk"
+     Target_en_us "Gang registry"
+     Comment "Map POI name (#4748): the Saint-Philippe registry cabin, where the registrar keeps the gang book and the flag wall; public place."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F12}" {
      Id "LF-MapPoi_ParcelDepot"
      Target_en_us "Parcel depot"
@@ -4533,6 +4543,11 @@ StringTable {
      Id "LF-MapPoi_PostOffice"
      Target_en_us "Post office (van run)"
      Comment "Map badge label: a post office stand where the postal van run starts and ends."
+    }
+    CustomStringTableItem "{6D2B9F40C8E15A73}" {
+     Id "LF-MapPoi_PubBar"
+     Target_en_us "Bar"
+     Comment "Map POI name (#4701): the Chotain and Levie village bars; public places."
     }
     CustomStringTableItem "{D1EC93AD7C6358F0}" {
      Id "LF-MapPoi_Range"
@@ -6813,6 +6828,21 @@ StringTable {
      Id "LF-Sign_Hideout_What"
      Target_en_us "A walled yard owned by one organization."
      Comment "Sign card for the organization hideout yard, What section."
+    }
+    CustomStringTableItem "{E27A60C4195DB38F}" {
+     Id "LF-Sign_HighstoneMine_How"
+     Target_en_us "Swing a pickaxe at the big rust-red rocks (not the grey granite) and pick up the iron nuggets. Smelt three nuggets into a bar at the furnace on Coalman's Brow; sell the bars at the iron counter in the dock wholesale warehouse."
+     Comment "Sign card for the Highstone mine plate, How section."
+    }
+    CustomStringTableItem "{5C1E7A93D20B4F68}" {
+     Id "LF-Sign_HighstoneMine_Title"
+     Target_en_us "Highstone iron mine"
+     Comment "Title of the pole plate at the iron mine on Highstone hill (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Highstone iron mine."
+    }
+    CustomStringTableItem "{0B94D3E6A71C58F2}" {
+     Id "LF-Sign_HighstoneMine_What"
+     Target_en_us "An open cut in the hillside with iron ore rocks along its foot. Nobody is on shift here: bring your own pickaxe."
+     Comment "Sign card for the Highstone mine plate, What section."
     }
     CustomStringTableItem "{4259F2E50006FDFF}" {
      Id "LF-Sign_Home_CafeOwner_Title"
