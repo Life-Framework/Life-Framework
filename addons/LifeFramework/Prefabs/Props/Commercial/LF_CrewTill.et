@@ -14,7 +14,7 @@ GenericEntity {
     UserActionContext "{E7AD9D8E0D63C48B}" {
      ContextName "default"
      Position PointInfo "{23591B2E71B1F5A6}" {
-      Offset 0 1 0
+      Offset 0 1.089 0
      }
      Radius 3
     }

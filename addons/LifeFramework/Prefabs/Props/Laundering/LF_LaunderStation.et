@@ -10,7 +10,7 @@ GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
     UserActionContext "{F2121BD019E65A04}" {
      ContextName "LF_LaunderStation"
      Position PointInfo "{F2121BD019E65A05}" {
-      Offset 0 0.9 0
+      Offset 0 1.079 0
      }
      Radius 1
     }

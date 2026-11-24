@@ -6,7 +6,7 @@ SCR_DestructibleEntity : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/B
     UserActionContext "{BEFB0FA45FA76643}" {
      ContextName "LF_Seat1"
      Position PointInfo "{C6BBD8128E19C78A}" {
-      Offset -0.5 0.5 0.15
+      Offset -0.5 0.538 0.15
      }
      Radius 0.9
     }
