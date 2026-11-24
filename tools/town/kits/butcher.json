@@ -201,6 +201,157 @@
       "attach": "table:butcher-freezer"
     },
     {
+      "id": "butcher-rack-1",
+      "name": "Butcher_rack_1",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5.54,
+        0.202,
+        -0.3
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "butcher-meat-4",
+      "name": "Butcher_meat_4",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-counter-1",
+      "offset": [
+        -5.15,
+        1.292,
+        3.1
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "counter:butcher-counter-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-00",
+      "name": "Butcher_rack_1_leg_00",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.43,
+        0.794,
+        -0.05
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-01",
+      "name": "Butcher_rack_1_leg_01",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.43,
+        0.794,
+        0.7
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-10",
+      "name": "Butcher_rack_1_leg_10",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.23,
+        1.287,
+        -0.05
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-11",
+      "name": "Butcher_rack_1_leg_11",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.23,
+        1.287,
+        0.7
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-20",
+      "name": "Butcher_rack_1_leg_20",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.43,
+        1.78,
+        -0.05
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-21",
+      "name": "Butcher_rack_1_leg_21",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.43,
+        1.78,
+        0.7
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-30",
+      "name": "Butcher_rack_1_leg_30",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.23,
+        2.273,
+        -0.05
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-31",
+      "name": "Butcher_rack_1_leg_31",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.23,
+        2.273,
+        0.7
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
       "id": "butcher-fascia",
       "name": "Butcher_fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",

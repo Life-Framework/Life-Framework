@@ -9,19 +9,6 @@ GenericEntity Fit_saint_philippe_butcher_Place {
  }
  coords 4474.5 12 10780.5
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_chiller_1 : "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et" {
- coords 4477.5 12.046 10776.155
- angleY -10
-}
-GenericEntity Fit_saint_philippe_butcher_anchor_counter {
- components {
-  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
-   m_sAnchorId "counter"
-  }
- }
- coords 4472.976 12.039 10776.474
- angleY -100
-}
 GenericEntity Fit_saint_philippe_butcher_butcher_counter_1 : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4472.336 12.044 10775.498
  angleY -100
@@ -29,6 +16,74 @@ GenericEntity Fit_saint_philippe_butcher_butcher_counter_1 : "{70C282F48D580FB8}
 GenericEntity Fit_saint_philippe_butcher_butcher_counter_2 : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4472.075 12.044 10776.975
  angleY -100
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_till : "{7CA6A8139045323E}Prefabs/Props/Commercial/LF_ButcherTill.et" {
+ coords 4472.174 13.084 10776.993
+ angleY 80
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_scale : "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et" {
+ coords 4472.362 13.081 10775.35
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_chiller_1 : "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et" {
+ coords 4477.5 12.046 10776.155
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_freezer : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
+ coords 4473.827 12.054 10775.101
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 4472.176 13.092 10775.825
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_meat_3 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 4472.072 13.092 10776.416
+ angleY -30
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_freezer_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 4473.975 12.904 10775.127
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 4475.757 12.002 10775.096
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_meat_4 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4472.341 13.092 10774.89
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_leg_00 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4475.492 12.594 10775.161
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_leg_01 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4474.754 12.594 10775.031
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_leg_10 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4475.457 13.087 10775.358
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_leg_11 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4474.719 13.087 10775.228
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_leg_20 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4475.492 13.58 10775.161
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_leg_21 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4474.754 13.58 10775.031
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_leg_30 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4475.457 14.073 10775.358
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_leg_31 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4474.719 14.073 10775.228
+ angleY -10
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  components {
@@ -42,39 +97,19 @@ GenericEntity Fit_saint_philippe_butcher_butcher_fascia : "{4697D9464B596C24}Pre
  coords 4467.689 15.05 10775.44
  angleY -100
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_freezer : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
- coords 4473.827 12.054 10775.101
- angleY -10
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_freezer_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4473.975 12.904 10775.127
+GenericEntity Fit_saint_philippe_butcher_anchor_counter {
+ coords 4472.976 12.039 10776.474
  angleY -100
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4472.176 13.092 10775.825
- angleY -100
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_meat_3 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4472.072 13.092 10776.416
- angleY -30
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_scale : "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et" {
- coords 4472.362 13.081 10775.35
- angleY -100
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_till : "{7CA6A8139045323E}Prefabs/Props/Commercial/LF_ButcherTill.et" {
- coords 4472.174 13.084 10776.993
- angleY 80
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4479.453 15.750 10778.327
+ coords 4479.453 15.75 10778.327
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4475.021 15.750 10777.546
+ coords 4475.021 15.75 10777.546
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4470.589 15.750 10776.764
+ coords 4470.589 15.75 10776.764
  angleY -100
 }
