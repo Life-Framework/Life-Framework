@@ -491,6 +491,17 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (LF_BookChargeHarness.IsVerb(tool))
+		{
+			// A fineable charge filed against the sender, for the booking desk proof (#4699).
+			string chargeResult = LF_BookChargeHarness.Run(this, tool);
+			if (chargeResult.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", chargeResult.Substring(3, chargeResult.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", chargeResult.Substring(6, chargeResult.Length() - 6));
+			return;
+		}
+
 		if (LF_TruckCheckHarness.IsVerb(tool))
 		{
 			// The lent check truck driven through the gates in short steps, for a proof that cannot drive (#4697).
