@@ -54,13 +54,18 @@ wait 1500
 shot ui island_01_square
 
 step 2 The clerk greets you; read the rules
-stand Fit_saint_philippe_arrival_town_hall_clerk
+stand Fit_saint_philippe_arrival_town_hall_clerk e2
 wait 1500
 use LF_QuestAction Fit_saint_philippe_arrival_town_hall_clerk
-wait 4000
+# Answer as a player does: wait for the replies, then Down, Up, Select (`dialogue pick 0` is the fallback).
+dialogue-wait choosing greet
 shot ui island_02_clerk_greets
+input MenuDown
+wait 600
+input MenuUp
+wait 600
 input MenuSelect
-wait 2000
+dialogue-wait line welcome_papers
 input MenuBack
 wait 1500
 stand Fit_saint_philippe_arrival_lf_sign_rules
