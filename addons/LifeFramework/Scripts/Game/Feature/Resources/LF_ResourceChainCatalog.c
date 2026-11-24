@@ -45,6 +45,12 @@ class LF_ResourceNodeDef
 
 	[Attribute("0", UIWidgets.Auto, "Stock model (#2409): milliseconds for one gather to grow back, starting full at m_iMaxGathers. 0 keeps the cooldown model")]
 	float m_fRegrowMs;
+
+	[Attribute("", UIWidgets.EditBox, "Job whose level opens this node (an ore rock: MINER). Empty is no gate")]
+	string m_sLevelJob;
+
+	[Attribute("0", UIWidgets.Auto, "Level in m_sLevelJob a miner needs before a hit breaks a piece off the rock. 0 or 1: no gate")]
+	int m_iMinLevel;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -144,10 +150,10 @@ class LF_ResourceChainCatalog
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Adds the machine rows of each pack overlay (the mission header's m_aLF_ConfigOverlays, then
-	//! the folder beside a listed file) to the core config (#3450). A pack adds machines: an id the
-	//! config already has is refused and logged, so a pack never rewrites a core recipe. Nodes and
-	//! chains are not overlaid.
+	//! Adds the machine and node rows of each pack overlay (the mission header's m_aLF_ConfigOverlays, then
+	//! the folder beside a listed file) to the core config (#3450). A pack adds machines and gather nodes: an id
+	//! the config already has is refused and logged, so a pack never rewrites a core recipe or node. Chains are
+	//! not overlaid.
 	protected static void ApplyPackOverlays()
 	{
 		array<ref Resource> resources = {};
@@ -157,7 +163,58 @@ class LF_ResourceChainCatalog
 		{
 			int added = ApplyPackMachines(resource.GetResource().ToBaseContainer(), names[i]);
 			LF_Debug.Info("Resources", string.Format("chains: pack overlay %1 added %2 machines", names[i], added));
+			int addedNodes = ApplyPackNodes(resource.GetResource().ToBaseContainer(), names[i]);
+			if (addedNodes > 0)
+				LF_Debug.Info("Resources", string.Format("chains: pack overlay %1 added %2 nodes", names[i], addedNodes));
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Gather nodes added from one overlay's root container (an id the config already has is skipped).
+	protected static int ApplyPackNodes(BaseContainer root, string source)
+	{
+		if (!root || !s_Config)
+			return 0;
+
+		if (!s_Config.m_aNodes)
+			s_Config.m_aNodes = {};
+
+		BaseContainerList entries = root.GetObjectArray("m_aNodes");
+		if (!entries)
+			return 0;
+
+		int added;
+		for (int i = 0; i < entries.Count(); i++)
+		{
+			BaseContainer entry = entries.Get(i);
+			if (!entry)
+				continue;
+
+			LF_ResourceNodeDef node = LF_ResourceNodeDef.Cast(BaseContainerTools.CreateInstanceFromContainer(entry));
+			if (!node || node.m_sNodeId.IsEmpty())
+			{
+				LF_Debug.Error("Resources", string.Format("chains: %1 has a node row with no id, skipped", source));
+				continue;
+			}
+
+			bool known;
+			foreach (LF_ResourceNodeDef have : s_Config.m_aNodes)
+			{
+				if (have && have.m_sNodeId == node.m_sNodeId)
+					known = true;
+			}
+
+			if (known)
+			{
+				LF_Debug.Warn("Resources", string.Format("chains: %1 names node %2 the config already has, skipped", source, node.m_sNodeId));
+				continue;
+			}
+
+			s_Config.m_aNodes.Insert(node);
+			added++;
+		}
+
+		return added;
 	}
 
 	//------------------------------------------------------------------------------------------------

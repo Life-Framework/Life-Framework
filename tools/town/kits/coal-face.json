@@ -84,7 +84,8 @@
         {
           "component": "LF_OreNodeComponent",
           "set": {
-            "m_fBaseScale": "1.6"
+            "m_fBaseScale": "1.6",
+            "m_sNodeId": "\"coal-seam\""
           },
           "blocks": []
         }
@@ -109,7 +110,8 @@
         {
           "component": "LF_OreNodeComponent",
           "set": {
-            "m_fBaseScale": "1.6"
+            "m_fBaseScale": "1.6",
+            "m_sNodeId": "\"coal-seam\""
           },
           "blocks": []
         }
@@ -134,7 +136,8 @@
         {
           "component": "LF_OreNodeComponent",
           "set": {
-            "m_fBaseScale": "1.6"
+            "m_fBaseScale": "1.6",
+            "m_sNodeId": "\"coal-seam\""
           },
           "blocks": []
         }
@@ -159,7 +162,8 @@
         {
           "component": "LF_OreNodeComponent",
           "set": {
-            "m_fBaseScale": "1.6"
+            "m_fBaseScale": "1.6",
+            "m_sNodeId": "\"coal-seam\""
           },
           "blocks": []
         }
@@ -541,6 +545,23 @@
           "guid": "7D3E2A91C05B48F6"
         }
       ]
+    },
+    {
+      "id": "mine-coal-heap",
+      "name": "Mine_CoalHeap",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        5.4,
+        0.07,
+        0.4
+      ],
+      "yaw": 0,
+      "scale": 0.8,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }
