@@ -120,21 +120,23 @@ TP-8 (the parity check) walks hours 0 to 2: rows 1 to 22. Rows 23 to 26 are file
 | 2 | Bus stops | done |
 | 3 | Boards | done (square board); per-stop boards not walked, #4679 |
 | 4 | Taxi rank | not placed, #4680 |
-| 5 | Arrival and clerk | welcome pack not seen, #4677 |
+| 5 | Arrival and clerk | welcome pack not seen, #4677; round 2: the conversation opens from the customer side but the harness stops at `welcome_room`, #4725 |
 | 6 | Hostel | not placed, hostel text points to it, #4676 |
-| 7 | Starter car and lot | lot done; starter car handout not walked, #4679 |
-| 8 | Orchard and press | stands and offers actions; apple yield not seen, #4679 |
+| 7 | Starter car and lot | done; round 2 (#4679): garage retrieve took the car out, plate and marker shown |
+| 8 | Orchard and press | done; round 2: 3 gathers give 3 apples, the press makes 1 juice, "Needs Apple" afterwards is correct |
 | 9 | Market | done |
-| 10 | Mine desk and rocks | desk done; ore rocks not driven, #4679; duplicate Pickaxe row, #4680 |
+| 10 | Mine desk and rocks | done; round 2: ore strikes register (`piece 1/5`, 4 nuggets dropped); duplicate Pickaxe row, #4680 |
 | 11 | Furnace | done; wording, #4680 |
 | 12 | Pickaxe counter | done |
 | 13 | Iron buyer | done |
 | 14 | Postal run | done |
-| 15 | Clothing | mannequins done; counter sheet not seen, #4679 |
-| 16 | Shop counters | not walked, #4679 |
+| 15 | Clothing | done; round 2: counter sheet opens (Raincoat $60, Jean Jacket $45), a mannequin purchase took $30 |
+| 16 | Shop counters | general store and gun counter sheets done; pharmacy opens a generic shopkeeper talk with bare shelves, no counter sheet (minor, round 2) |
 | 17 | Shops with no building | TP-10 (plan) |
-| 18 | Map POIs | not walked, #4679 |
-| 19 | Run chains | not walked, #4679 |
-| 20 | Guide and HUD rows | quiz and F3 done; F2 not walked, #4679; starting money differs from the island, #4678 |
-| 21 | Jail doors | not walked, #4679 |
+| 18 | Map POIs | done; round 2: the map shows bus stops, post offices, clerk, orchard, mine, clinic, gun; a VME every frame while it is open, #4726 |
+| 19 | Run chains | not walked: the run list is behind the clerk's papers, #4725 |
+| 20 | Guide and HUD rows | quiz, F3 and starting money ($100, $2,000) done; F2 opens but lists no rows until the clerk's papers, #4725 |
+| 21 | Jail doors | yard, timer and bail done; the door is a breach prop, not a cell door (minor, round 2) |
 | 22 | Bail phone | done |
+
+**TP-8 round 2 result (#4679, 2026-11-24).** Report: [2026-11-24-playtest-town-r2.md](../playtest/rounds/2026-11-24-playtest-town-r2.md). Rows now passing: 7, 8, 10, 15, 18. Partial: 16 (pharmacy), 19, 20 (F2), 21. Still open and filed: the harness cannot finish the clerk conversation (`welcome_room` ignores `MenuSelect`, no digit key), which keeps row 5, row 19 and the F2 rows unverified (#4725, with #4683 and #4677); the map throws a VME every frame in the town (#4726); the clerk's hostel line (#4676). Client 2 walked on its own and rejoined once: same identity, cash and bank kept.
