@@ -6,14 +6,18 @@
 // the asking player's own account only. Every source is read through its public accessor
 // (LF_FineTickets, LF_ConvictionRecord, LF_LicenceBans); nothing is saved or changed here.
 //
-// What a booking record holds today is a count and the latest in-game day (LF_ConvictionRecord); the
-// charges of one booking and how it was settled (paid or time) are not stored per booking yet.
+// The count and the latest in-game day come from LF_ConvictionRecord; each past booking at the desk,
+// with its charges, fine, settlement, seized licences and booking officer, from LF_BookingRecords
+// (newest first, at most LF_BookingRecords.KEEP).
 //
 // Wire (version 1): records split by ';', fields by '|', names cleaned like LF_PlayerMenuData.
 //   V|1
 //   T|number|offenceKey|amountOwed         one open ticket
 //   B|count|daysAgo                        bookings on record; daysAgo is 0 for today, -1 unknown
 //   L|licenceName|daysLeft                 one seized licence (LF_ELicenseType name)
+//   R|daysAgo|codes|fine|settled|servedSeconds|licences|officer
+//                                          one past booking, newest first; codes and licences joined
+//                                          by LF_BookingRecordRow.LIST_SEP, settled an LF_EBookingSettled
 
 //------------------------------------------------------------------------------------------------
 class LF_PlayerMenuFileData
@@ -30,6 +34,8 @@ class LF_PlayerMenuFileData
 	int m_iLastBookingDaysAgo = -1;
 	ref array<string> m_aLicences = {};
 	ref array<int> m_aLicenceDays = {};
+	//! Past bookings, newest first. m_iDay holds days ago here (0 today), not the in-game day.
+	ref array<ref LF_BookingRecordRow> m_aRecords = {};
 
 	//------------------------------------------------------------------------------------------------
 	string Encode()
@@ -44,6 +50,12 @@ class LF_PlayerMenuFileData
 		foreach (int l, string licence : m_aLicences)
 		{
 			wire += RECORD + "L" + FIELD + LF_PlayerMenuData.Clean(licence) + FIELD + m_aLicenceDays[l].ToString();
+		}
+
+		foreach (LF_BookingRecordRow row : m_aRecords)
+		{
+			wire += RECORD + "R" + FIELD + row.m_iDay.ToString() + FIELD + LF_PlayerMenuData.Clean(row.m_sCodes) + FIELD + row.m_iFine.ToString();
+			wire += FIELD + row.m_iSettled.ToString() + FIELD + row.m_iServedSeconds.ToString() + FIELD + LF_PlayerMenuData.Clean(row.m_sLicences) + FIELD + LF_PlayerMenuData.Clean(row.m_sOfficer);
 		}
 
 		return wire;
@@ -82,6 +94,18 @@ class LF_PlayerMenuFileData
 				data.m_aLicences.Insert(f[1]);
 				data.m_aLicenceDays.Insert(f[2].ToInt());
 			}
+			else if (f[0] == "R" && f.Count() >= 8)
+			{
+				LF_BookingRecordRow row = new LF_BookingRecordRow();
+				row.m_iDay = f[1].ToInt();
+				row.m_sCodes = f[2];
+				row.m_iFine = f[3].ToInt();
+				row.m_iSettled = f[4].ToInt();
+				row.m_iServedSeconds = f[5].ToInt();
+				row.m_sLicences = f[6];
+				row.m_sOfficer = f[7];
+				data.m_aRecords.Insert(row);
+			}
 		}
 
 		return data;
@@ -94,6 +118,8 @@ class LF_PlayerMenuFileTab
 	static const string FEATURE = "PlayerMenu";
 	//! The most tickets the card lists; the rest are counted in the line below.
 	static const int TICKETS_SHOWN = 8;
+	//! The most charges one past booking lists on the wire.
+	static const int CODES_SHOWN = 6;
 	static const string PART_COLUMNS = "PlayerMenuFileColumns";
 	static const string CARD_TICKETS = "PlayerMenuFileTickets";
 	static const string CARD_BOOKINGS = "PlayerMenuFileBookings";
@@ -102,6 +128,8 @@ class LF_PlayerMenuFileTab
 	static const string ROW_TICKET = "PlayerMenuFileTicket_";
 	static const string ROW_BOOKING = "PlayerMenuFileBooking_";
 	static const string ROW_LICENCE = "PlayerMenuFileLicence_";
+	static const string ROW_RECORD = "PlayerMenuFileRecord_";
+	static const string ROW_RECORD_NOTE = "PlayerMenuFileRecordNote_";
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the file of one account, read through the features' public accessors. Never null.
@@ -129,6 +157,30 @@ class LF_PlayerMenuFileTab
 				if (row.m_sPlayerUid == uid)
 					data.m_iLastBookingDaysAgo = LF_Utils.MaxInt(today - row.m_iDay, 0);
 			}
+		}
+
+		array<ref LF_BookingRecordRow> records = {};
+		LF_BookingRecords.CollectFor(uid, records);
+		foreach (LF_BookingRecordRow record : records)
+		{
+			record.m_iDay = LF_Utils.MaxInt(today - record.m_iDay, 0);
+			// A fine paid at the desk starts no sentence, so the conviction count never saw it: count it here.
+			if (record.m_iSettled == LF_EBookingSettled.PAID)
+				data.m_iBookings++;
+
+			if (data.m_iLastBookingDaysAgo < 0 || record.m_iDay < data.m_iLastBookingDaysAgo)
+				data.m_iLastBookingDaysAgo = record.m_iDay;
+
+			// Bounds the answer: ten bookings of a sheet with every code would pass 15k characters.
+			array<string> codes = {};
+			record.Codes(codes);
+			if (codes.Count() > CODES_SHOWN)
+			{
+				codes.Resize(CODES_SHOWN);
+				record.m_sCodes = LF_BookingRecordRow.Join(codes);
+			}
+
+			data.m_aRecords.Insert(record);
 		}
 
 		array<LF_ELicenseType> seizable = {LF_ELicenseType.DRIVING_LICENCE, LF_ELicenseType.FIREARM_PERMIT};
@@ -183,6 +235,63 @@ class LF_PlayerMenuFileTab
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A past booking's charges in words: each code's own text, joined by ", ".
+	static string ChargesText(notnull LF_BookingRecordRow record)
+	{
+		array<string> codes = {};
+		record.Codes(codes);
+		string words;
+		foreach (string code : codes)
+		{
+			if (!words.IsEmpty())
+				words += ", ";
+
+			words += LF_Terms.Text(code);
+		}
+
+		if (words.IsEmpty())
+			return LF_Terms.Text("#LF-PlayerMenuFile_RecordNoCharge");
+
+		return words;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How a past booking was settled: "$X paid" or "N min served".
+	static string SettledText(notnull LF_BookingRecordRow record)
+	{
+		if (record.m_iSettled == LF_EBookingSettled.PAID)
+			return LF_Terms.Text("#LF-PlayerMenuFile_RecordPaid", LF_MoneyFormat.FormatMoney(record.m_iFine));
+
+		return LF_Terms.Text("#LF-PlayerMenuFile_RecordServed", LF_BookingDesk.Minutes(record.m_iServedSeconds).ToString());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The line under a past booking: the licences it took and who booked it; empty with neither.
+	static string RecordNote(notnull LF_BookingRecordRow record)
+	{
+		string note;
+		array<string> licences = {};
+		record.Licences(licences);
+		foreach (string licence : licences)
+		{
+			if (!note.IsEmpty())
+				note += "; ";
+
+			note += LF_Terms.Text("#LF-PlayerMenuFile_RecordSeized", LF_Terms.Text(LicenceKey(licence)));
+		}
+
+		if (!record.m_sOfficer.IsEmpty())
+		{
+			if (!note.IsEmpty())
+				note += "; ";
+
+			note += LF_Terms.Text("#LF-PlayerMenuFile_RecordBookedBy", record.m_sOfficer);
+		}
+
+		return note;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static LF_UIPart CardIn(int index, string name)
 	{
 		array<float> weights = {1};
@@ -232,6 +341,15 @@ class LF_PlayerMenuFileTab
 		{
 			parts.Insert(Card(CARD_BOOKINGS, LF_UIPart.CreatePair(ROW_BOOKING + "count", "#LF-PlayerMenuFile_BookingsOnRecord", data.m_iBookings.ToString())));
 			parts.Insert(Card(CARD_BOOKINGS, LF_UIPart.CreatePair(ROW_BOOKING + "last", "#LF-PlayerMenuFile_BookingLatest", LastBookingText(data.m_iLastBookingDaysAgo))));
+		}
+
+		foreach (int r, LF_BookingRecordRow record : data.m_aRecords)
+		{
+			string when = LF_Terms.Text("#LF-PlayerMenuFile_RecordLabel", LastBookingText(record.m_iDay), ChargesText(record));
+			parts.Insert(Card(CARD_BOOKINGS, LF_UIPart.CreatePair(ROW_RECORD + r.ToString(), when, SettledText(record))));
+			string note = RecordNote(record);
+			if (!note.IsEmpty())
+				parts.Insert(Card(CARD_BOOKINGS, LF_UIPart.Create(LF_EUIPartKind.LINE, ROW_RECORD_NOTE + r.ToString(), note)));
 		}
 
 		parts.Insert(CardIn(2, CARD_LICENCES));
