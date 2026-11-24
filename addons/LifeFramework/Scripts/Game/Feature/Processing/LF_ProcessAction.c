@@ -138,12 +138,15 @@ class LF_ProcessAction : ScriptedUserAction
 		{
 			if (m_bForceDropOutput)
 			{
-				for (int i = 0; i < processingOutput.m_iOutputAmount; i++)
+				// A hand-carry output that stacks (planks) drops as carried bundles: one trip takes a bundle (#4875).
+				int left = processingOutput.m_iOutputAmount;
+				while (left > 0)
 				{
 					IEntity outputEntity = LF_Utils.SpawnEntityPrefab(processingOutput.m_OutputPrefab, pOwnerEntity.GetOrigin() + m_vDropOffset, m_vRotation);
 					if (outputEntity)
 					{
 						spawnedOutputs.Insert(outputEntity);
+						left -= LF_ProcessRun.TakeIntoBundle(outputEntity, left);
 						continue;
 					}
 

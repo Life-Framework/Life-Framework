@@ -1,18 +1,14 @@
 MatPBR2Layers : "{E9C191F08ACE8804}Assets/Rocks/Granite/Data/GraniteStone_01.emat" {
- Color 0.42 0.4 0.4 1
+ Color 0.2 0.2 0.21 1
  RoughnessScale 1
- BCRMap "{0257F19B0B86C303}Assets/Resources/Mining/OreVein/Data/OreVein_Iron_BCR.edds"
- NMOMap "{DC7CAC81FC06CABD}Assets/Resources/Mining/OreVein/Data/OreVein_Iron_NMO.edds"
  GlobalMapsUVTransform MatUVTransform "{56147A5D7D54B576}" {
   TilingU 2
   TilingV 2
  }
- Color2 0.1 0.1 0.12 1
- BCRMap2 "{0257F19B0B86C303}Assets/Resources/Mining/OreVein/Data/OreVein_Iron_BCR.edds"
+ Color2 0.06 0.06 0.07 1
  BCRMap2UVTransform MatUVTransform "{56147A5D623C5C07}" {
   TilingU 3
   TilingV 3
  }
- NMOMap2 "{DC7CAC81FC06CABD}Assets/Resources/Mining/OreVein/Data/OreVein_Iron_NMO.edds"
  RoughnessScale2 1
 }

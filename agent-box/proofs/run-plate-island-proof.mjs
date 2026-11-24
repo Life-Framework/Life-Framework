@@ -6,8 +6,8 @@ import { ROOT, arrive, clientBox, newestLog, parseState, sessionDir, sessionPath
 //   node agent-box/session.mjs up --mission island --clients 2 --profile full --wait
 //   node agent-box/session.mjs run-plate-island-proof [--name <shot prefix>]
 //   node agent-box/session.mjs down
-// Client 1 (A) buys an S105 (the lot's ignition-locked car; the first car, the T601, starts without a hotwire) at the Saint-Philippe lot and takes it out of the garage with its key. Client 2 (B) hotwires
-// it (stolen) and gets out; A reports it stolen. B then joins the police at the duty desk and clocks in. The harness
+// Client 1 (A) buys an S105 at the Saint-Philippe lot and takes it out of the garage with its key. The harness marks it stolen
+// (`markstolen`: a hotwire's result with no skill roll, so the STOLEN read is tested on every run); A reports it stolen. B then joins the police at the duty desk and clocks in. The harness
 // cannot drive, so `parkat` sets A's car 8 m ahead of the police car marker `car_b32_3`. B unlocks that police car,
 // sits at the wheel, presses "Run plate" and reads the pager: Plate <plate>: STOLEN. The harness `use` takes the action the
 // seat's interact menu offers (it answers cannot_show for one the row hides); `aim` reads nothing while seated, so the
@@ -18,6 +18,9 @@ const LOT = `${FIT}carlot_vehicle_lot`;
 const DESK = `${FIT}police_police_kit_duty_desk`;
 const POLICE_CAR = `${FIT}police_cars_car_b32_3`;
 const ACTION = "LF_RunPlateAction";
+// The marker `car_b32_3` spawns LF_UAZ469_Police.et (LF_PoliceCarMarker.et m_sServiceCar); the harness `engine` verb
+// seats at the wheel of the nearest vehicle whose prefab path contains the text after `veh_`.
+export const POLICE_CAR_SEAT = "veh_LF_UAZ469_Police";
 
 async function runRunPlateIslandProof() {
   const h = await import("../harness.mjs");
@@ -73,7 +76,7 @@ async function runRunPlateIslandProof() {
   wait(3000);
   step("1 A buys a car and gets it out of the garage", park.status === "ok", `park=${park.status} ${park.detail}`);
 
-  // 2. B hotwires it: stolen. (A's retrieved car comes out locked; A unlocks it with the key so B can sit in it.)
+  // 2. The car is stolen. (A's retrieved car comes out locked; A unlocks it with the key.)
   on(1, { verb: "stand", entityName: GARAGE, side: "n12" });
   wait(3500);
   on(1, { verb: "look" });
@@ -82,24 +85,11 @@ async function runRunPlateIslandProof() {
   on(1, { verb: "use", className: "LF_VehicleLockAction" }, 10000);
   wait(2000);
   step("2a A unlocks their car with the key", unlocks() > unlockedBefore, "no 'toggled by menu -> locked=0' line");
-  // B stands beside A, so the car B seats in is A's (the lot has other cars about).
-  on(2, { verb: "stand", entityName: `Player${state(1).player}` });
-  wait(3500);
-  const seat = on(2, { verb: "engine", entityName: "seat" }, 10000);
-  wait(4000);
-  let started;
-  for (let attempt = 1; attempt <= 5; attempt++) {
-    on(2, { verb: "use", className: "LF_HotwireAction" }, 10000);
-    wait(17000);
-    on(2, { verb: "engine" }, 10000);
-    wait(4000);
-    started = on(2, { verb: "engine" }, 10000);
-    if (started.status === "ok" && String(started.detail).includes("on=1")) break;
-  }
-  const stolen = started && started.status === "ok" && String(started.detail).includes("on=1");
-  step("2b B hotwires A's car (it runs, marked stolen)", seat.status === "ok" && stolen, `seat=${seat.status} ${seat.detail}; start=${started && started.detail}`);
-  on(2, { verb: "engine", entityName: "out" }, 10000);
-  wait(2500);
+  // The car is marked stolen by the harness (`markstolen`, what a hotwire sets), so the STOLEN read is tested on every run:
+  // the hotwire is a skill roll and a failed roll left the car clean (round 6 P3). The hotwire has its own proofs (hotwire-proof).
+  const marked = on(1, { verb: "markstolen", words: [] }, 10000);
+  wait(1500);
+  step("2b the harness marks A's car stolen (a hotwire's result, with no roll)", marked.status === "ok" && /plate=\S+/.test(String(marked.detail)), `${marked.status} ${marked.detail}`);
 
   // 3. A reports it stolen.
   on(1, { verb: "look" });
@@ -142,7 +132,8 @@ async function runRunPlateIslandProof() {
   on(2, { verb: "look" });
   on(2, { verb: "use", className: "LF_VehicleLockAction" }, 10000);
   wait(2000);
-  const seatB = on(2, { verb: "engine", entityName: "seat" }, 10000);
+  // The police car by its prefab (`veh_<text>`): "nearest car" put B in the starter car that stood beside it (round 7 P3).
+  const seatB = on(2, { verb: "engine", entityName: POLICE_CAR_SEAT }, 10000);
   wait(4000);
   const clientSees = String(on(2, { verb: "seen", radius: 20 }).detail);
   step("5b B sits in the police car and the stolen car stands ahead of it on B's client", seatB.status === "ok" && /veh=[^ ]*EL_S105_beige:d=([5-9]|1[0-2])[.:]/.test(clientSees), `seat=${seatB.status} ${seatB.detail}; B sees ${clientSees.slice(0, 200)}`);
@@ -176,8 +167,22 @@ async function runRunPlateIslandProof() {
   return failed.length ? 1 : 0;
 }
 
+// The seat token must be a legal harness token and name the prefab the police car marker really spawns, else the
+// proof would seat nobody (or, were it a plain "seat", the nearest car).
+function selftest() {
+  const fails = [];
+  if (!/^veh_[A-Za-z0-9_]+$/.test(POLICE_CAR_SEAT)) fails.push(`${POLICE_CAR_SEAT} is not a harness token of the form veh_<text>`);
+  const marker = readFileSync(join(ROOT, "addons", "LifeFramework", "Prefabs", "Systems", "Vehicles", "LF_PoliceCarMarker.et"), "utf8");
+  const car = /m_sServiceCar\s+"\{[0-9A-Fa-f]+\}([^"]+)"/.exec(marker)?.[1] ?? "";
+  if (!car.includes(POLICE_CAR_SEAT.slice(4))) fails.push(`the marker spawns '${car}', which does not contain '${POLICE_CAR_SEAT.slice(4)}'`);
+  if (car.includes("S105")) fails.push("the police car prefab matches the stolen S105");
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "run-plate-island-proof selftest: FAIL" : "run-plate-island-proof selftest: PASS");
+  return fails.length ? 1 : 0;
+}
+
 export default {
   name: "run-plate-island-proof",
-  usage: "run-plate-island-proof [--name <shot prefix>]",
-  run: (ctx) => runRunPlateIslandProof(),
+  usage: "run-plate-island-proof [--name <shot prefix>] [--selftest]",
+  run: (ctx) => ((ctx?.args ?? []).includes("--selftest") ? selftest() : runRunPlateIslandProof()),
 };

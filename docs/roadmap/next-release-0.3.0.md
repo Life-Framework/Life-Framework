@@ -188,7 +188,7 @@ After them `economy` flags any row that leaves its rung.
 | Iron on foot, Coalman's Brow | $471 | Entry | None |
 | Coal feeder, East Rise | $385 | Entry | Power plant buyer (WK-A1) lifts it to about $450 |
 | Wheat to the mill and bakery | $476 | Entry | None |
-| Softwood by hand | $398 to $410 | Entry | None |
+| Softwood by hand | $446 to $473 (#4875: plank bundles, buyers at the yard, the real trips) | Entry | None |
 | Fuel | $563 | Mid | None |
 | Iron by pickup, Highstone to the smelter | $515 (first hour $560) | Mid | None |
 | Taxi | $600 | Mid | None |

@@ -55,11 +55,16 @@ class LF_CasualtyTreat
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client and server: a downed character no player controls. The client cannot read the server's
-	//! casualty list, so this only picks the action's label and hold time; Perform decides on the server.
+	//! Client and server: a downed character no player controls that the server flagged as a casualty.
+	//! The client cannot read the server's casualty list, but the flag is an RplProp on the body, so this
+	//! picks the action's label and hold time; Perform and Find decide on the server (#4828, #4848).
 	static bool LooksLikeCasualty(IEntity entity)
 	{
 		if (!entity || !LF_Downed.IsDowned(entity))
+			return false;
+
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(entity);
+		if (!character || !character.LF_IsCasualty())
 			return false;
 
 		PlayerManager players = GetGame().GetPlayerManager();
@@ -137,20 +142,51 @@ class LF_CasualtyTreat
 		}
 
 		LF_Utils.NotifyEntity(medic, "#LF-CasualtyTreat_Done", "", 4.0);
-		if (GetGame() && GetGame().GetCallqueue())
-		{
-			if (!s_aLeaving)
-				s_aLeaving = {};
-			s_aLeaving.Insert(body.GetID());
-			GetGame().GetCallqueue().CallLater(Leave, LEAVE_MS, false);
-		}
+		QueueLeave(body);
 		return LF_EReviveRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a casualty a medic put in a clinic bed (#4849): the call is done like a treat. The call leaves
+	//! the open list and the board and the dispatch mark go (LF_OnServiceCallClosed), and the woken resident
+	//! leaves later like a treated one. The $15 delivery bonus is the bed's own (LF_OnPatientDelivered);
+	//! nothing is paid here. \return True when `body` was an open casualty.
+	static bool CloseDelivered(IEntity body)
+	{
+		LF_Casualty casualty = Find(body);
+		if (!casualty)
+			return false;
+
+		Close(casualty);
+		QueueLeave(body);
+		LF_Debug.Info(FEATURE, string.Format("casualty %1 put in a bed; call closed", casualty.m_sCallerUid));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the woken resident walks off LEAVE_MS from now.
+	protected static void QueueLeave(IEntity body)
+	{
+		if (!body || !GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		if (!s_aLeaving)
+			s_aLeaving = {};
+		s_aLeaving.Insert(body.GetID());
+		GetGame().GetCallqueue().CallLater(Leave, LEAVE_MS, false);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: take a casualty off the open list and its mark off the dispatch map.
 	protected static void Close(notnull LF_Casualty casualty)
 	{
+		// The flag goes with the call: the body is an ordinary resident from here (it walks off or lies in a bed).
+		SCR_ChimeraCharacter character;
+		if (GetGame() && GetGame().GetWorld())
+			character = SCR_ChimeraCharacter.Cast(GetGame().GetWorld().FindEntityByID(casualty.m_Entity));
+		if (character)
+			character.LF_SetCasualty(false);
+
 		array<ref LF_Casualty> open = LF_CasualtyCalls.Open();
 		for (int i = open.Count() - 1; i >= 0; i--)
 		{
@@ -200,6 +236,32 @@ class LF_CasualtyTreat
 	static int GetUnpaidCount()
 	{
 		return s_iUnpaid;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The casualty flag on the body, replicated so a client labels only real casualties (#4848). The server
+//! sets it when the generator spawns the body (LF_CasualtyCalls) and clears it when the call closes.
+modded class SCR_ChimeraCharacter
+{
+	[RplProp()]
+	protected bool m_bLF_Casualty;
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: flag this body as a medic-call casualty, or take the flag off.
+	void LF_SetCasualty(bool casualty)
+	{
+		if (!Replication.IsServer() || m_bLF_Casualty == casualty)
+			return;
+
+		m_bLF_Casualty = casualty;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool LF_IsCasualty()
+	{
+		return m_bLF_Casualty;
 	}
 }
 

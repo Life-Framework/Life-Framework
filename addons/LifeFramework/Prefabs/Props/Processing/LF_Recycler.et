@@ -20,7 +20,7 @@ GenericEntity : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.
     UserActionContext "{0703D61BD7D5322A}" {
      ContextName "LF_Recycler"
      Position PointInfo "{391B6C3A45505147}" {
-      Offset 0 1 0
+      Offset 0 1.079 0
      }
      Radius 2.5
     }

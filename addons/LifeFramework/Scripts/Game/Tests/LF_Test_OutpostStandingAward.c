@@ -92,7 +92,7 @@ class LF_Test_OutpostStandingAward : LF_Test
 		account.SetFaction(LF_Faction.CIVILIAN);
 		account.SetOnDuty(false);
 
-		ctx.Equal(2, LF_InventoryUtils.AddAmount(seller, PLANK, 2), "the seller gets 2 planks");
+		ctx.Equal(1, LF_InventoryUtils.AddAmount(seller, PLANK, 1), "the seller gets a plank");
 		if (ctx.FailureCount() > 0)
 			return;
 
@@ -133,6 +133,8 @@ class LF_Test_OutpostStandingAward : LF_Test
 		// An on-duty officer is refused in words inside the zone and keeps the plank.
 		account.SetFaction(LF_Faction.POLICE);
 		account.SetOnDuty(true);
+		// Planks stack into one bundle (#4875): the second plank comes now, so the first sale took only one.
+		ctx.Equal(1, LF_InventoryUtils.AddAmount(seller, PLANK, 1), "the officer gets a plank");
 		ctx.True(LF_Outpost.RefusesService(seller, traderOwner.GetOrigin()), "the outpost trader refuses an on-duty officer");
 		ctx.True(SellOne(seller, traderOwner) == LF_ETraderSale.OUTPOST_REFUSED, "the sale is refused as an outpost refusal");
 		ctx.Equal(1, LF_InventoryUtils.GetAmount(seller, PLANK), "the refused officer keeps the plank");

@@ -64,6 +64,37 @@ export function judgeCasualty(lines, { treat = true } = {}) {
   return fails;
 }
 
+// #4863: every casualty the server raised was dressed (a work outfit of at least a torso, trousers and shoes) and no roll
+// was refused for want of clear ground. `count` is how many casualties the run raised. Pure. Returns the failures.
+export function judgeDressed(lines, count) {
+  const fails = [];
+  const dressed = lines.map((l) => /\[LFDebug:CasualtyCall\] casualty dressed in (\d+) piece\(s\) of (\S+)/.exec(l)).filter(Boolean);
+  if (dressed.length < count) fails.push(`dressed: ${dressed.length} dressed-casualty line(s) for ${count} casualties`);
+  for (const m of dressed) if (Number(m[1]) < 3) fails.push(`dressed: only ${m[1]} piece(s) of ${m[2]} went on`);
+  if (findLine(lines, 0, "[LFDebug:CasualtyCall]", "no clear ground") >= 0) fails.push("ground: a roll found no clear ground near its place");
+  return fails;
+}
+
+// #4878: the car pool's reply is the server's log line, not the `use` verb's status (the verb says ok when the draw was
+// refused). Fails with the refusal line, which names the vehicle that blocks the bay. Pure. Returns the failures.
+export function judgeDraw(lines) {
+  const refused = lines.find((l) => l.includes("[LFDebug:MedicCarPool]") && l.includes("draw refused"));
+  if (refused) return [`draw: ${refused.slice(refused.indexOf("draw refused"))}`];
+  if (!lines.some((l) => l.includes("[LFDebug:MedicCarPool]") && l.includes(" drew "))) return ["draw: the car pool logged no draw"];
+  return [];
+}
+
+// #4849: a casualty put in a clinic bed closes its call: the bed line, the board line and the map mark. Pure. Returns the failures.
+export function judgeBed(lines, uid) {
+  const delivered = findLine(lines, 0, "[LFDebug:Medic]", "put in a hospital bed by medic");
+  if (delivered < 0) return ["bed: no 'put in a hospital bed' line for the second casualty"];
+  const fails = [];
+  if (findLine(lines, delivered, "[LFDebug:CasualtyTreat]", `casualty ${uid} put in a bed; call closed`) < 0) fails.push(`bed: ${uid} was put in a bed but its call did not close`);
+  if (findLine(lines, delivered, "[LFDebug:ServiceBoard]", "on the medic board closed", uid) < 0) fails.push(`bed: the medic board line of ${uid} did not close on the delivery`);
+  if (findLine(lines, delivered, "[LFDebug:ServiceCalls]", "closed: map mark", "removed") < 0) fails.push(`bed: the dispatch map mark of ${uid} did not close on the delivery`);
+  return fails;
+}
+
 async function runCasualtyCall(args) {
   const treat = !args.includes("--skip-treat");
   const h = await import("../harness.mjs");
@@ -146,6 +177,7 @@ async function runCasualtyCall(args) {
   const draw = use("LF_MedicCarPoolDrawAction", POOL);
   if (draw.status !== "ok") console.log(`note: the car pool draw returned ${draw.status} ${draw.detail}`);
   wait(2500);
+  fails.push(...judgeDraw(fresh()));
   mark("ambulance drawn");
 
   // 5. Stand at the casualty body itself (the harness name Casualty, #4853), so the hold is in reach.
@@ -177,6 +209,7 @@ async function runCasualtyCall(args) {
 
   // 5b. A second casualty rolled now and carried to a clinic bed for the $15 delivery.
   let carried = false;
+  let secondUid = "";
   if (treat && !args.includes("--no-carry")) {
     const second = on(1, { verb: "casualty", words: ["roll", "Dock"] }, 15000);
     const roll2 = parseRollReply(second.detail);
@@ -184,6 +217,11 @@ async function runCasualtyCall(args) {
       fails.push(`carry: the second casualty roll returned ${second.status} ${second.detail}`);
     } else {
       mark("second casualty rolled");
+      secondUid = roll2.uid;
+      // The dressed body on clear ground (#4863): the proof's second picture.
+      on(1, { verb: "stand", entityName: "Casualty" }, 30000);
+      wait(2500);
+      on(1, { verb: "capture", mode: "world", name: "casualty_site_2", x: roll2.at[0], y: roll2.at[1] + 0.4, z: roll2.at[2], ox: 3, oy: 0.5, oz: -3 }, 25000);
       const park1 = on(1, { verb: "casualty", words: ["ambulance", "Casualty", "4"] }, 15000);
       if (park1.status !== "ok") fails.push(`carry: the ambulance did not park by the casualty: ${park1.status} ${park1.detail}`);
       const st2 = on(1, { verb: "stand", entityName: "Casualty" }, 30000);
@@ -205,6 +243,16 @@ async function runCasualtyCall(args) {
       carried = true;
       mark("second casualty put in a bed");
       on(1, { verb: "capture", mode: "ui", name: "casualty_bed" }, 25000);
+      // The delivery closed the call (#4849): the board has no line for it any more.
+      on(1, { verb: "stand", entityName: BOARD });
+      wait(2500);
+      on(1, { verb: "look" });
+      on(1, { verb: "use", className: "LF_WantedBoardReadAction", entityName: BOARD }, 10000);
+      wait(2500);
+      on(1, { verb: "capture", mode: "ui", name: "casualty_board_after_bed" }, 25000);
+      on(1, { verb: "click", widget: "Close" });
+      wait(800);
+      mark("board read after the bed");
     }
   }
 
@@ -218,7 +266,9 @@ async function runCasualtyCall(args) {
   if (carried) {
     if (findLine(fresh(), 0, "put in a hospital bed by medic") < 0) fails.push("carry: no 'put in a hospital bed' line for the second casualty");
     if (findLine(fresh(), 0, "[LFDebug:DutyBonus]", "bonus +$", "PATIENT_DELIVERED") < 0) fails.push("carry: no delivery bonus was booked");
+    fails.push(...judgeBed(fresh(), secondUid));
   }
+  fails.push(...judgeDressed(fresh(), carried ? 2 : 1));
   const open = findLine(fresh(), 0, "[LFDebug:ServiceBoard]", "closed") >= 0;
   console.log(`call closed on the board log: ${open}`);
   for (const [s, t] of stamps) console.log(`  ${String(t).padStart(4)} s  ${s}`);

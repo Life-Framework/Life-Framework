@@ -2928,6 +2928,9 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
     console.log(`session: seeded ${f}`);
     slog(`seeded ${f}`);
   }
+  // `harness.mjs checkpoint <hour>` reads agent-box/checkpoints/hour-N.json from the profile (#4867).
+  const mirrored = session.mirrorCheckpoints(paths.server);
+  if (mirrored.length) slog(`checkpoints: ${mirrored.length} file(s) mirrored to $profile:LifeFramework/checkpoints`);
   if (isTemplateMission(mission)) {
     // What server/example/start.cmd does: the owner config goes to $profile:LifeFramework/config.json (#295).
     const owner = join(paths.server, "profile", "LifeFramework");

@@ -1145,6 +1145,9 @@ class LF_AgentCommand
 		// Look up or down (mouse pitch), so a swing can reach a low rock.
 		if (actionName == "CharacterTurnUp")
 			return true;
+		// Set the pitch outright (#4803): a lost relative turn cannot leave the view tilted.
+		if (actionName == "CharacterPitch")
+			return true;
 		// Vehicle lights and high beams, to light the dashboard indicators for the vehicle HUD proof (#921).
 		if (actionName == "VehicleLightsToggle" || actionName == "CarLightsHiBeamToggle")
 			return true;
@@ -2576,11 +2579,24 @@ class LF_AgentHarness
 		// An entity name seats this character at the wheel of that vehicle first (a teleport into the seat).
 		if (!vehicle && cmd.Arg1 != "")
 		{
-			// Names do not exist on a client: take the nearest vehicle within 6 m.
+			// Names do not exist on a client: take the nearest vehicle within 6 m. "veh_<text>" narrows it to the
+			// nearest vehicle whose prefab path contains <text> (round 7: the nearest car was the starter car, not the
+			// police car the proof meant); no such vehicle is seat_no_entity, never another car.
 			IEntity named;
 			array<IEntity> nearby = LF_Utils.GetNearbyVehicles(character.GetOrigin(), 6);
-			if (!nearby.IsEmpty())
-				named = nearby[0];
+			string prefabText;
+			if (cmd.Arg1.StartsWith("veh_"))
+				prefabText = cmd.Arg1.Substring(4, cmd.Arg1.Length() - 4);
+
+			foreach (IEntity candidate : nearby)
+			{
+				// lf-path-ok: harness substring filter typed by the tester
+				if (!prefabText.IsEmpty() && !LF_Utils.GetPrefabName(candidate).Contains(prefabText))
+					continue;
+
+				named = candidate;
+				break;
+			}
 			SCR_CompartmentAccessComponent seatAccess = SCR_CompartmentAccessComponent.Cast(access);
 			if (!named)
 			{
@@ -3577,7 +3593,7 @@ class LF_AgentHarness
 
 		// The melee key and the mouse pitch reach the character through its input
 		// context, the same flags the command handler reads (SCR_CharacterCommandHandler.HandleMelee).
-		if (cmd.Arg1 == "CharacterMelee" || cmd.Arg1 == "CharacterTurnUp")
+		if (cmd.Arg1 == "CharacterMelee" || cmd.Arg1 == "CharacterTurnUp" || cmd.Arg1 == "CharacterPitch")
 		{
 			SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
 			CharacterControllerComponent controller;
@@ -3595,6 +3611,11 @@ class LF_AgentHarness
 				context.SetMeleeAttack(true);
 				vector aimNow = context.GetAimingAngles();
 				character.LF_AskHarnessMelee(aimNow[0], aimNow[1]);
+			}
+			else if (cmd.Arg1 == "CharacterPitch")
+			{
+				// Absolute: a late or lost command cannot leave the view tilted (#4803).
+				context.SetAimingAngles(LF_AimHarness.PitchTo(context.GetAimingAngles(), value));
 			}
 			else
 			{

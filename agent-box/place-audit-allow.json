@@ -2,6 +2,11 @@
   "_note": "Placements that are meant to look this way. tools\\cli audit placement skips a problem whose kind matches and whose name or prefab matches the regex (docs/placement-audit.md). Give the reason a reviewer can check in a shot.",
   "allow": [
     {
+      "match": "^Fit_eastrise_mine_mine_coal_heap ",
+      "kind": "contact",
+      "why": "The coal heap in the East Rise coal yard (#3243) is the vanilla GravelPile_01_base at scale 0.8: a mound on a meadow slope, so its rounded base sits about 10 cm into the uphill side under a 3x3 footprint; the walk-up contact sheet (c02) shows the heap grounded."
+    },
+    {
       "match": "^Fit_eastrise_mine_mine_(picks|cart|flood_r) ",
       "kind": "contact",
       "why": "The pick pile, cart and right flood lamp at the East Rise coal seam (#3243) rest on the probed ground of a meadow slope: the contact gap reads 1 to 5 cm under a 3x3 footprint because the ground varies 6 to 9 cm under each, which the walk-up contact sheet (c02, c06) does not show."

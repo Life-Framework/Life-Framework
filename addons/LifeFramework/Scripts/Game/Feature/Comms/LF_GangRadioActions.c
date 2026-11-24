@@ -38,12 +38,18 @@ class LF_GangRadioTune
 	//------------------------------------------------------------------------------------------------
 	//! Server: subscribes the rekey to member-left. Idempotent. Called before any band is drawn
 	//! through this file, so every band a radio was tuned to is watched.
-	static void Watch()
+	//! Returns true when this call added the subscription, false when it was already watching.
+	static bool Watch()
 	{
 		if (!s_Left)
 			s_Left = new LF_GangRadioMemberLeftListener();
 
-		LF_EventBus.Subscribe(LF_OnOrganizationMemberLeft, s_Left);
+		// Watch() runs on every tune; the bus warns on a second Subscribe of the same instance. A bus
+		// reset drops the listener while s_Left lives on, so ask the bus, not s_Left.
+		if (LF_EventBus.IsSubscribed(LF_OnOrganizationMemberLeft, s_Left))
+			return false;
+
+		return LF_EventBus.Subscribe(LF_OnOrganizationMemberLeft, s_Left);
 	}
 
 	//------------------------------------------------------------------------------------------------

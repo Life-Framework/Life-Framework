@@ -1,3 +1,4 @@
+// red-proof: 2026-11-24 (#4848) `tools/cli test --no-build --red LF_Test_CasualtyTreat`: RED PROOF OK; "a downed resident who is no casualty is not labelled Treat the patient" fails with the hook on (the old label rule marked every downed NPC).
 // red-proof: 2026-11-24 (#4852) the board-line checks fail on the old code (a closed call stayed on the medic board until its expiry).
 // red-proof: 2026-11-24 `tools/cli test --no-build --red LF_Test_CasualtyTreat`: RED PROOF OK (the revive bonus check: expected 10, got 0; "MEDIC xp rose", "a second treat finds no casualty"). Green with --only.
 //! medic/casualty-treat (#4828): an on-duty medic beside a casualty from the generator (#4827) treats them:
@@ -87,6 +88,24 @@ class LF_Test_CasualtyTreat : LF_Test
 
 		ctx.Equal(1, BoardLines(now), "the casualty's call is on the medic board");
 
+		// The client labels from the replicated flag (#4848): a generator casualty reads "Treat the patient", any other
+		// downed resident (here a downed fixture character no player controls) keeps the plain revive.
+		SCR_ChimeraCharacter casualtyBody = SCR_ChimeraCharacter.Cast(body);
+		ctx.True(casualtyBody && casualtyBody.LF_IsCasualty(), "the generator flags the casualty's body");
+		ctx.True(LF_CasualtyTreat.LooksLikeCasualty(body), "a casualty looks like one on the client");
+		IEntity bystander = LF_TestCharacterFixture.Spawn(ctx);
+		SCR_ChimeraCharacter bystanderCharacter = SCR_ChimeraCharacter.Cast(bystander);
+		if (bystanderCharacter)
+		{
+			bystanderCharacter.LF_SetDowned(true, "");
+			if (RedProof())
+				bystanderCharacter.LF_SetCasualty(true);
+			ctx.False(LF_CasualtyTreat.LooksLikeCasualty(bystander), "a downed resident who is no casualty is not labelled Treat the patient");
+			ctx.True(LF_CasualtyTreat.Find(bystander) == null, "the server finds no casualty on that body");
+			bystanderCharacter.LF_SetDowned(false, "");
+		}
+		LF_TestCharacterFixture.Delete(bystander);
+
 		LF_InventoryUtils.AddAmount(medic, medicConfig.m_sReviveItemPrefab, 2);
 
 		// Off duty: refused, nothing changes.
@@ -103,6 +122,7 @@ class LF_Test_CasualtyTreat : LF_Test
 
 		ctx.Equal(LF_EReviveRefusal.NONE, treated, "the on-duty medic treats the casualty");
 		ctx.False(LF_Downed.IsDowned(body), "the patient is back on their feet");
+		ctx.False(casualtyBody && casualtyBody.LF_IsCasualty(), "the casualty flag is off once the call closes");
 		ctx.Equal(0, LF_CasualtyCalls.Open().Count(), "the call is closed");
 		ctx.Equal(0, BoardLines(now), "the treated casualty's line is off the medic board");
 		ctx.Equal(1, LF_InventoryUtils.GetAmount(medic, medicConfig.m_sReviveItemPrefab), "one dressing is used up");

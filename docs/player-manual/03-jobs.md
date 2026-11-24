@@ -50,6 +50,58 @@ Saint-Philippe holds most of them; the sawmill, the fishing coves, the lake and 
 (fuel delivery at work level 4, about 6 paid runs; taxi at level 6, about 15) and licences (felling, sawing, tools). A refusal message says what is
 missing and where to get it.
 
+<!-- unlocks -->
+**What each level opens.** The level-up card and the F2 skill card name what a level really gives you. A level that opens nothing says so: it reads "Mining 12: a seasoned hand" and promises no perk. The levels that open something (a licence, a machine step, a perk pick, a fish, a delivery job) are these; every other level from 2 to 30 is a milestone.
+
+| Trade | Level | Opens |
+|---|---|---|
+| Farming | 2 | Orchard hand license: pick apples |
+| Farming | 3 | Water collection permit: draw clean water |
+| Farming | 4 | Plum picker license: pick plums |
+| Farming | 5 | Seasoned field hand license: pick fruit and draw water twice as fast |
+| Farming | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Farming | 20 | Second perk: Light touch and Good word join the choices at the labor office |
+| Mining | 2 | Coal face permit: cut coal with a pick |
+| Mining | 3 | Copper seam permit: cut copper ore |
+| Mining | 4 | Iron seam permit: mine iron |
+| Mining | 5 | Seasoned miner license: cut any ore twice as fast |
+| Mining | 6 | Gold seam permit: cut gold ore |
+| Mining | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Mining | 20 | Second perk: Light touch and Good word join the choices at the labor office |
+| Lumber | 2 | Felling permit: fell trees with an axe |
+| Lumber | 3 | Sawmill hand license: saw logs into planks |
+| Lumber | 4 | Seasoned logger license: fell trees twice as fast |
+| Lumber | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Lumber | 20 | Second perk: Light touch and Good word join the choices at the labor office |
+| Fishing | 2 | Bass: you can now land them |
+| Fishing | 3 | Tuna: you can now land them |
+| Fishing | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Fishing | 20 | Second perk: Light touch and Good word join the choices at the labor office |
+| Smelting | 2 | Smelter runs: up to 6 bars |
+| Smelting | 5 | Bar molds: up to 7 bars a run |
+| Smelting | 6 | The Morton cement works |
+| Smelting | 7 | Faster smelting: 45-second runs |
+| Smelting | 8 | Larger run: up to 8 bars |
+| Smelting | 9 | Hotter fire: 35-second runs |
+| Smelting | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Smelting | 15 | The Levie refinery |
+| Smelting | 16 | Bigger batches: up to 10 bars a run |
+| Smelting | 20 | Second perk: Light touch joins the choices at the labor office |
+| Salvage | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Salvage | 20 | Second perk: Light touch joins the choices at the labor office |
+| Delivery | 4 | Fuel delivery: sign up at the depot counter |
+| Delivery | 5 | Truck check: pass it at the truck yard for freight work |
+| Delivery | 6 | Taxi fares: sign up at the depot counter |
+| Delivery | 10 | Export orders: take one at the export board |
+| Police | 10 | First perk: pick Fast cuff or Long radar at the {Police} station |
+| Police | 20 | Second perk: take the one of Fast cuff and Long radar you passed over |
+| Medic | 2 | First aid certificate: treat the injured |
+| Medic | 3 | Advanced first aid certificate: advanced treatment |
+| Medic | 4 | Resuscitation certificate: revive the unconscious |
+| Medic | 10 | First perk: pick Quick revive or Quick aid at the clinic |
+| Medic | 20 | Second perk: Steady carry joins the choices at the clinic |
+<!-- /unlocks -->
+
 **First shift of the day.** The first 30 minutes you earn experience in a trade each day pay **double**. The clock starts
 at your first paid outcome, not when you clock in. After the 30 minutes the rest of that day pays the normal rate. Each
 trade has its own first shift, and a new day opens it again. A server restart opens it again too.
@@ -316,7 +368,7 @@ the pump says "The tanks are dry. The depot truck is due."
 **Status:** 🚧 coming. The board and the crane spot work, but they are not on the dock yet.
 
 * **Where:** the **EXPORT ORDERS** board on the warehouse wall by the quay, and the **crane spot** (a pallet box on the quay apron by the harbour crane).
-* **How it works:** the board lists up to three orders, such as *20 x iron bars to the steamer | $920 by 13:00*. Scroll to **Take the order** on a line to take it (haulers at Delivery level 10 or higher; one order at a time). Bring every unit to the crane spot, in your pockets or in a vehicle backed up to the pallet box, and choose **Hand in the export order**.
-* **Pay:** the order's price in cash (wholesale plus 15 percent) and Delivery experience. A short count takes nothing: bring the rest and hand in again. Miss the deadline and the order closes and your standing in town drops; it never costs money.
+* **How it works:** the board lists up to three orders, such as *40 x iron bars to the steamer | $1040 by 23:00*. Scroll to **Take the order** on a line to take it (haulers at Delivery level 10 or higher; one order at a time). Bring every unit to the crane spot, in your pockets or in a vehicle backed up to the pallet box, and choose **Hand in the export order**.
+* **Pay:** the order's price in cash (the market's wholesale price plus 15 percent, plus an order bonus) and Delivery experience. Every kind of order pays about $700 an hour of mining or sawing: 40 iron bars $1,040, 20 copper bars $960, 100 coal $985, 120 planks $1,018. A short count takes nothing: bring the rest and hand in again. Miss the deadline and the order closes and your standing in town drops; it never costs money.
 
 * **Paper:** a paid shift hands you a payslip, a parcel run a delivery note, and a sale at the granary or a buyer a weigh slip. Each shows what was sold or paid and the date; choose **Read receipt** on it to read it.

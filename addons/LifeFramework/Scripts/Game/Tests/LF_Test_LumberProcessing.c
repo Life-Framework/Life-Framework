@@ -86,11 +86,13 @@ class LF_Test_LumberProcessing : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Loose copies of a good within the sweep radius of the sawmill; deletes them so the next action counts alone.
+	//! Loose units of a good within the sweep radius of the sawmill (a plank bundle counts its planks, #4875);
+	//! deletes them so the next action counts alone.
 	protected int Sweep(IEntity sawmill, ResourceName good)
 	{
 		LF_TestLooseSweep sweep = new LF_TestLooseSweep();
-		return sweep.Delete(sawmill.GetOrigin(), SWEEP_RADIUS, good);
+		sweep.Delete(sawmill.GetOrigin(), SWEEP_RADIUS, good);
+		return sweep.m_iUnits;
 	}
 
 	//------------------------------------------------------------------------------------------------

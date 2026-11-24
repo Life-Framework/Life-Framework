@@ -54,6 +54,31 @@ outside the bounds. Tune with `--tolerance` and `--fail-gap`. Character meshes
 Bounds say where the mesh is, not which side faces the street. Choose `--front`
 by looking at the entity in the world, or use `center`.
 
+## Interaction points
+
+A desk, counter, bench or seat puts its context point above its own top (`validate-interaction-points`,
+`tools/actions/interaction-points.mjs`). A player uses these by looking down at them, so the aim ray ends on the
+top; a point under it is farther from that ray than one above it. On #4803 the booking desk's point was 0.9 m under
+a 0.906 m top and the suspect's row was not offered at -40 or -50 degrees until the point went to 1.05 m.
+
+What the island session showed (`session.mjs interaction-points-proof`, `up --mission island --profile full`,
+looking down at -45): 12 of 15 props whose point sat 0.006 to 0.25 m under the top were offered anyway, and the
+law-book lectern, moved to the booking desk's old corner point (0 0.9 0), was offered at -30, -45 and -60. So a
+buried point does not always hide a row. It costs nothing to avoid, and it is the first suspect when a desk row is
+missing and another context sits on the same top.
+
+- The check fails a point that is under the highest top over its x and z, within 0.2 m, or within 2 cm above it. A
+  top counts when it is at least 0.15 m across both ways (a rim, a door edge or a rung is not a top).
+- `node tools/actions/interaction-points.mjs --fix` puts the flagged points 5 cm above their top.
+- The tops come from `tools/actions/interaction-surfaces.json` (the up-facing collider surfaces of every model that
+  carries a point), so the check needs no game install for them. After a prop's model changes, or a prop with a point
+  is added: `node tools/actions/interaction-points.mjs --update` (needs the game install) and commit the table.
+  A model missing from the table fails the check. A check run on a machine without the game's paks says SKIPPED
+  (it cannot resolve a prefab's ancestors), like `validate-prop-on-surface`.
+- A point that stays under a top goes in `tools/actions/interaction-points-allow.json` with the reason. Today: the
+  placed-furniture family (anchored at each piece's centre) and the bank's ladder.
+- The test worlds (`DebugWorld`, `GridWorld`) are fixtures and are not read.
+
 ## Counter NPCs
 
 A clerk, teller or desk officer stands behind a counter; the customer stands in front. The talk context on an NPC is a sphere on its `Spine5` bone, so its `Radius` is how far across the counter the prompt shows. The old 0.6 m put the prompt behind the counter ("you couldn't really talk to the clerk across the counter", live play 2026-11-22). Counter staff now use **2.4 m** (the `RoleTalk` context on `Npc_Base.et` too): a customer 1.5 to 2.2 m away across a counter has the prompt without walking round. `LF_DialogueTalkAction` and `LF_QuestAction` still show only within 3 m of the NPC and only on the same level (a storey is about 2.8 m), so the larger sphere does not show through a ceiling.

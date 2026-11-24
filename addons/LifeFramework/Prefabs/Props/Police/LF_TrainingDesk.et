@@ -9,7 +9,7 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
     UserActionContext "{DF809BD074C42BD8}" {
      ContextName "LF_TrainingDesk"
      Position PointInfo "{C7479925BE5657CE}" {
-      Offset 0 0.9 0
+      Offset 0 0.956 0
      }
      Radius 1.6
     }

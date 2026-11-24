@@ -79,7 +79,12 @@ modded class LF_CasualtyHarness
 
 		bool onDuty = LF_MedicDuty.IsOnDutyState(LF_AccountReplication.GetState(s_pSelf));
 		LF_EReviveRefusal refusal = LF_Revive.Check(s_pSelf, s_pNear, onDuty);
-		return string.Format("dist=%1 downed=%2 onDuty=%3 medicEnabled=%4 refusal=%5", vector.Distance(s_pSelf.GetOrigin(), s_pNear.GetOrigin()), LF_Downed.IsDowned(s_pNear), onDuty, LF_Systems.IsEnabled("Medic"), typename.EnumToString(LF_EReviveRefusal, refusal));
+		// casualtyFlag is the replicated flag on the body (#4848); labelled is what the Revive action shows: "Treat the patient" when 1.
+		bool flag;
+		SCR_ChimeraCharacter nearCharacter = SCR_ChimeraCharacter.Cast(s_pNear);
+		if (nearCharacter)
+			flag = nearCharacter.LF_IsCasualty();
+		return string.Format("dist=%1 downed=%2 onDuty=%3 medicEnabled=%4 refusal=%5 casualtyFlag=%6 labelled=%7", vector.Distance(s_pSelf.GetOrigin(), s_pNear.GetOrigin()), LF_Downed.IsDowned(s_pNear), onDuty, LF_Systems.IsEnabled("Medic"), typename.EnumToString(LF_EReviveRefusal, refusal), flag, LF_CasualtyTreat.LooksLikeCasualty(s_pNear));
 	}
 }
 

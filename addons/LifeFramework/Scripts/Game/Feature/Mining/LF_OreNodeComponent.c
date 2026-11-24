@@ -85,6 +85,9 @@ class LF_OreNodeComponent : ScriptComponent
 
 	protected ref LF_OreYieldState m_State = new LF_OreYieldState();
 	protected int m_iDropped;
+	//! Tick of the last refusal toast sent for this rock (0: none yet).
+	protected int m_iLastTellMs;
+	protected static const int TELL_GAP_MS = 4000;	// lf-fixed: a toast gap so a held swing does not stack toasts, not a gameplay tunable
 	//! Next fan slot (LF_OreDrop) for a dropped piece; back to 0 when the rock grows back.
 	protected int m_iDropSlot;
 	protected vector m_vRestOrigin;
@@ -94,6 +97,13 @@ class LF_OreNodeComponent : ScriptComponent
 	string GetNodeId()
 	{
 		return m_sNodeId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: points a spawned rock at another node row (a layer entry sets m_sNodeId; a test has no layer).
+	void UseNodeForTest(string nodeId)
+	{
+		m_sNodeId = nodeId;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -167,6 +177,16 @@ class LF_OreNodeComponent : ScriptComponent
 			return 0;
 		}
 
+		// A gated node (a pack's richer or deeper seam) takes no hit from a miner below its level: no wear, no piece, the
+		// refusal in the job's words (the server decides; levels live here).
+		string gateRefusal = LevelRefusal(row, LF_JobLevels.LevelOfBody(miner, row.m_sLevelJob));
+		if (!gateRefusal.IsEmpty())
+		{
+			LF_Debug.Info(FEATURE, string.Format("hit on %1 rock refused: %2 level below %3", m_sNodeId, row.m_sLevelJob, row.m_iMinLevel));
+			TellMiner(miner, gateRefusal);
+			return 0;
+		}
+
 		LF_ToolWear.OnUse(miner, LF_ToolBench.KIND_PICKAXE, tool);
 
 		if (hitDir.LengthSq() < 0.0001)
@@ -212,6 +232,36 @@ class LF_OreNodeComponent : ScriptComponent
 		}
 
 		return dropped;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The `#` key a miner at \p level reads at a rock of node \p row, or empty when the node has no gate or the level
+	//! meets it. No job, or a minimum of 1 or less, is no gate (the machine rule, LF_ProcessAction.LevelRefusal).
+	static string LevelRefusal(LF_ResourceNodeDef row, int level)
+	{
+		if (!row || row.m_sLevelJob.IsEmpty() || row.m_iMinLevel <= 1)
+			return "";
+
+		return LF_JobLevelWords.Refusal(row.m_sLevelJob, level, row.m_iMinLevel);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a refused swing tells the miner why, at most once every few seconds (a swing lands every second or so).
+	protected void TellMiner(IEntity miner, string refusalKey)
+	{
+		if (!miner || refusalKey.IsEmpty())
+			return;
+
+		int now = System.GetTickCount();
+		if (m_iLastTellMs != 0 && now - m_iLastTellMs < TELL_GAP_MS)
+			return;
+
+		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(miner);
+		if (playerId <= 0)
+			return;
+
+		m_iLastTellMs = now;
+		LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-OreGate_Title", refusalKey, 5.0, LF_ENotificationType.WARNING);
 	}
 
 	//------------------------------------------------------------------------------------------------

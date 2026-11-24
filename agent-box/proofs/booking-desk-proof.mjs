@@ -60,27 +60,30 @@ async function runBookingDeskProof() {
   // the server-side `use` cannot tell apart (it cannot see the client's offer), so scroll to the row and confirm.
   // The two rows are one class, so the row is picked by its label (`aim` name=): the handler remembers the row last
   // used, so "scroll 0" took the time instead of paying on a second booking (#4791).
-  const answer = (n, want) => {
+  const answer = (n, want, label) => {
     // A player looks down at a desk; the harness's level ray passes over a 0.75 m desk and finds no context.
-    // Sweep the pitch until the interact key selects the desk's answer, then put it back.
-    // After the till robbery the handler sometimes offered no context at all for up to ~90 s (`aim none`, no menu
-    // open) while `look` listed the row and the server held the offer; the same row then answered (#4791). Sweep
-    // again for up to two minutes, as a player looks around, and keep the last `aim` reply for the step's reason.
-    let pitch = 0;
+    // Sweep the pitch until the interact key selects the desk's answer, then look level again. The pitch is absolute
+    // (`input CharacterPitch`): the suspect's client stalls for about 20 s after paying a fine, a relative turn sent
+    // then was lost, and every later sweep landed 30 degrees low, on the floor. That was the "no interaction for
+    // ~90 s after the till robbery" of #4791 and #4803; the game offered the row all along.
     let aim;
     const started = Date.now();
     const selected = () => /selected=LF_BookingDeskAnswerAction/.test(aim.detail);
     do {
-      for (const target of [-30, -20, -40, -10, -50]) {
-        on(n, { verb: "input", action: "CharacterTurnUp", value: target - pitch }, 8000);
-        pitch = target;
+      for (const target of [-45, -30, -20, -55, -10]) {
+        on(n, { verb: "input", action: "CharacterPitch", value: target }, 8000);
         wait(800);
         aim = on(n, { verb: "aim", words: [] }, 10000);
         if (selected()) break;
       }
-      if (!selected()) wait(8000);
-    } while (!selected() && Date.now() - started < 120000);
-    if (Date.now() - started > 15000) console.log(`client ${n}: the desk's answer took ${Math.round((Date.now() - started) / 1000)} s to be offered`);
+      if (!selected()) {
+        console.log(`client ${n}: no desk answer after ${Math.round((Date.now() - started) / 1000)} s: ${String(aim.detail).slice(0, 400)}`);
+        wait(4000);
+      }
+    } while (!selected() && Date.now() - started < 30000);
+    const waited = Math.round((Date.now() - started) / 1000);
+    // What the suspect sees when the row is offered: the desk and the interaction prompt.
+    if (selected() && label) shot(n, label);
     for (let i = 0; i < 3 && !want.test((/ name=(.*?) menu=/.exec(aim.detail) ?? [0, ""])[1]); i++) {
       on(n, { verb: "interact", step: "next" }, 8000);
       wait(700);
@@ -88,8 +91,8 @@ async function runBookingDeskProof() {
     }
     const r = on(n, { verb: "interact", step: "confirm" }, 8000);
     wait(3500);
-    on(n, { verb: "input", action: "CharacterTurnUp", value: -pitch }, 8000);
-    return { ...r, aim: String(aim.detail) };
+    on(n, { verb: "input", action: "CharacterPitch", value: 0 }, 8000);
+    return { ...r, aim: String(aim.detail), waited };
   };
   const PAY = /\$\d/;
   const TIME = /min/;
@@ -209,7 +212,7 @@ async function runBookingDeskProof() {
   // Paying froze the suspect's client for about 20 s (#4824): `framegap` reads the longest wall time between two
   // harness polls (400 ms apart) from just before the answer until the pay has settled.
   on(2, { verb: "framegap" }, 10000);
-  const pay = answer(2, PAY);
+  const pay = answer(2, PAY, "1_answer_in_view");
   const after = state(2);
   wait(3000);
   // A client can answer no_session for a moment; ask again, and an answer that never comes is its own failure.
@@ -268,12 +271,14 @@ async function runBookingDeskProof() {
   const lookB2 = on(2, { verb: "look" }, 10000);
   step("2d the jail-only robbery sheet offers only the cell", (lookB2.detail.match(/LF_BookingDeskAnswerAction/g) ?? []).length === 1 && /payable=0/.test(lastOffer()), lookB2.detail.slice(0, 200));
   shot(2, "2_offer_time_only");
-  const take = answer(2, TIME);
+  const take = answer(2, TIME, "2_answer_in_view");
   wait(500);
   const j1 = Number(state(2).jail) || 0;
   wait(12000);
   const j2 = Number(state(2).jail) || 0;
   step("2e B takes the time: in the cell and the sentence counts down", take.status === "ok" && j1 > 0 && j2 < j1, `use=${take.status} ${take.detail}; jail ${j1} -> ${j2}; last aim: ${take.aim.slice(0, 200)}`);
+  // #4803: after the till robbery the answer is offered on the first look round, not a minute and a half later.
+  step("2g after the till robbery B is offered the answer at once (under 15 s)", take.waited <= 15, `waited ${take.waited} s; last aim: ${take.aim.slice(0, 300)}`);
   const seen2 = on(2, { verb: "seen" }, 10000);
   shot(2, "2_in_cell");
   step("2f B has a toast to read after the booking", toastOf(seen2.detail) !== "" && toastOf(seen2.detail) !== "none", `toast: ${toastOf(seen2.detail)}`);

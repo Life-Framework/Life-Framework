@@ -13,6 +13,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { parseConf, guidOf } from "../economy/profit-loops.mjs";
+import { findBuySellLoops } from "../economy/buy-sell-loops.mjs";
 import { buildLumber, lumberFlags, renderLumber } from "./economy-lumber.mjs";
 import { buildWheat, renderWheat, wheatFlags } from "./economy-wheat.mjs";
 import { buildMining, miningFlags, renderMining } from "./economy-mining.mjs";
@@ -239,6 +240,9 @@ export function buildReport(root, opts = {}) {
     const what = rule ? nameOfRes(rule.f("prefab")) : g.id;
     if (buy !== null && num(g.f("ceiling")) > buy) flags.push({ kind: "loop", id: `market:${what}`, text: `buy-low sell-high loop: ${what} is sold by a shop for ${buy}; the market pays up to ${num(g.f("ceiling"))}` });
   }
+
+  // A good some shop sells for less than some trader, buyer or outlet pays (#4180, validate-no-buy-sell-loop).
+  for (const l of findBuySellLoops(addonsDir)) flags.push({ kind: "loop", id: l.id, text: `buy-low sell-high loop: ${l.path} (+${l.margin} a unit)` });
 
   // A weighted fish with no prefab: a species a table can roll whose every size prefab is empty.
   const fishRoots = [parseConf(read(cfg("Fishing", "LF_Fishing.conf"))), ...loaded.overlays.filter((o) => o.root.cls === "LF_FishingConfig").map((o) => o.root)].filter(Boolean);
