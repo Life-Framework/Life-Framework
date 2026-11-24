@@ -4399,6 +4399,11 @@ StringTable {
      Target_en_us "Orchard"
      Comment "Map POI name (rc-map-places): the orchard to pick fruit."
     }
+    CustomStringTableItem "{A17C0E5B93D2F486}" {
+     Id "LF-MapPoi_OrgDesk"
+     Target_en_us "Gang registry"
+     Comment "Map POI name (#4701): the gang registry desk in the Saint-Philippe registry cabin; a public place, the under-the-counter trade stays off the map."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F12}" {
      Id "LF-MapPoi_ParcelDepot"
      Target_en_us "Parcel depot"
@@ -4423,6 +4428,11 @@ StringTable {
      Id "LF-MapPoi_PostOffice"
      Target_en_us "Post office (van run)"
      Comment "Map badge label: a post office stand where the postal van run starts and ends."
+    }
+    CustomStringTableItem "{6D2B9F40C8E15A73}" {
+     Id "LF-MapPoi_PubBar"
+     Target_en_us "Bar"
+     Comment "Map POI name (#4701): the Chotain and Levie village bars; public places."
     }
     CustomStringTableItem "{D1EC93AD7C6358F0}" {
      Id "LF-MapPoi_Range"
