@@ -178,7 +178,7 @@ The drops are on the east side (a house near the district road) and four along t
      With a van or truck, back it up to the saw (rear within about 3 m): when you carry no logs, the action reads
      **Feed from the truck** and the saw takes the logs straight from the vehicle and puts the cut back in it. A locked
      vehicle feeds nothing. Every processing station works this way.
-  3. Sell **planks ($8)** and **hardwood boards ($12)** at the **timber counter**. If its purse is full it tells you to
+  3. Sell **planks ($8)** and **hardwood boards ($15)** at the **timber counter**. If its purse is full it tells you to
      "try the wholesale warehouse at the dock". The dock pays a lower, falling price for planks, boards, posts and firewood.
 * **Pay:** about **$400 an hour** carrying softwood by hand. A truck and hardwood boards pay a little more.
 * **Needs:** an axe. Job levels unlock sawing and faster felling (a refusal says what is missing).
@@ -306,9 +306,9 @@ the pump says "The tanks are dry. The depot truck is due."
      it is full, the main wholesale counter buys more (from $20 a bar, falling as you sell).
 * **Pay:** about **$500 an hour**, with nothing to drive. Two players share the six rocks and the furnace comfortably.
 * **Shift board:** a cork **shift board** stands in the mine yard near the miner's desk. **Read the shift board** lists the week's top five workers at the mine by the trade XP they earned there, with their trade level. The list empties every Monday at 06:00 UTC.
-* **Wear:** every swing at a rock wears your pickaxe a little (an axe wears with each tree felled, a fishing rod with each fish landed). A notice tells you when the tool is getting worn, when it is badly worn, and after every use once it is worn out. A worn-out tool still works. The hardware bench repairs it for $12 and a scrap of metal once it is placed in town.
-* **Better tools:** the miners' supply till in the hardware store also sells the pickaxe, axe and fishing rod in three finishes: worn ($150), standard ($600) and fine ($1,800). A better finish wears slower. The standard pickaxe or axe needs trade level 3 and the fine one level 6; below that the till refuses in words.
-* **Needs:** the miner job and a pickaxe. Higher miner levels open the coal and copper rocks as those sites arrive. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the smelter wants Smelting level 8, the refinery level 15.
+* **Wear:** every swing at a rock wears the pickaxe you swing a little (an axe wears with each tree felled, a fishing rod with each fish landed). Each tool keeps its own condition: a new pickaxe starts in top shape whatever your old one looked like, and a worn one stays worn in your pack, on the ground, in someone else's hands and after a restart. A notice names the tool when it is getting worn, when it is badly worn, and after every use once it is worn out. A worn-out tool still works. At the hardware bench, hold the tool you want fixed: $12 and a scrap of metal bring that one tool back to top shape.
+* **Better tools:** the miners' supply till in the hardware store also sells the pickaxe, axe and fishing rod in three finishes: worn ($150), standard ($600) and fine ($1,800). A better finish wears slower: a worn tool loses twice as much per use as a standard one, a fine one half as much. The standard pickaxe or axe needs trade level 3 and the fine one level 6; below that the till refuses in words.
+* **Needs:** the miner job and a pickaxe. Higher miner levels open the coal and copper rocks as those sites arrive. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the iron smelter takes anyone from Smelting level 1 (you earn the trade by smelting), while the copper refinery wants Smelting level 15 and the cement works Smelting level 6. At the iron smelter the level grows the run: up to 6 bars at level 2, 7 at level 5, 8 at level 8 and 10 at level 16, and the run itself drops from 60 to 45 seconds at level 7 and to 35 at level 9 (the level-up card names each one). Where a trade has a level gate, the refusal says it in words: "Needs Smelting 15".
 
 
 ## Export orders

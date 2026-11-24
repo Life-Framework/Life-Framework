@@ -1,0 +1,39 @@
+{
+  "id": "coal_yard_clerk",
+  "name": "CoalYardClerk",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_CoalYardClerk_Name",
+  "voice": {
+    "id": "ePn9OncKq8KyJvrTRqTi",
+    "sex": "male",
+    "name": "James - Relaxed American Voice",
+    "why": "The power plant's yard clerk weighs coal all shift and has stopped being impressed by anyone: unhurried, plain, a little dry. James is a relaxed middle-aged American with a casual register, lighter than the sawmill foreman's resonance, the trickster buyer's husk or the mine foreman's baritone, and no other speaker uses this voice.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.15,
+      "speed": 1.0
+    }
+  },
+  "budget_chars": 700,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet", "line": "greet", "options": [
+      { "text": "how", "next": "how" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "how", "line": "how", "options": [
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Coal yard. Put your lumps on the counter and I pay cash for every one. The plant burns what it burns." },
+    "how": { "text": "My purse only goes so deep. When it runs dry I will say so, and you come back in an hour. It fills again." },
+    "bye": { "text": "Mind the Ural on your way out." }
+  },
+  "replies": {
+    "how": "How much will you take?",
+    "bye": "Goodbye."
+  }
+}

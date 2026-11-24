@@ -229,25 +229,7 @@ Vehicle Lot_Display_dana2 : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2
 SCR_DestructibleBuildingEntity : "{60333F74EE12B52F}Prefabs/Structures/Houses/Village/House_Village_E_1I05/House_Village_E_1I05s.et" {
  coords 346 0 236.42
 }
-LF_NpcBaseEntity Roadmap_Civilian_3 : "{61550FC3CB30580E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Townsfolk_2_Civilian.et" {
- components {
-  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
-   Slots {
-    SCR_FeetLoadoutSlotInfo Boots {
-     Enabled 1
-     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
-    }
-    LoadoutSlotInfo Jacket {
-     Enabled 1
-     Prefab "{AE93D885FDF713D4}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et"
-    }
-    LoadoutSlotInfo Pants {
-     Enabled 1
-     Prefab "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et"
-    }
-   }
-  }
- }
+LF_NpcBaseEntity Town_Org_Registrar : "{A93B5D07E21C4F86}Configs/Npcs/LF_Npc_Townsfolk_Registrar.et" {
  coords 293.226 1.059 268.55
  angles 0 -160 0
 }
@@ -431,10 +413,6 @@ SCR_DestructibleBuildingEntity : "{FD91931F589C05BF}Prefabs/Structures/Houses/To
 }
 SCR_DestructibleBuildingEntity Village_Drugstore : "{BD40585C1FC1DCCF}Prefabs/Buildings/Drugstore/Drugstore_Store.et" {
  coords 140 0 266.05
- angleY 180
-}
-LF_NpcBaseEntity Village_Drugstore_Pharmacist : "{87E1270978227F3A}Prefabs/Characters/Npcs/LF_Npc_Pharmacist.et" {
- coords 136.9 0.199 267.3
  angleY 180
 }
 SCR_DestructibleBuildingEntity Village_ClothingStore : "{B73B1D0B02F5C87C}Prefabs/Buildings/ClothingStore/ClothingStore_Store.et" {

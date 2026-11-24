@@ -186,7 +186,7 @@ StringTable {
     }
     CustomStringTableItem "{44D5E71018655F61}" {
      Id "LF-Activity_Medic_Pitch"
-     Target_en_us "Clock in at the clinic and answer calls for a wage."
+     Target_en_us "Clock in at the clinic and answer calls for a wage. Casualty calls come in on the board while you are on duty."
      Comment "Activity pitch, one line."
     }
     CustomStringTableItem "{A1503228206CA07A}" {
@@ -488,6 +488,31 @@ StringTable {
      Id "LF-BuyerSale_Nothing"
      Target_en_us "You have nothing he drinks or smokes."
      Comment "Toast (#2922, 1989 pack voice): no chain goods the buyer names."
+    }
+    CustomStringTableItem "{494D3B2405DA9765}" {
+     Id "LF-CasualtyCall_Dock"
+     Target_en_us "Docker down on the dock, crate fell on a leg"
+     Comment "Casualty call summary on the medic board and pager (#4829): a hurt docker on the Saint-Philippe dock."
+    }
+    CustomStringTableItem "{2851E2B13741CE5C}" {
+     Id "LF-CasualtyCall_Farm"
+     Target_en_us "Farmhand down at the farm compound, pitchfork wound"
+     Comment "Casualty call summary on the medic board and pager (#4829): a hurt farmhand at the farm compound."
+    }
+    CustomStringTableItem "{43F75E1783305BF3}" {
+     Id "LF-CasualtyCall_Mine"
+     Target_en_us "Miner down at the mine, crushed hand"
+     Comment "Casualty call summary on the medic board and pager (#4829): a hurt miner at a mine."
+    }
+    CustomStringTableItem "{15F584F729367016}" {
+     Id "LF-CasualtyCall_Road"
+     Target_en_us "Driver hurt at the roadside fuel stop, ran off the road"
+     Comment "Casualty call summary on the medic board and pager (#4829): a hurt driver at the roadside fuel stop."
+    }
+    CustomStringTableItem "{4F9EF33EB31A0B70}" {
+     Id "LF-CasualtyCall_Woodlot"
+     Target_en_us "Logger down at the woodlot, saw cut to the leg"
+     Comment "Casualty call summary on the medic board and pager (#4829): a hurt logger at the woodlot."
     }
     CustomStringTableItem "{6F65DE9EB00006ED}" {
      Id "LF-CharSel_Title"
@@ -818,6 +843,31 @@ StringTable {
      Id "LF-Dialogue_ClerkEveron_WorkErrand"
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
      Comment "Pack patch of the clerk dialogue's line work_errand (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{A8E4F39A5417F36C}" {
+     Id "LF-Dialogue_CoalYardClerk_Bye"
+     Target_en_us "Mind the Ural on your way out."
+     Comment "Dialogue caption, spoken by the coal_yard_clerk NPC (voiced; tools/assets/dialogue/coal_yard_clerk). Changing it needs: tools\\cli asset dialogue coal_yard_clerk"
+    }
+    CustomStringTableItem "{4D96CA00AC8455EE}" {
+     Id "LF-Dialogue_CoalYardClerk_Greet"
+     Target_en_us "Coal yard. Put your lumps on the counter and I pay cash for every one. The plant burns what it burns."
+     Comment "Dialogue caption, spoken by the coal_yard_clerk NPC (voiced; tools/assets/dialogue/coal_yard_clerk). Changing it needs: tools\\cli asset dialogue coal_yard_clerk"
+    }
+    CustomStringTableItem "{A5A762CBA4542A07}" {
+     Id "LF-Dialogue_CoalYardClerk_How"
+     Target_en_us "My purse only goes so deep. When it runs dry I will say so, and you come back in an hour. It fills again."
+     Comment "Dialogue caption, spoken by the coal_yard_clerk NPC (voiced; tools/assets/dialogue/coal_yard_clerk). Changing it needs: tools\\cli asset dialogue coal_yard_clerk"
+    }
+    CustomStringTableItem "{A1251A8EA9279A1E}" {
+     Id "LF-Dialogue_CoalYardClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the coal_yard_clerk NPC."
+    }
+    CustomStringTableItem "{7E7BA5E2E588DF3E}" {
+     Id "LF-Dialogue_CoalYardClerk_SayHow"
+     Target_en_us "How much will you take?"
+     Comment "Dialogue reply the player can pick when talking to the coal_yard_clerk NPC."
     }
     CustomStringTableItem "{7D9807E24C9AA3E9}" {
      Id "LF-Dialogue_DeskSergeant_Booking"
@@ -7029,6 +7079,16 @@ StringTable {
      Target_en_us "The village hostel: a bed for anyone with nowhere to sleep."
      Comment "What line of the hostel sign."
     }
+    CustomStringTableItem "{494F8AAE164272B0}" {
+     Id "LF-Sign_HoursPlate_Title"
+     Target_en_us "Opening Hours"
+     Comment "Title of the enamel plate beside a shop door (Everon 1989 pack, #4834). Printed on the plate in capitals and shown in the prompt as Read: Opening Hours. The row under it, OPEN and the span, is written from the keeper's timetable."
+    }
+    CustomStringTableItem "{5CA9B1E1C3CA3394}" {
+     Id "LF-Sign_HoursPlate_What"
+     Target_en_us "The hours the shopkeeper is at the counter. The plate is written from the keeper's timetable, so it always agrees with the shop."
+     Comment "Sign card for the opening-hours plate, What section."
+    }
     CustomStringTableItem "{BFF98FD4BBA45C34}" {
      Id "LF-Sign_Housewares_Title"
      Target_en_us "Housewares"
@@ -7108,6 +7168,21 @@ StringTable {
      Id "LF-Sign_Jail_What"
      Target_en_us "The cell yard for wanted people brought in by the police."
      Comment "Sign card for the jail yard behind the police station, What section."
+    }
+    CustomStringTableItem "{73CF950899F68295}" {
+     Id "LF-Sign_LabourOffice_How"
+     Target_en_us "Walk up to the counter and *Take* a perk at level 10 or 20, or *Change* it for a fee"
+     Comment "Sign card for the labor office plate, How section. The capitalized word is the action name the player sees."
+    }
+    CustomStringTableItem "{E98D42AB4B7294F5}" {
+     Id "LF-Sign_LabourOffice_Title"
+     Target_en_us "Labor Office"
+     Comment "Title of the plate on the town hall wall behind the labor office counter (Everon 1989 pack, #4180). Printed on the sign and shown in the prompt as Read: Labor Office."
+    }
+    CustomStringTableItem "{BDB94D06C6D49D8B}" {
+     Id "LF-Sign_LabourOffice_What"
+     Target_en_us "The labor office counter in the town hall. Pick a trade perk here at levels 10 and 20, or change it for a fee."
+     Comment "Sign card for the labor office plate, What section."
     }
     CustomStringTableItem "{9651118BDCD77FA5}" {
      Id "LF-Sign_LawlessZone_How"
@@ -8278,6 +8353,11 @@ StringTable {
      Id "LF-Townsfolk_CafeOwner_Role"
      Target_en_us "Cafe owner"
      Comment "Townsfolk (The relocated, #1960): what Odilon Marchand does, the role line under the name."
+    }
+    CustomStringTableItem "{7C2B4E90A13D5F68}" {
+     Id "LF-Townsfolk_CoalYardClerk_Name"
+     Target_en_us "Gaston Roux"
+     Comment "Townsfolk (power plant coal yard, #4491): the yard clerk's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{D20E34A328504890}" {
      Id "LF-Townsfolk_HarbourMaster_Name"
@@ -9491,7 +9571,7 @@ StringTable {
     }
     CustomStringTableItem "{5C28C1EA8C7DD082}" {
      Id "LF-Unlock_Smelting_02"
-     Target_en_us "Iron bars from iron nuggets"
+     Target_en_us "Smelter runs: up to 6 bars"
      Comment "What Smelting level 2 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{A2CD7E9EC5EAAB06}" {
@@ -9506,7 +9586,7 @@ StringTable {
     }
     CustomStringTableItem "{94282D37869E26CB}" {
      Id "LF-Unlock_Smelting_05"
-     Target_en_us "Bar molds: bigger batches"
+     Target_en_us "Bar molds: up to 7 bars a run"
      Comment "What Smelting level 5 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{5ADBBA78337241F0}" {
@@ -9516,17 +9596,17 @@ StringTable {
     }
     CustomStringTableItem "{4A5D95FC44DA822A}" {
      Id "LF-Unlock_Smelting_07"
-     Target_en_us "Faster smelting"
+     Target_en_us "Faster smelting: 45-second runs"
      Comment "What Smelting level 7 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{71CEF0C3AA3BE4C8}" {
      Id "LF-Unlock_Smelting_08"
-     Target_en_us "The smelter at the east-central works"
+     Target_en_us "Larger run: up to 8 bars"
      Comment "What Smelting level 8 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{1B5A72594151EE44}" {
      Id "LF-Unlock_Smelting_09"
-     Target_en_us "Steel bars at the smelter"
+     Target_en_us "Hotter fire: 35-second runs"
      Comment "What Smelting level 9 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{C17C8C6540A10D8A}" {
@@ -9561,7 +9641,7 @@ StringTable {
     }
     CustomStringTableItem "{03AB2A26283A3864}" {
      Id "LF-Unlock_Smelting_16"
-     Target_en_us "Bigger batches at the smelter"
+     Target_en_us "Bigger batches: up to 10 bars a run"
      Comment "What Smelting level 16 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{77666FBC2DB85F86}" {

@@ -9,7 +9,7 @@
   "kinds": [
     "LabourOffice"
   ],
-  "rows": 1,
+  "rows": 2,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

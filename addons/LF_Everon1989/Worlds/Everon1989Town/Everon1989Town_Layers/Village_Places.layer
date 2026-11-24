@@ -70,3 +70,34 @@ GenericEntity Places_GunCounter {
  }
  coords 375 0.199 267.6
 }
+GenericEntity Places_PharmacyCounter {
+ components {
+  LF_PlaceComponent "{3D7A5C21E0B94F68}" {
+   m_sKind "StoreCounter"
+   m_sId "saint-philippe.pharmacy"
+  }
+ }
+ coords 136.6 0.199 266.37
+}
+GenericEntity Places_PharmacyCounterAnchor {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+  }
+ }
+ coords 136.9 0.199 267.3
+ angleY 180
+}
+GenericEntity Places_FenceYard {
+ components {
+  LF_PlaceComponent "{8F2C61D7A3B94E05}" {
+   m_sKind "FenceYard"
+   m_sId "saint-philippe.fence"
+  }
+ }
+ coords 186.498 0 306.571
+}
+GenericEntity Town_OutpostBoard : "{6C4AFD9C193BC4EC}Prefabs/Outposts/LF_OutpostBoard.et" {
+ coords 131.615 0.001 246.999
+ angleY -90
+}

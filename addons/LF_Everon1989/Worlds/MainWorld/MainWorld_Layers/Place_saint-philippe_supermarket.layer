@@ -53,3 +53,27 @@ LF_NpcBaseEntity Fit_saint_philippe_supermarket_village_supermarket_shopkeeper :
  coords 4377.284 12.695 10672.539
  angleY 172
 }
+GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4366.073 16.100 10680.456
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4366.908 16.100 10674.515
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4370.971 16.100 10688.718
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_4 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4372.015 16.100 10681.291
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_5 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4372.850 16.100 10675.350
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_6 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4377.723 16.100 10673.005
+ angleY 82
+}

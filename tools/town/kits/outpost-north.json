@@ -394,6 +394,7 @@
     },
     {
       "id": "outpost-camo-net-pallets",
+      "scale": 0.5,
       "name": "Outpost_CamoNet_Pallets",
       "prefab": "{79AA43911CC6C3E8}Prefabs/Structures/Military/CamoNets/Soviet/CamoNet_Small_Soviet.et",
       "role": "dressing",
@@ -404,7 +405,6 @@
         14
       ],
       "yaw": -90,
-      "scale": 0.4,
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"
@@ -674,6 +674,264 @@
           "blocks": []
         }
       ]
+    }
+  ],
+  "clear": [
+    {
+      "prefab": "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{1F1980176A5052DC}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rosa_canina_0s.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{2A1012C2B5B4F1FA}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rubus_idaeus_1s.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{2FE01B5E743D5205}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_1s.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{5D1A7A4A41161E8A}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rubus_idaeus_0s.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{6813E89F9EF2BDAC}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rosa_canina_1s.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{727831E6D77F3360}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3f.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{86FE6FFC07B02673}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3x.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{C1F4CA4F9D788CE5}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3s.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{CF0A210B7AC7B329}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_2.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{DA7492F3E6B63251}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1l.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et",
+      "box": {
+        "offset": [
+          -6.603,
+          -7
+        ],
+        "half": [
+          7.3,
+          4
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{68C5231808D63103}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2f.et",
+      "box": {
+        "offset": [
+          -6.603,
+          -7
+        ],
+        "half": [
+          7.3,
+          4
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{727831E6D77F3360}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3f.et",
+      "box": {
+        "offset": [
+          -6.603,
+          -7
+        ],
+        "half": [
+          7.3,
+          4
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{A35E15EBC6033C07}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1.et",
+      "box": {
+        "offset": [
+          -6.603,
+          -7
+        ],
+        "half": [
+          7.3,
+          4
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{C8E68C4C6AF159DA}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2sw.et",
+      "box": {
+        "offset": [
+          -6.603,
+          -7
+        ],
+        "half": [
+          7.3,
+          4
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
     }
   ]
 }

@@ -3235,6 +3235,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Card taken down. It stays logged in the locker."
      Comment "Toast after unpinning (#148)."
     }
+    CustomStringTableItem "{DE6F4994046855A2}" {
+     Id "LF-CasualtyTreat_Action"
+     Target_en_us "Treat the patient"
+     Comment "Hold action on a hurt resident from a medic call (casualty), offered to an on-duty medic."
+    }
+    CustomStringTableItem "{95C4237C07E41A13}" {
+     Id "LF-CasualtyTreat_Done"
+     Target_en_us "Patient treated. The call is closed."
+     Comment "Toast to the medic after treating a casualty."
+    }
     CustomStringTableItem "{C4A100000000A004}" {
      Id "LF-Chain_Cider_Name"
      Target_en_us "Cider"
@@ -4557,52 +4567,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BDA999D625B19F3D}" {
      Id "LF-Credits_180"
-     Target_en_us "Barkeeper Josselin Vidal's five spoken lines"
+     Target_en_us "Coal yard clerk Gaston Roux's three spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A0A7AF015F2F74D4}" {
      Id "LF-Credits_181"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Hank Harvey - Gruff, Rugged and Wise\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"James - Relaxed American Voice\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0D1A861CFC75EB60}" {
      Id "LF-Credits_182"
-     Target_en_us "Registrar Gaspard Perrin's six spoken lines"
+     Target_en_us "Barkeeper Josselin Vidal's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{861D6EE9C532FE97}" {
      Id "LF-Credits_183"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Liam - Energetic, Social Media Creator\" (premade). Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Hank Harvey - Gruff, Rugged and Wise\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FD0F462ADB68D02E}" {
      Id "LF-Credits_184"
-     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Registrar Gaspard Perrin's six spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{00BFA04619043DFC}" {
      Id "LF-Credits_185"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Liam - Energetic, Social Media Creator\" (premade). Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{90696CB2BFCA919F}" {
      Id "LF-Credits_186"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{13C921E553E1333A}" {
      Id "LF-Credits_187"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1FD2D69733781B26}" {
      Id "LF-Credits_188"
-     Target_en_us "Kevin MacLeod (incompetech.com)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{413CD254F961C2CC}" {
      Id "LF-Credits_189"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9B225E9F684B34BE}" {
@@ -4617,47 +4627,47 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{20D09EC5580FB73B}" {
      Id "LF-Credits_191"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{EB138655CB017E1B}" {
      Id "LF-Credits_192"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{ADAAD0ACB3D62D04}" {
      Id "LF-Credits_193"
-     Target_en_us "Michael Hansen / Rhasspy"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4BC652FE250FB8F9}" {
      Id "LF-Credits_194"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B19D39615671DC17}" {
      Id "LF-Credits_195"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
+     Target_en_us "Michael Hansen / Rhasspy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{031A67A6561231CB}" {
      Id "LF-Credits_196"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{41B72E8D01F8E68E}" {
      Id "LF-Credits_197"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{899288C00EFEEAC6}" {
      Id "LF-Credits_198"
-     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
+     Target_en_us "FONTS AND LOGO"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AB6DB02C0E62EDEF}" {
      Id "LF-Credits_199"
-     Target_en_us "LIVERIES"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
@@ -4672,52 +4682,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{98645FC8B2D9330E}" {
      Id "LF-Credits_200"
-     Target_en_us "LF_UAZ469_Police"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{31D05720B5CD5B48}" {
      Id "LF-Credits_201"
-     Target_en_us "LF_S105_Police"
+     Target_en_us "LIVERIES"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4D22C5E97B2689AA}" {
      Id "LF-Credits_202"
-     Target_en_us "LF_UAZ469_Rebel"
+     Target_en_us "LF_UAZ469_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D12E84B0D1EB5D48}" {
      Id "LF-Credits_203"
-     Target_en_us "LF_Ural4320_Rebel"
+     Target_en_us "LF_S105_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{E5F5B4D1BBEFC2E5}" {
      Id "LF-Credits_204"
-     Target_en_us "LF_S1203_Police"
+     Target_en_us "LF_UAZ469_Rebel"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8DF88C3D0E2242BE}" {
      Id "LF-Credits_205"
-     Target_en_us "LF_UAZ452_Ambulance"
+     Target_en_us "LF_Ural4320_Rebel"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BE5E5996E3159D99}" {
      Id "LF-Credits_206"
-     Target_en_us "LF_S1203_Ambulance"
+     Target_en_us "LF_S1203_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3357BDF3A3C49CCF}" {
      Id "LF-Credits_207"
-     Target_en_us "LF_S105_Taxi"
+     Target_en_us "LF_UAZ452_Ambulance"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C1690BAB498831CF}" {
      Id "LF-Credits_208"
-     Target_en_us "LF_S1203_CompanyBakery"
+     Target_en_us "LF_S1203_Ambulance"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{92B8B9DD3342AC1A}" {
      Id "LF-Credits_209"
-     Target_en_us "LF_S1203_CompanyFactory"
+     Target_en_us "LF_S105_Taxi"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09A1E735EF193A11}" {
@@ -4727,57 +4737,67 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BCC6DE3AE86E2A44}" {
      Id "LF-Credits_210"
-     Target_en_us "LF_UAZ452_CompanyHardware"
+     Target_en_us "LF_S1203_CompanyBakery"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B77F496979C34298}" {
      Id "LF-Credits_211"
-     Target_en_us "LF_Ural4320_CompanyTimber"
+     Target_en_us "LF_S1203_CompanyFactory"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{7E19D38663FDACAA}" {
      Id "LF-Credits_212"
-     Target_en_us "CONTRABAND LABELS"
+     Target_en_us "LF_UAZ452_CompanyHardware"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D8C2792E870AA9C3}" {
      Id "LF-Credits_213"
-     Target_en_us "LF_CigaretteCarton_BCR"
+     Target_en_us "LF_Ural4320_CompanyTimber"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F36B1E4FCF515481}" {
      Id "LF-Credits_214"
-     Target_en_us "LF_VodkaBottle_BCR"
+     Target_en_us "CONTRABAND LABELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1A410F6815AF10B2}" {
      Id "LF-Credits_215"
-     Target_en_us "WORK-SITE SOUNDS"
+     Target_en_us "LF_CigaretteCarton_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BD8D70A1D99DD608}" {
      Id "LF-Credits_216"
-     Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Target_en_us "LF_VodkaBottle_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0AC90225C1A0D9FD}" {
      Id "LF-Credits_217"
-     Target_en_us "Desk sergeant's five lines"
+     Target_en_us "WORK-SITE SOUNDS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C2A33E2596D13DB2}" {
      Id "LF-Credits_218"
-     Target_en_us "Booking typewriter and ink pad stamp sounds"
+     Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C6A1555A111852AA}" {
      Id "LF-Credits_219"
-     Target_en_us "The north outpost's spoken lines: quartermaster"
+     Target_en_us "Desk sergeant's five lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B8555A0EF2D6690B}" {
      Id "LF-Credits_22"
      Target_en_us "The clothing pipeline (docs/asset-pipeline/clothing.md) runs Bohemia Interactive's Enfusion Blender Tools (GPL-3.0) from the local Arma Reforger Tools install, and downloads the character templates..."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D2E4EF8E85E93FA3}" {
+     Id "LF-Credits_220"
+     Target_en_us "Booking typewriter and ink pad stamp sounds"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{2BF516A298D246D4}" {
+     Id "LF-Credits_221"
+     Target_en_us "The north outpost's spoken lines: quartermaster"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{53B28D555A161361}" {
@@ -9636,11 +9656,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Sin bonos activos"
      Comment "Character standing summary when there are no bonuses"
     }
-    CustomStringTableItem "{502AD651193AD12E}" {
-     Id "LF-Level_Far_Any"
-     Target_en_us "You are not experienced enough for this yet."
-     Comment "Job-level gate refusal in words, never a number (#2700)."
-    }
     CustomStringTableItem "{3AF129B888C991B7}" {
      Id "LF-Level_Far_Delivery"
      Target_en_us "Do more runs first."
@@ -9669,11 +9684,6 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{41FE6820DDF1221C}" {
      Id "LF-Level_Far_Police"
      Target_en_us "You are not experienced enough in the force for this yet."
-     Comment "Job-level gate refusal in words, never a number (#2700)."
-    }
-    CustomStringTableItem "{21C91A1344B91226}" {
-     Id "LF-Level_Near_Any"
-     Target_en_us "You are almost experienced enough for this. A little more practice first."
      Comment "Job-level gate refusal in words, never a number (#2700)."
     }
     CustomStringTableItem "{83D47B50E56450B1}" {
@@ -9705,6 +9715,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Level_Near_Police"
      Target_en_us "Nearly there. A little more time on duty first."
      Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{50B4954BCAFEE2D0}" {
+     Id "LF-Level_Needs"
+     Target_en_us "Needs %1 %2"
+     Comment "Level gate refusal for a trade with no words of its own (#4856). %1 = the trade, e.g. Smelting; %2 = the level, e.g. 8."
+    }
+    CustomStringTableItem "{D73232FD8F9ACA91}" {
+     Id "LF-Level_NeedsAny"
+     Target_en_us "Needs level %1"
+     Comment "Level gate refusal when the gate names no trade (#4856). %1 = the level."
     }
     CustomStringTableItem "{2024E806595907BF}" {
      Id "LF-Level_Promoted"
@@ -17890,7 +17910,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C6145C357DAD1FAB}" {
      Id "LF-ToolBench_NoTool"
-     Target_en_us "You have no tool of that kind to work on."
+     Target_en_us "Hold the tool you want worked on in your hands."
      Comment "Bench refusal (#4187)"
     }
     CustomStringTableItem "{6F3046628BDFDFCF}" {

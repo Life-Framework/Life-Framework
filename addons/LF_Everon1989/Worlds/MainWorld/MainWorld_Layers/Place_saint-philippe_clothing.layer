@@ -108,3 +108,19 @@ GenericEntity Fit_saint_philippe_clothing_clothing_fascia : "{4697D9464B596C24}P
  coords 4442.313 14.33 10780.73
  angleY 153
 }
+GenericEntity Fit_saint_philippe_clothing_clothing_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4438.046 15.150 10788.775
+ angleY 153
+}
+GenericEntity Fit_saint_philippe_clothing_clothing_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4440.744 15.150 10786.783
+ angleY 153
+}
+GenericEntity Fit_saint_philippe_clothing_clothing_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4440.770 15.150 10783.428
+ angleY 153
+}
+GenericEntity Fit_saint_philippe_clothing_clothing_lamp_4 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4442.787 15.150 10782.773
+ angleY 153
+}
