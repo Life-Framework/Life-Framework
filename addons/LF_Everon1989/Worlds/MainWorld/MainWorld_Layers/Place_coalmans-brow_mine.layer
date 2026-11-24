@@ -200,6 +200,7 @@ GenericEntity Fit_coalmans_brow_mine_mine_rock_9 : "{735E970ACBB1B473}Prefabs/Ro
 GenericEntity Mapper_coalmans_brow_mine_M1 : "{A4E81D6C2F9B3057}Prefabs/Props/LF_ShiftBoard.et" {
  coords 4336.51 34.313 10406.491
  angleY 0
+}
 GenericEntity Fit_coalmans_brow_mine_whistle_morning : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
  components {
   LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
