@@ -9,6 +9,23 @@ GenericEntity Fit_saint_philippe_districts_garage_Place {
  }
  coords 4696.6 20.8 10755.1
 }
+GenericEntity Fit_saint_philippe_districts_garage_clear {
+ components {
+  LF_BaseWorldClearComponent "{854CD9AF7C645BBA}" {
+   m_sBuilding "{CFF7F6F7042AFFEF}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Main.et"
+   m_aPrefabs {
+    "{027DFD4BB8D66F61}Prefabs/Props/Furniture/BenchWooden_03.et"
+    "{148E2BA12B48CFBA}Prefabs/Props/Furniture/PlantRoom_04.et"
+    "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et"
+    "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et"
+    "{8AC23039E7EC0375}Prefabs/Props/Furniture/TowelRack_01.et"
+    "{910424AC5CABE800}Prefabs/Props/Garbage/Bins/BinInterior_01_red.et"
+    "{D0BD7A55306FC46B}Prefabs/Props/Furniture/Faucet_01/Faucet_01.et"
+   }
+  }
+ }
+ coords 4696.6 20.6 10755.1
+}
 GenericEntity Fit_saint_philippe_districts_garage_shop_counter : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4697.556 20.757 10758.054
  angleY 93
@@ -70,6 +87,78 @@ GenericEntity Fit_saint_philippe_districts_garage_lf_sign_fascia : "{4697D9464B5
  coords 4700.304 23.6 10756.408
  angleY 93
 }
+GenericEntity Fit_saint_philippe_districts_garage_garage_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4695.259 23.7 10758.174
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_garage_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4698.255 23.7 10758.017
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_garage_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4696.521 23.7 10753.602
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_garage_lamp_4 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4696.364 23.7 10750.606
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_parts_shelf : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 4693.435 20.79 10756.418
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_parts_oil_1 : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+ coords 4693.65 21.87 10756.707
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_parts_oil_2 : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+ coords 4693.671 21.87 10757.106
+ angleY 118
+}
+GenericEntity Fit_saint_philippe_districts_garage_parts_oil_3 : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+ coords 4693.692 21.87 10757.506
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_parts_jerry_1 : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+ coords 4693.653 21.38 10756.757
+ angleY -177
+}
+GenericEntity Fit_saint_philippe_districts_garage_parts_jerry_2 : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+ coords 4693.679 21.38 10757.256
+ angleY -177
+}
+GenericEntity Fit_saint_philippe_districts_garage_parts_toolbox : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
+ coords 4693.674 22.36 10757.156
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_parts_oil_4 : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+ coords 4693.647 22.36 10756.657
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_parts_oil_5 : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+ coords 4693.697 22.36 10757.606
+ angleY 133
+}
+GenericEntity Fit_saint_philippe_districts_garage_tyre_1 : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+ coords 4695.433 20.79 10756.713
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_tyre_2 : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+ coords 4695.433 21.02 10756.713
+ angleY 128
+}
+GenericEntity Fit_saint_philippe_districts_garage_tyre_3 : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+ coords 4695.433 21.24 10756.713
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_districts_garage_air_tank : "{10C5A45290A9EEED}Prefabs/Props/Industrial/GasTank_01_blue.et" {
+ coords 4696.568 20.79 10756.403
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_counter_toolbox : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
+ coords 4697.734 21.8 10758.595
+ angleY 93
+}
 GenericEntity Fit_saint_philippe_districts_garage_livery_bay : "{837750C2B0CBF9D9}Prefabs/Props/LF_LiveryBay.et" {
  components {
   LF_PlaceComponent "{B52C0E829AC28E9F}" {
@@ -80,22 +169,46 @@ GenericEntity Fit_saint_philippe_districts_garage_livery_bay : "{837750C2B0CBF9D
    m_vOffset -4 0 0
   }
  }
- coords 4691.615 20.63 10751.696
+ coords 4691.615 20.813 10751.696
  angleY -87
 }
-GenericEntity Fit_saint_philippe_districts_garage_garage_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4695.259 23.700 10758.174
+GenericEntity Fit_saint_philippe_districts_garage_bay_rack : "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et" {
+ coords 4692.367 20.816 10753.62
+ angleY -87
+}
+GenericEntity Fit_saint_philippe_districts_garage_bay_welder : "{50A752B7D5E679A2}Prefabs/Props/Industrial/Repair/GasWelder_01.et" {
+ coords 4691.976 20.814 10749.985
+ angleY -67
+}
+GenericEntity Fit_saint_philippe_districts_garage_bay_tank_1 : "{10C5A45290A9EEED}Prefabs/Props/Industrial/GasTank_01_blue.et" {
+ coords 4692.115 20.813 10752.631
  angleY 93
 }
-GenericEntity Fit_saint_philippe_districts_garage_garage_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4698.255 23.700 10758.017
+GenericEntity Fit_saint_philippe_districts_garage_bay_tank_2 : "{10C5A45290A9EEED}Prefabs/Props/Industrial/GasTank_01_blue.et" {
+ coords 4692.096 20.813 10752.282
  angleY 93
 }
-GenericEntity Fit_saint_philippe_districts_garage_garage_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4696.521 23.700 10753.602
+GenericEntity Fit_saint_philippe_districts_garage_bay_drum : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+ coords 4690.914 20.83 10749.79
  angleY 93
 }
-GenericEntity Fit_saint_philippe_districts_garage_garage_lamp_4 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4696.364 23.700 10750.606
+GenericEntity Fit_saint_philippe_districts_garage_bay_bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 4690.992 20.814 10753.191
  angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_bay_paint_1 : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+ coords 4691.639 21.963 10752.156
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_bay_paint_2 : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+ coords 4691.621 21.963 10751.806
+ angleY 143
+}
+GenericEntity Fit_saint_philippe_districts_garage_bay_paint_3 : "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et" {
+ coords 4691.592 21.963 10751.257
+ angleY 93
+}
+GenericEntity Fit_saint_philippe_districts_garage_bay_toolbox : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
+ coords 4691.676 21.963 10750.952
+ angleY 103
 }

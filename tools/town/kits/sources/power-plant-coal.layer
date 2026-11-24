@@ -26,12 +26,12 @@ DecalEntity Coal_PadD : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_
  angleY 300
  scale 6
 }
-GenericEntity Coal_Counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Coal_Counter : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
  coords -24 0 4
  angleY 0
 }
 GenericEntity Coal_Buyer : "{52895A24E4FC994C}Prefabs/Trader/LF_CoalBuyer_Everon1989.et" {
- coords -24 1.04 4
+ coords -24 0.962 4
  angleY 0
 }
 GenericEntity Coal_Clerk : "{DFBF063F590C7160}Configs/Npcs/LF_Npc_Townsfolk_CoalYardClerk.et" {
@@ -43,7 +43,7 @@ GenericEntity Coal_HeapL : "{D93A7286584E122C}Prefabs/Props/Construction/GravelP
  angleY 90
 }
 GenericEntity Coal_HeapM : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords -24 0.082 -3.5
+ coords -24 0.082 -6.5
  angleY 0
 }
 GenericEntity Coal_HeapR : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
@@ -85,4 +85,17 @@ GenericEntity Coal_FloodB : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerose
 GenericEntity Coal_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  coords -29.5 0 10.5
  angleY 0
+}
+GenericEntity Coal_Hut : "{E30E1250FD927736}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_beige.et" {
+ coords -24 0 0.3
+ angleY 90
+}
+GenericEntity Coal_Scale : "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et" {
+ coords -21.4 0 3.4
+ angleY 90
+}
+GenericEntity Coal_Fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ coords -24 2.45 2.28
+ angleY 0
+ scale 0.8
 }

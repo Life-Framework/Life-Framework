@@ -30,7 +30,7 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "A hostless plot beside the power plant: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The coal buyer stands behind a shop counter facing north (his premium buyer, `power_plant`, on its top), three coal heaps and a barrow behind him, a hopper (shaft tippler, metal bin and a rail cart) and a Ural parked along it to the east make the truck bay, two flood lamps light the yard and the pole plate stands west of the counter. Rows are rigid: shift, never stretch."
+    "adapt": "A hostless plot beside the power plant: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The coal buyer stands behind a plank workbench facing north (his premium buyer, `power_plant`, a wooden cash box on its top), three coal heaps and a barrow behind him, a hopper (shaft tippler, metal bin and a rail cart) and a Ural parked along it to the east make the truck bay, two flood lamps light the yard and the pole plate stands west of the counter. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -112,7 +112,7 @@
     {
       "id": "coal-counter",
       "name": "Coal_Counter",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "prefab": "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et",
       "role": "counter",
       "verb": "on floor",
       "offset": [
@@ -124,7 +124,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.04
+      "lift": 0.07
     },
     {
       "id": "coal-buyer",
@@ -141,7 +141,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 1.08
+      "lift": 1.032
     },
     {
       "id": "coal-clerk",
@@ -158,6 +158,69 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"
+    },
+    {
+      "id": "coal-hut",
+      "name": "Coal_Hut",
+      "prefab": "{E30E1250FD927736}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_beige.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "offset": [
+        -24,
+        0,
+        0.3
+      ],
+      "yaw": 90
+    },
+    {
+      "id": "coal-scale",
+      "name": "Coal_Scale",
+      "prefab": "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "offset": [
+        -21.4,
+        0,
+        3.4
+      ],
+      "yaw": 90,
+      "lift": 0.05
+    },
+    {
+      "id": "coal-fascia",
+      "name": "Coal_Fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "on floor",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "offset": [
+        -24,
+        2.45,
+        2.28
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"coal-buyer\"",
+            "m_vRimColor": "0.12 0.1 0.08",
+            "m_vPaintColor": "0.9 0.86 0.74",
+            "m_vTextColor": "0.12 0.1 0.08"
+          },
+          "blocks": []
+        }
+      ],
+      "lift": 2.45,
+      "scale": 0.8
     },
     {
       "id": "coal-heap-l",
@@ -184,7 +247,7 @@
       "offset": [
         -24,
         0.082,
-        -3.5
+        -6.5
       ],
       "yaw": 0,
       "wall": "free",
@@ -376,6 +439,136 @@
           "blocks": []
         }
       ]
+    }
+  ],
+  "clear": [
+    {
+      "prefab": "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et",
+      "box": {
+        "offset": [
+          -19,
+          3.5
+        ],
+        "half": [
+          17,
+          12.5
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{16D3707EA3F8DD41}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_alnus_glutinosa_3s.et",
+      "box": {
+        "offset": [
+          -19,
+          3.5
+        ],
+        "half": [
+          17,
+          12.5
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{425761285F36BF16}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_1s.et",
+      "box": {
+        "offset": [
+          -19,
+          3.5
+        ],
+        "half": [
+          17,
+          12.5
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{932E56F57F6F0C9A}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_salix_cinerea_1w.et",
+      "box": {
+        "offset": [
+          -19,
+          3.5
+        ],
+        "half": [
+          17,
+          12.5
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{960EA50FD57CD7D5}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_1sw.et",
+      "box": {
+        "offset": [
+          -19,
+          3.5
+        ],
+        "half": [
+          17,
+          12.5
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{C8E68C4C6AF159DA}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2sw.et",
+      "box": {
+        "offset": [
+          -19,
+          3.5
+        ],
+        "half": [
+          17,
+          12.5
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{DA7492F3E6B63251}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1l.et",
+      "box": {
+        "offset": [
+          -19,
+          3.5
+        ],
+        "half": [
+          17,
+          12.5
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{DB49D8B142D18E86}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2s.et",
+      "box": {
+        "offset": [
+          -19,
+          3.5
+        ],
+        "half": [
+          17,
+          12.5
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
     }
   ]
 }

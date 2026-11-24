@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "3F2FFC3E33CDB4E8"
+ components {
+  MeshObject "{F61E452DE22DE160}" {
+   Object "{79CA5DD14C0940E9}Assets/Items/Equipment/Kits/MedicalKit_01/MedicalKit_01.xob"
+  }
+ }
+ coords 0 0 0
+}

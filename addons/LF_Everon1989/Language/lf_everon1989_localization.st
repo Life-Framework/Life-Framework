@@ -5336,7 +5336,7 @@ StringTable {
     }
     CustomStringTableItem "{169160A3F43F94EA}" {
      Id "LF-Quest_EveronMarket_Desc"
-     Target_en_us "Drive back to the market in the town center and sell your apple juice to the trader."
+     Target_en_us "Drive back to the market in the town center and sell your apple juice to the trader. Scroll to the juice row, the last one, and press F."
      Comment "Everon arrival step 5 errand: sell the juice at the market."
     }
     CustomStringTableItem "{E821B19281DF6F39}" {
@@ -5346,7 +5346,7 @@ StringTable {
     }
     CustomStringTableItem "{78C9F1FB26B9EE9A}" {
      Id "LF-Quest_EveronMarket_Title"
-     Target_en_us "Market day"
+     Target_en_us "Sell your juice at the market stall"
      Comment "Everon arrival step 5 title (arrival_done, the market)."
     }
     CustomStringTableItem "{9B59BF96F8F32C1A}" {
@@ -6229,6 +6229,26 @@ StringTable {
      Target_en_us "The village butcher: dried meat, canned meat and cured cuts."
      Comment "What line of the butcher sign (#3228)."
     }
+    CustomStringTableItem "{6DED683EC28D2099}" {
+     Id "LF-Sign_ChotainPub_How"
+     Target_en_us "Walk in and talk to the barkeeper at the bar. Open every day."
+     Comment "How line of the Chotain pub sign (#4902)."
+    }
+    CustomStringTableItem "{59C3E1528834575E}" {
+     Id "LF-Sign_ChotainPub_Title"
+     Target_en_us "Chotain Pub"
+     Comment "Title painted on the Chotain bar fascia and chalk board facing the road (#4902). Shown in the prompt as Read: Chotain Pub."
+    }
+    CustomStringTableItem "{25C671A25EC655F1}" {
+     Id "LF-Sign_ChotainPub_What"
+     Target_en_us "The village pub: beer and bottles over the bar, and the barkeeper hears the talk of the road."
+     Comment "What line of the Chotain pub sign (#4902)."
+    }
+    CustomStringTableItem "{6A1C42D90B7E35F8}" {
+     Id "LF-Sign_Clinic_Title"
+     Target_en_us "Clinic"
+     Comment "Title painted on the clinic's fascia on Saint-Philippe (#4905): one short word so the lettering fills the board like the pharmacy's. The sign card under it reuses the hospital text."
+    }
     CustomStringTableItem "{7C4173595794A1E9}" {
      Id "LF-Sign_ClothingStore_How"
      Target_en_us "*Ask the clerk* at the counter, or look at a mannequin in the window and the shop floor"
@@ -6253,6 +6273,11 @@ StringTable {
      Id "LF-Sign_ClothingStore_What"
      Target_en_us "The village clothing store: jackets, trousers, caps and boots, and a backpack."
      Comment "Sign card for the clothing store, What section."
+    }
+    CustomStringTableItem "{9F4BEADF5074C0BF}" {
+     Id "LF-Sign_CoalBuyer_Title"
+     Target_en_us "Coal buyer"
+     Comment "Title painted on the fascia of the coal buyer's hut at the power plant coal yard (Everon 1989 pack, #4907). Printed on the sign and shown in the prompt as Read: Coal buyer."
     }
     CustomStringTableItem "{54968BCB66E488A0}" {
      Id "LF-Sign_CoalmansBrowBuyer_Iron"

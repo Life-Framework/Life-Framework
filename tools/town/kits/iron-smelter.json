@@ -30,7 +30,7 @@
     },
     "front": "+z",
     "counters": [],
-    "adapt": "The centre-east iron smelter on the open works apron in front of the compound workshop (the host): the kit frame is the workshop's, +z is its door side, and every row rests on the probed ground (`--terrain`). The brick furnace (the plant: 2 iron nuggets and 1 coal make a bar) stands at the door end; a coal heap with a barrow and bucket lies to its west, a hopper (shaft tippler, metal bin and a rail cart) and a Ural parked along the fence with its tail at the bin make the truck bay to the east, two flood lamps light the apron and the pole plate with its card stands in front. Rows are rigid: shift, never stretch."
+    "adapt": "The centre-east iron smelter on the open works apron in front of the compound workshop (the host): the kit frame is the workshop's, +z is its door side, and every row rests on the probed ground (`--terrain`). The furnace (the plant, the vanilla cast-iron `BoilerLarge_02` boiler at 1.6x, 3.1 m with its flue pipe, which runs into a brick stack behind it: the vanilla ruined-house chimney at 0.8x, 6 m; 2 iron nuggets and 1 coal make a bar) stands at the door end; a heap of black coal lumps (the pack's `LF_CoalHeap`, mesh only) with a barrow and bucket lies beside it to the west, a hopper (shaft tippler, metal bin and a rail cart) and a Ural parked along the fence with its tail at the bin make the truck bay to the east, two flood lamps light the apron and the pole plate with its card stands in front. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -45,6 +45,25 @@
         11.5
       ],
       "yaw": 0,
+      "scale": 1.6,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-flue",
+      "name": "Smelter_Flue",
+      "prefab": "{4B2072D6C07CC8C1}Prefabs/Structures/Ruins/HouseRuins/HouseRuin_01/HouseRuin_01_Chimney.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.5,
+        0,
+        10.45
+      ],
+      "yaw": 0,
+      "scale": 0.8,
+      "lift": 1.2,
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"
@@ -52,15 +71,15 @@
     {
       "id": "smelter-coal-heap",
       "name": "Smelter_CoalHeap",
-      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "prefab": "{1FCEFB5ED3E34996}Prefabs/Props/Industrial/LF_CoalHeap.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -11,
-        0.082,
-        12
+        -6.1,
+        0,
+        12.3
       ],
-      "yaw": 90,
+      "yaw": 0,
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"

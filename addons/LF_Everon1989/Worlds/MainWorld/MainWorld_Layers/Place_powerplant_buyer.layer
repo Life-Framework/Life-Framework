@@ -7,6 +7,27 @@ GenericEntity Fit_powerplant_buyer_Place {
  }
  coords 5896 5.8 9797
 }
+GenericEntity Fit_powerplant_buyer_clear_box1 {
+ components {
+  LF_BaseWorldClearComponent "{CC23E36095A72149}" {
+   m_vBoxHalfM 17 0 12.5
+   m_fBoxHeightM 12
+   m_fBoxBelowM 4
+   m_fRepeatS 5
+   m_aPrefabs {
+    "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et"
+    "{16D3707EA3F8DD41}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_alnus_glutinosa_3s.et"
+    "{425761285F36BF16}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_1s.et"
+    "{932E56F57F6F0C9A}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_salix_cinerea_1w.et"
+    "{960EA50FD57CD7D5}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_1sw.et"
+    "{C8E68C4C6AF159DA}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2sw.et"
+    "{DA7492F3E6B63251}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1l.et"
+    "{DB49D8B142D18E86}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2s.et"
+   }
+  }
+ }
+ coords 5877 5.8 9800.5
+}
 DecalEntity Fit_powerplant_buyer_pad_a : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
  coords 5874 0 9800
  angleX -90
@@ -30,21 +51,41 @@ DecalEntity Fit_powerplant_buyer_pad_d : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/
  angleY -60
  scale 6
 }
-GenericEntity Fit_powerplant_buyer_coal_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 5872 4.134 9801
+GenericEntity Fit_powerplant_buyer_coal_counter : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+ coords 5872 4.164 9801
 }
 GenericEntity Fit_powerplant_buyer_coal_buyer : "{52895A24E4FC994C}Prefabs/Trader/LF_CoalBuyer_Everon1989.et" {
- coords 5872 5.174 9801
+ coords 5872 5.126 9801
 }
 GenericEntity Fit_powerplant_buyer_coal_clerk : "{DFBF063F590C7160}Configs/Npcs/LF_Npc_Townsfolk_CoalYardClerk.et" {
  coords 5872 4.094 9799.6
+}
+GenericEntity Fit_powerplant_buyer_coal_hut : "{E30E1250FD927736}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_beige.et" {
+ coords 5872 0 9797.3
+ angleY 90
+}
+GenericEntity Fit_powerplant_buyer_coal_scale : "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et" {
+ coords 5874.6 3.956 9800.4
+ angleY 90
+}
+GenericEntity Fit_powerplant_buyer_coal_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "coal-buyer"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 5872 6.544 9799.28
+ scale 0.8
 }
 GenericEntity Fit_powerplant_buyer_coal_heap_l : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 5866 4.5 9795
  angleY 90
 }
 GenericEntity Fit_powerplant_buyer_coal_heap_m : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 5872 4.102 9793.5
+ coords 5872 4.148 9790.5
 }
 GenericEntity Fit_powerplant_buyer_coal_heap_r : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 5878 3.719 9795

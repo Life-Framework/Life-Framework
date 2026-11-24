@@ -127,6 +127,10 @@ GenericEntity Butcher_freezer_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commerci
  coords 332.225 1.111 28.764
  angleY -90
 }
+GenericEntity Butcher_rack_1 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 334.675 0.202 28.424
+ angleY -90
+}
 GenericEntity Butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  coords 326.075 3.3 30.164
  angleY -90

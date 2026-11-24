@@ -196,3 +196,39 @@ GenericEntity Mine_FenceS4 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/
  coords 12 0 -9.6
  angleY 0
 }
+DecalEntity Mine_PadA : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
+ coords 10 0 4.6
+ angleX -90
+ angleY 0
+ scale 8
+}
+DecalEntity Mine_PadB : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords 9 0 -5
+ angleX -90
+ angleY 90
+ scale 8
+}
+DecalEntity Mine_PadC : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
+ coords 4 0 -3.2
+ angleX -90
+ angleY 200
+ scale 8
+}
+DecalEntity Mine_PadD : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords -0.5 0 2.5
+ angleX -90
+ angleY 300
+ scale 7
+}
+DecalEntity Mine_PadE : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
+ coords 6.5 0 0.5
+ angleX -90
+ angleY 140
+ scale 6
+}
+DecalEntity Mine_PadF : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords 4 0 5.4
+ angleX -90
+ angleY 20
+ scale 8
+}

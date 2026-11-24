@@ -1,0 +1,16 @@
+GenericEntity {
+ ID "938B10D128437B42"
+ {
+  LightEntity {
+   ID "E5AC2FC6768A799D"
+   coords 0 -0.4 0
+   Color 1 0.92 0.78 1
+   LV 5.5
+   ClipEV -10
+   CastShadow 0
+   Radius 7
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+ }
+}

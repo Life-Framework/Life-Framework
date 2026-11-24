@@ -6,7 +6,10 @@
     "file": "tools/town/kits/sources/iron-mine.layer",
     "group": "*",
     "origin": "0,0,0",
-    "frame": "origin-entity"
+    "frame": "origin-entity",
+    "also": [
+      "tools/town/kits/sources/iron-mine-bench.layer"
+    ]
   },
   "scope": "room",
   "anchoring": {
@@ -33,6 +36,120 @@
     "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). Two spoil heaps stand on the uphill side (the buried shaft end that was the portal left its coal chunks floating above the ground, 0.2.1 final check V4, so it is gone); a pick pile and a lantern wait beside them; a granite rock face of nine boulders in two tiers closes the north side of the apron and the six iron ore rocks lie at its foot, 1.6 times the stone's size and streaked rust red so they stand apart from the grey granite, which stands 1.5 m further back (first-2h review B8), 2.7 m apart in a staggered row so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk, the miner's supply counter (the pickaxe, so a new miner buys it where they take the job, first-2h review B3) and the sign on the other, all on the side the track comes in from. The iron buyer is not here: bars are sold at the dock wholesale warehouse. The camp is dressed as a worked 1989 site (#4180, playtest round 3 F3): a yellow site hut with its tool rack and bench (a lamp on the bench top) stands on the south side of the yard, two blue barrels (a lamp on one) and firewood logs beside it, two ore carts and a plank stack on the west, a wheelbarrow by the bench, and a fence line along the south edge with a gap for the track. Every prop is a vanilla one that rests on a slope (a pallet or a slab sinks or hovers on this hill, so no duckboards); the shift board and the sound emitters are hand rows in the layer that a refit drops, so a refit re-appends them from the committed layer. Rows are rigid: shift, never stretch."
   },
   "rows": [
+    {
+      "id": "mine-pad-a",
+      "name": "Mine_PadA",
+      "prefab": "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10,
+        0,
+        4.6
+      ],
+      "yaw": 0,
+      "pitch": -90,
+      "scale": 8,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-pad-b",
+      "name": "Mine_PadB",
+      "prefab": "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        9,
+        0,
+        -5
+      ],
+      "yaw": 90,
+      "pitch": -90,
+      "scale": 8,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-pad-c",
+      "name": "Mine_PadC",
+      "prefab": "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4,
+        0,
+        -3.2
+      ],
+      "yaw": 200,
+      "pitch": -90,
+      "scale": 8,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-pad-d",
+      "name": "Mine_PadD",
+      "prefab": "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -0.5,
+        0,
+        2.5
+      ],
+      "yaw": 300,
+      "pitch": -90,
+      "scale": 7,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-pad-e",
+      "name": "Mine_PadE",
+      "prefab": "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.5,
+        0,
+        0.5
+      ],
+      "yaw": 140,
+      "pitch": -90,
+      "scale": 6,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-pad-f",
+      "name": "Mine_PadF",
+      "prefab": "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4,
+        0,
+        5.4
+      ],
+      "yaw": 20,
+      "pitch": -90,
+      "scale": 8,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
     {
       "id": "mine-heap-l",
       "name": "Mine_HeapL",
@@ -368,6 +485,33 @@
       "floor": "f0"
     },
     {
+      "id": "mine-board",
+      "name": "Mine_ShiftBoard",
+      "prefab": "{B747EFA4D94F3C2F}Prefabs/Props/LF_ShiftBoardPost.et",
+      "role": "sign",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -3.2,
+        0,
+        -1
+      ],
+      "yaw": 240,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_vRimColor": "0.12 0.1 0.08",
+            "m_vPaintColor": "0.9 0.86 0.74",
+            "m_vTextColor": "0.12 0.1 0.08"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
       "role": "dressing",
       "verb": "on floor",
       "mount": "terrain",
@@ -407,7 +551,7 @@
       "floor": "f0",
       "id": "mine-bench",
       "name": "Mine_Bench",
-      "prefab": "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et",
+      "prefab": "{090B9013CF776866}Prefabs/Props/Furniture/TableLong_01/TableLong_01_base.et",
       "offset": [
         6.6,
         0,
@@ -418,8 +562,7 @@
     },
     {
       "role": "light",
-      "verb": "on floor",
-      "mount": "terrain",
+      "verb": "on mine-bench",
       "wall": "free",
       "floor": "f0",
       "id": "mine-bench-lamp",
@@ -427,11 +570,40 @@
       "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
       "offset": [
         6.63,
-        0,
+        0.9,
         -3.9
       ],
-      "yaw": 180,
-      "lift": 1.11
+      "yaw": 180
+    },
+    {
+      "role": "dressing",
+      "verb": "on mine-bench",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-bench-toolbox",
+      "name": "Mine_BenchToolBox",
+      "prefab": "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et",
+      "offset": [
+        6.6,
+        0.9,
+        -4.6
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on mine-bench",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-bench-vice",
+      "name": "Mine_BenchVice",
+      "prefab": "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et",
+      "offset": [
+        6.6,
+        1,
+        -5.25
+      ],
+      "yaw": 90
     },
     {
       "role": "dressing",

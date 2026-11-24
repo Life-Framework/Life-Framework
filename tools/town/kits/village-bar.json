@@ -5,7 +5,9 @@
   "source": {
     "file": "tools/town/kits/sources/bakery.layer",
     "also": [
-      "docs/everon/catalog-props.json"
+      "docs/everon/catalog-props.json",
+      "docs/everon/saint-philippe.json",
+      "tools/town/kits/sources/village-bar-props.txt"
     ],
     "origin": "building",
     "frame": "building-local"
@@ -68,7 +70,12 @@
     "{29BA0E995E24468D}Prefabs/Props/Furniture/PlantRoom_03.et",
     "{4BE33BD4C315C615}Prefabs/Props/Civilian/Ashtray_01_Full_base.et",
     "{147131A9AEAC2176}Prefabs/Props/Decorations/Paintings/PaintingSmall_01_V6.et",
-    "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et"
+    "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et",
+    "{E66C895D628B01A2}Prefabs/Props/Furniture/Kitchen_01_base.et",
+    "{1CA1A9D19D7C8445}Prefabs/Props/Furniture/Rack_01_Short.et",
+    "{D416ECE78FF7078E}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_LightWood.et",
+    "{9DBA8179AFD4FF9F}Prefabs/Props/Furniture/LightTable_02.et",
+    "{E7FB58DA735DB7A0}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_06.et"
   ],
   "rows": [
     {
@@ -81,7 +88,7 @@
         0.35,
         -0.8
       ],
-      "yaw": 180,
+      "yaw": 0,
       "wall": "free",
       "floor": "f0",
       "free": true
@@ -96,7 +103,7 @@
         0.35,
         -0.8
       ],
-      "yaw": 180,
+      "yaw": 0,
       "wall": "free",
       "floor": "f0",
       "free": true
@@ -111,7 +118,7 @@
         0.35,
         -0.8
       ],
-      "yaw": 180,
+      "yaw": 0,
       "wall": "free",
       "floor": "f0",
       "free": true
@@ -167,84 +174,6 @@
       ],
       "yaw": 0,
       "wall": "-z",
-      "floor": "f0"
-    },
-    {
-      "id": "bar-bottle-1",
-      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
-      "role": "dressing",
-      "verb": "on bar-shelf-1",
-      "offset": [
-        -1.9,
-        1.3,
-        -4.2
-      ],
-      "yaw": 0,
-      "floor": "f0"
-    },
-    {
-      "id": "bar-bottle-2",
-      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
-      "role": "dressing",
-      "verb": "on bar-shelf-1",
-      "offset": [
-        -1.5,
-        1.3,
-        -4.2
-      ],
-      "yaw": 20,
-      "floor": "f0"
-    },
-    {
-      "id": "bar-bottle-3",
-      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
-      "role": "dressing",
-      "verb": "on bar-shelf-1",
-      "offset": [
-        -1.1,
-        1.275,
-        -4.2
-      ],
-      "yaw": 0,
-      "floor": "f0"
-    },
-    {
-      "id": "bar-bottle-4",
-      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
-      "role": "dressing",
-      "verb": "on bar-shelf-2",
-      "offset": [
-        1.2,
-        1.3,
-        -4.2
-      ],
-      "yaw": 0,
-      "floor": "f0"
-    },
-    {
-      "id": "bar-bottle-5",
-      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
-      "role": "dressing",
-      "verb": "on bar-shelf-2",
-      "offset": [
-        1.6,
-        1.3,
-        -4.2
-      ],
-      "yaw": 35,
-      "floor": "f0"
-    },
-    {
-      "id": "bar-bottle-6",
-      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
-      "role": "dressing",
-      "verb": "on bar-shelf-2",
-      "offset": [
-        2,
-        1.3,
-        -4.2
-      ],
-      "yaw": 0,
       "floor": "f0"
     },
     {
@@ -332,6 +261,467 @@
       "wall": "free",
       "floor": "f0",
       "free": true
+    },
+    {
+      "id": "bar-bottle-1",
+      "prefab": "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -1.75,
+        0.94,
+        -4.17
+      ],
+      "yaw": -8,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-2",
+      "prefab": "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -2,
+        0.94,
+        -4.17
+      ],
+      "yaw": 29,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-3",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -2.5,
+        0.94,
+        -4.17
+      ],
+      "yaw": -24,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-4",
+      "prefab": "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -2.75,
+        0.94,
+        -4.17
+      ],
+      "yaw": 13,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-5",
+      "prefab": "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -1.75,
+        1.43,
+        -4.17
+      ],
+      "yaw": -40,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-6",
+      "prefab": "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -2,
+        1.43,
+        -4.17
+      ],
+      "yaw": -3,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-7",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -2.5,
+        1.43,
+        -4.17
+      ],
+      "yaw": 34,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-8",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -2.75,
+        1.43,
+        -4.17
+      ],
+      "yaw": -19,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-9",
+      "prefab": "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -1.75,
+        1.92,
+        -4.17
+      ],
+      "yaw": 18,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-10",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -2,
+        1.92,
+        -4.17
+      ],
+      "yaw": -35,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-11",
+      "prefab": "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -2.5,
+        1.92,
+        -4.17
+      ],
+      "yaw": 2,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-12",
+      "prefab": "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        -2.75,
+        1.92,
+        -4.17
+      ],
+      "yaw": 39,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-13",
+      "prefab": "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        1.35,
+        0.94,
+        -4.17
+      ],
+      "yaw": -14,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-14",
+      "prefab": "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        1.1,
+        0.94,
+        -4.17
+      ],
+      "yaw": 23,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-15",
+      "prefab": "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        0.6,
+        0.94,
+        -4.17
+      ],
+      "yaw": -30,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-16",
+      "prefab": "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        0.35,
+        0.94,
+        -4.17
+      ],
+      "yaw": 7,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-17",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        1.35,
+        1.43,
+        -4.17
+      ],
+      "yaw": 44,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-18",
+      "prefab": "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        1.1,
+        1.43,
+        -4.17
+      ],
+      "yaw": -9,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-19",
+      "prefab": "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        0.6,
+        1.43,
+        -4.17
+      ],
+      "yaw": 28,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-20",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        0.35,
+        1.43,
+        -4.17
+      ],
+      "yaw": -25,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-21",
+      "prefab": "{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        1.35,
+        1.92,
+        -4.17
+      ],
+      "yaw": 12,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-22",
+      "prefab": "{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        1.1,
+        1.92,
+        -4.17
+      ],
+      "yaw": -41,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-23",
+      "prefab": "{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        0.6,
+        1.92,
+        -4.17
+      ],
+      "yaw": -4,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-24",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        0.35,
+        1.92,
+        -4.17
+      ],
+      "yaw": 33,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-glass-1",
+      "prefab": "{3F23DA7ACAC0ED90}Prefabs/Props/Civilian/GlassBeer_01/GlassBeer_01.et",
+      "role": "dressing",
+      "verb": "on bar-counter-1",
+      "offset": [
+        -2.05,
+        1.39,
+        -0.8
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-glass-2",
+      "prefab": "{5377EE9A760462BE}Prefabs/Props/Civilian/GlassBeer_01/GlassBeer_02.et",
+      "role": "dressing",
+      "verb": "on bar-counter-1",
+      "offset": [
+        -1,
+        1.39,
+        -0.75
+      ],
+      "yaw": 20,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-glass-3",
+      "prefab": "{3F23DA7ACAC0ED90}Prefabs/Props/Civilian/GlassBeer_01/GlassBeer_01.et",
+      "role": "dressing",
+      "verb": "on bar-counter-2",
+      "offset": [
+        -0.55,
+        1.39,
+        -0.8
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-glass-4",
+      "prefab": "{5377EE9A760462BE}Prefabs/Props/Civilian/GlassBeer_01/GlassBeer_02.et",
+      "role": "dressing",
+      "verb": "on bar-counter-2",
+      "offset": [
+        0.5,
+        1.39,
+        -0.75
+      ],
+      "yaw": 20,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-glass-5",
+      "prefab": "{3F23DA7ACAC0ED90}Prefabs/Props/Civilian/GlassBeer_01/GlassBeer_01.et",
+      "role": "dressing",
+      "verb": "on bar-counter-3",
+      "offset": [
+        0.95,
+        1.39,
+        -0.8
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-glass-6",
+      "prefab": "{5377EE9A760462BE}Prefabs/Props/Civilian/GlassBeer_01/GlassBeer_02.et",
+      "role": "dressing",
+      "verb": "on bar-counter-3",
+      "offset": [
+        2,
+        1.39,
+        -0.75
+      ],
+      "yaw": 20,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-stool-5",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        -2.5,
+        0.339,
+        0.45
+      ],
+      "yaw": 20,
+      "wall": "free",
+      "free": true,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-stool-6",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        2.9,
+        0.339,
+        0.45
+      ],
+      "yaw": 60,
+      "wall": "free",
+      "free": true,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-clock",
+      "prefab": "{D51E223FD6EDB039}Prefabs/Props/Furniture/ClockWall_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        1,
+        2.6,
+        -4.4
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "mount": "wall",
+      "floor": "f0"
+    },
+    {
+      "id": "pub-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        0.5,
+        3,
+        -5.5
+      ],
+      "yaw": 180,
+      "wall": "-z",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"pub_chotain\"",
+            "m_vRimColor": "0.85 0.7 0.3",
+            "m_vPaintColor": "0.12 0.22 0.15",
+            "m_vTextColor": "0.96 0.93 0.82"
+          },
+          "blocks": []
+        }
+      ],
+      "floor": "f0"
     }
   ]
 }

@@ -9,7 +9,7 @@
     "Workplace",
     "plant"
   ],
-  "rows": 11,
+  "rows": 12,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

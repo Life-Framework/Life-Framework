@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3B041460280222A5}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Clinic.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

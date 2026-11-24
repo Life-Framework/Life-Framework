@@ -16865,6 +16865,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Rules"
      Comment "Sign card section heading: cooldowns, wanted level, other rules."
     }
+    CustomStringTableItem "{F5CEEA586CBB4B8F}" {
+     Id "LF-Sign_ShiftBoard_Next"
+     Target_en_us "Keep working this site to climb the board."
+     Comment "Sign catalog next text of the posted shift board's Read card (sign id shift_board): what to do after reading it."
+    }
+    CustomStringTableItem "{3EFD6AD0426C7BB2}" {
+     Id "LF-Sign_ShiftBoard_Title"
+     Target_en_us "Shift board"
+     Comment "Title painted on the posted shift board at a work site (polish of #4713) and shown in the prompt as Read: Shift board."
+    }
+    CustomStringTableItem "{BF1EE8DF0BD254A0}" {
+     Id "LF-Sign_ShiftBoard_What"
+     Target_en_us "The week's top five workers at this site by the trade XP they earned here. Read the board to see where you stand."
+     Comment "Sign card for the posted shift board, What section (polish of #4713)."
+    }
     CustomStringTableItem "{B71E5C09A4D23F68}" {
      Id "LF-Sign_TaxiStand_Next"
      Target_en_us "Take taxi work here, then drive each fare where it wants to go."

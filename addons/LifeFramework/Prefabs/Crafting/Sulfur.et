@@ -30,8 +30,20 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
    Object "{2A40539EDABCBE37}Assets/Crafting/Sulfur/sulfur.xob"
    Materials {
     MaterialAssignClass "{61CB1B0190561B04}" {
-     SourceMaterial "Material"
-     AssignedMaterial "{7C2E488A0E64AF45}Assets/Rocks/Granite/Data/GraniteBeach_Forest_MLOD.emat"
+     SourceMaterial "Sulfur_LOD0"
+     AssignedMaterial "{835AF267A980634B}Assets/Crafting/Sulfur/Data/Sulfur_LOD0.emat"
+    }
+    MaterialAssignClass "{3C8E5A17D2B94F61}" {
+     SourceMaterial "DefaultGeneratedMaterial"
+     AssignedMaterial "{1F4E6361C1D1C1A5}Assets/Crafting/Sulfur/Data/DefaultGeneratedMaterial.emat"
+    }
+    MaterialAssignClass "{9A47D0E15B2C8F36}" {
+     SourceMaterial "Sulfur_LOD1"
+     AssignedMaterial "{F6B00E513AB39362}Assets/Crafting/Sulfur/Data/Sulfur_LOD1.emat"
+    }
+    MaterialAssignClass "{E5D1B6A8473F0C92}" {
+     SourceMaterial "Sulfur_LOD2"
+     AssignedMaterial "{19D950B207CFE453}Assets/Crafting/Sulfur/Data/Sulfur_LOD2.emat"
     }
    }
   }

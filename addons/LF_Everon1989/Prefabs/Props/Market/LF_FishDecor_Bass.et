@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "704A7460F634610C"
+ components {
+  MeshObject "{81E2C05A94789ECE}" {
+   Object "{844FBF1EB8480E5C}Assets/Items/Fishing/FishBass/FishBass.xob"
+  }
+ }
+ coords 0 0 0
+}

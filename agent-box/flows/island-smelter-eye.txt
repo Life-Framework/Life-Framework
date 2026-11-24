@@ -1,0 +1,50 @@
+# Centre-east iron smelter at eye height (#3244): a fresh player stands at the furnace, the F prompt shows, then steps back
+# for the whole furnace with its brick flue. Pictures for the PR.
+# Session: node agent-box/session.mjs up --profile full --mission island --wait
+#          node agent-box/harness.mjs --client 1 flow island-smelter-eye
+#          node agent-box/session.mjs down
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+stand Fit_eastcompound_smelter_smelter_furnace n3
+wait 3000
+look
+shot ui smelter_eye_n3
+stand Fit_eastcompound_smelter_smelter_furnace s3
+wait 3000
+look
+shot ui smelter_eye_s3
+stand Fit_eastcompound_smelter_smelter_furnace n6
+wait 3000
+shot ui smelter_eye_n6
+stand Fit_eastcompound_smelter_smelter_furnace s6
+wait 3000
+shot ui smelter_eye_s6
