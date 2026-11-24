@@ -46,3 +46,9 @@ GenericEntity Fit_saint_philippe_church_anchor_bench {
  coords 4442.409 12.7 10734.643
  angleY -98
 }
+GenericEntity Fit_saint_philippe_church_bell_hour : "{CA01343AF14EA0BA}Prefabs/Atmosphere/LF_BellHour.et" {
+ coords 4434.5 26.5 10735.2
+}
+GenericEntity Fit_saint_philippe_church_bell_service : "{EB41CD31CE7157B2}Prefabs/Atmosphere/LF_BellService.et" {
+ coords 4434.5 26 10736.2
+}
