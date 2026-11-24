@@ -4074,6 +4074,51 @@ StringTable {
      Target_en_us "A glass siphon of soda water. A squirt from the head and it fizzes."
      Comment "Item description: soda water."
     }
+    CustomStringTableItem "{304A16DFA044CEB6}" {
+     Id "LF-Item_ToolAxeFine_Name"
+     Target_en_us "Fine axe"
+     Comment "Item name: the fine axe (#4717, #4188). Tells the three finishes apart at the miners' supply till, in the inventory and in the tool-wear line."
+    }
+    CustomStringTableItem "{C21DC3B91503833D}" {
+     Id "LF-Item_ToolAxeStandard_Name"
+     Target_en_us "Standard axe"
+     Comment "Item name: the standard axe (#4717, #4188). Tells the three finishes apart at the miners' supply till, in the inventory and in the tool-wear line."
+    }
+    CustomStringTableItem "{9EF47C88043553D7}" {
+     Id "LF-Item_ToolAxeWorn_Name"
+     Target_en_us "Worn axe"
+     Comment "Item name: the worn axe (#4717, #4188). Tells the three finishes apart at the miners' supply till, in the inventory and in the tool-wear line."
+    }
+    CustomStringTableItem "{10BD46088A14AEC2}" {
+     Id "LF-Item_ToolPickaxeFine_Name"
+     Target_en_us "Fine pickaxe"
+     Comment "Item name: the fine pickaxe (#4717, #4188). Tells the three finishes apart at the miners' supply till, in the inventory and in the tool-wear line."
+    }
+    CustomStringTableItem "{4272EC3A7C9927A3}" {
+     Id "LF-Item_ToolPickaxeStandard_Name"
+     Target_en_us "Standard pickaxe"
+     Comment "Item name: the standard pickaxe (#4717, #4188). Tells the three finishes apart at the miners' supply till, in the inventory and in the tool-wear line."
+    }
+    CustomStringTableItem "{0368A9C3673EB3C0}" {
+     Id "LF-Item_ToolPickaxeWorn_Name"
+     Target_en_us "Worn pickaxe"
+     Comment "Item name: the worn pickaxe (#4717, #4188). Tells the three finishes apart at the miners' supply till, in the inventory and in the tool-wear line."
+    }
+    CustomStringTableItem "{C0420E08ECD7060F}" {
+     Id "LF-Item_ToolRodFine_Name"
+     Target_en_us "Fine fishing rod"
+     Comment "Item name: the fine fishing rod (#4717, #4188). Tells the three finishes apart at the miners' supply till, in the inventory and in the tool-wear line."
+    }
+    CustomStringTableItem "{3E97D8E2F64873D6}" {
+     Id "LF-Item_ToolRodStandard_Name"
+     Target_en_us "Standard fishing rod"
+     Comment "Item name: the standard fishing rod (#4717, #4188). Tells the three finishes apart at the miners' supply till, in the inventory and in the tool-wear line."
+    }
+    CustomStringTableItem "{1EDF441B167C1E73}" {
+     Id "LF-Item_ToolRodWorn_Name"
+     Target_en_us "Worn fishing rod"
+     Comment "Item name: the worn fishing rod (#4717, #4188). Tells the three finishes apart at the miners' supply till, in the inventory and in the tool-wear line."
+    }
     CustomStringTableItem "{9F32BE4E1F1F7320}" {
      Id "LF-Item_TouristMap_Description"
      Target_en_us "A printed tourist and road map of the island. Studying it pencils every place a visitor might look for onto your own map."

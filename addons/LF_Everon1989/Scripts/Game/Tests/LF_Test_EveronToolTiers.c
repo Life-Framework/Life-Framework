@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-23 (#4415): before the tier rows existed on main, `tools\cli test --no-build --only LF_Test_EveronToolTiers` failed on every `has a row at the miners' supply till` line and on the level-2 refusal; under `--red` the prefab probe is blanked and the same lines fail.
+// red-proof: #4717 names: under `--red` each tier prefab resolves its base prefab's name (the old one), so the nine-distinct-names lines fail. Observed 2026-11-23 (#4415):before the tier rows existed on main, `tools\cli test --no-build --only LF_Test_EveronToolTiers` failed on every `has a row at the miners' supply till` line and on the level-2 refusal; under `--red` the prefab probe is blanked and the same lines fail.
 //! #4415 (WK-W12): the miners' supply till, which the hardware store's tool counter also is, sells the
 //! pickaxe, the axe and the fishing rod in their three finishes (#4188) at $150, $600 and $1,800. The
 //! better finishes sit behind the trade level: a level-2 miner is refused the fine pickaxe and the
@@ -22,6 +22,9 @@ class LF_Test_EveronToolTiers : LF_Test
 	static const ResourceName ROD_WORN = "{882DF16910A9076F}Prefabs/Tools/Tiers/LF_Tool_Rod_Worn.et";
 	static const ResourceName ROD_STANDARD = "{18F6CD1DCF69D861}Prefabs/Tools/Tiers/LF_Tool_Rod_Standard.et";
 	static const ResourceName ROD_FINE = "{10849D099541584B}Prefabs/Tools/Tiers/LF_Tool_Rod_Fine.et";
+	static const ResourceName BASE_PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
+	static const ResourceName BASE_AXE = "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et";
+	static const ResourceName BASE_ROD = "{0327968D17D249FD}Prefabs/Items/Fishing/LF_FishingRod.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -41,6 +44,31 @@ class LF_Test_EveronToolTiers : LF_Test
 		CheckLadder(ctx, catalogue, "axe", AXE_WORN, AXE_STANDARD, AXE_FINE, "LUMBERJACK");
 		CheckLadder(ctx, catalogue, "rod", ROD_WORN, ROD_STANDARD, ROD_FINE, "");
 		CheckLevelGate(ctx, catalogue);
+		CheckNames(ctx);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #4717: the till sheet, the inventory and the tool-wear line show an item's UI name, so the nine
+	//! tier prefabs must resolve nine different names, each in words (no raw key, no base-item name).
+	protected void CheckNames(LF_TestContext ctx)
+	{
+		array<ResourceName> prefabs = {PICKAXE_WORN, PICKAXE_STANDARD, PICKAXE_FINE, AXE_WORN, AXE_STANDARD, AXE_FINE, ROD_WORN, ROD_STANDARD, ROD_FINE};
+		array<ResourceName> bases = {BASE_PICKAXE, BASE_PICKAXE, BASE_PICKAXE, BASE_AXE, BASE_AXE, BASE_AXE, BASE_ROD, BASE_ROD, BASE_ROD};
+		ref array<string> seen = {};
+		foreach (int i, ResourceName prefab : prefabs)
+		{
+			ResourceName probe = prefab;
+			if (RedProof())
+				probe = bases[i];
+
+			string name = WidgetManager.Translate(LF_ShopManagerComponent.ResolveDisplayName(probe));
+			ctx.False(name.IsEmpty() || name.StartsWith("#"), string.Format("%1 resolves a name in words (%2)", prefab, name));
+			bool fresh = seen.Find(name) < 0;
+			ctx.True(fresh, string.Format("%1 has a name no other tier prefab has (%2)", prefab, name));
+			if (fresh)
+				seen.Insert(name);
+		}
+		ctx.Equal(9, seen.Count(), "nine tier prefabs resolve nine names");
 	}
 
 	//------------------------------------------------------------------------------------------------
