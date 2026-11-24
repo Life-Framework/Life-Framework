@@ -7,6 +7,7 @@
 class LF_Test_EveronIronRichGate : LF_Test
 {
 	protected static const ResourceName IRON_ORE = "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et";
+	protected static const ResourceName RICH_ORE = "{8406DCAC1238E2A3}Prefabs/Resources/Mining/LF_IronOreRich_Everon1989.et";
 	protected static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
 	protected static const ResourceName NUGGET = "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et";
 	protected static const vector SPOT = "70 0 70";
@@ -17,6 +18,22 @@ class LF_Test_EveronIronRichGate : LF_Test
 	override string GetName()
 	{
 		return "everon/iron-rich-gate";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The node id a rock prefab's LF_OreNodeComponent names.
+	protected string NodeOfPrefab(ResourceName prefab)
+	{
+		Resource resource = Resource.Load(prefab);
+		if (!resource || !resource.IsValid())
+			return "";
+
+		IEntityComponentSource source = SCR_BaseContainerTools.FindComponentSource(resource, LF_OreNodeComponent);
+		string id;
+		if (source)
+			source.Get("m_sNodeId", id);
+
+		return id;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -60,7 +77,16 @@ class LF_Test_EveronIronRichGate : LF_Test
 		LF_ResourceNodeDef plain = LF_ResourceChainCatalog.FindNode("iron");
 		ctx.NotNull(plain, "the core iron node is still there");
 		if (plain)
+		{
 			ctx.Equal(0, plain.m_iMinLevel, "the plain core iron node stays ungated");
+			ctx.EqualStr("", LF_OreNodeComponent.LevelRefusal(plain, 7), "a MINER 7 miner (the hour-5 player) mines the plain iron rocks");
+		}
+
+		// The face has two kinds of rock: the pack's amber rich rock names iron-rich, the plain rock names iron.
+		ctx.EqualStr("iron-rich", NodeOfPrefab(RICH_ORE), "the rich rock prefab names the iron-rich node");
+		ctx.EqualStr("iron", NodeOfPrefab(IRON_ORE), "the plain rock prefab names the iron node");
+		ctx.EqualStr("#LF-Level_Near_Miner", LF_OreNodeComponent.LevelRefusal(row, 11), "MINER 11 is refused at the rich rock, nearly there");
+		ctx.EqualStr("#LF-Level_Far_Miner", LF_OreNodeComponent.LevelRefusal(row, 7), "a MINER 7 miner is refused at the rich rock");
 
 		float y = GetGame().GetWorld().GetSurfaceY(SPOT[0], SPOT[2]);
 		vector at = Vector(SPOT[0], y, SPOT[2]);
