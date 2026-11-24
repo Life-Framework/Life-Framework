@@ -377,6 +377,8 @@ class LF_CasualtyCalls
 
 		damage.ForceUnconsciousness();
 		LF_Downed.Down(character, damage, health, null);
+		// Replicated, so a client labels this body "Treat the patient" and no other downed resident (#4848).
+		character.LF_SetCasualty(true);
 		// The body bleeds out when the call expires, not on the player default (180 s), so an ambulance run has the time.
 		character.LF_StartBleeding(bleedSeconds);
 		return body;
