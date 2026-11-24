@@ -7,20 +7,19 @@ GenericEntity Fit_outpost_north_camp_clear_box1 {
    m_fRepeatS 5
    m_aPrefabs {
     "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et"
-    "{1F1980176A5052DC}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rosa_canina_0s.et"
-    "{2A1012C2B5B4F1FA}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rubus_idaeus_1s.et"
     "{2FE01B5E743D5205}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_1s.et"
-    "{5D1A7A4A41161E8A}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rubus_idaeus_0s.et"
-    "{6813E89F9EF2BDAC}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rosa_canina_1s.et"
+    "{425761285F36BF16}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_1s.et"
+    "{68C5231808D63103}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2f.et"
     "{727831E6D77F3360}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3f.et"
-    "{86FE6FFC07B02673}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3x.et"
-    "{C1F4CA4F9D788CE5}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3s.et"
-    "{CF0A210B7AC7B329}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_2.et"
+    "{960EA50FD57CD7D5}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_1sw.et"
+    "{9C6CE0F73E3AED80}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_1f.et"
+    "{A35E15EBC6033C07}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1.et"
+    "{C8E68C4C6AF159DA}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2sw.et"
     "{DA7492F3E6B63251}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1l.et"
    }
   }
  }
- coords 7738.696 7.55 8336.851
+ coords 7660.696 16 8394.851
 }
 GenericEntity Fit_outpost_north_camp_clear_box2 {
  components {
@@ -31,17 +30,29 @@ GenericEntity Fit_outpost_north_camp_clear_box2 {
    m_fRepeatS 5
    m_aPrefabs {
     "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et"
-    "{68C5231808D63103}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2f.et"
     "{727831E6D77F3360}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3f.et"
-    "{A35E15EBC6033C07}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1.et"
-    "{C8E68C4C6AF159DA}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2sw.et"
    }
   }
  }
- coords 7738.397 7.55 8320
+ coords 7660.397 16 8378
+}
+GenericEntity Fit_outpost_north_camp_clear_box3 {
+ components {
+  LF_BaseWorldClearComponent "{E854AD25F5CFAC9C}" {
+   m_vBoxHalfM 2.5 0 2.5
+   m_fBoxHeightM 6
+   m_fBoxBelowM 4
+   m_fRepeatS 5
+   m_aPrefabs {
+    "{59D79F785D414D67}PrefabLibrary/DefaultLibrary/Rocks/Granite/Granite_Stone_01/Granite_ForestStone_01.et"
+   }
+  }
+ }
+ coords 7659.75 16 8387.92
 }
 GenericEntity Fit_outpost_north_camp_outpost_board : "{6C4AFD9C193BC4EC}Prefabs/Outposts/LF_OutpostBoard.et" {
- coords 7734.8 8.666 8334.6
+ coords 7656.8 16.016 8392.6
+ angleY 180
 }
 GenericEntity Fit_outpost_north_camp_outpost_site {
  components {
@@ -49,110 +60,110 @@ GenericEntity Fit_outpost_north_camp_outpost_site {
    m_sOutpostId "north"
   }
  }
- coords 7739 7.891 8337
+ coords 7661 16.031 8395
 }
 SCR_ChimeraCharacter Fit_outpost_north_camp_outpost_npc_quartermaster : "{D9C9D205CD9D4A61}Prefabs/Characters/Outposts/LF_Outpost_Quartermaster.et" {
- coords 7735.9 7.931 8341.2
+ coords 7657.9 15.898 8399.2
  angleY 180
 }
 SCR_ChimeraCharacter Fit_outpost_north_camp_outpost_npc_buyer : "{ABD45E880BD19544}Prefabs/Characters/Outposts/LF_Outpost_Buyer.et" {
- coords 7743.4 7.028 8339.7
+ coords 7665.4 15.978 8397.7
  angleY 180
 }
 SCR_ChimeraCharacter Fit_outpost_north_camp_outpost_npc_guard_s : "{C974EBD0B66A34F4}Prefabs/Characters/Outposts/LF_Outpost_GuardGate1.et" {
- coords 7743 7.664 8332.7
+ coords 7665 16.192 8390.7
  angleY 180
 }
 SCR_ChimeraCharacter Fit_outpost_north_camp_outpost_npc_guard_n : "{6B2180250B983E0F}Prefabs/Characters/Outposts/LF_Outpost_GuardGate2.et" {
- coords 7732.8 9.083 8332.7
+ coords 7654.8 15.983 8390.7
  angleY 180
 }
 SCR_ChimeraCharacter Fit_outpost_north_camp_outpost_npc_mechanic : "{D9E78AC61656C5CA}Prefabs/Characters/Outposts/LF_Outpost_Mechanic.et" {
- coords 7741.4 6.856 8344.8
+ coords 7663.4 15.85 8402.8
  angleY 90
 }
 GenericEntity Fit_outpost_north_camp_outpost_gate_sandbag_s1 : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
- coords 7742.177 7.909 8330.691
+ coords 7664.177 16.228 8388.691
 }
 GenericEntity Fit_outpost_north_camp_outpost_gate_sandbag_s2 : "{B547CF929FCC6BB7}Prefabs/Props/Military/Sandbags/Sandbag_01_end_high_burlap.et" {
- coords 7745.197 7.436 8330.702
+ coords 7667.197 16.258 8388.702
 }
 GenericEntity Fit_outpost_north_camp_outpost_gate_sandbag_n1 : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
- coords 7734.577 8.978 8330.691
+ coords 7656.577 16.09 8388.691
 }
 GenericEntity Fit_outpost_north_camp_outpost_gate_sandbag_n2 : "{B547CF929FCC6BB7}Prefabs/Props/Military/Sandbags/Sandbag_01_end_high_burlap.et" {
- coords 7731.597 9.388 8330.702
+ coords 7653.597 15.976 8388.702
 }
 GameEntity Fit_outpost_north_camp_outpost_fire : "{0FB935C50541B694}Prefabs/Crafting/Fireplace.et" {
- coords 7739.48 8.06 8337.645
+ coords 7661.48 16.217 8395.645
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_generator : "{FCBEDECB2A39B6BC}Prefabs/Props/Military/Generators/GeneratorPortable_USSR_01.et" {
- coords 7729.437 9.384 8335.705
+ coords 7651.437 15.831 8393.705
  angleY 90
 }
 GenericEntity Fit_outpost_north_camp_outpost_mast : "{5B8922E61D8DF345}Prefabs/Props/Military/Antennas/Antenna_R161_01.et" {
- coords 7748.495 5.812 8346.7
+ coords 7670.495 15.77 8404.7
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_flag_pole : "{1A8791C2BC2B8B75}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et" {
- coords 7729.327 8.184 8346.701
+ coords 7651.327 15.603 8404.701
  angleY -90
 }
 SCR_DestructibleBuildingEntity Fit_outpost_north_camp_outpost_tent_quartermaster : "{4A1E3B17DB672E35}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01.et" {
- coords 7736.389 0 8343.309
+ coords 7658.389 0 8401.309
 }
 GenericEntity Fit_outpost_north_camp_outpost_table : "{1A1020205E2B1710}Prefabs/Props/Military/Furniture/TableMilitary_USSR_01.et" {
- coords 7733.9 8.448 8339.2
+ coords 7655.9 15.93 8397.2
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
- coords 7728.912 9.131 8339.708
+ coords 7650.912 15.748 8397.708
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_pallet_box_1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 7728.896 8.897 8342.299
+ coords 7650.896 15.721 8400.299
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_barrel_1 : "{4BE795374BE3D67E}Prefabs/Props/Industrial/BarrelFuel_01_closed.et" {
- coords 7747.411 6.993 8333.178
+ coords 7669.411 16.182 8391.178
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_canvas_cover_crates : "{BFC48B664ED362EE}Prefabs/Structures/Military/Camps/Canvas_Covers/CanvasCover_Medium_Base.et" {
- coords 7745.9 6.898 8336.7
+ coords 7667.9 16.072 8394.7
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_camo_net_pallets : "{79AA43911CC6C3E8}Prefabs/Structures/Military/CamoNets/Soviet/CamoNet_Small_Soviet.et" {
- coords 7728.9 8.906 8341
+ coords 7650.9 15.702 8399
  angleY -90
  scale 0.5
 }
 GenericEntity Fit_outpost_north_camp_outpost_stool_w : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
- coords 7739.5 7.945 8336.001
+ coords 7661.5 16.063 8394.001
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_stool_n : "{D023942ECEA592ED}Prefabs/Props/Furniture/Stool_02.et" {
- coords 7737.91 7.998 8337.894
+ coords 7659.91 16.002 8395.894
  angleY -60
 }
 GenericEntity Fit_outpost_north_camp_outpost_stool_s : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
- coords 7741.2 7.596 8337.301
+ coords 7663.2 16.053 8395.301
  angleY -110
 }
 GenericEntity Fit_outpost_north_camp_outpost_bench_box : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 7739.996 7.662 8339.4
+ coords 7661.996 16.012 8397.4
  angleY -75
 }
 GenericEntity Fit_outpost_north_camp_outpost_workbench_1 : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
- coords 7742.4 6.988 8343.302
+ coords 7664.4 15.901 8401.302
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_workbench_2 : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
- coords 7743.02 6.624 8346.301
+ coords 7665.02 15.822 8404.301
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_canopy_mechanic : "{C2789448B0BD05F8}Prefabs/Structures/Military/Camps/Canvas_Covers/CanvasCover_Medium_A_Base.et" {
- coords 7744 6.528 8344.7
+ coords 7666 15.833 8402.7
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_flag_cloth : "{AE09DA7896F9DB37}Prefabs/Props/Fabric/Flags/Flag_1_2.et" {
@@ -166,7 +177,7 @@ GenericEntity Fit_outpost_north_camp_outpost_flag_cloth : "{AE09DA7896F9DB37}Pre
    }
   }
  }
- coords 7729.427 13 8346.701
+ coords 7651.427 21.45 8404.701
  angleY -90
 }
 GenericEntity Fit_outpost_north_camp_outpost_bed_generator : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
@@ -180,7 +191,7 @@ GenericEntity Fit_outpost_north_camp_outpost_bed_generator : "{A8568D2A6C46B864}
    m_iPriority 1
   }
  }
- coords 7730.4 9.186 8335.7
+ coords 7652.4 15.861 8393.7
 }
 GenericEntity Fit_outpost_north_camp_outpost_bed_fire : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
  components {
@@ -193,7 +204,7 @@ GenericEntity Fit_outpost_north_camp_outpost_bed_fire : "{A8568D2A6C46B864}Prefa
    m_iPriority 1
   }
  }
- coords 7739.48 7.815 8337.2
+ coords 7661.48 16.036 8395.2
 }
 GenericEntity Fit_outpost_north_camp_outpost_bed_radio : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
  components {
@@ -206,7 +217,7 @@ GenericEntity Fit_outpost_north_camp_outpost_bed_radio : "{A8568D2A6C46B864}Pref
    m_iPriority 1
   }
  }
- coords 7735.4 7.634 8344.6
+ coords 7657.4 15.766 8402.6
 }
 GenericEntity Fit_outpost_north_camp_outpost_bed_wind : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
  components {
@@ -219,5 +230,5 @@ GenericEntity Fit_outpost_north_camp_outpost_bed_wind : "{A8568D2A6C46B864}Prefa
    m_iPriority 1
   }
  }
- coords 7739 7.719 8339
+ coords 7661 16 8397
 }

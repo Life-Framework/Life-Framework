@@ -258,13 +258,13 @@
  "outpost": {
   "site": {
    "name": "Schooner's End camp",
-   "note": "A pine-ringed meadow on the shore of the north-east bulge, 232 m NW of the cove the map calls Schooner's End. Survey picture: img/overview-top.jpg",
+   "note": "A pine-ringed plateau (free plot p1) above the meadow on the shore of the north-east bulge, near the cove the map calls Schooner's End. The camp first stood on the meadow (plot p3) and moved up here on 2026-11-24 because the meadow falls 8 m to the sea. Survey picture: img/overview-top.jpg",
    "centre": {
-    "x": 7728,
-    "z": 8368
+    "x": 7661,
+    "z": 8395
    },
-   "distanceFromSaintPhilippeKm": 4.01,
-   "minimumKm": 4,
+   "distanceFromSaintPhilippeKm": 3.94,
+   "minimumKm": 3.9,
    "directionFromSaintPhilippe": "ENE",
    "nearestMappedRoad": {
     "id": "r02",
@@ -278,66 +278,66 @@
   },
   "bounds": {
    "kind": "rect",
-   "minX": 7698,
-   "maxX": 7758,
-   "minZ": 8338,
-   "maxZ": 8398,
-   "note": "the meadow floor; pines to the west and south, the beach to the east"
+   "minX": 7651,
+   "maxX": 7671,
+   "minZ": 8388,
+   "maxZ": 8405,
+   "note": "the fitted camp on plot p1; pines all round the plateau"
   },
   "safeZone": {
-   "x": 7728,
-   "z": 8368,
+   "x": 7661,
+   "z": 8395,
    "radius": 60,
-   "note": "matches the LF_Outposts.conf default; its east third is beach and sea"
+   "note": "the outpost-site row of the fitted layer; the LF_Outposts.conf default radius"
   },
   "gate": {
-   "x": 7700,
-   "z": 8340,
+   "x": 7660.5,
+   "z": 8388.7,
    "facing": "S",
-   "approach": "from the south along the free strip p2 (x 7688, z 8237 to 8355) through the pines",
+   "approach": "from the south: the free strip p2 (x 7688, z 8237 to 8355), then across the south half of p1",
    "guardPosts": [
     [
-     7694,
-     8336
+     7654.8,
+     8390.7
     ],
     [
-     7706,
-     8336
+     7665,
+     8390.7
     ]
    ]
   },
   "quartermaster": {
-   "x": 7738,
-   "z": 8372,
-   "faces": "W",
-   "note": "the table and crate stand under canvas on the beach side, 40 m in from the gate, so a stranger walks past the guards and the chalk board to reach him"
+   "x": 7657.9,
+   "z": 8399.2,
+   "faces": "S",
+   "note": "before the FIA tent by the table and the pallets; a stranger walks past the guards and the chalk board to reach him"
   },
   "slots": {
    "chalkBoard": [
-    7704,
-    8346
+    7656.8,
+    8392.6
    ],
    "contrabandBuyer": [
-    7742,
-    8352
+    7665.4,
+    8397.7
    ],
    "mechanicCanopy": [
-    7716,
-    8392
+    7666,
+    8402.7
    ],
    "campfire": [
-    7724,
-    8364
+    7661.5,
+    8395.6
    ],
    "mast": [
-    7712,
-    8394
+    7670.5,
+    8404.7
    ],
    "flagPole": [
-    7752,
-    8380
+    7651.3,
+    8404.7
    ]
   },
-  "verified": "Centre, plots, terrain, water and the picture are from the scout dump. The gate, post, quartermaster and slot spots are read off the overhead picture and the free plots and are first values: the dressing card (O9) seats them with `town fit --terrain`."
+  "verified": "Centre, plots, terrain, water and the picture are from the scout dump. The part spots are read back from the fitted layer Place_outpost-north_camp.layer (2026-11-24)."
  }
 }
