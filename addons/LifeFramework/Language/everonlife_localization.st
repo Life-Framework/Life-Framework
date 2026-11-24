@@ -18158,6 +18158,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You walked away from the truck. Check failed. Retake in about %1 minutes."
      Comment "Toast: 300 m from the lent truck. %1 = retake wait in in-game minutes."
     }
+    CustomStringTableItem "{B23BECAA67E06B1C}" {
+     Id "LF-TruckCheck_FailedCourse"
+     Target_en_us "Wrong gate. Check failed. Retake in about %1 minutes."
+     Comment "Toast: the truck drove through a gate out of order. %1 = retake wait in in-game minutes."
+    }
     CustomStringTableItem "{D6AC02B80EEAA64F}" {
      Id "LF-TruckCheck_FailedLeft"
      Target_en_us "You left the truck too long. Check failed. Retake in about %1 minutes."
@@ -18168,6 +18173,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The truck is wrecked. Check failed. Retake in about %1 minutes."
      Comment "Toast: the lent truck was destroyed or is gone. %1 = retake wait in in-game minutes."
     }
+    CustomStringTableItem "{44D0650A3100C463}" {
+     Id "LF-TruckCheck_Gate"
+     Target_en_us "Gate %1 of 4. Drive on to the next one."
+     Comment "Toast: the lent truck cleared a gate in order. %1 = the gate number, 1 to 4."
+    }
     CustomStringTableItem "{13750B36D26E7656}" {
      Id "LF-TruckCheck_Held"
      Target_en_us "You already hold the truck license."
@@ -18177,6 +18187,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-TruckCheck_NoCash"
      Target_en_us "The truck check costs {currency:sym}%1. Bring the cash."
      Comment "Examiner: the player carries less than the fee. %1 = the fee."
+    }
+    CustomStringTableItem "{EAF52394C7253DE0}" {
+     Id "LF-TruckCheck_Passed"
+     Target_en_us "You passed the truck check. The truck license is yours."
+     Comment "Toast: the fourth gate was cleared; the truck license is granted."
     }
     CustomStringTableItem "{380BE3A3C6FE2658}" {
      Id "LF-TruckCheck_RetakeWait"
