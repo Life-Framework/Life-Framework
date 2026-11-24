@@ -281,3 +281,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_wanted_board : "{3F233EFE851C
  coords 4548.817 19.35 10751.407
  angleY -99
 }
+GenericEntity Fit_saint_philippe_police_police_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4549.402 20.9 10749.311
+ angleY 171
+}
