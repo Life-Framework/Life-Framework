@@ -17,14 +17,19 @@ import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 // There is no checkpoint save yet (the X cards cut one); the hour-3 state is `resetplayer`, `levelset LUMBERJACK` and `time`.
 // Each step is PASS or FAIL with the server line it read.
 const TILL = "Fit_saint_philippe_hardware_hardware_miners_till";
-const SHOP = "Fit_saint_philippe_hardware_hardware_shop_till";
 const DESK = "Fit_saint_philippe_woodlot_desk";
 const SAW = "Fit_saint_philippe_woodlot_saw";
+const BUYER = "Fit_saint_philippe_merchant_timber_timber_buyer";
+// Walking speeds the harness teleports past, for the walk-adjusted figure (metres per second): a jog, and a jog under a shoulder log (cap 0.7).
+const JOG_MPS = 4.5;
+const LOADED_MPS = 4.5 * 0.7;
 const AXE_PRICE = 600;
 const CHECKPOINT_CASH = 700;
 const CHECKPOINT_LEVEL = Number(process.env.CHECKPOINT_LEVEL ?? "3");
 const SAW_CHOICE = process.env.SAW_CHOICE ?? "LF_ProcessAction";
 const FELL_TRIES = 4;
+// The nearest softwood is a pine about 200 m from the woodlot (the stand beside it is birch, a hardwood): WOOD=hardwood plays the birch.
+const WOOD = process.env.WOOD ?? "softwood";
 
 const root = dirname(fileURLToPath(import.meta.url));
 
@@ -138,7 +143,7 @@ async function run(args) {
   step("1 the Standard axe is bought at the miners' till", open.status === "ok" && cash0 - cash1 === AXE_PRICE && carried("LF_Tool_Axe_Standard") > 0, `till ${open.status}, cash $${cash0} -> $${cash1}`);
 
   // 2. The real hold on a softwood at the woodlot.
-  const found = on({ verb: "treefall", words: ["find", "120"] }, 20000);
+  const found = on({ verb: "treefall", words: ["find", "300", WOOD] }, 20000);
   const m = /pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(found.detail));
   step("2a a standing tree is found for the felling hold", found.status === "ok" && !!m, String(found.detail).slice(0, 120));
   if (!m) return finish(results);
@@ -162,6 +167,9 @@ async function run(args) {
     aim = on({ verb: "fellhold", words: ["aim"] });
   }
   step("2c the felling prompt is on the tree: the row reads Fell tree, shown and performable", aim.status === "ok" && /label=Fell tree/.test(aim.detail) && /shown=1 perform=1/.test(aim.detail), aim.detail);
+  // The picture of the row a player sees with the axe drawn (a HUD widget: a session shot, not a look). LUMBER_STOP=2c ends the run here.
+  on({ verb: "capture", mode: "ui", name: "lumber_arc_fell_prompt" }, 25000);
+  if (process.env.LUMBER_STOP === "2c") return finish(results);
   const chop = Number(/\((\d+) s\)/.exec(String(aim.detail))?.[1] ?? 0);
   const fellStart = Date.now();
   // The hold lasts the chop seconds on a player's screen; the harness waits them out, then completes it.
@@ -174,47 +182,110 @@ async function run(args) {
   }
   step("2d the hold fells the tree (the server runs TryFell)", hold.status === "ok" && !!felled, felled ? `${felled.key} (${felled.logs} logs, ${felled.wood})` : `no \`Lumber] felled\` line; hold ${hold.status} ${hold.detail}`);
   if (!felled) return finish(results);
-  step("2e a softwood", felled.wood === "SOFTWOOD", felled.wood);
+  step(`2e a ${WOOD}`, felled.wood === WOOD.toUpperCase(), felled.wood);
 
-  // 3. The logs to the sawmill.
-  let logs = 0;
-  for (let i = 0; i < 6 && logs < felled.logs; i++) {
-    wait(2500);
-    on({ verb: "pickup", item: "WoodLog" }, 15000);
-    wait(900);
-    logs = carried("WoodLog");
+  // 3. The logs to the sawmill. A log is a shoulder load (LF_ShoulderHoistAction, one at a time, speed 0.7), not a pack item:
+  // the vanilla pickup refuses it. The sawmill takes the shoulder log; its planks drop at the saw.
+  const feetAt = () => {
+    const p = /pos=(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/.exec(String(on({ verb: "state" }).detail));
+    return p ? [Number(p[1]), Number(p[3])] : [0, 0];
+  };
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  wait(6000);
+  let sawnPlanks = 0;
+  let hoisted = 0;
+  let walkM = 0;
+  let loadedM = 0;
+  let here = feetAt();
+  for (let trip = 0; trip < felled.logs; trip++) {
+    let got = false;
+    if (trip > 0) {
+      // Back to the fall line from the saw (on foot, unloaded): the logs lie within a few metres of the stump.
+      on({ verb: "capture", mode: "world", name: "lumber_arc_stump", x: tx, y: ty, z: tz, ox: -3, oy: 1.6, oz: 0, hour: 9 }, 30000);
+      wait(1500);
+      const back = feetAt();
+      walkM += dist(here, back);
+      here = back;
+    }
+    for (let i = 0; i < 6 && !got; i++) {
+      const lg = on({ verb: "treefall", words: ["logs", "40"] }, 15000);
+      const lm = /pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(lg.detail));
+      if (!lm) {
+        wait(2500);
+        continue;
+      }
+      on({ verb: "capture", mode: "world", name: "lumber_arc_log", x: Number(lm[1]), y: Number(lm[2]), z: Number(lm[3]), ox: -0.8, oy: 0, oz: 0, hour: 9 }, 30000);
+      wait(1500);
+      const to = feetAt();
+      walkM += dist(here, to);
+      here = to;
+      const hoist = on({ verb: "use", className: "LF_ShoulderHoistAction" }, 15000);
+      wait(1500);
+      got = hoist.status === "ok" && carried("WoodLog") > 0;
+    }
+    if (got) hoisted++;
+    on({ verb: "stand", entityName: SAW });
+    wait(2000);
+    const to = feetAt();
+    loadedM += dist(here, to);
+    here = to;
+    const sawMark = serverLog().length;
+    const saw = on({ verb: "use", className: SAW_CHOICE, entityName: SAW });
+    wait(1500);
+    let sawn = "";
+    for (let i = 0; i < 40 && !sawn; i++) {
+      sawn = /\[LFDebug:Processing\] processed [^\n]*WoodPlank\.et x(\d+)[^\n]*/.exec(serverLog().slice(sawMark))?.[0] ?? "";
+      if (!sawn) wait(1000);
+    }
+    sawnPlanks += Number(/WoodPlank\.et x(\d+)/.exec(sawn)?.[1] ?? 0);
+    if (trip === 0) {
+      step("3a the first log is hoisted from the fall line", got, `hoisted ${hoisted}`);
+      step("3b the sawmill takes the shoulder log", saw.status === "ok", `${saw.status} ${saw.detail}`);
+      step("3c the sawmill's run ends with its output line", !!sawn, sawn.slice(0, 160) || "no Processing output line");
+    }
   }
-  step("3a the logs are picked up", logs >= 1, `carried WoodLog=${logs} of ${felled.logs}`);
-  on({ verb: "stand", entityName: SAW });
-  wait(2000);
-  const sawMark = serverLog().length;
-  const saw = on({ verb: "use", className: SAW_CHOICE, entityName: SAW });
-  wait(1500);
-  step("3b the sawmill takes a log", saw.status === "ok", `${saw.status} ${saw.detail}`);
-  let sawn = "";
-  for (let i = 0; i < 40 && !sawn; i++) {
-    sawn = /\[LFDebug:Processing\][^\n]*(?:output|produced|dropped)[^\n]*/i.exec(serverLog().slice(sawMark))?.[0] ?? "";
-    if (!sawn) wait(3000);
-  }
-  step("3c the sawmill's run ends with its output line", !!sawn, sawn.slice(0, 160) || "no Processing output line");
+  // The planks drop at the saw. A plank is a hand-carry item (HandCarryItem_Base): one in the hands at a time, so the hand-haul
+  // loop is one plank per trip to the buyer. Carry each sawn plank over and sell it there (the hardware buyer's premium row).
   let planks = 0;
-  for (let i = 0; i < 4 && planks < 1; i++) {
-    on({ verb: "pickup", item: "WoodPlank" }, 15000);
-    wait(900);
-    planks = carried("WoodPlank");
+  let earned = 0;
+  let sold = 0;
+  let cashBefore = cash();
+  let buyerTrips = 0;
+  for (let k = 0; k < sawnPlanks; k++) {
+    if (k > 0) {
+      on({ verb: "stand", entityName: SAW });
+      wait(1500);
+      const back = feetAt();
+      walkM += dist(here, back);
+      here = back;
+    }
+    let carriedNow = 0;
+    for (let i = 0; i < 3 && carriedNow < 1; i++) {
+      on({ verb: "pickup", item: "WoodPlank" }, 15000);
+      wait(900);
+      carriedNow = carried("WoodPlank");
+    }
+    if (carriedNow < 1) break;
+    planks++;
+    on({ verb: "stand", entityName: BUYER });
+    wait(1500);
+    const buyerAt = feetAt();
+    walkM += dist(here, buyerAt);
+    here = buyerAt;
+    buyerTrips++;
+    const before = cash();
+    const sell = on({ verb: "use", className: "LF_TraderSellAction", entityName: BUYER });
+    wait(2000);
+    const gain = cash() - before;
+    if (sell.status === "ok" && gain > 0) {
+      earned += gain;
+      sold++;
+    }
   }
-  step("3d the planks are picked up", planks >= 1, `carried WoodPlank=${planks}`);
+  step("3d each sawn plank is carried to the buyer", planks >= 1 && planks === sawnPlanks, `carried ${planks} of ${sawnPlanks} sawn, one per trip (a hand-carry item)`);
+  // 4. The sale at the timber buyer (the hardware buyer row: the premium price, a demand cap that refills).
+  step("4 the planks are sold at the timber buyer", sold >= 1 && sold === planks, `${sold} sold, cash $${cashBefore} -> $${cash()} (+$${earned}) over ${buyerTrips} trip(s)`);
 
-  // 4. The sale at the hardware store.
-  on({ verb: "stand", entityName: SHOP });
-  wait(2000);
-  const cashBefore = cash();
-  console.log(String(on({ verb: "look" }).detail ?? "").slice(0, 400));
-  const sell = on({ verb: "use", className: "LF_TraderSellAction", entityName: SHOP });
-  wait(2500);
-  const cashAfter = cash();
-  const earned = cashAfter - cashBefore;
-  step("4 the planks are sold at the hardware store", sell.status === "ok" && earned > 0, `${sell.status} ${sell.detail}; cash $${cashBefore} -> $${cashAfter} (+$${earned})`);
 
   // 5. Minutes and dollars.
   const arcMin = minutes(arcStart);
@@ -226,10 +297,15 @@ async function run(args) {
     console.log(`economy: ${e.message.split("\n")[0]}`);
   }
   const perHour = dollarsPerHour(earned, loopMin);
-  console.log(`ARC  whole arc ${arcMin.toFixed(1)} min wall clock (axe shopping included); fell, haul, saw and sell ${loopMin.toFixed(1)} min`);
-  console.log(`ARC  axe -$${AXE_PRICE}; planks sold +$${earned} from ${felled.logs} log(s); measured $${perHour}/h over the loop, $${dollarsPerHour(earned - AXE_PRICE, arcMin)}/h over the arc with the axe`);
-  console.log(`ARC  tools\\cli economy hand-haul planks: ${econ ? `steady $${econ.steady}/h, first hour $${econ.first}/h` : "row not read"} (one tree is one cycle: the measured figure carries the purse refill only)`);
-  step("5 the arc's minutes and dollars are measured", earned > 0 && loopMin > 0, `${loopMin.toFixed(1)} min, +$${earned}, $${perHour}/h`);
+  // The harness teleports between the tree, the saw and the buyer; add the walk a player makes (straight lines, so a floor).
+  const walkMin = (walkM / JOG_MPS + loadedM / LOADED_MPS) / 60;
+  const adjMin = loopMin + walkMin;
+  const adjPerHour = dollarsPerHour(earned, adjMin);
+  console.log(`ARC  whole arc ${arcMin.toFixed(1)} min wall clock (axe shopping included); fell, haul, saw and sell ${loopMin.toFixed(1)} min with teleports`);
+  console.log(`ARC  walk a player makes: ${Math.round(walkM)} m on foot + ${Math.round(loadedM)} m under a log = ${walkMin.toFixed(1)} min; loop with the walk ${adjMin.toFixed(1)} min`);
+  console.log(`ARC  axe -$${AXE_PRICE}; ${sold} plank(s) sold +${earned} from ${felled.logs} log(s) (${hoisted} hoisted, ${sawnPlanks} sawn, ${buyerTrips} trips to the buyer); measured $${perHour}/h over the loop, $${adjPerHour}/h with the walk, $${dollarsPerHour(earned - AXE_PRICE, arcMin)}/h over the arc with the axe`);
+  console.log(`ARC  tools\cli economy hand-haul planks: ${econ ? `steady $${econ.steady}/h, first hour $${econ.first}/h` : "row not read"} (one tree is one cycle: the measured figure carries the purse refill only)`);
+  step("5 the arc's minutes and dollars are measured", earned > 0 && loopMin > 0, `${adjMin.toFixed(1)} min with the walk, +$${earned}, $${adjPerHour}/h`);
   return finish(results);
 }
 
