@@ -66,6 +66,32 @@
       "floor": "f0"
     },
     {
+      "id": "mine-ore-1",
+      "name": "Mine_Ore_1",
+      "prefab": "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -4.5,
+        0,
+        6.6
+      ],
+      "yaw": 110,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6",
+            "m_sNodeId": "\"iron-rich\""
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
       "id": "mine-ore-2",
       "name": "Mine_Ore_2",
       "prefab": "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et",
@@ -84,7 +110,8 @@
         {
           "component": "LF_OreNodeComponent",
           "set": {
-            "m_fBaseScale": "1.6"
+            "m_fBaseScale": "1.6",
+            "m_sNodeId": "\"iron-rich\""
           },
           "blocks": []
         }
@@ -109,7 +136,34 @@
         {
           "component": "LF_OreNodeComponent",
           "set": {
-            "m_fBaseScale": "1.6"
+            "m_fBaseScale": "1.6",
+            "m_sNodeId": "\"iron-rich\""
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "mine-ore-4",
+      "name": "Mine_Ore_4",
+      "prefab": "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        5.8,
+        0,
+        6
+      ],
+      "yaw": -20,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6",
+            "m_sNodeId": "\"iron-rich\""
           },
           "blocks": []
         }
@@ -134,7 +188,8 @@
         {
           "component": "LF_OreNodeComponent",
           "set": {
-            "m_fBaseScale": "1.6"
+            "m_fBaseScale": "1.6",
+            "m_sNodeId": "\"iron-rich\""
           },
           "blocks": []
         }
@@ -159,7 +214,8 @@
         {
           "component": "LF_OreNodeComponent",
           "set": {
-            "m_fBaseScale": "1.6"
+            "m_fBaseScale": "1.6",
+            "m_sNodeId": "\"iron-rich\""
           },
           "blocks": []
         }
