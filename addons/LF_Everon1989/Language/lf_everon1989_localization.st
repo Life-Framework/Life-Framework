@@ -6364,6 +6364,21 @@ StringTable {
      Target_en_us "Calls waiting for this service, newest first."
      Comment "Dispatch board sign card: what it is."
     }
+    CustomStringTableItem "{8A3D51F7C20E64B9}" {
+     Id "LF-Sign_EastRiseSeam_How"
+     Target_en_us "Swing a pickaxe at the black coal rocks (not the grey granite) and pick up the coal lumps. The dock's coal freighter takes coal on export orders."
+     Comment "Sign card for the East Rise coal seam plate, How section."
+    }
+    CustomStringTableItem "{16C7E2B04D9A8F53}" {
+     Id "LF-Sign_EastRiseSeam_Title"
+     Target_en_us "East Rise coal seam"
+     Comment "Title of the pole plate at the coal seam on the East Rise ridge (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: East Rise coal seam."
+    }
+    CustomStringTableItem "{C95B0A3E71D2F648}" {
+     Id "LF-Sign_EastRiseSeam_What"
+     Target_en_us "An open seam in the ridge with coal rocks along its foot. Nobody is on shift here: bring your own pickaxe."
+     Comment "Sign card for the East Rise coal seam plate, What section."
+    }
     CustomStringTableItem "{F962FB99DD0ED9A6}" {
      Id "LF-Sign_EveronSawmill_How"
      Target_en_us "*Saw logs into planks* or *Saw hardwood into boards* at a saw in the hall"

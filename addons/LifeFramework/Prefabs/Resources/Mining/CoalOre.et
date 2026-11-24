@@ -1,0 +1,16 @@
+GenericEntity : "{F36375B16DB07ABD}Prefabs/Resources/Mining/MinableOre.et" {
+ ID "43C69E556F8579D3"
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_sNodeId "coal"
+  }
+  MeshObject "{59F0709385A10D16}" {
+   Materials {
+    MaterialAssignClass "{2AD98F6421BEA8B7}" {
+     SourceMaterial "Common/Materials/Physics/stone"
+     AssignedMaterial "{4B5E29C38517BC58}Assets/Resources/Mining/OreVein/Data/OreVein_Coal.emat"
+    }
+   }
+  }
+ }
+}
