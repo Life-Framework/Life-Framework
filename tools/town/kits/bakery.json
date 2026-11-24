@@ -198,6 +198,321 @@
       "attach": "counter:bakery-counter-1"
     },
     {
+      "id": "bakery-counter-loaf-3",
+      "name": "Bakery_counter_loaf_3",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-counter-1",
+      "offset": [
+        -5.1,
+        1.272,
+        3.15
+      ],
+      "yaw": 6,
+      "floor": "f0",
+      "attach": "counter:bakery-counter-1"
+    },
+    {
+      "id": "bakery-counter-loaf-4",
+      "name": "Bakery_counter_loaf_4",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-counter-1",
+      "offset": [
+        -4.8,
+        1.272,
+        3.15
+      ],
+      "yaw": -14,
+      "floor": "f0",
+      "attach": "counter:bakery-counter-1"
+    },
+    {
+      "id": "bakery-counter-loaf-5",
+      "name": "Bakery_counter_loaf_5",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-counter-1",
+      "offset": [
+        -4.5,
+        1.272,
+        3.15
+      ],
+      "yaw": 22,
+      "floor": "f0",
+      "attach": "counter:bakery-counter-1"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b000",
+      "name": "Bakery_rack_3_loaf_b000",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.44,
+        0.794,
+        0.34
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b001",
+      "name": "Bakery_rack_3_loaf_b001",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.44,
+        0.794,
+        0.72
+      ],
+      "yaw": 82,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b002",
+      "name": "Bakery_rack_3_loaf_b002",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.44,
+        0.794,
+        1.1
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b010",
+      "name": "Bakery_rack_3_loaf_b010",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.22,
+        0.794,
+        0.34
+      ],
+      "yaw": 82,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b011",
+      "name": "Bakery_rack_3_loaf_b011",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.22,
+        0.794,
+        0.72
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b012",
+      "name": "Bakery_rack_3_loaf_b012",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.22,
+        0.794,
+        1.1
+      ],
+      "yaw": 82,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b100",
+      "name": "Bakery_rack_3_loaf_b100",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.44,
+        1.78,
+        0.34
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b101",
+      "name": "Bakery_rack_3_loaf_b101",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.44,
+        1.78,
+        0.72
+      ],
+      "yaw": 82,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b102",
+      "name": "Bakery_rack_3_loaf_b102",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.44,
+        1.78,
+        1.1
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b110",
+      "name": "Bakery_rack_3_loaf_b110",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.22,
+        1.78,
+        0.34
+      ],
+      "yaw": 82,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b111",
+      "name": "Bakery_rack_3_loaf_b111",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.22,
+        1.78,
+        0.72
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-b112",
+      "name": "Bakery_rack_3_loaf_b112",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.22,
+        1.78,
+        1.1
+      ],
+      "yaw": 82,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-top-0",
+      "name": "Bakery_rack_3_top_0",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.33,
+        2.273,
+        0.34
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-top-1",
+      "name": "Bakery_rack_3_top_1",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.33,
+        2.273,
+        0.72
+      ],
+      "yaw": 82,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-top-2",
+      "name": "Bakery_rack_3_top_2",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.33,
+        2.273,
+        1.1
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-low-0",
+      "name": "Bakery_rack_3_low_0",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.33,
+        0.318,
+        0.34
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-low-1",
+      "name": "Bakery_rack_3_low_1",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.33,
+        0.318,
+        0.72
+      ],
+      "yaw": 82,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-low-2",
+      "name": "Bakery_rack_3_low_2",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.33,
+        0.318,
+        1.1
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
       "id": "bakery-fascia",
       "name": "Bakery_fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
