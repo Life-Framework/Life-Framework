@@ -9,7 +9,7 @@ GenericEntity Smelter_Furnace : "{CBFF9864374D9542}Prefabs/Processor/LF_IronSmel
  coords -3.5 0 11.5
  angleY 0
 }
-GenericEntity Smelter_CoalHeap : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+GenericEntity Smelter_CoalHeap : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et" {
  coords -11 0.082 12
  angleY 90
 }

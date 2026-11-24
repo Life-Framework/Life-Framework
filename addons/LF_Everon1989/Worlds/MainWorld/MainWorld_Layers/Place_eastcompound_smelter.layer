@@ -22,7 +22,7 @@ GenericEntity Fit_eastcompound_smelter_smelter_furnace : "{CBFF9864374D9542}Pref
  coords 6442.481 162.195 6489.772
  angleY -21
 }
-GenericEntity Fit_eastcompound_smelter_smelter_coal_heap : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+GenericEntity Fit_eastcompound_smelter_smelter_coal_heap : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et" {
  coords 6435.3 162.149 6487.551
  angleY 69
 }
