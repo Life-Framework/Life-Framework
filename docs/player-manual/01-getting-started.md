@@ -41,6 +41,9 @@ Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It
   end and read **Done**. Pick one and press **Start**: a few short steps follow, each with a waypoint on your screen, a
   mark on your map and a one-line note. A step you have already done is skipped (you hold the job, you carry the tool).
   **Resume** on a started one puts the waypoint and the note back on its step.
+  Four more rows point you at a place on the island: **Found a crew** (the registry cabin in Saint-Philippe), **Truck check**
+  (the examiner at the truck yard in the north-east, $300), **Pick a perk** (the counter at the labor office in the town hall)
+  and **A rumor of easy money** (the fence's yard). **Start** puts the waypoint on the place.
 * **Gang** (only if you are in a gang): your crew at a glance, read only. The gang's name and flag, your rank, which
   members are online, whether a radio you carry is on the gang channel, and the sites the gang holds. It shows only your
   own gang. Nothing on it is a standing number; gang standing is never shown as a figure.

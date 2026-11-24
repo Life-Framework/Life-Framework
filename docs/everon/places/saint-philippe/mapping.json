@@ -706,6 +706,16 @@
         "Card #4391 (from the 0.2.1 market fixes, PR #4390): the vanilla base-map signs, murals and graffiti in Czech or Russian (DOMACI POTREBY, NEPTUN, Nedej se, Drogerie, Pohona, Sputnik and the like) break the US English rule. This slot owns the boxed hides (LF_BaseWorldClearComponent, one carrier per wall) that remove them and the US English fascia that replaces the household-wares shop sign",
         "the drops are the buildings the props hang on or stand beside; the 80 m margin reaches the outskirts murals and graffiti"
       ]
+    },
+    "road-signs": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b126" },
+        { "place": "saint-philippe-districts", "building": "b46" },
+        { "place": "stillbarn", "building": "b03" }
+      ],
+      "why": [
+        "Card #4707: the green road signs on the verges, not in a plot or a building. Each drop is the nearest surveyed building to one sign, so the 40 m margin keeps every sign within reach of a building that exists: the south entry on r37 (b126, 38 m), the east entry on r06 (districts b46, 13 m) and the Stillbarn T (stillbarn b03, 23 m; the junction sign stands on the road, the barn is the only survey beside it)"
+      ]
     }
   }
 }

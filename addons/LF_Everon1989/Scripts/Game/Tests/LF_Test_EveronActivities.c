@@ -1,6 +1,6 @@
 // red-proof: 2026-11-22 `tools/cli.mjs test --no-build --red LF_Test_NextActivities,LF_Test_NextActivitiesWorld,LF_Test_EveronActivities`: RED-OK everon/activities (fails with the hook on: RedProof() skips loading the table).
 //! everon/activities: under the Everon 1989 header (the pack leg) the "What to do next" table is the pack's: the
-//! seven activities load in order, every one stands (LF_ActivityConfig.Problem), every step names a target, every
+//! seven activities (and the four island starters, #4709) load in order, every one stands (LF_ActivityConfig.Problem), every step names a target, every
 //! item a check or an objective names loads, and the mining starter is the maintainer's route: miner job, pickaxe,
 //! car, the mine, ore, smelt, sell. Its quests are registered with the quest manager, and a new civilian is offered
 //! the five civilian activities but not police or medic duty.
@@ -50,7 +50,7 @@ class LF_Test_EveronActivities : LF_Test
 			}
 		}
 
-		ctx.EqualStr("mining,postal,lumber,fishing,apples,police,medic", ids, "the pack lists its seven activities in order");
+		ctx.EqualStr("mining,postal,lumber,fishing,apples,police,medic,crew,truckcheck,perkpick,rumor", ids, "the pack lists its seven activities in order, then the four island starters (#4709)");
 
 		LF_ActivityDef mining = config.Find("mining");
 		ctx.NotNull(mining, "mining is listed");
@@ -76,6 +76,6 @@ class LF_Test_EveronActivities : LF_Test
 
 		array<LF_ActivityDef> listed = {};
 		LF_ActivityRules.Listed(config.m_aActivities, new LF_ActivityFacts(), listed);
-		ctx.Equal(5, listed.Count(), "a new civilian is offered the five civilian activities, not police or medic duty");
+		ctx.Equal(9, listed.Count(), "a new civilian is offered the five civilian activities and the four island starters, not police or medic duty");
 	}
 }

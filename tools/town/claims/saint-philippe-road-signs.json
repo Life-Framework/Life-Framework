@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "road-signs",
+  "kit": "road-signs",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_road-signs.layer",
+  "drops": [
+    { "place": "saint-philippe", "building": "b126" },
+    { "place": "saint-philippe-districts", "building": "b46" },
+    { "place": "stillbarn", "building": "b03" }
+  ],
+  "kinds": [],
+  "rows": 3,
+  "date": "2026-11-24"
+}
