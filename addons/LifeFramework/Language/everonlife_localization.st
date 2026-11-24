@@ -18058,6 +18058,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take the truck check ({currency:sym}300)"
      Comment "Action on the examiner: pay the fee and take the lent truck for the licence check (#4696)."
     }
+    CustomStringTableItem "{F0C30EB379F299C1}" {
+     Id "LF-TruckCheck_ActionPlain"
+     Target_en_us "Take the truck check"
+     Comment "Prefab name of the examiner action; the script shows LF-TruckCheck_Action with the fee (#4696)."
+    }
     CustomStringTableItem "{AFE6468581F2B50C}" {
      Id "LF-TruckCheck_FailedAway"
      Target_en_us "You walked away from the truck. Check failed. Retake in about %1 minutes."
