@@ -1,0 +1,17 @@
+{
+  "section": "shiftboard",
+  "class": "LF_ShiftBoardSavePayload",
+  "version": 1,
+  "roots": "LF_ShiftBoardRow",
+  "records": {
+    "LF_ShiftBoardRow": {
+      "fields": [
+        "string m_sSite",
+        "string m_sPlayerUid",
+        "string m_sName",
+        "string m_sJob",
+        "int m_iXp"
+      ]
+    }
+  }
+}
