@@ -137,14 +137,38 @@ class LF_CasualtyTreat
 		}
 
 		LF_Utils.NotifyEntity(medic, "#LF-CasualtyTreat_Done", "", 4.0);
-		if (GetGame() && GetGame().GetCallqueue())
-		{
-			if (!s_aLeaving)
-				s_aLeaving = {};
-			s_aLeaving.Insert(body.GetID());
-			GetGame().GetCallqueue().CallLater(Leave, LEAVE_MS, false);
-		}
+		QueueLeave(body);
 		return LF_EReviveRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a casualty a medic put in a clinic bed (#4849): the call is done like a treat. The call leaves
+	//! the open list and the board and the dispatch mark go (LF_OnServiceCallClosed), and the woken resident
+	//! leaves later like a treated one. The $15 delivery bonus is the bed's own (LF_OnPatientDelivered);
+	//! nothing is paid here. \return True when `body` was an open casualty.
+	static bool CloseDelivered(IEntity body)
+	{
+		LF_Casualty casualty = Find(body);
+		if (!casualty)
+			return false;
+
+		Close(casualty);
+		QueueLeave(body);
+		LF_Debug.Info(FEATURE, string.Format("casualty %1 put in a bed; call closed", casualty.m_sCallerUid));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the woken resident walks off LEAVE_MS from now.
+	protected static void QueueLeave(IEntity body)
+	{
+		if (!body || !GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		if (!s_aLeaving)
+			s_aLeaving = {};
+		s_aLeaving.Insert(body.GetID());
+		GetGame().GetCallqueue().CallLater(Leave, LEAVE_MS, false);
 	}
 
 	//------------------------------------------------------------------------------------------------

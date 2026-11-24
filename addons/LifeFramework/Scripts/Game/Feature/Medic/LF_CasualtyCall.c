@@ -31,6 +31,8 @@ class LF_CasualtyCalls
 	static const int CHECK_MS = 10000; // lf-fixed: poll rate of the roll check; the roll interval is m_iIntervalSeconds
 	//! How long clearing waits again while a medic is moving the patient.
 	static const int DEFER_MS = 60000; // lf-fixed: retry while a body is moved, not a game rule
+	//! Row-and-place picks tried before a roll gives up for lack of clear ground (#4863).
+	static const int PICKS = 3; // lf-fixed: search effort, not a game rule
 
 	protected static ref array<ref LF_Casualty> s_aOpen;
 	protected static int s_iSequence;
@@ -143,18 +145,33 @@ class LF_CasualtyCalls
 	//! Server: pick a row and a place, spawn the casualty and place the call. \return The casualty, or null.
 	protected static LF_Casualty Raise(notnull LF_CasualtyCallConfig config, int nowMs, array<ref LF_ServiceCandidate> players, string kind)
 	{
+		// A row and place whose surroundings hold no clear ground are skipped for another pick (#4863).
 		IEntity place;
-		LF_CasualtyCallRow row = PickRow(config.m_aRows, kind, place);
-		if (!row)
+		LF_CasualtyCallRow row;
+		vector position;
+		string why;
+		bool found;
+		for (int pick = 0; pick < PICKS && !found; pick++)
 		{
-			LF_Debug.Warn(FEATURE, string.Format("no casualty: none of the %1 row(s) has a place in this world (kind filter %2)", config.m_aRows.Count(), kind));
-			return null;
+			row = PickRow(config.m_aRows, kind, place);
+			if (!row)
+			{
+				LF_Debug.Warn(FEATURE, string.Format("no casualty: none of the %1 row(s) has a place in this world (kind filter %2)", config.m_aRows.Count(), kind));
+				return null;
+			}
+
+			found = LF_CasualtySpot.Find(place.GetOrigin(), config.m_fSpotRadius, row.m_bBuilt, position, why);
+			if (!found)
+				LF_Debug.Warn(FEATURE, string.Format("no clear ground near the %1 place at %2 (%3)", row.m_sPlaceKind, place.GetOrigin(), why));
 		}
+
+		if (!found)
+			return null;
 
 		// The call outlives the walk to it, and the body bleeds out with it; never past the board line.
 		int expirySeconds = LF_Utils.MinInt(config.ExpirySeconds(), LF_Utils.MaxInt(LF_ServiceCallsConfig.BoardExpirySeconds(), LF_CasualtyCallConfig.MIN_EXPIRY_SECONDS));
-		vector position = Spot(place.GetOrigin(), config.m_fSpotRadius);
-		IEntity body = SpawnCasualty(config.m_sPrefab, position, expirySeconds);
+		IEntity body = SpawnCasualty(config.m_sPrefab, position, expirySeconds, row.m_sOutfit);
+
 		if (!body)
 			return null;
 
@@ -309,26 +326,8 @@ class LF_CasualtyCalls
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A ground point within radius of origin.
-	protected static vector Spot(vector origin, float radius)
-	{
-		vector spot = origin;
-		if (radius > 0)
-		{
-			float angle = Math.RandomFloat(0, Math.PI2);
-			float distance = Math.RandomFloat(radius * 0.5, radius);
-			spot[0] = origin[0] + Math.Cos(angle) * distance;
-			spot[2] = origin[2] + Math.Sin(angle) * distance;
-		}
-
-		if (GetGame() && GetGame().GetWorld())
-			spot[1] = GetGame().GetWorld().GetSurfaceY(spot[0], spot[2]);
-		return spot;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server: spawn the resident and lay them down. \return The character, or null (logged).
-	protected static IEntity SpawnCasualty(ResourceName prefab, vector position, int bleedSeconds)
+	//! Server: spawn the resident, dress them in the row's work outfit and lay them down. \return The character, or null (logged).
+	protected static IEntity SpawnCasualty(ResourceName prefab, vector position, int bleedSeconds, ResourceName outfit)
 	{
 		if (prefab.IsEmpty())
 			prefab = LF_CasualtyCallConfig.DEFAULT_PREFAB;
@@ -367,6 +366,13 @@ class LF_CasualtyCalls
 			LF_Debug.Error(FEATURE, "casualty prefab is not a character with a damage manager: " + prefab);
 			SCR_EntityHelper.DeleteEntityAndChildren(body);
 			return null;
+		}
+
+		// Dressed while they still stand: a downed body's inventory is locked.
+		if (!outfit.IsEmpty())
+		{
+			int worn = LF_NpcOutfitDresser.Dress(body, outfit);
+			LF_Debug.Info(FEATURE, string.Format("casualty dressed in %1 piece(s) of %2", worn, outfit));
 		}
 
 		damage.ForceUnconsciousness();
