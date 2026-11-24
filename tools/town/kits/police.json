@@ -213,7 +213,8 @@
       "yaw": 90,
       "wall": "+x",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "free": true
     },
     {
       "id": "police-kit-handcuffs",
@@ -458,7 +459,8 @@
       "wall": "-z",
       "floor": "f0",
       "attach": "wall",
-      "lift": 0.036
+      "lift": 0.036,
+      "free": true
     },
     {
       "id": "police-kit-decor-31",
