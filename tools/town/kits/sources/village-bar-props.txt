@@ -1,0 +1,5 @@
+Vanilla props the Chotain bar kit adds (#4902). GUIDs resolved from the game's own prefab index (tools/lib/game-prefab.mjs resolvePrefab), listed because the kit check wants every vanilla GUID in a source file.
+{8963CD1DC1CDB614}Prefabs/Props/Civilian/BeerBottle_01_brown.et
+{F401D58CD490C872}Prefabs/Props/Civilian/BeerBottle_01_slava.et
+{84BC93D7A303F53B}Prefabs/Props/Civilian/SodaBottle_01.et
+{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et
