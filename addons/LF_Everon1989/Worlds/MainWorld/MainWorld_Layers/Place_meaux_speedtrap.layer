@@ -15,3 +15,8 @@ Vehicle Fit_meaux_speedtrap_speedtrap_patrol_car : "{D1C459F87589D01D}Prefabs/Ve
 GenericEntity Fit_meaux_speedtrap_speedtrap_barrier : "{64C9C1D1C2C1B38D}Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et" {
  coords 4562.4 12.07 9400.5
 }
+StaticModelEntity Fit_meaux_speedtrap_speedtrap_gravel_1 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 4562.5 11.892 9403.3
+ angleY 90
+ scale 0.5
+}
