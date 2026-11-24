@@ -26,7 +26,7 @@ GenericEntity Fit_saint_philippe_supermarket_lf_sign_fascia : "{4697D9464B596C24
    m_vTextColor 0.96 0.93 0.82
   }
  }
- coords 4380.919 15.5 10673.454
+ coords 4381.03 15.5 10672.662
  angleY 82
 }
 GenericEntity Fit_saint_philippe_supermarket_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
@@ -36,7 +36,7 @@ GenericEntity Fit_saint_philippe_supermarket_electricity_box_small_01 : "{CDE403
    m_fReach 10
   }
  }
- coords 4380.769 15.3 10674.342
+ coords 4380.769 14.7 10674.342
  angleY 82
 }
 GenericEntity Fit_saint_philippe_supermarket_supermarket_box_safe : "{FDF16EF9B78A92F7}Prefabs/Props/Safes/LF_StoreBox.et" {
