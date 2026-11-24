@@ -7,7 +7,7 @@
   "medicRank": 0,
   "levels": {
     "MINER": 8,
-    "HAULING": 6,
+    "DELIVERY": 6,
     "FARMER": 3
   },
   "standing": {
