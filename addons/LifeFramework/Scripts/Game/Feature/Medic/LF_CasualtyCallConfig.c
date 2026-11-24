@@ -71,11 +71,60 @@ class LF_CasualtyCallConfig
 				LF_Debug.Error(LF_CasualtyCalls.FEATURE, "casualty config did not load: " + CONFIG_PATH + "; casualty calls are off");
 				s_Config = new LF_CasualtyCallConfig();
 			}
+			else
+			{
+				s_Config.ApplyLayers();
+			}
 		}
 
 		if (!s_Config.m_aRows)
 			s_Config.m_aRows = {};
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Each pack overlay (the mission header's m_aLF_ConfigOverlays, in load order) sets the fields it
+	//! writes directly over this instance, which holds the core `.conf`: a pack that writes `m_aRows`
+	//! replaces the (empty) row list whole, and one that writes `m_bEnabled 1` turns the generator on.
+	void ApplyLayers()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_CasualtyCallConfig, "casualty-calls", resources, names);
+		foreach (int i, Resource resource : resources)
+		{
+			BaseContainer root = resource.GetResource().ToBaseContainer();
+			LF_CasualtyCallConfig layer = LF_CasualtyCallConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(root));
+			if (!layer)
+			{
+				LF_Debug.Error(LF_CasualtyCalls.FEATURE, "casualty overlay did not load: " + names[i]);
+				continue;
+			}
+
+			if (root.IsVariableSetDirectly("m_bEnabled"))
+				m_bEnabled = layer.m_bEnabled;
+			if (root.IsVariableSetDirectly("m_iIntervalSeconds"))
+				m_iIntervalSeconds = layer.m_iIntervalSeconds;
+			if (root.IsVariableSetDirectly("m_iPerMedic"))
+				m_iPerMedic = layer.m_iPerMedic;
+			if (root.IsVariableSetDirectly("m_iMaxOpen"))
+				m_iMaxOpen = layer.m_iMaxOpen;
+			if (root.IsVariableSetDirectly("m_fSpotRadius"))
+				m_fSpotRadius = layer.m_fSpotRadius;
+			if (root.IsVariableSetDirectly("m_sPrefab"))
+				m_sPrefab = layer.m_sPrefab;
+			if (root.IsVariableSetDirectly("m_aRows") && layer.m_aRows)
+			{
+				m_aRows = new array<ref LF_CasualtyCallRow>();
+				foreach (LF_CasualtyCallRow layerRow : layer.m_aRows)
+					m_aRows.Insert(layerRow);
+			}
+
+			int rowCount;
+			if (m_aRows)
+				rowCount = m_aRows.Count();
+			LF_Debug.Info(LF_CasualtyCalls.FEATURE, string.Format("casualty calls: pack overlay %1 applied, %2 rows, generator %3", names[i], rowCount, m_bEnabled));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
