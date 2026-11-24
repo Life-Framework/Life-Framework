@@ -4,7 +4,7 @@ import { arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } fr
 
 // The harbour master's crates contract, end to end on the island (#3084), the way a weekend player takes it:
 //   node agent-box/session.mjs up --mission island --profile full --wait
-//   node agent-box/session.mjs harbour-crates-proof [--drop <entity name of a LF_JobDropoffAction>]
+//   node agent-box/session.mjs harbour-crates-proof [--drop <entity name of a LF_JobDropoffAction>] [--cmd-timeout ms]
 //   node agent-box/session.mjs down
 // One client: puts its own TOWN standing at 100 points (Known, tier 1) through the `repgrant` verb, talks to
 // Marcel Roux (`harbour_master` dialogue), asks about the crates, takes the contract, reads the tracker, then
@@ -17,16 +17,22 @@ const TALK = "LF_DialogueTalkAction";
 const DROP = "LF_JobDropoffAction";
 const CONTRACT = "harbour_crates";
 const BASE_PAY = 40; // LF_CivilianJob.PAY_PARCEL
+// The island's parcel drops are LF_ParcelDrop mailboxes (Place_saint-philippe_parcel-drops.layer). A run needs the
+// drop 300 m or more from where it started (LF_Jobs.conf m_fRunMinDistance); from Marcel's dock cabin the four dock
+// drops are all under 100 m, so the one that counts is this district drop, about 510 m away.
+const ISLAND_DROP = "Fit_saint_philippe_districts_parcel_drops_drop_b34";
 
 async function runHarbourCratesProof() {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
   const flag = (name, dflt) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : dflt; };
-  const dropName = flag("--drop", "");
+  const dropName = flag("--drop", ISLAND_DROP);
   const prefix = flag("--name", "harbour_crates");
+  // A loaded pool PC answers a client command in 10+ s; --cmd-timeout raises the floor of every command wait.
+  const cmdFloor = Number(flag("--cmd-timeout", "8000"));
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
-    const r = h.sendCommand(spec, timeout);
+    const r = h.sendCommand(spec, Math.max(timeout ?? 8000, cmdFloor));
     console.log(`client ${n}: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail.slice(0, 220)}`);
     return r;
   };
@@ -90,7 +96,8 @@ async function runHarbourCratesProof() {
 
   // 3. The crates reply is offered (the 2nd of work / crates / bye) and opens the offer, not the "come back later" line.
   const replies = untilChoosing("greeting");
-  step("3 the greeting offers three replies", /replies=3/.test(replies), replies, "#3054 (contract offer dialogue)");
+  // `replies` counts the work and crates rows; Goodbye is the separate always-present 0. row (LF_DialogueScene.ShowRows).
+  step("3 the greeting offers the work and crates replies (plus Goodbye)", /replies=2/.test(replies), replies, "#3054 (contract offer dialogue)");
   shot("replies");
   // The focus starts on the first reply; one Down moves it to the crates reply. The keys are spaced out: a Down
   // sent while the capture is still settling is dropped and the confirm then takes the work reply (seen once).
@@ -119,19 +126,18 @@ async function runHarbourCratesProof() {
   let text = "";
   for (let i = 0; i < 10; i++) {
     text = on(1, { verb: "ui", mode: "text" }, 10000).detail;
-    if (/Harbour crates/.test(text)) break;
+    if (/Harbou?r crates/.test(text)) break; // US English title since 2026-11-22
     wait(700);
   }
   const timeWord = /(plenty of time|time is getting on|hurry)/.exec(text);
-  step("6 the tracker shows the contract title and the time left", /Harbour crates/.test(text) && !!timeWord, timeWord ? `'${timeWord[1]}'` : `ui text: ${text.slice(0, 200)}`, "#2914 tracker (LF_ContractTracker)");
+  step("6 the tracker shows the contract title and the time left", /Harbou?r crates/.test(text) && !!timeWord, timeWord ? `'${timeWord[1]}'` : `ui text: ${text.slice(0, 200)}`, "#2914 tracker (LF_ContractTracker)");
   shot("tracker");
 
-  // 6. The run's drop: any LF_JobDropoffAction. The island's own layers hold none (the depot and drop are DebugWorld
-  // and grid props), so a run started at the dock has nowhere to be delivered unless --drop names one.
+  // 6. The run's drop: an LF_ParcelDrop mailbox 300 m or more from the dock (ISLAND_DROP, or --drop <name>).
   const dropOk = dropName
     ? on(1, { verb: "stand", entityName: dropName, side: "s" }, 10000).status === "ok"
     : false;
-  step("7 the run has a drop-off to walk to on the island", dropOk, dropName ? `at ${dropName}` : "no drop-off entity is known on the island (pass --drop <name> to try one)", "a town pass that places the post counter and drop kit on the island (lead call)");
+  step("7 the run has a drop-off to walk to on the island", dropOk, `at ${dropName}`, "the island parcel drops (Place_saint-philippe_parcel-drops.layer): none 300 m or more from the dock");
   if (!dropOk) return finish(results);
   // The run needs a minimum distance and time before it pays (DropoffRefusal); wait out the time share.
   wait(Number(flag("--run-seconds", "45")) * 1000);
@@ -163,6 +169,6 @@ function finish(results) {
 
 export default {
   name: "harbour-crates-proof",
-  usage: "harbour-crates-proof [--drop <LF_JobDropoffAction entity name>] [--run-seconds N] [--name <shot prefix>]   (up --mission island --profile full)",
+  usage: "harbour-crates-proof [--drop <LF_JobDropoffAction entity name>] [--cmd-timeout ms] [--run-seconds N] [--name <shot prefix>]   (up --mission island --profile full)",
   run: () => runHarbourCratesProof(),
 };
