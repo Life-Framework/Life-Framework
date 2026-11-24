@@ -11,7 +11,8 @@ import { arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } fr
 // delivers at a drop-off and reads the server's ledger lines (`standing-bonus`) and the standing change.
 // PASS or FAIL is printed per step; a FAIL names the PR that should fix it. The standing is the server's, so
 // every verdict reads `[LFDebug:...]` lines of the server log, never a client guess.
-const MARCEL = "Fit_saint_philippe_harbour_harbour_master";
+const MARCEL = "Resident_dock_harbour_master";
+const MARCEL_PLACE = "Fit_saint_philippe_harbour_Place";
 const TALK = "LF_DialogueTalkAction";
 const DROP = "LF_JobDropoffAction";
 const CONTRACT = "harbour_crates";
@@ -72,6 +73,12 @@ async function runHarbourCratesProof() {
   if (!uid) return finish(results);
 
   // 2. Marcel is on the island and answers.
+  // Marcel is a resident (#4466, #4646): he spawns on his timetable when a player is within 150 m of the harbour place, so the
+  // player goes to the place marker first and the clock is set inside his 06:00 to 18:00 day.
+  on(1, { verb: "stand", entityName: MARCEL_PLACE, side: "s" }, 20000);
+  wait(2000);
+  on(1, { verb: "time", hour: 10.0 }, 15000);
+  wait(10000);
   const stand = on(1, { verb: "stand", entityName: MARCEL, side: "s" }, 10000);
   wait(2500);
   const talk = on(1, { verb: "use", className: TALK, entityName: MARCEL }, 10000);

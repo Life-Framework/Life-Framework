@@ -4,6 +4,11 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
   LF_DialogueComponent "{4A66B1C0D2E7F300}" {
    m_sDialogueId "harbour_master"
   }
+  LF_QuestGiverComponent "{C3C13AE290E9CACD}" {
+   m_sGiverId "harbour_master"
+   m_sDisplayName "#LF-Townsfolk_HarbourMaster_Name"
+   m_bConverse 1
+  }
   ActionsManagerComponent "{520EA1D2F659CE02}" {
    ActionContexts + {
     UserActionContext "{4A66B1C0D2E7F301}" {

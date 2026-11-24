@@ -15,7 +15,8 @@ import { ROOT, arrive, clientBox, newestLog, readSession, sessionDir, sessionPat
 //     LF_ContractTracker.Receive) shows the line again with less than the full limit left, and holds no line for
 //     a contract that is not the running one (a contract that has ended is cleared, never shown).
 // The server's journal of the send was never enough: this reads the receiving client.
-const MARCEL = "Fit_saint_philippe_harbour_harbour_master";
+const MARCEL = "Resident_dock_harbour_master";
+const MARCEL_PLACE = "Fit_saint_philippe_harbour_Place";
 const TALK = "LF_DialogueTalkAction";
 const CONTRACT = "harbour_crates";
 const WAIT_BEFORE_REJOIN_S = 30;
@@ -108,6 +109,12 @@ async function runTrackerRejoinProof() {
     console.log("FAIL  the character is not Known (the repgrant verb did not reach the server)");
     return 1;
   }
+  // Marcel is a resident (#4466, #4646): he spawns on his timetable when a player is within 150 m of the harbour place, so the
+  // player goes to the place marker first and the clock is set inside his 06:00 to 18:00 day.
+  on(1, { verb: "stand", entityName: MARCEL_PLACE, side: "s" }, 20000);
+  wait(2000);
+  on(1, { verb: "time", hour: 10.0 }, 15000);
+  wait(10000);
   on(1, { verb: "stand", entityName: MARCEL, side: "s" }, 10000);
   wait(2500);
   on(1, { verb: "use", className: TALK, entityName: MARCEL }, 10000);
