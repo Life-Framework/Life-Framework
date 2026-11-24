@@ -1,0 +1,13 @@
+GenericEntity Places_LabourOffice {
+ components {
+  LF_PlaceComponent "{B5D13E78F2A04C96}" {
+   m_sKind "LabourOffice"
+   m_sId "saint-philippe.labour"
+  }
+ }
+ coords 300.027 0 263.149
+}
+GenericEntity Town_Labour_Counter : "{5E7A1C93D24B86F1}Prefabs/Props/LF_LabourCounter.et" {
+ coords 300.027 0.001 263.149
+ angleY 90
+}

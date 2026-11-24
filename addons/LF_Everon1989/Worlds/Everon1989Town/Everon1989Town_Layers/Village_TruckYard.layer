@@ -1,0 +1,146 @@
+GenericEntity Places_TruckLot {
+ components {
+  LF_PlaceComponent "{3C7A90E1D2B54F68}" {
+   m_sKind "TruckLot"
+   m_sId "saint-philippe.truckyard"
+  }
+ }
+ coords 345 0 196
+}
+GenericEntity Town_Truckyard_Lot {
+ components {
+  LF_VehicleLotComponent "{A7C4000000000003}" {
+   m_sShopId "truck-yard"
+   m_iCashCeiling 500
+   m_iExtraKeyPrice 25
+   m_sLotId "truck-yard"
+  }
+  LF_VehicleSpawnPointComponent "{A7C4000000000005}" {
+   m_sShopId "truck-yard"
+   m_vOffset -22.5 0 4.5
+   m_iSlots 2
+   m_vSlotStep 10 0 0
+   m_vAngles 270 0 0
+  }
+  MeshObject "{A7C4000000000001}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{A7C4000000000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{A7C4000000000006}" {
+   ActionContexts {
+    UserActionContext "{A7C4000000000007}" {
+     ContextName "default"
+     Radius 3
+     Position PointInfo "{A7C4000000000008}" {
+      Offset 0 0.8 0
+     }
+    }
+   }
+   additionalActions {
+    LF_VehicleBuyAction "{A7C4000000000021}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A7C4000000000022}" {
+      Name "#EL-Vehicle_Buy"
+     }
+    }
+    LF_VehicleExtraKeyAction "{A7C4000000000023}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A7C4000000000024}" {
+      Name "#EL-Vehicle_ExtraKey"
+     }
+    }
+   }
+  }
+  RplComponent "{A7C4000000000009}" {
+   Enabled 1
+  }
+ }
+ coords 345 0 196
+ angleY -90
+}
+GenericEntity Town_Truckyard_Sign_Lot : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "everon_truckyard"
+   m_vRimColor 0.9 0.9 0.9
+   m_vPaintColor 0.12 0.3 0.55
+   m_vTextColor 1 1 1
+  }
+ }
+ coords 341 0 196.9
+ angleY -90
+}
+GenericEntity Town_Truckyard_Sign_Start : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "everon_truckyard"
+   m_vRimColor 0.9 0.9 0.9
+   m_vPaintColor 0.12 0.3 0.55
+   m_vTextColor 1 1 1
+  }
+ }
+ coords 289 0 187.5
+ angleY -90
+}
+LF_NpcBaseEntity Town_Truckyard_Examiner : "{194B8115D8E97886}Prefabs/Characters/Npcs/Outfits/LF_Npc_TruckExaminer_1.et" {
+ coords 342.6 0 192.8
+ angleY -95
+}
+GenericEntity Town_Truckyard_CheckStart {
+ components {
+  LF_PlaceComponent "{A7C4000000000051}" {
+   m_sKind "TruckCheckStart"
+   m_sId "truck_check_start"
+  }
+ }
+ coords 290 0 190.5
+ angleY 85
+}
+GenericEntity Town_Truckyard_CheckGate_0 : "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et" {
+ components {
+  LF_TruckCheckGateComponent "{B7ECFB790AA2CB09}" {
+   m_iOrder 0
+   m_fRadius 4
+  }
+ }
+ coords 300 0 190.50
+ angleY 85
+}
+GenericEntity Town_Truckyard_CheckGate_1 : "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et" {
+ components {
+  LF_TruckCheckGateComponent "{B7ECFB790AA2CB09}" {
+   m_iOrder 1
+   m_fRadius 4
+  }
+ }
+ coords 310 0 191.37
+ angleY 85
+}
+GenericEntity Town_Truckyard_CheckGate_2 : "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et" {
+ components {
+  LF_TruckCheckGateComponent "{B7ECFB790AA2CB09}" {
+   m_iOrder 2
+   m_fRadius 4
+  }
+ }
+ coords 320 0 192.24
+ angleY 85
+}
+GenericEntity Town_Truckyard_CheckGate_3 : "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et" {
+ components {
+  LF_TruckCheckGateComponent "{B7ECFB790AA2CB09}" {
+   m_iOrder 3
+   m_fRadius 4
+  }
+ }
+ coords 330 0 193.11
+ angleY 85
+}
