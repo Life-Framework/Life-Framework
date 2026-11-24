@@ -30,11 +30,15 @@ class LF_LevelUpCardLines
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return "Opens: Ore buyer at the depot", or empty when this level opens nothing.
+	//! \return "Opens: Ore buyer at the depot", or empty when this level opens nothing. A milestone row
+	//! (#4869) opens nothing: its text is shown as it is, with no "Opens:".
 	string OpensLine()
 	{
 		if (m_sUnlockKey.IsEmpty())
 			return string.Empty;
+
+		if (LF_TradeUnlocks.IsMilestoneKey(m_sUnlockKey))
+			return LF_Terms.Text(m_sUnlockKey);
 
 		return LF_Terms.Text("#LF-LevelUpCard_Opens", LF_Terms.Text(m_sUnlockKey));
 	}

@@ -1,6 +1,25 @@
 //------------------------------------------------------------------------------------------------
+//! What backs one unlock row (#4869). A row either names a real gate at its level and says which
+//! one in m_sRef, or is a MILESTONE line that promises nothing. A flagship pack test
+//! checks every non-milestone row against the config or the code that
+//! holds the gate, by these two fields and never by the text.
+enum LF_ETradeUnlockKind
+{
+	MILESTONE,		//!< An honest marker of the level: no gate, no perk. The card and F2 show its text as it is, with no "Opens:"
+	LICENSE,		//!< A licence the jobs config gates at this level in this trade; m_sRef is the LF_ELicenseType name
+	MACHINE,		//!< A machine whose m_sLevelJob and m_iMinLevel are this trade and level; m_sRef is the machine id
+	MACHINE_STEP,	//!< A step of a machine (LF_MachineStep) that starts at this level; m_sRef is the machine id
+	PERK_PICK,		//!< A perk pick (LF_PerkPick, levels 10 and 20) that the trade offers; m_sRef is empty
+	FISH,			//!< A fish species whose m_iMinFisherLevel is this level; m_sRef is the species id
+	ACTIVITY,		//!< An activity whose m_sTrade and m_iMinTradeLevel are this trade and level; m_sRef is the activity id
+	DELIVERY_JOB,	//!< A delivery job sign-up (LF_CivilianJob.RequiredLevel); m_sRef is the LF_EJobType name
+	EXPORT_ORDERS	//!< The export order board (LF_ExportOrderConfig.m_iMinLevel); m_sRef is empty
+}
+
+//------------------------------------------------------------------------------------------------
 //! One thing a trade level opens (#4185): a site, a tool, a buyer or a perk. The text is a
-//! localization key; the level-up card prefixes it with "Opens:" and F2 shows the next one.
+//! localization key; the level-up card prefixes it with "Opens:" and F2 shows the next one. A row of
+//! kind MILESTONE opens nothing and shows its text with no prefix (#4869).
 [BaseContainerProps()]
 class LF_TradeUnlockRow
 {
@@ -13,13 +32,21 @@ class LF_TradeUnlockRow
 	[Attribute("", UIWidgets.EditBox, "Localization key naming what the level opens, the unlock text row")]
 	string m_sTextKey;
 
+	[Attribute("0", UIWidgets.ComboBox, "What backs the row: a real gate, or MILESTONE for an honest marker with no promise (#4869)", "", ParamEnumArray.FromEnum(LF_ETradeUnlockKind))]
+	LF_ETradeUnlockKind m_eKind;
+
+	[Attribute("", UIWidgets.EditBox, "The gate the row names, by its kind: a licence, machine, species, activity or job id. Empty for a milestone, a perk pick and the export board")]
+	string m_sRef;
+
 	//------------------------------------------------------------------------------------------------
-	static LF_TradeUnlockRow Make(string job, int level, string key)
+	static LF_TradeUnlockRow Make(string job, int level, string key, LF_ETradeUnlockKind kind = LF_ETradeUnlockKind.MILESTONE, string gateRef = "")
 	{
 		LF_TradeUnlockRow row = new LF_TradeUnlockRow();
 		row.m_sJob = job;
 		row.m_iLevel = level;
 		row.m_sTextKey = key;
+		row.m_eKind = kind;
+		row.m_sRef = gateRef;
 		return row;
 	}
 }
@@ -124,6 +151,38 @@ class LF_TradeUnlocksConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return The row of `job` at `level`, or null when none names one.
+	LF_TradeUnlockRow RowFor(string job, int level)
+	{
+		if (!m_aRows)
+			return null;
+
+		foreach (LF_TradeUnlockRow row : m_aRows)
+		{
+			if (row && row.m_sJob == job && row.m_iLevel == level)
+				return row;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when the row carrying this text key is a MILESTONE (#4869).
+	bool IsMilestoneKey(string key)
+	{
+		if (!m_aRows || key.IsEmpty())
+			return false;
+
+		foreach (LF_TradeUnlockRow row : m_aRows)
+		{
+			if (row && row.m_sTextKey == key)
+				return row.m_eKind == LF_ETradeUnlockKind.MILESTONE;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return The text key naming what `job` opens at `level`, or empty when no row names one.
 	string KeyFor(string job, int level)
 	{
@@ -153,6 +212,14 @@ class LF_TradeUnlocks
 			return "";
 
 		return LF_TradeUnlocksConfig.Get().KeyFor(job, level);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when the row behind this text key is a milestone: the card and F2 show its text
+	//! as it is, with no "Opens:" in front, because it opens nothing (#4869).
+	static bool IsMilestoneKey(string key)
+	{
+		return LF_TradeUnlocksConfig.Get().IsMilestoneKey(key);
 	}
 
 	//------------------------------------------------------------------------------------------------
