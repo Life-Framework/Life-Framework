@@ -75,11 +75,15 @@ export const clearBoxesOf = (kit) => {
     const offset = [Number(c.box.offset?.[0]) || 0, Number(c.box.offset?.[1]) || 0];
     const half = [Number(c.box.half?.[0]) || 0, Number(c.box.half?.[1]) || 0];
     const height = Number(c.box.height) || 4;
-    const key = [...offset, ...half, height].join("|");
-    if (!groups.has(key)) groups.set(key, { prefabs: [], offset, half, height });
+    // How far the box reaches below the ground under its carrier: 1 m unless the entry says (a slope drops away from the carrier, #4724).
+    const below = Number(c.box.below) > 0 ? Number(c.box.below) : 1;
+    // Seconds between repeat passes, 0 = once at load: the forest streams in and out with the player (#4724).
+    const repeat = Number(c.box.repeat) > 0 ? Number(c.box.repeat) : 0;
+    const key = [...offset, ...half, height, below, repeat].join("|");
+    if (!groups.has(key)) groups.set(key, { prefabs: [], offset, half, height, below, repeat });
     if (!groups.get(key).prefabs.includes(c.prefab)) groups.get(key).prefabs.push(c.prefab);
   }
-  return [...groups.values()].map((g) => ({ ...g, prefabs: g.prefabs.sort() })).sort((p, q) => `${p.offset}|${p.half}|${p.height}`.localeCompare(`${q.offset}|${q.half}|${q.height}`));
+  return [...groups.values()].map((g) => ({ ...g, prefabs: g.prefabs.sort() })).sort((p, q) => `${p.offset}|${p.half}|${p.height}|${p.below}|${p.repeat}`.localeCompare(`${q.offset}|${q.half}|${q.height}|${q.below}|${q.repeat}`));
 };
 
 // One box-mode carrier per distinct box (the entries that share one box list their prefabs together): no building, a box (half size on x and z) centred on the carrier and turned by its yaw, standing
@@ -90,7 +94,7 @@ export function clearBoxCarriers({ place, slot, anchor, boxes }) {
     const list = ["{", ...bx.prefabs.map((p) => `    "${p}"`), "   }"].join("\n");
     return {
       name: `Fit_${ident(place)}_${ident(slot)}_clear_box${i + 1}`,
-      comps: [{ cls: "LF_BaseWorldClearComponent", guid: guidOf(place, slot, "base-world-clear-box", i + 1), set: { m_vBoxHalfM: `${bx.half[0]} 0 ${bx.half[1]}`, m_fBoxHeightM: String(bx.height), m_aPrefabs: list } }],
+      comps: [{ cls: "LF_BaseWorldClearComponent", guid: guidOf(place, slot, "base-world-clear-box", i + 1), set: { m_vBoxHalfM: `${bx.half[0]} 0 ${bx.half[1]}`, m_fBoxHeightM: String(bx.height), ...(bx.below !== 1 ? { m_fBoxBelowM: String(bx.below) } : {}), ...(bx.repeat > 0 ? { m_fRepeatS: String(bx.repeat) } : {}), m_aPrefabs: list } }],
       coords: [r3(anchor.x + wx), anchor.y, r3(anchor.z + wz)],
       yaw: anchor.yaw,
     };

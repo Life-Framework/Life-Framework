@@ -155,6 +155,22 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"
+    },
+    {
+      "id": "org-lamp-1",
+      "name": "Org_Lamp_1",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        0,
+        2.95,
+        0
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }

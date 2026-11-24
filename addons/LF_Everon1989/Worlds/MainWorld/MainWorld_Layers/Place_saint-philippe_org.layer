@@ -64,3 +64,7 @@ GenericEntity Fit_saint_philippe_org_flag_wall : "{E0EE8DD048907D65}Prefabs/Orga
  coords 4500.427 16.185 10621.14
  angleY -3
 }
+GenericEntity Fit_saint_philippe_org_org_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4501.500 19.150 10623.600
+ angleY 87
+}
