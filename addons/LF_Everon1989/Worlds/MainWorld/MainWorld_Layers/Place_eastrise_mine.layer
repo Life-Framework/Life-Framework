@@ -1,0 +1,163 @@
+GenericEntity Fit_eastrise_mine_Place {
+ components {
+  LF_PlaceComponent "{5367DB5356BE89CF}" {
+   m_sKind "Workplace"
+   m_sId "eastrise.mine"
+  }
+ }
+ coords 6681 148.65 7921
+}
+GenericEntity Fit_eastrise_mine_Place_mine {
+ components {
+  LF_PlaceComponent "{137781534529E0CC}" {
+   m_sKind "mine"
+   m_sId "eastrise.mine"
+  }
+ }
+ coords 6681 148.65 7921
+}
+GenericEntity Fit_eastrise_mine_mine_picks : "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et" {
+ coords 6678.2 149.909 7917.7
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_lantern : "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/MiningLantern_01/MiningLantern_01.et" {
+ coords 6677 149.681 7922.6
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_ore_2 : "{5A986136ADB1EC2C}Prefabs/Resources/Mining/CoalOre.et" {
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 6681.3 148.933 7929.6
+ angleY -130
+}
+GenericEntity Fit_eastrise_mine_mine_ore_3 : "{5A986136ADB1EC2C}Prefabs/Resources/Mining/CoalOre.et" {
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 6684.3 148.802 7928.7
+ angleY 165
+}
+GenericEntity Fit_eastrise_mine_mine_ore_5 : "{5A986136ADB1EC2C}Prefabs/Resources/Mining/CoalOre.et" {
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 6689.7 148.406 7928.7
+ angleY 40
+}
+GenericEntity Fit_eastrise_mine_mine_ore_6 : "{5A986136ADB1EC2C}Prefabs/Resources/Mining/CoalOre.et" {
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 6692.4 148.131 7929.6
+ angleY -70
+}
+GenericEntity Fit_eastrise_mine_mine_rock_1 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 6678.8 0 7933.9
+ angleY 20
+}
+GenericEntity Fit_eastrise_mine_mine_rock_2 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords 6682.2 0 7934.3
+ angleY 150
+}
+GenericEntity Fit_eastrise_mine_mine_rock_3 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 6685.4 0 7933.8
+ angleY 80
+}
+GenericEntity Fit_eastrise_mine_mine_rock_4 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords 6688.6 0 7934.2
+ angleY -160
+}
+GenericEntity Fit_eastrise_mine_mine_rock_5 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 6691.6 0 7933.9
+ angleY -50
+}
+GenericEntity Fit_eastrise_mine_mine_rock_6 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords 6680.2 0 7936.7
+ angleY 40
+}
+GenericEntity Fit_eastrise_mine_mine_rock_7 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 6683.9 0 7937
+ angleY -100
+}
+GenericEntity Fit_eastrise_mine_mine_rock_8 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords 6687.4 0 7936.6
+ angleY 120
+}
+GenericEntity Fit_eastrise_mine_mine_rock_9 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 6690.8 0 7936.9
+ angleY 10
+}
+GenericEntity Fit_eastrise_mine_mine_cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords 6677.5 149.153 7925.4
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_timber_l : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 6675.6 149.191 7930.6
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_timber_r : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 6697 148.191 7924.2
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_flood_l : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 6679.8 149.263 7926.4
+ angleY 180
+}
+GenericEntity Fit_eastrise_mine_mine_flood_r : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 6691.4 148.453 7926.4
+ angleY 180
+}
+GenericEntity Fit_eastrise_mine_mine_fence_w1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 6673.8 0 7917
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_fence_w2 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 6673.8 0 7921
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_fence_w3 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 6673.8 0 7925
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_fence_e1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 6693.6 0 7917
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_fence_e2 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 6693.6 0 7921
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_fence_e3 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 6693.6 0 7925
+ angleY 90
+}
+GenericEntity Fit_eastrise_mine_mine_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "eastrise-seam"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 6684 149.672 7915
+ angleY 180
+}
+GenericEntity Fit_eastrise_mine_mine_ore_field {
+ components {
+  LF_PlaceComponent "{7D3E2A91C05B48F6}" {
+   m_sKind "Workplace"
+   m_sId "eastrise.mine-ore"
+  }
+ }
+ coords 6685.5 148.688 7929.2
+}

@@ -2,6 +2,11 @@
   "_note": "Placements that are meant to look this way. tools\\cli audit placement skips a problem whose kind matches and whose name or prefab matches the regex (docs/placement-audit.md). Give the reason a reviewer can check in a shot.",
   "allow": [
     {
+      "match": "^Fit_eastrise_mine_mine_(picks|cart|flood_r) ",
+      "kind": "contact",
+      "why": "The pick pile, cart and right flood lamp at the East Rise coal seam (#3243) rest on the probed ground of a meadow slope: the contact gap reads 1 to 5 cm under a 3x3 footprint because the ground varies 6 to 9 cm under each, which the walk-up contact sheet (c02, c06) does not show."
+    },
+    {
       "match": "^Grid_police_car_pool_R0_[23] ",
       "kind": "sunk",
       "why": "The two police cars in the car-pool grid cell (#4352) stand on their wheels: place settle measured each mesh bottom 1 mm over GridTerrain; the audit's terrain check reads the vehicle pivot, which sits below the wheel tops."
