@@ -1,3 +1,41 @@
+GenericEntity Fit_outpost_north_camp_clear_box1 {
+ components {
+  LF_BaseWorldClearComponent "{D6DD52D8D82EFF01}" {
+   m_vBoxHalfM 11.3 0 11.351
+   m_fBoxHeightM 12
+   m_fBoxBelowM 4
+   m_aPrefabs {
+    "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et"
+    "{1F1980176A5052DC}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rosa_canina_0s.et"
+    "{2A1012C2B5B4F1FA}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rubus_idaeus_1s.et"
+    "{2FE01B5E743D5205}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_1s.et"
+    "{5D1A7A4A41161E8A}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rubus_idaeus_0s.et"
+    "{6813E89F9EF2BDAC}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rosa_canina_1s.et"
+    "{727831E6D77F3360}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3f.et"
+    "{86FE6FFC07B02673}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3x.et"
+    "{C1F4CA4F9D788CE5}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3s.et"
+    "{CF0A210B7AC7B329}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_2.et"
+    "{DA7492F3E6B63251}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1l.et"
+   }
+  }
+ }
+ coords 7738.696 7.55 8336.851
+}
+GenericEntity Fit_outpost_north_camp_clear_box2 {
+ components {
+  LF_BaseWorldClearComponent "{95EC37B2DD7F1A6C}" {
+   m_vBoxHalfM 7.3 0 4
+   m_fBoxHeightM 12
+   m_fBoxBelowM 4
+   m_aPrefabs {
+    "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et"
+    "{727831E6D77F3360}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3f.et"
+    "{A35E15EBC6033C07}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1.et"
+   }
+  }
+ }
+ coords 7738.397 7.55 8321.5
+}
 GenericEntity Fit_outpost_north_camp_outpost_board : "{6C4AFD9C193BC4EC}Prefabs/Outposts/LF_OutpostBoard.et" {
  coords 7734.8 8.666 8334.6
 }

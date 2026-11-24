@@ -918,14 +918,27 @@ class LF_PlacementAudit
 				continue;
 
 			string prefab = LF_BaseWorldClear.PrefabOf(e);
-			if (prefab.IsEmpty())
+			bool tree = Tree.Cast(e) != null;
+			if (prefab.IsEmpty() && !tree)
 				continue;
 
 			int top;
 			if (!e.GetParent())
 				top = 1;
 
-			lines.Insert(string.Format("scan prefab=%1 name=%2 p=%3 top=%4", prefab, Label(e), V(e.GetOrigin()), top));
+			if (prefab.IsEmpty())
+				prefab = "-";
+
+			string mesh = "-";
+			VObject vobject = e.GetVObject();
+			if (vobject)
+				mesh = vobject.GetResourceName();
+
+			int shown = 0;
+			if ((e.GetFlags() & EntityFlags.VISIBLE) != 0)
+				shown = 1;
+
+			lines.Insert(string.Format("scan prefab=%1 name=%2 p=%3 top=%4 class=%5 mesh=%6 vis=%7", prefab, Label(e), V(e.GetOrigin()), top, e.ClassName(), mesh, shown));
 		}
 
 		s_aScanIds = null;

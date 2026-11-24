@@ -163,6 +163,9 @@ class LF_BaseWorldClearComponent : ScriptComponent
 	[Attribute("4", desc: "Box mode: how tall the box is above the ground under the carrier, metres (it also reaches 1 m below)")]
 	protected float m_fBoxHeightM;
 
+	[Attribute("1", desc: "Box mode: how far the box reaches below the ground under the carrier, metres. A slope drops away from the carrier's own height: a camp on one needs more than 1 m (#4724)")]
+	protected float m_fBoxBelowM;
+
 	[Attribute("3", desc: "How far from this entity the building origin may be on x and z, metres")]
 	protected float m_fRadiusM;
 
@@ -250,6 +253,6 @@ class LF_BaseWorldClearComponent : ScriptComponent
 			prefabs.Insert(prefab);
 		}
 
-		LF_BaseWorldClear.HideInBox(owner.GetWorld(), Vector(-m_vBoxHalfM[0], -1, -m_vBoxHalfM[2]), Vector(m_vBoxHalfM[0], m_fBoxHeightM, m_vBoxHalfM[2]), mat, prefabs, owner.GetName());
+		LF_BaseWorldClear.HideInBox(owner.GetWorld(), Vector(-m_vBoxHalfM[0], -m_fBoxBelowM, -m_vBoxHalfM[2]), Vector(m_vBoxHalfM[0], m_fBoxHeightM, m_vBoxHalfM[2]), mat, prefabs, owner.GetName());
 	}
 }
