@@ -13,4 +13,5 @@ None: it is a server service. Nothing a player owns and keeps (an owned vehicle,
 - **Player sees:** old litter, wrecks and bodies vanish once no player is near; nothing owned does.
 - **Owner and side:** `LF_Cleanup` runs on the server, started from `LF_GameModeRoleplay.OnGameStart` when the `World` system is on.
 - **Data:** `Configs/World/LF_CleanupConfig.conf` (a rule per kind: age without a player near, distance to the nearest player, damage state, exempt prefab parts) with the owner's `cleanup` section over it. The system switch is `World`. Nothing is persisted; a saved vehicle record is never touched.
+- **Shelf goods (#4819):** a store's own shelf copies are never swept; the sweep reads every live store's shelf ids once per pass. A unit taken off the shelf is an ordinary item again. Proof: `store/shelf-cleanup`.
 - **Proof:** `cleanup/sweep` (WORLD), `cleanup/rule` (LOGIC), `cleanup/persist` (PERSISTENCE). Each sweep logs `[LFDebug:Cleanup]` lines.

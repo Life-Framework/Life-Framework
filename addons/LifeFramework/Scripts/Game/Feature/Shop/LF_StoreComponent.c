@@ -261,6 +261,21 @@ class LF_StoreComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Adds the id (EntityID.ToString) of every display copy standing at a shelf slot of this store.
+	//! The cleanup sweep reads it once per pass (#4819).
+	void CollectShelfIds(notnull set<string> outIds)
+	{
+		foreach (LF_StoreLineState line : m_aState)
+		{
+			foreach (EntityID id : line.m_aShelf)
+			{
+				if (id != EntityID.INVALID)
+					outIds.Insert(id.ToString());
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return Display copies standing on the shelf now, -1 when the store has no line for the prefab.
 	int GetShelfCount(ResourceName prefab)
 	{
