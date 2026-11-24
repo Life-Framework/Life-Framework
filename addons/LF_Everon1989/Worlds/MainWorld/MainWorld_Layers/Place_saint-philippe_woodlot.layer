@@ -41,6 +41,14 @@ GenericEntity Fit_saint_philippe_woodlot_desk : "{F2DA01057E99744B}Prefabs/Jobs/
  coords 4345.593 14.068 10624.932
  angleY 79
 }
+GenericEntity Fit_saint_philippe_woodlot_buyer : "{7C1E5A2D9B3F460C}Prefabs/Trader/LF_TimberBuyer_Everon1989.et" {
+ coords 4339.417 14.123 10625.259
+ angleY 79
+}
+GenericEntity Fit_saint_philippe_woodlot_wholesale : "{7C1E5A2D9B3F4608}Prefabs/Trader/LF_WholesaleBuyer_Everon1989.et" {
+ coords 4339.99 14.1 10622.314
+ angleY 79
+}
 GenericEntity Fit_saint_philippe_woodlot_deck_1 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
  coords 4335.069 13.135 10637.148
  angleY 79

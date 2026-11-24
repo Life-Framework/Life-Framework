@@ -78,6 +78,36 @@
       "lift": -0.032
     },
     {
+      "id": "buyer",
+      "name": "TimberYard_Buyer",
+      "prefab": "{7C1E5A2D9B3F460C}Prefabs/Trader/LF_TimberBuyer_Everon1989.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -4,
+        0,
+        1.5
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "wholesale",
+      "name": "TimberYard_Wholesale",
+      "prefab": "{7C1E5A2D9B3F4608}Prefabs/Trader/LF_WholesaleBuyer_Everon1989.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -4,
+        0,
+        -1.5
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
       "id": "deck-1",
       "name": "TimberYard_Deck_1",
       "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
