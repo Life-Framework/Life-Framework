@@ -1,0 +1,8 @@
+GenericEntity {
+ ID "C95B2E7A10D4F368"
+ components {
+  MeshObject "{1F7A5C9E3B84D260}" {
+   Object "{1012CD8635D9487A}Assets/Props/Civilian/Broom_01/Broom_01.xob"
+  }
+ }
+}
