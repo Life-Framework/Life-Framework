@@ -2,7 +2,7 @@
 # for more than the account holds and read the refusal on the screen. `state` before and after
 # shows cash and bank moving. Needs a spawned character carrying cash (run ui-intake first).
 state
-layer ATM_Debug
+layer Town_ATM_Bank
 wait 1200
 shot ui atm_open
 click Key1Button
@@ -24,4 +24,4 @@ wait 1500
 shot ui atm_refused
 click CloseButton
 wait 300
-shot world ATM_Debug
+shot world Town_ATM_Bank

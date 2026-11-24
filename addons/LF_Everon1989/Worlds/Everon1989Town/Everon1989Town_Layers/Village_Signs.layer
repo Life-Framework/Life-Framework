@@ -39,3 +39,14 @@ $grp GenericEntity : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
 GenericEntity LF_MiningSign_Debug : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
  coords 172.4 0 170.2
 }
+GenericEntity Sign_PubHostinecHide {
+ components {
+  LF_BaseWorldClearComponent "{6C1E9A3D54B7F028}" {
+   m_sBuilding "{1B68F3EE279C97A1}Prefabs/Structures/Commercial/Pubs/PubVillage_E_2L01/PubVillage_E_2L01_V1.et"
+   m_aPrefabs {
+    "{234CF9A4AE06D5ED}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_02_Pub_V1.et"
+   }
+  }
+ }
+ coords 118 0 277.51
+}

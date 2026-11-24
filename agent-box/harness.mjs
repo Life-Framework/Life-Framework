@@ -1069,8 +1069,8 @@ function selftest() {
   if (buildLine(8, { verb: "probe", mode: "ground", x: 5, z: 6 }) !== "8 probe ground 5 6") throw new Error("probe ground line");
   const interact = buildLine(9, { verb: "interact", step: "confirm" });
   if (interact !== "9 interact confirm") throw new Error(interact);
-  const stand = buildLine(10, { verb: "stand", entityName: "ATM_Debug" });
-  if (stand !== "10 stand ATM_Debug") throw new Error(stand);
+  const stand = buildLine(10, { verb: "stand", entityName: "Town_ATM_Bank" });
+  if (stand !== "10 stand Town_ATM_Bank") throw new Error(stand);
   const state = buildLine(11, { verb: "state" });
   if (state !== "11 state") throw new Error(state);
   if (buildLine(12, { verb: "perf", seconds: 8, label: "boards_4" }) !== "12 perf 8 boards_4") throw new Error("perf line");
@@ -1089,8 +1089,8 @@ function selftest() {
   if (!addressFor(["B1"], "R", theirs).error) throw new Error("another checkout's session must refuse");
   if (addressFor(null, "R", theirs).id !== "") throw new Error("Workbench boxes carry no session");
   const list = pads();
-  const atm = findPad(list, "ATM_Debug");
-  if (!atm || !atm.actions.includes("LF_ATMAction")) throw new Error("ATM_Debug missing from layer catalog");
+  const atm = findPad(list, "Town_ATM_Bank");
+  if (!atm || !atm.actions.includes("LF_ATMAction")) throw new Error("Town_ATM_Bank missing from layer catalog");
   const shop = findPad(list, "Shop_GeneralStore_Debug");
   if (!shop || shop.actions[0] !== "LF_ShopAction") throw new Error("Shop_GeneralStore_Debug missing from layer catalog");
   // $grp members carry world coords; children add their parent's (village layout,

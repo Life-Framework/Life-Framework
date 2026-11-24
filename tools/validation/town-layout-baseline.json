@@ -407,7 +407,7 @@
   "name:Roadmap_Lockpick_Door"
  ],
  "agent-box/flows/arrival-chain.txt": [
-  "name:ATM_Debug",
+  "name:Town_ATM_Bank",
   "name:Quest_Clerk",
   "name:Roadmap_Job_Depot",
   "name:Roadmap_Job_Drop",
@@ -418,7 +418,7 @@
   "name:AppleTradeContainer"
  ],
  "agent-box/flows/film-debugworld.txt": [
-  "name:ATM_Debug",
+  "name:Town_ATM_Bank",
   "name:AppleGatherTree",
   "name:Roadmap_Bank_Vault",
   "name:Roadmap_Police_Desk"
@@ -429,14 +429,14 @@
   "name:Sawmill_Debug"
  ],
  "agent-box/flows/ui-paper.txt": [
-  "name:ATM_Debug",
+  "name:Town_ATM_Bank",
   "name:LF_MiningSign_Debug"
  ],
  "agent-box/flows/world-atm.txt": [
-  "name:ATM_Debug"
+  "name:Town_ATM_Bank"
  ],
  "agent-box/town.mjs": [
-  "name:ATM_Debug",
+  "name:Town_ATM_Bank",
   "name:FarmPlot_1",
   "name:Furnace",
   "name:Quest_Clerk",
@@ -468,7 +468,7 @@
  ],
  "agent-box/harness.mjs": [
   "coord:466,331",
-  "name:ATM_Debug",
+  "name:Town_ATM_Bank",
   "name:AppleTradeContainer",
   "name:CementPile_Debug",
   "name:Hospital_Bed_1",
