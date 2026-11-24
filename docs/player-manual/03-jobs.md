@@ -232,7 +232,8 @@ The drops are on the east side (a house near the district road) and four along t
      vehicle feeds nothing. Every processing station works this way.
   3. Sell **planks ($8)** and **hardwood boards ($15)** at the **timber counter**. If its purse is full it tells you to
      "try the wholesale warehouse at the dock". The dock pays a lower, falling price for planks, boards, posts and firewood.
-* **Pay:** about **$400 an hour** carrying softwood by hand. A truck and hardwood boards pay a little more.
+* **Pay:** about **$400 an hour** carrying softwood by hand. With a truck and hardwood boards, about **$700 to $800 an hour**:
+  the timber counter takes about 30 boards an hour at $15, and the rest sell at the wholesale counter beside it for less.
 * **Needs:** an axe. Job levels unlock sawing and faster felling (a refusal says what is missing).
 * **Shift board:** at the **island sawmill** a cork **shift board** stands under the roof at the front of the hall, a few steps from the lumberjack desk. **Read the shift board** lists the week's top five workers at the sawmill by the trade XP they earned there, with their trade level. The list empties every Monday at 06:00 UTC.
 

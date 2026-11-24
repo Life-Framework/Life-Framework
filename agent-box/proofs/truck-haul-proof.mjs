@@ -18,6 +18,7 @@ const SAW_ACTION = process.env.SAW_ACTION ?? "LF_ProcessAction__3";
 const SAW = "Fit_saint_philippe_woodlot_saw";
 const DESK = "Fit_saint_philippe_woodlot_desk";
 const BUYER = process.env.BUYER ?? "Fit_saint_philippe_woodlot_buyer";
+const WHOLESALE = process.env.WHOLESALE ?? "Fit_saint_philippe_woodlot_wholesale";
 const JOG_MPS = 4.5;
 const LOADED_MPS = 4.5 * 0.5;
 const BED_UNITS = 12;
@@ -150,204 +151,224 @@ async function run(args) {
   wait(2500);
   console.log(`seen: ${String(on({ verb: "seen", words: ["12"] }).detail).slice(0, 220)}`);
 
-  const startedAt = Date.now();
-  let walkM = 0;
-  let loadedM = 0;
-  let here = feetAt();
-  let felledTrees = 0;
-  let logsLoaded = 0;
-  let loadRefused = false;
-  let firstTreeAt = null;
-  let driveM = 0;
-  let chopSeconds = 0;
-  const serverMark = serverLog().length;
-  const clientMark = clientLog().length;
+  // `--cycles N` (#4898): N cycles in a row to the same buyers, so the premium purse falls the way it does over an hour.
+  const ci = args.indexOf("--cycles");
+  const cycles = Math.max(1, Math.min(12, ci >= 0 ? Number(args[ci + 1]) || 1 : 1));
+  const runs = [];
+  for (let c = 1; c <= cycles; c++) {
+    const r = cycle(c, c === 1);
+    runs.push(r);
+    console.log(`CYCLE ${c}  ${r.logsLoaded} log(s) loaded, ${r.sawn} sawn, ${r.premium} premium + ${r.wholesale} wholesale sale(s): +$${r.earned} in ${r.adjMin.toFixed(1)} min ($${dollarsPerHour(r.earned, r.adjMin)}/h)`);
+    if (!r.logsLoaded || !r.earned) break;
+  }
 
-  // 1. Fell hardwood on the stand and load every log until the bed is full.
-  for (let tree = 0; tree < 4 && logsLoaded * HARDWOOD_UNITS < BED_UNITS; tree++) {
-    on({ verb: "stand", entityName: SAW });
-    wait(1500);
-    const sawAt = feetAt();
-    const found = on({ verb: "treefall", words: ["find", "300", "hardwood"] }, 20000);
-    const m = /key=(\S+) pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(found.detail));
-    if (!m) {
-      step(`1a a standing hardwood tree is found (${tree + 1})`, false, String(found.detail).slice(0, 120));
-      break;
-    }
-    const [key, tx, ty, tz] = [m[1], Number(m[2]), Number(m[3]), Number(m[4])];
-    on({ verb: "capture", mode: "world", name: "truck_haul_tree", x: tx, y: ty, z: tz, ox: -2, oy: 1.6, oz: 0, hour: 9 }, 30000);
-    wait(1500);
-    const treeAt = feetAt();
-    here = treeAt;
-    if (!firstTreeAt) {
-      firstTreeAt = treeAt;
-      driveM = 2 * dist(sawAt, treeAt);
-    }
-    const mark = serverLog().length;
-    on({ verb: "treefall", words: ["fell", key] }, 20000);
-    let felled = "";
-    for (let i = 0; i < 12 && !felled; i++) {
-      wait(1000);
-      felled = /\[LFDebug:Lumber\] felled \S+ \((\d+) logs?, (\w+)\)/.exec(serverLog().slice(mark))?.[0] ?? "";
-    }
-    step(`1a a hardwood tree is felled (${tree + 1})`, /HARDWOOD/.test(felled), felled || "no `Lumber] felled` line");
-    if (!felled) break;
-    felledTrees++;
-    // `treefall fell` is instant; the hold a player makes lasts the species row's chop seconds (a size-N hardwood, LF_TreeSpecies.conf).
-    chopSeconds += CHOP_SECONDS[Number(/\((\d+) logs?/.exec(felled)?.[1] ?? 2)] ?? 45;
-    wait(5000);
+  function cycle(c, first) {
+    const startedAt = Date.now();
+    let walkM = 0;
+    let loadedM = 0;
+    let here = feetAt();
+    let felledTrees = 0;
+    let logsLoaded = 0;
+    let loadRefused = false;
+    let firstTreeAt = null;
+    let driveM = 0;
+    let chopSeconds = 0;
+    const serverMark = serverLog().length;
+    const clientMark = clientLog().length;
 
-    for (let n = 0; n < 4 && logsLoaded * HARDWOOD_UNITS < BED_UNITS; n++) {
-      let hoisted = false;
-      // Back at the stump (the truck stands beside the stand in the model; the harness loads at the saw).
-      on({ verb: "capture", mode: "world", name: "truck_haul_tree", x: tx, y: ty, z: tz, ox: -2, oy: 1.6, oz: 0, hour: 9 }, 30000);
-      wait(1200);
-      here = feetAt();
-      for (let i = 0; i < 5 && !hoisted; i++) {
-        const lg = on({ verb: "treefall", words: ["logs", "40"] }, 15000);
-        const lm = /pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(lg.detail));
-        if (!lm) {
-          wait(2000);
-          continue;
-        }
-        on({ verb: "capture", mode: "world", name: "truck_haul_log", x: Number(lm[1]), y: Number(lm[2]), z: Number(lm[3]), ox: -0.8, oy: 0, oz: 0, hour: 9 }, 30000);
-        wait(1500);
-        const to = feetAt();
-        walkM += dist(here, to);
-        here = to;
-        const hoist = on({ verb: "use", className: "LF_ShoulderHoistAction" }, 15000);
-        wait(1200);
-        hoisted = hoist.status === "ok" && carried("WoodLog") > 0;
-      }
-      if (!hoisted) break;
-      // To the truck at the saw, under the log, and load at the tailgate.
+    // 1. Fell hardwood on the stand and load every log until the bed is full.
+    for (let tree = 0; tree < 5 && logsLoaded * HARDWOOD_UNITS < BED_UNITS; tree++) {
       on({ verb: "stand", entityName: SAW });
-      wait(1800);
-      loadedM += LOG_TO_TRUCK_M;
-      const mark2 = serverLog().length;
-      const load = on({ verb: "use", className: "LF_CargoBedAction" }, 15000);
       wait(1500);
-      const ok = load.status === "ok" && /\[LFDebug:Cargo\] loaded hardwood/.test(serverLog().slice(mark2));
-      if (logsLoaded === 0) {
-        const refusal = clientLog().slice(clientMark).split("\n").filter((l) => /Cargo\]/.test(l)).slice(-3).join(" | ");
-        step("1b the first hoisted hardwood log loads at the tailgate of the bought truck", ok, ok ? load.detail : `${load.status} ${load.detail} ${refusal}`);
-      }
-      if (!ok) {
-        loadRefused = true;
+      const sawAt = feetAt();
+      const found = on({ verb: "treefall", words: ["find", "300", "hardwood"] }, 20000);
+      const m = /key=(\S+) pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(found.detail));
+      if (!m) {
+        step(`1a a standing hardwood tree is found (cycle ${c}, tree ${tree + 1})`, false, String(found.detail).slice(0, 120));
         break;
       }
-      logsLoaded++;
-    }
-    if (loadRefused) break;
-  }
-  const units = lastUnits(serverLog().slice(serverMark));
-  step("1c the bed holds the felled logs", logsLoaded >= 1 && units === logsLoaded * HARDWOOD_UNITS, `${logsLoaded} log(s), ${units}/${BED_UNITS} units, ${felledTrees} tree(s)`);
+      const [key, tx, ty, tz] = [m[1], Number(m[2]), Number(m[3]), Number(m[4])];
+      on({ verb: "capture", mode: "world", name: "truck_haul_tree", x: tx, y: ty, z: tz, ox: -2, oy: 1.6, oz: 0, hour: 9 }, 30000);
+      wait(1500);
+      const treeAt = feetAt();
+      here = treeAt;
+      if (!firstTreeAt) {
+        firstTreeAt = treeAt;
+        driveM = 2 * dist(sawAt, treeAt);
+      }
+      const mark = serverLog().length;
+      on({ verb: "treefall", words: ["fell", key] }, 20000);
+      let felled = "";
+      for (let i = 0; i < 12 && !felled; i++) {
+        wait(1000);
+        felled = /\[LFDebug:Lumber\] felled \S+ \((\d+) logs?, (\w+)\)/.exec(serverLog().slice(mark))?.[0] ?? "";
+      }
+      if (first) step(`1a a hardwood tree is felled (${tree + 1})`, /HARDWOOD/.test(felled), felled || "no `Lumber] felled` line");
+      if (!felled) break;
+      felledTrees++;
+      // `treefall fell` is instant; the hold a player makes lasts the species row's chop seconds (a size-N hardwood, LF_TreeSpecies.conf).
+      chopSeconds += CHOP_SECONDS[Number(/\((\d+) logs?/.exec(felled)?.[1] ?? 2)] ?? 45;
+      wait(5000);
 
-  // 2. A full bed refuses with words.
-  if (units + HARDWOOD_UNITS > BED_UNITS) {
-    const tree = on({ verb: "treefall", words: ["find", "300", "hardwood"] }, 20000);
-    const tm = /key=(\S+) pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(tree.detail));
-    if (tm) {
-      on({ verb: "capture", mode: "world", name: "truck_haul_tree", x: Number(tm[2]), y: Number(tm[3]), z: Number(tm[4]), ox: -2, oy: 1.6, oz: 0, hour: 9 }, 30000);
-      wait(1000);
-      on({ verb: "treefall", words: ["fell", tm[1]] }, 20000);
-      wait(6000);
-      const lg = on({ verb: "treefall", words: ["logs", "40"] }, 15000);
-      const lm = /pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(lg.detail));
-      if (lm) {
-        on({ verb: "capture", mode: "world", name: "truck_haul_log", x: Number(lm[1]), y: Number(lm[2]), z: Number(lm[3]), ox: -0.8, oy: 0, oz: 0, hour: 9 }, 30000);
+      for (let n = 0; n < 4 && logsLoaded * HARDWOOD_UNITS < BED_UNITS; n++) {
+        let hoisted = false;
+        // Back at the stump (the truck stands beside the stand in the model; the harness loads at the saw).
+        on({ verb: "capture", mode: "world", name: "truck_haul_tree", x: tx, y: ty, z: tz, ox: -2, oy: 1.6, oz: 0, hour: 9 }, 30000);
         wait(1200);
-        on({ verb: "use", className: "LF_ShoulderHoistAction" }, 15000);
-        wait(1200);
+        here = feetAt();
+        for (let i = 0; i < 5 && !hoisted; i++) {
+          const lg = on({ verb: "treefall", words: ["logs", "40"] }, 15000);
+          const lm = /pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(lg.detail));
+          if (!lm) {
+            wait(2000);
+            continue;
+          }
+          on({ verb: "capture", mode: "world", name: "truck_haul_log", x: Number(lm[1]), y: Number(lm[2]), z: Number(lm[3]), ox: -0.8, oy: 0, oz: 0, hour: 9 }, 30000);
+          wait(1500);
+          const to = feetAt();
+          walkM += dist(here, to);
+          here = to;
+          const hoist = on({ verb: "use", className: "LF_ShoulderHoistAction" }, 15000);
+          wait(1200);
+          hoisted = hoist.status === "ok" && carried("WoodLog") > 0;
+        }
+        if (!hoisted) break;
+        // To the truck at the saw, under the log, and load at the tailgate.
         on({ verb: "stand", entityName: SAW });
         wait(1800);
-        const before = clientLog().length;
-        const beforeServer = serverLog().length;
-        on({ verb: "use", className: "LF_CargoBedAction" }, 15000);
-        wait(3500);
-        // The reason a player reads (the action's cannot-perform text) goes to the server log with the harness's refusal;
-        // the client's offer check names which rule refused. A full bed says so on both.
-        // The harness's use runs the offer check on the host, so the line is in the server's log (or the client's, on a remote client).
-        const said = clientLog().slice(before) + serverLog().slice(beforeServer);
-        const reason = /cannot_perform reason=(\S+)/.exec(serverLog().slice(beforeServer))?.[1] ?? "";
-        step("2 a full bed refuses with its reason in words", reason === "#LF-Cargo_Full" && /offer refused on the client: the bed is full/.test(said), `reason=${reason || "none"}; ${said.split("\n").filter((l) => /Cargo\]/.test(l)).slice(-1).join("") || "no Cargo line on the client"}`);
-        // The refused log stays on the shoulder: it is the first thing the saw takes in the delivery below.
+        loadedM += LOG_TO_TRUCK_M;
+        const mark2 = serverLog().length;
+        const load = on({ verb: "use", className: "LF_CargoBedAction" }, 15000);
+        wait(1500);
+        const ok = load.status === "ok" && /\[LFDebug:Cargo\] loaded hardwood/.test(serverLog().slice(mark2));
+        if (logsLoaded === 0 && first) {
+          const refusal = clientLog().slice(clientMark).split("\n").filter((l) => /Cargo\]/.test(l)).slice(-3).join(" | ");
+          step("1b the first hoisted hardwood log loads at the tailgate of the bought truck", ok, ok ? load.detail : `${load.status} ${load.detail} ${refusal}`);
+        }
+        if (!ok) {
+          loadRefused = true;
+          break;
+        }
+        logsLoaded++;
+      }
+      if (loadRefused) break;
+    }
+    const units = lastUnits(serverLog().slice(serverMark));
+    step(`1c the bed holds the felled logs (cycle ${c})`, logsLoaded >= 1 && units === logsLoaded * HARDWOOD_UNITS, `${logsLoaded} log(s), ${units}/${BED_UNITS} units, ${felledTrees} tree(s)`);
+
+    // 2. A full bed refuses with words (the first cycle only; the refused log rides on the shoulder to the saw).
+    if (first && units + HARDWOOD_UNITS > BED_UNITS) {
+      const tree = on({ verb: "treefall", words: ["find", "300", "hardwood"] }, 20000);
+      const tm = /key=(\S+) pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(tree.detail));
+      if (tm) {
+        on({ verb: "capture", mode: "world", name: "truck_haul_tree", x: Number(tm[2]), y: Number(tm[3]), z: Number(tm[4]), ox: -2, oy: 1.6, oz: 0, hour: 9 }, 30000);
+        wait(1000);
+        on({ verb: "treefall", words: ["fell", tm[1]] }, 20000);
+        wait(6000);
+        const lg = on({ verb: "treefall", words: ["logs", "40"] }, 15000);
+        const lm = /pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(lg.detail));
+        if (lm) {
+          on({ verb: "capture", mode: "world", name: "truck_haul_log", x: Number(lm[1]), y: Number(lm[2]), z: Number(lm[3]), ox: -0.8, oy: 0, oz: 0, hour: 9 }, 30000);
+          wait(1200);
+          on({ verb: "use", className: "LF_ShoulderHoistAction" }, 15000);
+          wait(1200);
+          on({ verb: "stand", entityName: SAW });
+          wait(1800);
+          const before = clientLog().length;
+          const beforeServer = serverLog().length;
+          on({ verb: "use", className: "LF_CargoBedAction" }, 15000);
+          wait(3500);
+          // The reason a player reads (the action's cannot-perform text) goes to the server log with the harness's refusal;
+          // the client's offer check names which rule refused. A full bed says so on both.
+          const said = clientLog().slice(before) + serverLog().slice(beforeServer);
+          const reason = /cannot_perform reason=(\S+)/.exec(serverLog().slice(beforeServer))?.[1] ?? "";
+          step("2 a full bed refuses with its reason in words", reason === "#LF-Cargo_Full" && /offer refused on the client: the bed is full/.test(said), `reason=${reason || "none"}; ${said.split("\n").filter((l) => /Cargo\]/.test(l)).slice(-1).join("") || "no Cargo line on the client"}`);
+        }
       }
     }
-  }
 
-  // 3. Deliver: unload log after log at the saw, saw each, sell what comes out.
-  const loopStart = Date.now();
-  let earned = 0;
-  let sawn = 0;
-  let sold = 0;
-  let trips = 0;
-  const econMark = serverLog().length;
-  for (let k = 0; k < 8; k++) {
-    on({ verb: "stand", entityName: SAW });
-    wait(1000);
-    if (carried("WoodLog") < 1) {
-      const un = on({ verb: "use", className: "LF_CargoBedAction", entityName: undefined }, 15000);
-      wait(1500);
-      if (un.status !== "ok") break;
-    }
-    const sawMark = serverLog().length;
-    const proc = on({ verb: "use", className: SAW_ACTION, entityName: SAW });
-    wait(1500);
-    let out = "";
-    for (let i = 0; i < 40 && !out; i++) {
-      out = /\[LFDebug:Processing\] processed [^\n]*x(\d+)[^\n]*/.exec(serverLog().slice(sawMark))?.[0] ?? "";
-      if (!out) wait(1000);
-    }
-    if (proc.status !== "ok" || !out) break;
-    sawn += 1;
-    if (k === 0) step("3a the saw takes the unloaded hardwood log", true, out.slice(0, 160));
-  }
-  step("3b the bed is empty after the delivery", units > 0 && /\[LFDebug:Cargo\] unloaded/.test(serverLog().slice(serverMark)), `${sawn} log(s) sawn`);
-
-  // Sell what the saw dropped (boards, firewood) at the buyer beside the saw.
-  const cashBefore = cash();
-  for (const item of ["HardwoodBoard", "WoodPlank", "Firewood"]) {
-    for (let p = 0; p < 12; p++) {
-      on({ verb: "pickup", item }, 15000);
-      wait(700);
-      if (carried(item) < 1) break;
-      on({ verb: "stand", entityName: BUYER });
-      wait(1200);
-      trips++;
-      for (let press = 0; press < 12 && carried(item) > 0; press++) {
-        const before = cash();
-        const sell = on({ verb: "use", className: "LF_TraderSellAction", entityName: BUYER });
-        wait(1200);
-        if (sell.status !== "ok" || cash() - before <= 0) break;
-        sold++;
-      }
+    // 3. Deliver: unload log after log at the saw, saw each.
+    let sawn = 0;
+    for (let k = 0; k < 8; k++) {
       on({ verb: "stand", entityName: SAW });
       wait(1000);
+      if (carried("WoodLog") < 1) {
+        const un = on({ verb: "use", className: "LF_CargoBedAction", entityName: undefined }, 15000);
+        wait(1500);
+        if (un.status !== "ok") break;
+      }
+      const sawMark = serverLog().length;
+      const proc = on({ verb: "use", className: SAW_ACTION, entityName: SAW });
+      wait(1500);
+      let out = "";
+      for (let i = 0; i < 40 && !out; i++) {
+        out = /\[LFDebug:Processing\] processed [^\n]*x(\d+)[^\n]*/.exec(serverLog().slice(sawMark))?.[0] ?? "";
+        if (!out) wait(1000);
+      }
+      if (proc.status !== "ok" || !out) break;
+      sawn += 1;
+      if (k === 0 && first) step("3a the saw takes the unloaded hardwood log", true, out.slice(0, 160));
     }
-  }
-  earned = cash() - cashBefore;
-  void econMark;
+    step(`3b the bed is empty after the delivery (cycle ${c})`, units > 0 && /\[LFDebug:Cargo\] unloaded/.test(serverLog().slice(serverMark)), `${sawn} log(s) sawn`);
 
-  // 4. Minutes and dollars.
-  const loopMin = minutes(startedAt);
-  void loopStart;
+    // Sell what the saw dropped at the premium buyer beside the saw; what its spent purse refuses goes to the wholesale
+    // counter beside it (the player reads "they have enough" and walks the 3 m).
+    const cashBefore = cash();
+    let premium = 0;
+    let wholesale = 0;
+    let trips = 0;
+    for (const item of ["HardwoodBoard", "WoodPlank", "Firewood"]) {
+      for (let p = 0; p < 16; p++) {
+        on({ verb: "pickup", item }, 15000);
+        wait(700);
+        if (carried(item) < 1) break;
+        for (const [buyer, isPremium] of [[BUYER, true], [WHOLESALE, false]]) {
+          if (carried(item) < 1) break;
+          on({ verb: "stand", entityName: buyer });
+          wait(1200);
+          trips++;
+          for (let press = 0; press < 12 && carried(item) > 0; press++) {
+            const before = cash();
+            const sell = on({ verb: "use", className: "LF_TraderSellAction", entityName: buyer });
+            wait(1200);
+            if (sell.status !== "ok" || cash() - before <= 0) break;
+            if (isPremium) premium++;
+            else wholesale++;
+          }
+        }
+        on({ verb: "stand", entityName: SAW });
+        wait(1000);
+      }
+    }
+    const earned = cash() - cashBefore;
+    const demand = [...serverLog().slice(serverMark).matchAll(/\[LFDebug:Market\] demand hardware\/[^\n]*HardwoodBoard[^\n]* (\d+)\/(\d+) \(sold (\d+), refused (\d+), paid (\d+)\)/g)].pop();
+    if (demand) console.log(`CYCLE ${c}  premium purse after the cycle: ${demand[1]}/${demand[2]} boards`);
+
+    const loopMin = minutes(startedAt);
+    // The truck drives out to the stand and back with the load (the harness parks it at the saw and teleports), the logs
+    // are carried 6 m to it, and the walk between a tree's logs is real; the harness's own waits stay in the wall clock.
+    const walkMin = (walkM / JOG_MPS + loadedM / LOADED_MPS + driveM / TRUCK_MPS) / 60;
+    const chopMin = chopSeconds / 60;
+    const adjMin = loopMin + walkMin + chopMin;
+    console.log(`CYCLE ${c}  ${loopMin.toFixed(1)} min wall clock + ${walkMin.toFixed(1)} min movement (${Math.round(walkM)} m on foot, ${Math.round(loadedM)} m under a log, ${Math.round(driveM)} m by truck) + ${chopMin.toFixed(1)} min felling holds; ${felledTrees} tree(s), ${trips} buyer trip(s)`);
+    return { logsLoaded, sawn, premium, wholesale, earned, adjMin, loopMin };
+  }
+
+  // 4. Minutes and dollars over every cycle.
   let econ = null;
   try {
     econ = parseEconomy(execFileSync("node", [join(root, "../../tools/cli.mjs"), "economy"], { encoding: "utf8", timeout: 120000 }));
   } catch (e) {
     console.log(`economy: ${e.message.split("\n")[0]}`);
   }
-  const walkMin = (walkM / JOG_MPS + loadedM / LOADED_MPS + driveM / TRUCK_MPS) / 60;
-  // The truck drives out to the stand and back with the load (the harness parks it at the saw and teleports), the logs
-  // are carried 6 m to it, and the walk between a tree's logs is real; the harness's own waits stay in the wall clock.
-  const chopMin = chopSeconds / 60;
-  const adjMin = loopMin + walkMin + chopMin;
-  console.log(`RUN  ${logsLoaded} log(s) in ${felledTrees} tree(s) loaded, ${sawn} sawn, ${sold} sale press(es) over ${trips} trip(s): +$${earned}`);
-  console.log(`RUN  ${loopMin.toFixed(1)} min wall clock with teleports; movement a player makes ${Math.round(walkM)} m on foot + ${Math.round(loadedM)} m under a log + ${Math.round(driveM)} m by truck = ${walkMin.toFixed(1)} min, the felling holds ${chopMin.toFixed(1)} min; loop with them ${adjMin.toFixed(1)} min`);
-  console.log(`RUN  measured $${dollarsPerHour(earned, loopMin)}/h wall clock, $${dollarsPerHour(earned, adjMin)}/h with the walk and the holds (truck at ${TRUCK_MPS} m/s)`);
-  console.log(`RUN  tools\\cli economy hardwood by truck: ${econ ? `steady $${econ.steady}/h, first hour $${econ.first}/h` : "row not read"} (a ${BED_UNITS}-unit bed is ${BED_UNITS / HARDWOOD_UNITS} logs; the row models 24 logs/h)`);
-  step("4 the run's minutes and dollars are measured", earned > 0 && loopMin > 0, `${adjMin.toFixed(1)} min, +$${earned}, $${dollarsPerHour(earned, adjMin)}/h`);
+  const earned = runs.reduce((s, r) => s + r.earned, 0);
+  const adjMin = runs.reduce((s, r) => s + r.adjMin, 0);
+  const loopMin = runs.reduce((s, r) => s + r.loopMin, 0);
+  const logs = runs.reduce((s, r) => s + r.sawn, 0);
+  console.log(`RUN  ${runs.length} cycle(s), ${logs} log(s) sawn, +$${earned} in ${adjMin.toFixed(1)} min (${loopMin.toFixed(1)} wall clock): $${dollarsPerHour(earned, adjMin)}/h with the walk and the holds (truck at ${TRUCK_MPS} m/s), ${(adjMin / runs.length).toFixed(1)} min a cycle`);
+  console.log(`RUN  per cycle: ${runs.map((r) => `$${r.earned}`).join(", ")}`);
+  console.log(`RUN  tools\\cli economy hardwood by truck: ${econ ? `steady $${econ.steady}/h, first hour $${econ.first}/h` : "row not read"}`);
+  step("4 the run's minutes and dollars are measured", earned > 0 && adjMin > 0, `${adjMin.toFixed(1)} min, +$${earned}, $${dollarsPerHour(earned, adjMin)}/h`);
   return finish(results);
 }
 
@@ -359,6 +380,6 @@ function finish(results) {
 
 export default {
   name: "truck-haul-proof",
-  usage: "truck-haul-proof [--selftest]   (after truck-check-proof on `up --mission island --profile full`)",
+  usage: "truck-haul-proof [--cycles N] [--selftest]   (after truck-check-proof on `up --mission island --profile full`)",
   run: (ctx) => run(ctx?.args ?? []),
 };

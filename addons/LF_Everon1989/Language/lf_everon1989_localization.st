@@ -5336,7 +5336,7 @@ StringTable {
     }
     CustomStringTableItem "{169160A3F43F94EA}" {
      Id "LF-Quest_EveronMarket_Desc"
-     Target_en_us "Drive back to the market in the town center and sell your apple juice to the trader."
+     Target_en_us "Drive back to the market in the town center and sell your apple juice to the trader. Scroll to the juice row, the last one, and press F."
      Comment "Everon arrival step 5 errand: sell the juice at the market."
     }
     CustomStringTableItem "{E821B19281DF6F39}" {
@@ -5346,7 +5346,7 @@ StringTable {
     }
     CustomStringTableItem "{78C9F1FB26B9EE9A}" {
      Id "LF-Quest_EveronMarket_Title"
-     Target_en_us "Market day"
+     Target_en_us "Sell your juice at the market stall"
      Comment "Everon arrival step 5 title (arrival_done, the market)."
     }
     CustomStringTableItem "{9B59BF96F8F32C1A}" {

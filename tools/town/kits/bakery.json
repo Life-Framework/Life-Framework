@@ -595,6 +595,54 @@
       "free": true,
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "bakery-fill-1",
+      "name": "Bakery_Fill_1",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -4.3,
+        2.9,
+        2.4
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-fill-2",
+      "name": "Bakery_Fill_2",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -4.3,
+        2.9,
+        1
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-fill-3",
+      "name": "Bakery_Fill_3",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -4.3,
+        2.9,
+        -0.6
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
     }
   ],
   "stamp": {
