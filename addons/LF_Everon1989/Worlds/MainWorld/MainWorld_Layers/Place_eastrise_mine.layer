@@ -166,11 +166,6 @@ GenericEntity Fit_eastrise_mine_mine_ore_field {
  coords 6685.5 148.688 7929.2
 }
 GenericEntity Fit_eastrise_mine_mine_coal_heap : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 6686 149.194 7921.4
- scale 0.7
-}
-GenericEntity Fit_eastrise_mine_mine_coal_heap_s : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 6679.8 149.663 7920.1
- angleY 90
- scale 0.5
+ coords 6686.4 149.163 7921.4
+ scale 0.8
 }

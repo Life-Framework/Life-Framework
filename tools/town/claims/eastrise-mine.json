@@ -10,7 +10,7 @@
     "Workplace",
     "mine"
   ],
-  "rows": 30,
+  "rows": 29,
   "destruction": {
     "mode": "none",
     "reason": "hostless plot: no building stands in the slot"
