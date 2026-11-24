@@ -103,7 +103,32 @@
           },
           "blocks": []
         }
-      ]
+      ],
+      "lift": 0.029
+    },
+    {
+      "id": "anchor-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        3.1,
+        0.231,
+        -1.25
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
     },
     {
       "id": "pharmacy-till",
@@ -191,7 +216,7 @@
       "name": "Pharmacy_shelf_1",
       "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
       "role": "furniture",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         5.6,
         0.231,
@@ -200,7 +225,8 @@
       "yaw": -90,
       "wall": "+x",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": 0.023
     },
     {
       "id": "pharmacy-shelf-1-aspirin",
@@ -261,7 +287,8 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.023
     },
     {
       "id": "pharmacy-shelf-2-tourniquet",

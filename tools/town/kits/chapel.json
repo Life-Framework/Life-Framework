@@ -51,7 +51,8 @@
       "yaw": 90,
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.032
     },
     {
       "id": "pew-east",
@@ -67,7 +68,8 @@
       "yaw": -90,
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.032
     },
     {
       "id": "candle-1",
@@ -83,7 +85,8 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.032
     },
     {
       "id": "candle-2",
@@ -99,7 +102,8 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.032
     },
     {
       "id": "flowers-pink",
@@ -116,7 +120,8 @@
       "class": "SCR_DestructibleEntity",
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.033
     },
     {
       "id": "flowers-red",
@@ -133,7 +138,8 @@
       "class": "SCR_DestructibleEntity",
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.033
     },
     {
       "id": "anchor-priest",

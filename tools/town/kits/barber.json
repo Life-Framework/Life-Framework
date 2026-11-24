@@ -77,7 +77,8 @@
       "yaw": 90,
       "wall": "-z",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": -0.052
     },
     {
       "id": "barber-chair-2",
@@ -93,12 +94,13 @@
       "yaw": 90,
       "wall": "+z",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": -0.052
     },
     {
       "id": "barber-counter",
       "name": "Barber_counter",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "prefab": "{2F68C06AF2843E84}Prefabs/Props/Commercial/LF_ShopCounterTill.et",
       "role": "furniture",
       "verb": "against wall",
       "offset": [
@@ -109,7 +111,8 @@
       "yaw": 90,
       "wall": "-x",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "free": true
     },
     {
       "id": "barber-basin",

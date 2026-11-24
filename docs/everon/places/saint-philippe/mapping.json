@@ -296,6 +296,7 @@
     },
     "chapel-pink": {
       "building": "b17",
+      "kit": "chapel-pink",
       "dossier": "saint-philippe-districts",
       "why": [
         "Chapel_01_pink (chapel), interior yes, 1 door, in the districts survey (purpose row di:b17): the pink chapel",

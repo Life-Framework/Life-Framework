@@ -62,7 +62,8 @@
       "yaw": 0,
       "wall": "-x",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": 0.036
     },
     {
       "id": "newsagent-till",
@@ -112,7 +113,9 @@
       "yaw": 0,
       "wall": "+x",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "free": true,
+      "lift": 0.036
     },
     {
       "id": "newsagent-postcard",
@@ -173,6 +176,30 @@
       "yaw": 0,
       "floor": "f0",
       "attach": "table:newsagent-papers"
+    },
+    {
+      "id": "anchor-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -0.199,
+        0.05,
+        -0.675
+      ],
+      "yaw": -163,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\""
+          },
+          "blocks": []
+        }
+      ]
     }
   ],
   "stamp": {

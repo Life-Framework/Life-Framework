@@ -2,6 +2,7 @@
 // inputs: tools/**, agent-box/**, .githooks/**
 // -ClickTest) and checks the pick comes back. playtest-m2-2 shipped a launcher whose buttons threw
 // "The property 'Tag' cannot be found" on the first real click; the -ShotTo screenshot never clicks.
+// red-proof (#4793 flake): the old window-based click (Shown event + PerformClick) timed out at 30 s on a loaded runner; with a 1 s timeout it fails every run (ETIMEDOUT). Now no window is shown.
 // red-proof: with the click handler restored to `$form.Tag = $result` it printed
 // "solo: no pick (picked=)", with no window on screen.
 import { spawnSync } from "node:child_process";
@@ -17,7 +18,7 @@ const failures = [];
 for (const pick of ["solo", "join"]) {
   const r = spawnSync("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script, "-ClickTest", pick], {
     encoding: "utf8",
-    timeout: 30000,
+    timeout: 120000, // hang guard only: the click is synchronous, so a slow runner cannot fail it (#4793)
     windowsHide: true,
   });
   const out = `${r.stdout || ""}${r.stderr || ""}`;

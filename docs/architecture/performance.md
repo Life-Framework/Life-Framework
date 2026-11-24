@@ -251,7 +251,7 @@ The counts are from `tools\cli perf building <slug> --size <size>` (`BUDGET` in
 | Per building | Small | Medium | Large | Why |
 |---|---:|---:|---:|---|
 | Decorative entities (the building and its children, an upper bound) | 150 | 300 | 500 | At these counts nothing was measurable (600 boxes in one view: +0.7 ms), and the first clear rise was at 1,200 in one view. Several of these buildings in one view stay under that. The playtest gun store sits at 293 (medium) |
-| Lights (`LightEntity`, every kind) | 3 | 6 | 10 | Vanilla buildings have 0, and Saint-Philippe has 12 lights in 60 m in all. Unshadowed lights measured no cost, so this is a look and maintenance limit: light a room with one or two lights and make the fixtures emissive |
+| Lights (`LightEntity` not written `CastShadow 0`) | 3 | 6 | 10 | Vanilla buildings have 0, and Saint-Philippe has 12 lights in 60 m in all. A fill light that writes `CastShadow 0` is listed (`fill` in `perf building`, `town check`) but not charged here: unshadowed lights measured no cost (128 in one room, part 2), and the shadow and point rows already bound what costs. A ceiling fixture is three fills (`LF_LightCeiling_Interior`, #4718), so a lit shop room carries a few |
 | Shadow casters (`CastShadow 1`, or unset) | 0 | 1 | 2 | Vanilla density is 12 casters within 60 m, all street and exterior lamps. The diag menu suggests a fixed pool of light shadow maps, and our noise cannot rule out +3 to 7 ms for a few casters |
 | Point lights casting shadows | 0 | 0 | 0 | Six faces each (inferred); use a spot for the one shadowed light |
 | `CastShadow` left unset | 0 | 0 | 0 | Unset behaves as on (vanilla lights all report shadows); write `CastShadow 0` on every fill light |
@@ -263,7 +263,7 @@ Per place (a slot set within 60 m, the square plus its streets):
 
 | Per place | Limit | Why |
 |---|---:|---|
-| Lights switched on at night | 24 | 2 times vanilla's 12 in 60 m, for lit shop interiors vanilla does not have |
+| Lights switched on at night (not `CastShadow 0`) | 24 | 2 times vanilla's 12 in 60 m, for lit shop interiors vanilla does not have. Unshadowed fills are not counted (see the building row); a placed vanilla street lamp counts here but not in a building's budget (a timber yard's work lights are street lighting) |
 | Shadow casters | 12 | Vanilla's own density round the square (12 in 60 m) |
 | Entities added over the vanilla map | 1,500 | About +40 % on the square's 3,720. A view across the square sees several buildings, and the clear rise came at 1,200 extra in one view |
 | Interactables with replication | as many as the gameplay needs | Each is a stream; watch `RplItemsC0` in `-logStats` |

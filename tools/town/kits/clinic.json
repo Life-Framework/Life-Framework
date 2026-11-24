@@ -318,6 +318,30 @@
       "free": true,
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "medic-fleet-board",
+      "prefab": "{7626F19FBE72C466}Prefabs/Props/Medic/LF_MedicCarPoolBoard.et",
+      "free": true,
+      "role": "board",
+      "verb": "on floor",
+      "offset": [
+        2.776,
+        1.03,
+        6.127
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_MedicCarPoolComponent",
+          "set": {
+            "m_vBayOffset": "9 -1 5"
+          },
+          "blocks": []
+        }
+      ]
     }
   ],
   "stamp": {
