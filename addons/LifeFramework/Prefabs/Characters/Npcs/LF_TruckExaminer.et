@@ -17,7 +17,7 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
       "Check"
      }
      UIInfo UIInfo "{6E8DFDA13A583A84}" {
-      Name "#LF-TruckCheck_Action"
+      Name "#LF-TruckCheck_ActionPlain"
      }
     }
    }
