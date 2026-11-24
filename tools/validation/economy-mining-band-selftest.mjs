@@ -1,6 +1,6 @@
 // Proves the tuned mining chains (#3246, E2 of #3206): the real core + 1989 pack configs, run through `tools\cli economy`,
 // put iron by pickup, copper by car, stone by truck and the coal feeder on the pay ladder (at or above the lowest duty
-// shift, the Cadet's: #4178), the three plant chains near the design's $520 / $510 / $490 an hour, and flag only the foot haul of stone,
+// shift, the Cadet's: #4178), iron and copper near the design's $520 / $510 an hour, stone by truck on the high-tier rung near $656 (#4826, the truck is the climb), and flag only the foot haul of stone,
 // which stays unviable on purpose (a 280 minute walk for 10 limestone).
 // inputs: tools/lib/economy-mining.mjs, tools/economy/mining-assumptions.json, addons/LF_Everon1989/Configs/Market/LF_Market_Everon1989.conf, addons/LF_Everon1989/Configs/Market/LF_BuyerDemand_Everon1989.conf, addons/LifeFramework/Configs/Resources/ResourceChains.conf, tools/validation/economy-mining-band-selftest.mjs
 // red-proof: on the #3240 rows (iron premium $26, copper wholesale 50 / 25 and premium $62, coal 3 / 2) this printed
@@ -15,7 +15,7 @@ const fails = [];
 const rep = buildReport(root, {});
 const loops = rep.mining?.loops ?? [];
 const by = (id) => loops.find((l) => l.id === id);
-const want = { "iron-pickup": 520, "copper-car": 510, "stone-truck": 490 };
+const want = { "iron-pickup": 520, "copper-car": 510, "stone-truck": 656 };
 
 if (rep.error || loops.length === 0) fails.push(`FAIL no mining loops in the report (${rep.error ?? rep.mining?.problems?.join("; ")})`);
 for (const id of ["iron-pickup", "copper-car", "stone-truck", "coal-feeder"]) {
@@ -30,7 +30,7 @@ for (const [id, target] of Object.entries(want)) {
 const flagged = loops.filter((l) => l.flagged).map((l) => l.id);
 if (flagged.join() !== "stone-foot") fails.push(`FAIL only stone-foot may stay below the rung (got ${flagged.join() || "none"})`);
 const iron = by("iron-pickup"), copper = by("copper-car"), stone = by("stone-truck");
-if (iron && copper && stone && !(copper.steady <= iron.steady + 40 && stone.steady < iron.steady)) fails.push("FAIL the chains must differ: stone (the entry job) pays least, iron and copper within $40 of each other");
+if (iron && copper && stone && !(copper.steady <= iron.steady + 40 && stone.steady > iron.steady)) fails.push("FAIL the chains must differ: stone by truck (the truck rung, #4826) pays most, iron and copper within $40 of each other");
 
 if (fails.length) {
   for (const f of fails) console.error(f);

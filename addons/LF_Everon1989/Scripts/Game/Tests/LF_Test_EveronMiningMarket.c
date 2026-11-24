@@ -161,7 +161,7 @@ class LF_Test_EveronMiningMarket : LF_Test
 		// Premium rows: copper the smallest purse and slowest refill, cement the largest purse and fastest refill.
 		LF_BuyerDemandRow copperRow = CheckPremium(ctx, demand, "copper bar", COPPER_BAR, 52, 12, 4, copper);
 		LF_BuyerDemandRow ironRow = CheckPremium(ctx, demand, "iron bar", IRON_BAR, 22, 30, 15, iron);
-		LF_BuyerDemandRow cementRow = CheckPremium(ctx, demand, "cement bag", CEMENT, 10, 120, 60, cement);
+		LF_BuyerDemandRow cementRow = CheckPremium(ctx, demand, "cement bag", CEMENT, 14, 120, 60, cement);	// #4826: the truck rung
 		if (copperRow && ironRow && cementRow)
 		{
 			ctx.True(copperRow.m_iCap < ironRow.m_iCap && ironRow.m_iCap < cementRow.m_iCap, "the purse grows from copper to iron to cement");
