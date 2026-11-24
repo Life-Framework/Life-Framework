@@ -159,7 +159,17 @@
       "yaw": 270,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_VehicleLockComponent",
+          "guid": "54D6FBC0EA806FE5",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "smelter-flood-a",
