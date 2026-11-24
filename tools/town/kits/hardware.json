@@ -206,13 +206,13 @@
       "attach": "shelf:hardware-shelf-1"
     },
     {
-      "id": "hardware-tool-bench",
-      "name": "Hardware_tool_bench",
+      "id": "hardware-tool-station",
+      "name": "Hardware_tool_station",
       "prefab": "{B6CCB3CFBFD054C7}Prefabs/Props/LF_ToolBench.et",
       "role": "interactable",
       "verb": "against wall",
       "offset": [
-        -0.9,
+        -1.9,
         0.454,
         -2
       ],
@@ -281,7 +281,7 @@
       },
       {
         "from": "entrance",
-        "to": "hardware-tool-bench",
+        "to": "hardware-tool-station",
         "width": 1.2
       }
     ],
