@@ -41,11 +41,6 @@
  },
  {
   "rule": "L2",
-  "file": "Scripts/Game/Feature/Chat/AdminChatChannel.c",
-  "text": "LF_WhitelistRespawnHandlerComponent whitelistComponent = LF_WhitelistRespawnHandlerComponent.Cast(GetGame().GetGameMode().FindComponent(LF_WhitelistRespawnHandlerComponent));"
- },
- {
-  "rule": "L2",
   "file": "Scripts/Game/Feature/Quantity/LF_SplitQuantityDialog.c",
   "text": "m_wSlider = LF_ThinSliderWidget.Cast(w.FindAnyWidget(\"AmountSlider\").FindHandler(LF_ThinSliderWidget));"
  },

@@ -224,6 +224,8 @@ class LF_BedDelivery
 
 		s_iDeliveredCount++;
 		LF_Debug.Info(FEATURE, string.Format("player %1 put in a hospital bed by medic %2", patientUid, medicUid));
+		// A casualty from the generator: its call and map mark close with the delivery (#4849).
+		LF_CasualtyTreat.CloseDelivered(patient);
 		LF_EventBus.Publish(LF_OnPlayerRevived.Create(patientUid, medicUid, position));
 		int billNumber;
 		LF_TreatmentBillRecord bill = LF_TreatmentBills.IssueForRevive(medic, patient);

@@ -13,8 +13,9 @@ class LF_ResidentForeman
 	static const string KEY_TOP = "Top";
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The lowest level above `level` that `job` has an unlock row for; 0 when there is none
-	//! (the player is past the last row, the trade has no rows, or there is no table).
+	//! \return The lowest level above `level` that `job` has a real unlock row for; 0 when there is none
+	//! (the player is past the last row, the trade has no rows, or there is no table). A milestone row
+	//! opens nothing, so the foreman never announces it (#4869).
 	static int NextLevel(array<ref LF_TradeUnlockRow> rows, string job, int level)
 	{
 		if (!rows)
@@ -23,7 +24,7 @@ class LF_ResidentForeman
 		int best = 0;
 		foreach (LF_TradeUnlockRow row : rows)
 		{
-			if (!row || row.m_sJob != job || row.m_iLevel <= level)
+			if (!row || row.m_sJob != job || row.m_iLevel <= level || row.m_eKind == LF_ETradeUnlockKind.MILESTONE)
 				continue;
 
 			if (best == 0 || row.m_iLevel < best)

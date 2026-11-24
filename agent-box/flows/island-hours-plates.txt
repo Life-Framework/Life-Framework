@@ -1,0 +1,69 @@
+# The opening-hours plates on the Saint-Philippe shop doors (#4834): a full-profile picture of each plate reading its
+# keeper's hours (OPEN 6 AM - 2 PM style). Faces render only in a session; `look` shows them white.
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow island-hours-plates
+#   node agent-box/session.mjs down
+# Read the client console for [LFDebug:Signs] "styled face printed: hours_plate" and no "no shop keeper's work place" warning.
+
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+
+step 1 The bakery plate, close and wide
+stand Fit_saint_philippe_hours_plates_drop_b06 e3
+wait 4000
+shot world hours_plate_bakery 4472.935 14 10748.1 -2.36 0 -0.42
+shot world hours_plate_bakery_wide 4472.935 14 10748.1 -4.92 0.3 -0.87
+step 2 The newsagent plate, close and wide
+stand Fit_saint_philippe_hours_plates_drop_b13 e3
+wait 4000
+shot world hours_plate_newsagent 4435.855 12.75 10692.431 -2.39 0 -0.21
+shot world hours_plate_newsagent_wide 4435.855 12.75 10692.431 -4.98 0.3 -0.44
+step 3 The butcher plate, close and wide
+stand Fit_saint_philippe_hours_plates_drop_b20 e3
+wait 4000
+shot world hours_plate_butcher 4467.135 13.3 10777.902 -2.36 0 -0.42
+shot world hours_plate_butcher_wide 4467.135 13.3 10777.902 -4.92 0.3 -0.87
+step 4 The parcel plate, close and wide
+stand Fit_saint_philippe_hours_plates_drop_b21 e3
+wait 4000
+shot world hours_plate_parcel 4426.193 11.25 10754.538 0.42 0 2.36
+shot world hours_plate_parcel_wide 4426.193 11.25 10754.538 0.87 0.3 4.92
+step 5 The barber plate, close and wide
+stand Fit_saint_philippe_hours_plates_drop_b43 e3
+wait 4000
+shot world hours_plate_barber 4414.817 11.5 10768.094 1.13 0 -2.12
+shot world hours_plate_barber_wide 4414.817 11.5 10768.094 2.35 0.3 -4.41
+step 6 The pharmacy plate, close and wide
+stand Fit_saint_philippe_hours_plates_drop_b88 e3
+wait 4000
+shot world hours_plate_pharmacy 4438.611 10.5 10844.338 2.33 0 0.58
+shot world hours_plate_pharmacy_wide 4438.611 10.5 10844.338 4.85 0.3 1.21

@@ -130,7 +130,9 @@ class LF_FeedFromVehicle
 
 			inVehicle.Insert(toVehicle);
 			withUser.Insert(toUser);
-			for (int i = toVehicle + toUser; i < output.m_iOutputAmount; i++)
+			// What drops at the station drops as carried bundles where the output stacks in the hands (#4875).
+			int left = output.m_iOutputAmount - toVehicle - toUser;
+			while (left > 0)
 			{
 				IEntity item = LF_Utils.SpawnEntityPrefab(output.m_OutputPrefab, station.GetOrigin() + dropOffset, rotation);
 				if (!item)
@@ -141,6 +143,7 @@ class LF_FeedFromVehicle
 				}
 
 				dropped.Insert(item);
+				left -= LF_ProcessRun.TakeIntoBundle(item, left);
 			}
 
 			if (!ok)

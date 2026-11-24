@@ -1,0 +1,5 @@
+{
+  "_doc": "Interaction points that stay under a top the validator sees, each with the reason. Key: a repo path or path prefix; value: why it stays. validate-interaction-points skips a point whose file starts with the key.",
+  "addons/LifeFramework/Prefabs/Placeables/Furniture/": "Player-placed furniture anchors each piece at its own centre (tools/actions/anchors.json, anchor center): a pick-up or use row on a bed, chair or rug, with no desk row or kit prop beside it to compete with. Not swept in #4871's follow-up; raise a point here when a session shows its row missing.",
+  "addons/LF_Everon1989/Prefabs/Buildings/Bank/Bank.et": "The context sits on a ladder inside the bank model (Ladder_Metal_900_B), a climb row on the rungs, not a surface a player looks down at."
+}

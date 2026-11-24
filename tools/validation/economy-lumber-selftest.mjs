@@ -6,10 +6,12 @@
 // red-proof: before tools/lib/economy-lumber.mjs existed this selftest died on the missing import and exited 1; with
 // the band check (DUTY_BAND.max raised to 3.5) the "$300 flagged" check printed "FAIL 300/h flagged"; with the demand cap ignored
 // (premium = units) the "cap limits premium" checks printed FAIL; restored, it prints "economy-lumber-selftest: OK".
+// #4875: with a buyer trip costing nothing (`trip = () => 0`) five checks printed FAIL ("one plank a trip to buyers in town is
+// below the rung (got 466/h)", "the premium planks take the near trip", ...); restored, OK.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { FALLBACK_BUYERS, FALLBACK_CURVES, LUMBER_ASSUMPTIONS, rungCheck, buildLumber, computeLoops, lumberFlags, renderLumber, sellWholesale, simulateProduct } from "../lib/economy-lumber.mjs";
+import { FALLBACK_BUYERS, FALLBACK_CURVES, LUMBER_ASSUMPTIONS, rungCheck, buildLumber, computeLoops, handHaulHour, logSpeedCapOf, lumberFlags, plankBundleOf, renderLumber, sellWholesale, simulateProduct, tripsPerLog } from "../lib/economy-lumber.mjs";
 import { buildReport, renderReport } from "../lib/economy.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
@@ -48,14 +50,26 @@ expect(near(fresh.first, fresh.steady) && carried.steady < carried.first, "carry
 
 // 4. The loops from inputs: three loops, steady within the first hour, flagged under the lowest duty shift.
 const inp = {
-  assumptions: LUMBER_ASSUMPTIONS, duty: { police: 350, medic: 480 },
+  assumptions: { ...LUMBER_ASSUMPTIONS, plankBundle: 4 }, duty: { police: 350, medic: 480 },
   yields: { softwood: { chopSecondsPerLog: 12.5 }, hardwood: { chopSecondsPerLog: 22.5 } },
   outputs: { plank: 4, post: 2, firewood: 4, board: 2, hardFirewood: 5 }, buyers: FALLBACK_BUYERS, curves: FALLBACK_CURVES,
 };
 const loops = computeLoops(inp);
 expect(loops.length === 3, `three lumber loops (got ${loops.length})`);
 for (const l of loops) expect(l.steady > 0 && l.steady <= l.first, `${l.id}: steady ${l.steady} within first hour ${l.first}`);
-expect(near(loops[0].logsPerHour, 17.7, 0.3), `hand haul is about 18 logs an hour (got ${loops[0].logsPerHour})`);
+expect(near(loops[0].logsPerHour, 20.7, 0.3), `hand haul with bundles of 4 and the yard's buyers is about 21 logs an hour (got ${loops[0].logsPerHour})`);
+// 4b. The plank trips (#4875): a trip per bundle, so one plank a trip to buyers in town is the ~$262 hour the proof measured.
+expect(tripsPerLog(4, 4) === 1 && tripsPerLog(4, 1) === 4 && tripsPerLog(5, 4) === 2 && tripsPerLog(0, 4) === 0, "a log's planks take a trip per bundle");
+const town = { ...inp.assumptions, plankBundle: 1, premiumMetres: 187, wholesaleMetres: 170 };
+const single = computeLoops({ ...inp, assumptions: town });
+expect(single[0].flagged && single[0].steady < loops[0].steady / 2, `one plank a trip to buyers in town is below the rung (got ${single[0].steady}/h)`);
+const bundled = computeLoops({ ...inp, assumptions: { ...town, plankBundle: 4 } });
+expect(bundled[0].steady > single[0].steady && bundled[0].steady < loops[0].steady, `bundles help, the yard's buyers help more (${single[0].steady} < ${bundled[0].steady} < ${loops[0].steady})`);
+expect(loops[0].steady >= 400 && loops[0].steady <= 480, `the hand-haul planks hour is on the $400 to $480 entry rung (got ${loops[0].steady})`);
+const h = handHaulHour(100, 4, 1, 20, { runMps: 2, premiumMetres: 10, wholesaleMetres: 100 });
+expect(near(h.logs, 5 + (3600 - 5 * 110) / 200, 0.001) && near(h.trips, h.logs, 0.001), `the premium planks take the near trip, the rest the far one (got ${JSON.stringify(h)})`);
+expect(plankBundleOf('LF_QuantityComponent "{5AD2B81F97B9381B}" {\n   m_iMaxQuantity 4\n  }') === 4 && plankBundleOf("MeshObject {}") === null, "the plank bundle is read from the prefab");
+expect(logSpeedCapOf("   m_fSpeedCap 0.7\n") === 0.7 && logSpeedCapOf("") === null, "the log speed cap is read from the prefab");
 expect(loops[2].logsPerHour === 24, "the truck loop is 6 logs x 4 cycles = 24 logs an hour");
 expect(loops[0].detail[0].premiumSteady === 20 && loops[0].detail[0].premiumFirst === 40, "the plank purse caps premium at 20 steady, 40 first");
 expect(loops.every((l) => !l.flagged), `every fixture loop pays at least the $350 Cadet shift (got ${loops.map((l) => l.steady).join(", ")})`);

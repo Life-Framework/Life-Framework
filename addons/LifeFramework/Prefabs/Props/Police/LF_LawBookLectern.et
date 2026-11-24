@@ -9,7 +9,7 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
     UserActionContext "{AB7ED6C311B6FA3D}" {
      ContextName "LF_LawBookLectern"
      Position PointInfo "{5DDCBCD065B2D408}" {
-      Offset -0.6 0.9 0.35
+      Offset -0.6 0.956 0.35
      }
      Radius 1.8
     }

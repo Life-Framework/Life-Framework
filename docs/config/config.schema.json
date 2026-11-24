@@ -1858,6 +1858,16 @@
                 "type": "string",
                 "description": "Localization key naming what the level opens, the unlock text row",
                 "default": ""
+              },
+              "kind": {
+                "type": "integer",
+                "description": "What backs the row: a real gate, or MILESTONE for an honest marker with no promise (#4869)",
+                "default": 0
+              },
+              "ref": {
+                "type": "string",
+                "description": "The gate the row names, by its kind: a licence, machine, species, activity or job id. Empty for a milestone, a perk pick and the export board",
+                "default": ""
               }
             },
             "additionalProperties": false

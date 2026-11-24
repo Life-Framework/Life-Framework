@@ -1145,6 +1145,9 @@ class LF_AgentCommand
 		// Look up or down (mouse pitch), so a swing can reach a low rock.
 		if (actionName == "CharacterTurnUp")
 			return true;
+		// Set the pitch outright (#4803): a lost relative turn cannot leave the view tilted.
+		if (actionName == "CharacterPitch")
+			return true;
 		// Vehicle lights and high beams, to light the dashboard indicators for the vehicle HUD proof (#921).
 		if (actionName == "VehicleLightsToggle" || actionName == "CarLightsHiBeamToggle")
 			return true;
@@ -3575,7 +3578,7 @@ class LF_AgentHarness
 
 		// The melee key and the mouse pitch reach the character through its input
 		// context, the same flags the command handler reads (SCR_CharacterCommandHandler.HandleMelee).
-		if (cmd.Arg1 == "CharacterMelee" || cmd.Arg1 == "CharacterTurnUp")
+		if (cmd.Arg1 == "CharacterMelee" || cmd.Arg1 == "CharacterTurnUp" || cmd.Arg1 == "CharacterPitch")
 		{
 			SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
 			CharacterControllerComponent controller;
@@ -3593,6 +3596,11 @@ class LF_AgentHarness
 				context.SetMeleeAttack(true);
 				vector aimNow = context.GetAimingAngles();
 				character.LF_AskHarnessMelee(aimNow[0], aimNow[1]);
+			}
+			else if (cmd.Arg1 == "CharacterPitch")
+			{
+				// Absolute: a late or lost command cannot leave the view tilted (#4803).
+				context.SetAimingAngles(LF_AimHarness.PitchTo(context.GetAimingAngles(), value));
 			}
 			else
 			{
@@ -4334,6 +4342,11 @@ class LF_AgentHarness
 		if (resident)
 			return resident;
 
+		// A casualty the medic generator spawned has no layer name either: Casualty or casualty:<n> (#4853).
+		IEntity casualty = LF_CasualtyHarness.Named(entityName);
+		if (casualty)
+			return casualty;
+
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
 			return null;
@@ -4441,6 +4454,16 @@ class LF_AgentHarness
 		{
 			if (FindOnEntity(patient, className))
 				return patient;
+
+			return null;
+		}
+
+		// A casualty the medic generator spawned (#4853): Casualty or casualty:<n>, the server's open list.
+		IEntity casualty = LF_CasualtyHarness.Named(entityName);
+		if (casualty)
+		{
+			if (FindOnEntity(casualty, className))
+				return casualty;
 
 			return null;
 		}

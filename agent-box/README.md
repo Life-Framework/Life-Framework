@@ -220,6 +220,10 @@ the game profile). Hooks:
   `MenuRight`, `MenuSelect`, `MenuBack`, `LF_OpenDebugMenu`, and the digit keys
   `LF_Keypad0`..`LF_Keypad9`) for 300 ms and at least three client frames, so a slow frame
   cannot swallow it. Movement actions are refused.
+  **View pitch:** `input CharacterTurnUp <deg>` turns the view by that much (relative);
+  `input CharacterPitch <deg>` sets it (absolute, clamped to ±85). Use the absolute one for a
+  sweep: a relative turn sent while the client stalls can be lost, and every later step then
+  lands that far off. On #4803 the suspect stared at the floor and `aim` read `none` for minutes.
   **Talking to an NPC:** drive a dialogue the way a player does. Start the talk, then
   `dialogue-wait choosing <node>` (the line plays first; a Select while it plays only skips it),
   then `input MenuDown` / `MenuUp` to move the focus and `input MenuSelect` to answer, or
@@ -241,7 +245,9 @@ the game profile). Hooks:
   handcuffs flag (#664).
 - `hold <name>` (runs on the client) takes a carried gadget whose prefab name contains `<name>`
   into the left hand, as a quick-slot key does; a prefab whose file name is exactly `<name>` wins
-  over one that only contains it. Replies `held <name>` or `not_carried`. `hold weapon` draws the first slotted weapon; `hold none` puts the weapon in hand away (vanilla `SelectWeapon(null)`), replying `holstered`.
+  over one that only contains it. Replies `held <name>` or `not_carried`. `hold weapon` draws the first slotted weapon; `hold none` puts the weapon in hand away (vanilla `SelectWeapon(null)`), replying `holstered`. Right after a swing, a reload or an interaction the hands are busy and the draw is refused (`drew <prefab> false`): the sender (`sendCommand`, so every proof) then holsters, waits 0.9 s and draws again, up to 4 tries (#4867).
+- `send checkpoint <hour>` (harness build, #4825) applies `agent-box/checkpoints/hour-<hour>.json`. Every `session up` (and `restart`) mirrors the whole folder to the server's `$profile:LifeFramework/checkpoints/` (the test runner does the same, #4845), so it works in any session with no `--seed`; the reply is only `asked for...`, the verdict is `[LFDebug:Checkpoint] checkpoint applied to <uid>: cash C, bank B, 0 part(s) failed` in the server log. A character must exist first (`arrive`), or the server logs `character NULL`.
+- `state` answering `no_session` is a timeout, not a missing session: the client's main thread freezes 25-30 s when the last carried cash leaves the character (an ATM deposit-all, `checkpoint 0`), and nothing is read from the command file meanwhile. `state` only reads, so `sendCommand` asks again up to 4 times (about 40 s) before reporting it; any other verb sent during the freeze still times out as `no_session` (#4867).
 - `itemon <{GUID}path>` / `itemoff <{GUID}path>` (server, dev gate) switch the item's use state (`LF_AssetAnimComponent.SetActive`: the
   handcuffs' strands swing open), looking in the inventory first, then for one lying within 3 m.
 - `itemgive <{GUID}path>` and `itemdrop <{GUID}path>` (server, dev gate) put one item of a prefab in

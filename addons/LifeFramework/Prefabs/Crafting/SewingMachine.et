@@ -6,7 +6,7 @@ GenericEntity : "{1D9FA80D3742DBD6}Prefabs/Props/Civilian/SewingMachine_01.et" {
     UserActionContext "{61CF4728B00BD666}" {
      ContextName "default"
      Position PointInfo "{61CF4728B00BD79D}" {
-      Offset -0.2923 1.0037 0
+      Offset -0.2923 1.212 0
      }
     }
    }

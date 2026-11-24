@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{22E9F27191AB3316}Configs/Signs/LF_Signs_Everon1989/LF_Signs_HoursPlate.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

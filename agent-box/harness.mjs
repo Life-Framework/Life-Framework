@@ -32,6 +32,8 @@ const MENU_ACTIONS = new Set([
   // Character actions the harness drives for melee proof (pickaxe swing at an ore rock).
   "CharacterMelee",
   "CharacterTurnUp",
+  // Absolute view pitch in degrees (#4803): a lost or late relative turn cannot leave the view tilted.
+  "CharacterPitch",
   // The clip stamp key (#1173), so the proof presses the real binding.
   "LF_ClipStamp",
   // Vehicle lights, to light the dashboard indicators for the vehicle HUD proof (#921).
@@ -402,7 +404,36 @@ function warnLowspecCapture(dir) {
 // A client answers `stand` once the target has streamed in (up to 20 s after a jump across the island, #4611).
 const STAND_TIMEOUT_MS = 25000;
 
+// `hold weapon` answers `ok drew <prefab> false` while the hands are busy (right after a swing, a reload, an
+// interaction): the draw was refused. Holster, wait out the animation and draw again, a few times (#4867).
+export const HOLD_WEAPON_TRIES = 4;
+export const HOLD_WEAPON_WAIT_MS = 900;
+export function weaponNotDrawn(result) {
+  return result?.status === "ok" && /^drew .* false$/.test(String(result.detail ?? "").trim());
+}
+export function holdWeapon(send, timeoutMs, wait) {
+  let result = send({ verb: "hold", item: "weapon" }, timeoutMs);
+  for (let attempt = 1; attempt < HOLD_WEAPON_TRIES && weaponNotDrawn(result); attempt++) {
+    send({ verb: "hold", item: "none" }, timeoutMs);
+    wait(HOLD_WEAPON_WAIT_MS);
+    result = send({ verb: "hold", item: "weapon" }, timeoutMs);
+  }
+  return result;
+}
+
+// `state` answering `no_session` right after the last carried cash leaves the character (an ATM deposit-all, a
+// checkpoint to $0) is not a missing session: the client's main thread freezes 25-30 s and answers once it thaws
+// (#4867, follow-up issue for the freeze). `state` only reads, so ask again: three more tries outwait the freeze.
+export const STATE_TRIES = 4;
+export function stateOutwaitingFreeze(send, timeoutMs) {
+  let result = send({ verb: "state" }, timeoutMs);
+  for (let attempt = 1; attempt < STATE_TRIES && result.status !== "ok" && result.detail === "no_session"; attempt++) result = send({ verb: "state" }, timeoutMs);
+  return result;
+}
+
 export function sendCommand(spec, timeoutMs = 8000) {
+  if (spec.verb === "state" && !spec.retried) return stateOutwaitingFreeze((s, t) => sendCommand({ ...s, retried: true }, t), timeoutMs);
+  if (spec.verb === "hold" && spec.item === "weapon" && !spec.retried) return holdWeapon((s, t) => sendCommand({ ...s, retried: true }, t), timeoutMs, pause);
   if (spec.verb === "stand") timeoutMs = Math.max(timeoutMs, STAND_TIMEOUT_MS);
   const id = nextId();
   const address = addressFor(boxOverride);
@@ -1114,6 +1145,35 @@ function selftest() {
       refused = true;
     }
     if (!refused) throw new Error(`chat accepted ${JSON.stringify(bad)}`);
+  }
+  {
+    // red-proof 2026-11-24 (#4867): with holdWeapon sending once, the "retried" check below failed.
+    const calls = [];
+    const answers = ["drew AK false", "holstered", "drew AK false", "holstered", "drew AK true"];
+    const fake = (spec) => { calls.push(`${spec.verb} ${spec.item}`); return { status: "ok", detail: answers.shift() }; };
+    const got = holdWeapon(fake, 1, () => {});
+    if (got.detail !== "drew AK true" || calls.join() !== "hold weapon,hold none,hold weapon,hold none,hold weapon") throw new Error(`hold weapon retry: ${calls.join()} -> ${got.detail}`);
+    let n = 0;
+    const never = () => { n++; return { status: "ok", detail: "drew AK false" }; };
+    holdWeapon(never, 1, () => {});
+    if (n !== 2 * HOLD_WEAPON_TRIES - 1) throw new Error(`hold weapon gave up after ${n} sends`);
+    const once = [];
+    holdWeapon((spec) => { once.push(spec.item); return { status: "ok", detail: "drew AK true" }; }, 1, () => { throw new Error("waited after a draw that worked"); });
+    if (once.join() !== "weapon") throw new Error("hold weapon retried a draw that worked");
+    if (weaponNotDrawn({ status: "error", detail: "no_character" }) || weaponNotDrawn({ status: "ok", detail: "no_weapon_in_slots" })) throw new Error("weaponNotDrawn matched a non-draw answer");
+  }
+  {
+    // red-proof 2026-11-24 (#4867): with stateOutwaitingFreeze sending once, the first check below failed.
+    const answers = [{ status: "error", detail: "no_session" }, { status: "error", detail: "no_session" }, { status: "ok", detail: "cash=0" }];
+    let sent = 0;
+    const got = stateOutwaitingFreeze(() => { sent++; return answers.shift(); }, 1);
+    if (got.status !== "ok" || sent !== 3) throw new Error(`state retry: ${sent} sends -> ${got.status}`);
+    sent = 0;
+    stateOutwaitingFreeze(() => { sent++; return { status: "error", detail: "no_character" }; }, 1);
+    if (sent !== 1) throw new Error("state retried an answer that was not a timeout");
+    sent = 0;
+    stateOutwaitingFreeze(() => { sent++; return { status: "error", detail: "no_session" }; }, 1);
+    if (sent !== STATE_TRIES) throw new Error(`state gave up after ${sent} sends`);
   }
   const quizClear = buildLine(9, { verb: "quizclear" });
   if (quizClear !== "9 quizclear") throw new Error(quizClear);

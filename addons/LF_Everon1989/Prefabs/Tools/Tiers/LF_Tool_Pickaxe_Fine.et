@@ -21,5 +21,8 @@ GenericEntity : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
     }
    }
   }
+  LF_ToolConditionComponent "{FF07C0EC5451DBB3}" {
+   m_iTier 2
+  }
  }
 }
