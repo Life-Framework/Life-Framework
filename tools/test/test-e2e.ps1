@@ -166,6 +166,11 @@ $craftingMirror = Join-Path $profile "profile\crafting-addon\Prefabs\Crafting"
 New-Item -ItemType Directory -Force -Path $craftingMirror | Out-Null
 Copy-Item -Path (Join-Path $root "addons\LifeFramework\Prefabs\Crafting\*") -Destination $craftingMirror -Recurse -Force
 
+# The harness checkpoints (agent-box/checkpoints/hour-N.json, #4825) are read from $profile:LifeFramework/checkpoints.
+$checkpointMirror = Join-Path $profile "profile\LifeFramework\checkpoints"
+New-Item -ItemType Directory -Force -Path $checkpointMirror | Out-Null
+Copy-Item -Path (Join-Path $root "agent-box\checkpoints\*.json") -Destination $checkpointMirror -Force
+
 # tools\cli audit placement (agent-box/place-audit.mjs) hands over the town's entity list in
 # LF_PLACE_AUDIT_IN; LF_Test_PlacementAuditTown reads it as $profile:place-audit/in.txt.
 if ($env:LF_PLACE_AUDIT_IN -and (Test-Path -LiteralPath $env:LF_PLACE_AUDIT_IN)) {

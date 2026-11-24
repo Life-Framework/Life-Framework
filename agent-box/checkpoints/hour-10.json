@@ -1,0 +1,17 @@
+{
+  "hour": 10,
+  "note": "past the arc: the truck yard is next",
+  "cash": 450,
+  "bank": 8450,
+  "policeRank": 0,
+  "medicRank": 0,
+  "levels": {
+    "MINER": 10,
+    "DELIVERY": 10,
+    "FARMER": 3
+  },
+  "standing": {
+    "UNDERWORLD": 260
+  },
+  "licences": "DRIVING_LICENCE,MINER_COAL,MINER_IRON"
+}

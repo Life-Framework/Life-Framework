@@ -1,7 +1,8 @@
 //------------------------------------------------------------------------------------------------
 //! One action on the hardware bench (WK-W9, #4187): "Repair the pickaxe", "Sharpen the axe" or
-//! "Re-string the rod", one per tool kind. The client sends no price; the server reads the fee from
-//! the bench prefab, the cash and the scrap from the player, and says how it went in words.
+//! "Re-string the rod", one per tool kind. It works on the tool of that kind the player holds (#4821).
+//! The client sends no price; the server reads the fee from the bench prefab, the cash and the scrap
+//! from the player, and says how it went in words.
 class LF_ToolBenchAction : ScriptedUserAction
 {
 	[Attribute("0", UIWidgets.ComboBox, "Tool kind this action works on", "", ParamEnumArray.FromEnum(LF_EToolBenchKind))]
@@ -13,11 +14,7 @@ class LF_ToolBenchAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	static string KindId(LF_EToolBenchKind kind)
 	{
-		if (kind == LF_EToolBenchKind.AXE)
-			return LF_ToolBench.KIND_AXE;
-		if (kind == LF_EToolBenchKind.ROD)
-			return LF_ToolBench.KIND_ROD;
-		return LF_ToolBench.KIND_PICKAXE;
+		return LF_ToolConditionComponent.KindId(kind);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -33,8 +30,23 @@ class LF_ToolBenchAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The holder's client reads the held tool's replicated condition: no tool in hand, or one already
+	//! at full, greys the action out with the reason in words.
 	override bool CanBePerformedScript(IEntity user)
 	{
+		LF_ToolConditionComponent tool = LF_ToolConditionComponent.Held(user, KindId(m_eKind));
+		if (!tool)
+		{
+			SetCannotPerformReason("#LF-ToolBench_NoTool");
+			return false;
+		}
+
+		if (tool.GetCondition() >= LF_ToolCondition.FULL)
+		{
+			SetCannotPerformReason("#LF-ToolBench_Full");
+			return false;
+		}
+
 		if (LF_MoneyUtils.GetCash(user) < m_iFee)
 		{
 			SetCannotPerformReason("#LF-ToolBench_NoMoney");
@@ -55,7 +67,7 @@ class LF_ToolBenchAction : ScriptedUserAction
 			return;
 		}
 
-		LF_ToolCondition tool = LF_ToolBench.ToolOf(LF_Utils.GetPlayerUid(pUserEntity), KindId(m_eKind));
+		LF_ToolConditionComponent tool = LF_ToolConditionComponent.Held(pUserEntity, KindId(m_eKind));
 		LF_EToolBenchResult result = LF_EToolBenchResult.FAILED;
 		ResourceName scrap = LF_ToolBench.ScrapPrefab();
 		if (scrap.IsEmpty())

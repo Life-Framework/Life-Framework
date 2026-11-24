@@ -186,7 +186,7 @@ StringTable {
     }
     CustomStringTableItem "{44D5E71018655F61}" {
      Id "LF-Activity_Medic_Pitch"
-     Target_en_us "Clock in at the clinic and answer calls for a wage."
+     Target_en_us "Clock in at the clinic and answer calls for a wage. Casualty calls come in on the board while you are on duty."
      Comment "Activity pitch, one line."
     }
     CustomStringTableItem "{A1503228206CA07A}" {
@@ -488,6 +488,31 @@ StringTable {
      Id "LF-BuyerSale_Nothing"
      Target_en_us "You have nothing he drinks or smokes."
      Comment "Toast (#2922, 1989 pack voice): no chain goods the buyer names."
+    }
+    CustomStringTableItem "{494D3B2405DA9765}" {
+     Id "LF-CasualtyCall_Dock"
+     Target_en_us "Docker down on the dock, crate fell on a leg"
+     Comment "Casualty call summary on the medic board and pager (#4829): a hurt docker on the Saint-Philippe dock."
+    }
+    CustomStringTableItem "{2851E2B13741CE5C}" {
+     Id "LF-CasualtyCall_Farm"
+     Target_en_us "Farmhand down at the farm compound, pitchfork wound"
+     Comment "Casualty call summary on the medic board and pager (#4829): a hurt farmhand at the farm compound."
+    }
+    CustomStringTableItem "{43F75E1783305BF3}" {
+     Id "LF-CasualtyCall_Mine"
+     Target_en_us "Miner down at the mine, crushed hand"
+     Comment "Casualty call summary on the medic board and pager (#4829): a hurt miner at a mine."
+    }
+    CustomStringTableItem "{15F584F729367016}" {
+     Id "LF-CasualtyCall_Road"
+     Target_en_us "Driver hurt at the roadside fuel stop, ran off the road"
+     Comment "Casualty call summary on the medic board and pager (#4829): a hurt driver at the roadside fuel stop."
+    }
+    CustomStringTableItem "{4F9EF33EB31A0B70}" {
+     Id "LF-CasualtyCall_Woodlot"
+     Target_en_us "Logger down at the woodlot, saw cut to the leg"
+     Comment "Casualty call summary on the medic board and pager (#4829): a hurt logger at the woodlot."
     }
     CustomStringTableItem "{6F65DE9EB00006ED}" {
      Id "LF-CharSel_Title"

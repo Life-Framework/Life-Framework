@@ -1,5 +1,5 @@
-// red-proof: 2026-11-23, `--red LF_Test_GatherWear` skips the wear step, so the tools stay at 100 and the warning checks fail. Green with `--only`.
-//! tool/gather-wear (#4300): each mining swing, tree felled and fish caught lowers that tool's
+// red-proof: 2026-11-23, `--red LF_Test_GatherWear` skips the wear step, so the tools stay at 100 and the warning checks fail. Green with `--only`. #4821 moved it onto the tool items; re-proved 2026-11-24 in the #4821 batched `--red` run: RED-OK, "three swings cost the pickaxe three uses (expected 97, got 100)".
+//! tool/gather-wear (#4300, #4821): each mining swing, tree felled and fish caught lowers that tool item's
 //! condition by the tier's configured amount, only that kind of tool wears, and a tool dropping into
 //! a worse band (or worn out) says so in words.
 [LF_TestInfo(LF_TestTier.WORLD)]
@@ -45,38 +45,67 @@ class LF_Test_GatherWear : LF_Test
 		if (!character)
 			return;
 
-		// A player's tools: a swing wears the pickaxe, a fell the axe, a catch the rod, each on its own.
-		LF_ToolBench.ResetStatics();
-		LF_Utils.SetUidForTests(character, "uid-gather-wear");
+		// The tools themselves (#4821): a swing wears the pickaxe, a fell the axe, a catch the rod, each its own.
+		IEntity pickEntity = LF_Utils.SpawnEntityPrefab(PICKAXE, character.GetOrigin() + "3 0.5 0");
+		IEntity axeEntity = LF_Utils.SpawnEntityPrefab(AXE, character.GetOrigin() + "3 0.5 1");
+		IEntity rodEntity = LF_Utils.SpawnEntityPrefab(ROD, character.GetOrigin() + "3 0.5 2");
+		LF_ToolConditionComponent pick = LF_ToolConditionComponent.Of(pickEntity);
+		LF_ToolConditionComponent axe = LF_ToolConditionComponent.Of(axeEntity);
+		LF_ToolConditionComponent rod = LF_ToolConditionComponent.Of(rodEntity);
+		ctx.True(pick && axe && rod, "the core pickaxe, axe and rod carry a tool condition");
+		if (!pick || !axe || !rod)
+		{
+			DeleteAll(character, pickEntity, axeEntity, rodEntity);
+			return;
+		}
+
+		ctx.EqualStr(LF_ToolBench.KIND_PICKAXE, pick.GetKind(), "the pickaxe is a pickaxe");
+		ctx.EqualStr(LF_ToolBench.KIND_AXE, axe.GetKind(), "the axe is an axe");
+		ctx.EqualStr(LF_ToolBench.KIND_ROD, rod.GetKind(), "the rod is a rod");
+
 		float rate = LF_ToolCondition.WearPerUse(LF_ToolCondition.TIER_STANDARD);
 		for (int i = 0; i < 3; i++)
 		{
 			if (!RedProof())
-				LF_ToolWear.OnUse(character, LF_ToolBench.KIND_PICKAXE);
+				LF_ToolWear.OnUse(character, LF_ToolBench.KIND_PICKAXE, pickEntity);
 		}
 		if (!RedProof())
 		{
-			LF_ToolWear.OnUse(character, LF_ToolBench.KIND_AXE);
-			LF_ToolWear.OnUse(character, LF_ToolBench.KIND_ROD);
+			LF_ToolWear.OnUse(character, LF_ToolBench.KIND_AXE, axeEntity);
+			LF_ToolWear.OnUse(character, LF_ToolBench.KIND_ROD, rodEntity);
 		}
-		ctx.EqualFloat(100.0 - 3 * rate, LF_ToolBench.ToolOf("uid-gather-wear", LF_ToolBench.KIND_PICKAXE).m_fCondition, 0.001, "three swings cost the pickaxe three uses");
-		ctx.EqualFloat(100.0 - rate, LF_ToolBench.ToolOf("uid-gather-wear", LF_ToolBench.KIND_AXE).m_fCondition, 0.001, "one fell costs the axe one use");
-		ctx.EqualFloat(100.0 - rate, LF_ToolBench.ToolOf("uid-gather-wear", LF_ToolBench.KIND_ROD).m_fCondition, 0.001, "one catch costs the rod one use");
+		ctx.EqualFloat(100.0 - 3 * rate, pick.GetCondition(), 0.001, "three swings cost the pickaxe three uses");
+		ctx.EqualFloat(100.0 - rate, axe.GetCondition(), 0.001, "one fell costs the axe one use");
+		ctx.EqualFloat(100.0 - rate, rod.GetCondition(), 0.001, "one catch costs the rod one use");
+
+		// The tool passed must be of the kind: an axe handed to a pickaxe use wears nothing (none held).
+		LF_ToolWear.OnUse(character, LF_ToolBench.KIND_PICKAXE, axeEntity);
+		ctx.EqualFloat(100.0 - rate, axe.GetCondition(), 0.001, "an axe is not worn as a pickaxe");
 
 		// A worn-out tool still works: the use goes through and the condition stays at zero.
-		LF_ToolCondition axe = LF_ToolBench.ToolOf("uid-gather-wear", LF_ToolBench.KIND_AXE);
-		axe.m_fCondition = 0;
-		LF_ToolWear.OnUse(character, LF_ToolBench.KIND_AXE);
-		ctx.EqualFloat(0, axe.m_fCondition, 0.001, "a worn-out axe stays at zero");
-		ctx.True(axe.Speed() > 0, "a worn-out axe still works");
+		axe.SetCondition(0);
+		LF_ToolWear.OnUse(character, LF_ToolBench.KIND_AXE, axeEntity);
+		ctx.EqualFloat(0, axe.GetCondition(), 0.001, "a worn-out axe stays at zero");
+		ctx.True(LF_ToolCondition.SpeedFactor(axe.GetCondition()) > 0, "a worn-out axe still works");
 
-		// No player identity (an empty uid), or a family with no tool: nothing wears, nothing crashes.
-		LF_Utils.SetUidForTests(null, "");
+		// A user with no tool of the kind in hand or pack, or a family with no tool: nothing wears, nothing crashes.
 		LF_ToolWear.OnUse(character, LF_ToolBench.KIND_PICKAXE);
 		LF_ToolWear.OnGather(character, LF_GatherTools.FAMILY_FORAGING);
-		ctx.EqualFloat(100.0 - 3 * rate, LF_ToolBench.ToolOf("uid-gather-wear", LF_ToolBench.KIND_PICKAXE).m_fCondition, 0.001, "a user without identity wears no player's tool");
+		ctx.EqualFloat(100.0 - 3 * rate, pick.GetCondition(), 0.001, "a user without a pickaxe wears no pickaxe lying nearby");
 
-		LF_ToolBench.ResetStatics();
+		DeleteAll(character, pickEntity, axeEntity, rodEntity);
+	}
+
+	static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
+	static const ResourceName AXE = "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et";
+	static const ResourceName ROD = "{0327968D17D249FD}Prefabs/Items/Fishing/LF_FishingRod.et";
+
+	//------------------------------------------------------------------------------------------------
+	protected static void DeleteAll(IEntity character, IEntity a, IEntity b, IEntity c)
+	{
+		LF_TestCharacterFixture.Delete(a);
+		LF_TestCharacterFixture.Delete(b);
+		LF_TestCharacterFixture.Delete(c);
 		LF_TestCharacterFixture.Delete(character);
 	}
 }

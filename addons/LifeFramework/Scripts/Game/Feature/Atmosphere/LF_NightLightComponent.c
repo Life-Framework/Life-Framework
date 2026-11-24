@@ -15,6 +15,11 @@ class LF_NightLight
 	//! Milliseconds between two looks at the clock.
 	static const int CHECK_MS = 30000; // lf-fixed: a dusk look every 30 s costs nothing; the card fixes it, no server setting
 
+	//! The child light of a world-streamed entity can appear after its first init. A miss is retried
+	//! this often, this many times, before the "no LightEntity child" error is logged (#4831).
+	static const int RETRY_MS = 500; // lf-fixed: a few frames; the child is built by the next second
+	static const int RETRY_MAX = 6; // lf-fixed: 3 s in all, then the 30 s tick keeps looking
+
 	//------------------------------------------------------------------------------------------------
 	//! True when `hour` (0 to 24) is inside [hourOn, hourOff). The window wraps past midnight when
 	//! hourOn is later than hourOff (18 to 6). Equal bounds mean always on.
@@ -48,9 +53,29 @@ class LF_NightLightComponent : ScriptComponent
 	[Attribute("6", UIWidgets.Auto, "The light goes off at this hour. A window may wrap past midnight (18 to 6)")]
 	protected float m_fHourOff;
 
+	[Attribute("1 0.72 0.42", UIWidgets.ColorPicker, "Colour of the light the component builds when the prefab's own child light is missing at run time")]
+	protected vector m_vColor;
+
+	[Attribute("3", UIWidgets.Auto, "LV of the built light")]
+	protected float m_fLV;
+
+	[Attribute("4", UIWidgets.Auto, "Radius in metres of the built light")]
+	protected float m_fRadius;
+
+	[Attribute("0", UIWidgets.CheckBox, "The built light is a spot light that points down (a lamp head); otherwise a point light")]
+	protected bool m_bSpot;
+
+	[Attribute("140", UIWidgets.Auto, "Cone angle in degrees of a built spot light")]
+	protected float m_fConeAngle;
+
 	protected bool m_bLit;
 	protected bool m_bApplied;
 	protected bool m_bTicking;
+	protected bool m_bRetryPending;
+	protected bool m_bGaveUp;
+	protected bool m_bBuilt;
+	protected bool m_bForceRenders;
+	protected int m_iMisses;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -82,7 +107,114 @@ class LF_NightLightComponent : ScriptComponent
 		if (m_bTicking)
 			GetGame().GetCallqueue().Remove(Tick);
 
+		if (m_bRetryPending)
+			GetGame().GetCallqueue().Remove(Retry);
+
 		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Retry()
+	{
+		m_bRetryPending = false;
+		Tick();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True on a machine that builds the light (not a dedicated or console-app server). The test, which
+	//! runs headless, forces it on to drive the miss path.
+	protected bool Renders()
+	{
+		if (m_bForceRenders)
+			return true;
+
+		return RplSession.Mode() != RplMode.Dedicated && !System.IsConsoleApp();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void ForceRenders(bool on)
+	{
+		m_bForceRenders = on;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True once the retries ran out, no light could be built either, and the error was logged.
+	bool GaveUp()
+	{
+		return m_bGaveUp;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the prefab's child light never appeared and the component built its own.
+	bool Built()
+	{
+		return m_bBuilt;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int Misses()
+	{
+		return m_iMisses;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No child light yet. Look again shortly; after RETRY_MAX looks build the light from the attributes
+	//! (a LightEntity child declared in a prefab is not there at run time on a client: #4831), and only
+	//! when that fails log the error once.
+	protected void OnMiss()
+	{
+		if (m_bGaveUp || m_bBuilt || !Renders())
+			return;
+
+		m_iMisses++;
+		if (m_iMisses > LF_NightLight.RETRY_MAX)
+		{
+			if (BuildLight())
+				return;
+
+			m_bGaveUp = true;
+			LF_Debug.Error(LF_NightLight.FEATURE, string.Format("%1 has no LightEntity child after %2 looks and the light could not be built; it stays dark", LF_Atmosphere.LabelOf(GetOwner()), m_iMisses));
+			return;
+		}
+
+		if (m_bRetryPending)
+			return;
+
+		m_bRetryPending = true;
+		GetGame().GetCallqueue().CallLater(Retry, LF_NightLight.RETRY_MS, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Builds the light as a child of the owner, the way the other runtime lights are made. The next
+	//! look finds it and applies the hour.
+	protected bool BuildLight()
+	{
+		IEntity owner = GetOwner();
+		if (!owner)
+			return false;
+
+		LightType type = LightType.POINT;
+		vector direction = vector.Forward;
+		if (m_bSpot)
+		{
+			type = LightType.SPOT;
+			direction = "0 -1 0";
+		}
+
+		LightEntity light = LightEntity.CreateLight(type, 0, m_fRadius, Color.FromVector(m_vColor), m_fLV, vector.Zero, direction);
+		if (!light)
+			return false;
+
+		light.SetLensFlareType(LightLensFlareType.Disabled);
+		light.SetCastShadow(false);
+		light.SetIntensityEVClip(-10);
+		if (m_bSpot)
+			light.SetConeAngle(m_fConeAngle);
+
+		owner.AddChild(light, -1);
+		m_bBuilt = true;
+		LF_Debug.Info(LF_NightLight.FEATURE, string.Format("%1 had no LightEntity child after %2 looks; built its light", LF_Atmosphere.LabelOf(owner), m_iMisses));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -98,25 +230,30 @@ class LF_NightLightComponent : ScriptComponent
 	//! Applies the rule for `hour` to the child light and returns the state it should have. Also the
 	//! entry for the test, which has no client clock to wait on. A headless server builds no
 	//! LightEntity, so there the state is kept and no light is touched; a machine that renders and
-	//! finds no light says so once.
+	//! finds no light looks again, then builds one (OnMiss).
 	bool Evaluate(float hour)
 	{
 		bool wanted = LF_NightLight.IsOn(hour, m_fHourOn, m_fHourOff);
 		LightEntity light = FindLight();
 		if (!light)
 		{
-			bool renders = RplSession.Mode() != RplMode.Dedicated && !System.IsConsoleApp();
-			if (renders && !m_bApplied)
-				LF_Debug.Error(LF_NightLight.FEATURE, string.Format("%1 has no LightEntity child; it stays dark", LF_Atmosphere.LabelOf(GetOwner())));
+			OnMiss();
+			light = FindLight();
 		}
-		else if (!m_bApplied || light.IsEnabled() != wanted)
+
+		if (light)
 		{
-			light.SetEnabled(wanted);
-			LF_Debug.Info(LF_NightLight.FEATURE, string.Format("%1 %2 at hour %3", LF_Atmosphere.LabelOf(GetOwner()), LF_NightLight.Word(wanted), hour.ToString(-1, 1)));
+			m_iMisses = 0;
+			if (!m_bApplied || light.IsEnabled() != wanted)
+			{
+				light.SetEnabled(wanted);
+				LF_Debug.Info(LF_NightLight.FEATURE, string.Format("%1 %2 at hour %3", LF_Atmosphere.LabelOf(GetOwner()), LF_NightLight.Word(wanted), hour.ToString(-1, 1)));
+			}
+
+			m_bApplied = true;
 		}
 
 		m_bLit = wanted;
-		m_bApplied = true;
 		return wanted;
 	}
 

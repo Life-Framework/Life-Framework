@@ -30,6 +30,11 @@ class LF_StorageItemRecord : Managed
 	[NonSerialized()]
 	string m_sHouseKey;
 
+	//! Condition of a gathering tool (LF_ToolConditionComponent, #4821), -1 for anything that is not
+	//! one. Travels in the separate "toolcondition" save section, like the house key.
+	[NonSerialized()]
+	float m_fToolCondition = -1;
+
 	//------------------------------------------------------------------------------------------------
 	static LF_StorageItemRecord Create(string prefab, int quantity, int parent, int storage, int slot)
 	{
@@ -271,6 +276,7 @@ class LF_StorageSnapshot
 			copy.m_sSerial = source.m_sSerial;
 			copy.m_bStolen = source.m_bStolen;
 			copy.m_sHouseKey = source.m_sHouseKey;
+			copy.m_fToolCondition = source.m_fToolCondition;
 			int parent = source.m_iParent;
 			if (parent >= 0 && parent < heldIndex && held[parent])
 			{
@@ -696,6 +702,10 @@ class LF_StorageSnapshot
 				if (houseKey)
 					record.m_sHouseKey = houseKey.GetHouseIdentifier();
 
+				LF_ToolConditionComponent toolCondition = LF_ToolConditionComponent.Of(item);
+				if (toolCondition)
+					record.m_fToolCondition = toolCondition.GetCondition();
+
 				items.Insert(record);
 				CaptureChildren(item, items.Count() - 1, items, visited);
 			}
@@ -781,6 +791,7 @@ class LF_StorageSnapshot
 			SetSerial(occupants[match], item);
 			SetStolen(occupants[match], item);
 			SetHouseKey(occupants[match], item);
+			SetToolCondition(occupants[match], item);
 		}
 
 		// What the snapshot does not list is not carried: default prefab contents included.
@@ -882,6 +893,96 @@ class LF_StorageSnapshot
 		}
 
 		key.SetHouseIdentifier(item.m_sHouseKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a gathering tool gets back its condition (#4821). A record without one (-1) leaves the
+	//! tool as it is; an item without the component is skipped.
+	protected static void SetToolCondition(IEntity entity, LF_StorageItemRecord item)
+	{
+		if (item.m_fToolCondition < 0)
+			return;
+
+		LF_ToolConditionComponent tool = LF_ToolConditionComponent.Of(entity);
+		if (!tool)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("tool condition %1 not restored: %2 has no tool condition component", item.m_fToolCondition, item.m_sPrefab));
+			return;
+		}
+
+		tool.SetCondition(item.m_fToolCondition);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The "toolcondition" section (#4821): one row per stored snapshot that holds a gathering tool,
+	//! its conditions parallel to the item list (-1 = not a tool).
+	static array<ref LF_StorageToolConditionRecord> ExportToolConditions()
+	{
+		array<ref LF_StorageToolConditionRecord> rows = new array<ref LF_StorageToolConditionRecord>();
+		if (!s_mSnapshots)
+			return rows;
+
+		foreach (string key, LF_StorageSnapshotRecord record : s_mSnapshots)
+		{
+			if (!record || !record.m_aItems)
+				continue;
+
+			LF_StorageToolConditionRecord row = new LF_StorageToolConditionRecord();
+			row.m_sOwnerKey = record.m_sOwnerKey;
+			row.m_sSlot = record.m_sSlot;
+			bool any;
+			foreach (LF_StorageItemRecord item : record.m_aItems)
+			{
+				float condition = -1;
+				if (item)
+					condition = item.m_fToolCondition;
+
+				if (condition >= 0)
+					any = true;
+
+				row.m_aConditions.Insert(condition);
+			}
+
+			if (any)
+				rows.Insert(row);
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Runs after the carried payload loaded the snapshots. Replacement: every item of a matched
+	//! snapshot takes the row's value. A row whose snapshot is gone or whose item count differs is
+	//! skipped with a warning (those tools come back at full).
+	//! \return Number of snapshots that took their tool conditions.
+	static int ApplyToolConditions(array<ref LF_StorageToolConditionRecord> rows)
+	{
+		if (!rows)
+			return 0;
+
+		int matched;
+		foreach (LF_StorageToolConditionRecord row : rows)
+		{
+			if (!row || !row.m_aConditions)
+				continue;
+
+			LF_StorageSnapshotRecord record = Get(row.m_sOwnerKey, row.m_sSlot);
+			if (!record || !record.m_aItems || record.m_aItems.Count() != row.m_aConditions.Count())
+			{
+				LF_Debug.Warn(FEATURE, string.Format("tool conditions for %1/%2 skipped: no matching snapshot", row.m_sOwnerKey, row.m_sSlot));
+				continue;
+			}
+
+			for (int index = 0; index < record.m_aItems.Count(); index++)
+			{
+				if (record.m_aItems[index])
+					record.m_aItems[index].m_fToolCondition = row.m_aConditions[index];
+			}
+
+			matched++;
+		}
+
+		return matched;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1216,6 +1317,7 @@ class LF_StorageSnapshot
 		SetSerial(entity, item);
 		SetStolen(entity, item);
 		SetHouseKey(entity, item);
+		SetToolCondition(entity, item);
 
 		// A restored stack keeps its own slot instead of merging into a neighbour.
 		bool isStack = entity.FindComponent(LF_QuantityComponent) != null;

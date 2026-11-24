@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{1817D728C208B571}Configs/Medic/LF_CasualtyCalls_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

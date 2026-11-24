@@ -4,6 +4,11 @@ GenericEntity {
   LF_NightLightComponent "{9EA0FADFE29DA81E}" {
    m_fHourOn 18
    m_fHourOff 6
+   m_vColor 1 0.86 0.62
+   m_fLV 8
+   m_fRadius 16
+   m_bSpot 1
+   m_fConeAngle 140
   }
  }
  {
