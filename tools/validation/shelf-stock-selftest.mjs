@@ -7,7 +7,7 @@
 //     puts each line on its own shelf unit, never more points than boards x perBoard, and skips an item the board cannot hold;
 //   - a unit that faces the other way (yaw 180) gets points on its own side;
 //   - the prefab text carries the store key, the stock id for prices, one line per item and the boundary.
-// red-proof: 2026-11-19 with planShelves given `rows: 2` this printed "SUMMARY shelf-stock-selftest fail 3" (first line "FAIL a line has more than one row of copies"); restored, it prints ok.
+// red-proof: 2026-11-24 with the gondola units dropped from the plan this prints "SUMMARY shelf-stock-selftest fail 2"; restored, ok. Earlier: 2026-11-19 with planShelves given `rows: 2` this printed "SUMMARY shelf-stock-selftest fail 3" (first line "FAIL a line has more than one row of copies"); restored, it prints ok.
 import { shelvesPrefab, instancesOf, planShelves, sortUnits, stockItems } from "../town/shelf-stock.mjs";
 
 let failed = 0;
@@ -81,6 +81,16 @@ for (const line of plan.lines) {
 }
 // a facing-away unit (yaw 180) puts its goods on its own front: z below its own z, the yaw 0 unit's above
 ok(plan.lines.some((l) => l.slots.every((p) => p[2] > -3.47)) && plan.lines.some((l) => l.slots.every((p) => p[2] < -3.47)), "both faces of the gondola run carry goods");
+
+// A second fixture type (the sloped gondolas): its units take the fitting items in turn, the points join that item's line, never a pile.
+const gBoards = [0.1, 0.43, 0.82, 1.18].map((y) => ({ y, x: [-1.2, 1.2], z: [0.05, 0.45], clear: 0.35 }));
+const gUnits = [0, 1, 2, 3, 4].map((i) => ({ at: [9 + i * 2.5, 0, 9], yaw: 90 }));
+const gPlan = planShelves({ units, items, itemRefs: refs, boards, boardIdx: [1, 2, 3], perBoard: 8, gondolaZ: -3.47, gondola: { units: gUnits, boards: gBoards, boardIdx: [1, 2, 3], perBoard: 6 } });
+ok(gPlan.gondolaUnits === 5, `gondola units stocked: ${gPlan.gondolaUnits}, wanted 5`);
+ok(gPlan.lines.length === 3, `${gPlan.lines.length} lines, the gondolas add points to the existing items, not new lines for the same item`);
+ok(gPlan.lines.every((l) => l.max === l.slots.length), "a gondola line's stock is not one copy per point");
+ok(new Set(gPlan.lines.flatMap((l) => l.slots.map((p) => p.join(" ")))).size === gPlan.lines.reduce((n, l) => n + l.slots.length, 0), "two copies share one point on the gondolas");
+ok(gPlan.lines.reduce((n, l) => n + l.slots.length, 0) > plan.lines.reduce((n, l) => n + l.slots.length, 0), "the gondolas added no points");
 
 const text = shelvesPrefab({ storeKey: "k_test", stockId: "stock_test", restockSeconds: 90 }, plan, { center: [1, 0, -3], half: [12, 0, 9] });
 ok(/m_sStoreKey "k_test"/.test(text), "the store key is not in the prefab");
