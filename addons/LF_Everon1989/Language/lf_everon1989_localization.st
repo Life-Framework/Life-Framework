@@ -3604,6 +3604,36 @@ StringTable {
      Target_en_us "No room left in your garage: %1 cars and that is the lot. Take one out before you put another in."
      Comment "Garage store refused (#3458, 1989 pack voice): the owner's stored cars fill every slot. %1 is the cap. Overrides the core row."
     }
+    CustomStringTableItem "{3AAD37EC21729213}" {
+     Id "LF-Handbook_Everon_CrewsBody1"
+     Target_en_us "A crew starts at the registry cabin in Saint-Philippe. Talk to the registrar to found one for $250, to join one, or to file a notice. A crew has a leader and a fund, and new members start as prospects who cannot touch the fund or the stash yet."
+     Comment "Everon handbook page Crews, paragraph 1 (#4710)."
+    }
+    CustomStringTableItem "{A718DD52001D7B73}" {
+     Id "LF-Handbook_Everon_CrewsBody2"
+     Target_en_us "The flag wall outside the cabin shows the flags. The leader picks one for the crew. A flag another crew already flies nearby cannot be taken, so pick another."
+     Comment "Everon handbook page Crews, paragraph 2 (#4710)."
+    }
+    CustomStringTableItem "{4E308237D5A4F31C}" {
+     Id "LF-Handbook_Everon_CrewsBody3"
+     Target_en_us "To recruit, face another player and choose Invite. They join by facing you and choosing Join. Nobody can be pulled in without saying yes."
+     Comment "Everon handbook page Crews, paragraph 3 (#4710)."
+    }
+    CustomStringTableItem "{09EF67F05C1518FE}" {
+     Id "LF-Handbook_Everon_CrewsBody4"
+     Target_en_us "The gang radio costs $60 at the north outpost's quartermaster. Tune it to the gang channel and only your crew hears you. Members only."
+     Comment "Everon handbook page Crews, paragraph 4 (#4710)."
+    }
+    CustomStringTableItem "{D732ACC381E1A9B5}" {
+     Id "LF-Handbook_Everon_CrewsBody5"
+     Target_en_us "Your crew's marks and its members show on your map. A member who is down or in custody shows dim."
+     Comment "Everon handbook page Crews, paragraph 5 (#4710)."
+    }
+    CustomStringTableItem "{A1DC2AA421FACA93}" {
+     Id "LF-Handbook_Everon_CrewsTitle"
+     Target_en_us "Crews"
+     Comment "Everon handbook page title: Crews (#4710)."
+    }
     CustomStringTableItem "{5AFB8F50443E2D63}" {
      Id "LF-Handbook_Everon_CrimeBody1"
      Target_en_us "Hold up a shop, break into a vault or force a door and the police are told. Your wanted level goes up, and they come looking for you. You leave marks at the scene, and officers read them."
@@ -3643,6 +3673,31 @@ StringTable {
      Id "LF-Handbook_Everon_JobsTitle"
      Target_en_us "Work in town"
      Comment "Everon handbook page title: jobs (#1776)."
+    }
+    CustomStringTableItem "{D02F5D225390E034}" {
+     Id "LF-Handbook_Everon_LawAndOrderBody1"
+     Target_en_us "When an officer books you, they fill in a charge sheet at the booking desk in the police station. They tick each charge and sign it, and the sheet offers you the fine or the time. The paper is the record: what is on it is what you answer for."
+     Comment "Everon handbook page LawAndOrder, paragraph 1 (#4710)."
+    }
+    CustomStringTableItem "{7CBC65DCE88755D5}" {
+     Id "LF-Handbook_Everon_LawAndOrderBody2"
+     Target_en_us "Pay now or take the cell. A fine is paid at the booking desk, and it goes to the town, never to the officer. Take the time instead and you serve it in the Saint-Philippe holding cell: 15 minutes at most, counted while you are online."
+     Comment "Everon handbook page LawAndOrder, paragraph 2 (#4710)."
+    }
+    CustomStringTableItem "{FE064EE6C4A07A22}" {
+     Id "LF-Handbook_Everon_LawAndOrderBody3"
+     Target_en_us "Violent charges and robbery are jail only. Cooperate with the officer and the time is shorter. Bail is $150 for each minute you have left, with a minimum of $500."
+     Comment "Everon handbook page LawAndOrder, paragraph 3 (#4710)."
+    }
+    CustomStringTableItem "{C7A7878B1A989B8B}" {
+     Id "LF-Handbook_Everon_LawAndOrderBody4"
+     Target_en_us "Some road charges can get your driving license seized for a number of days. The license desk in the station porch turns you away until the days run out."
+     Comment "Everon handbook page LawAndOrder, paragraph 4 (#4710)."
+    }
+    CustomStringTableItem "{9D8B05786FC36FD7}" {
+     Id "LF-Handbook_Everon_LawAndOrderTitle"
+     Target_en_us "Law and order"
+     Comment "Everon handbook page title: LawAndOrder (#4710)."
     }
     CustomStringTableItem "{9F56752F9C3CF3D7}" {
      Id "LF-Handbook_Everon_LawBody1"
@@ -3728,6 +3783,61 @@ StringTable {
      Id "LF-Handbook_Everon_PoliceTitle"
      Target_en_us "The police"
      Comment "Everon handbook page title: police (#1776)."
+    }
+    CustomStringTableItem "{E5080908F6351B6E}" {
+     Id "LF-Handbook_Everon_TradesBody1"
+     Target_en_us "Every trade has its own level, and it rises with the work you finish, not with the hours you wait. Press F2 to see your levels. A level-up card tells you what just opened. A better tool or a bigger vehicle sits behind a level, and a refusal says which one."
+     Comment "Everon handbook page Trades, paragraph 1 (#4710)."
+    }
+    CustomStringTableItem "{4877096A8FEB9915}" {
+     Id "LF-Handbook_Everon_TradesBody2"
+     Target_en_us "Pickaxes, axes and fishing rods come in three finishes: worn, standard and fine, at $150, $600 and $1,800. Buy them at the hardware store's tool counter. The fine finish needs a higher trade level than the worn one."
+     Comment "Everon handbook page Trades, paragraph 2 (#4710)."
+    }
+    CustomStringTableItem "{2566F612E9B7C77C}" {
+     Id "LF-Handbook_Everon_TradesBody3"
+     Target_en_us "Tools wear with use. Take a worn tool to the bench at the hardware store: a repair costs $12 and a piece of scrap, and it is cheaper than a new tool."
+     Comment "Everon handbook page Trades, paragraph 3 (#4710)."
+    }
+    CustomStringTableItem "{D73C535C656044A0}" {
+     Id "LF-Handbook_Everon_TradesBody4"
+     Target_en_us "At trade levels 10 and 20 you pick a perk. Go to the labor office counter in the town hall and choose one for that trade. It works from your next shift. Changing it later costs $500 in cash, and you can change it once a week."
+     Comment "Everon handbook page Trades, paragraph 4 (#4710)."
+    }
+    CustomStringTableItem "{95F50BCBFBF78D2F}" {
+     Id "LF-Handbook_Everon_TradesBody5"
+     Target_en_us "Trucks need a truck license. The license desk runs the truck check and sells the license for $300. Then buy a truck at the yard in the north-east. Truck loops pay above the loops you can do on foot or by car."
+     Comment "Everon handbook page Trades, paragraph 5 (#4710)."
+    }
+    CustomStringTableItem "{DE93E3823523CD37}" {
+     Id "LF-Handbook_Everon_TradesTitle"
+     Target_en_us "Trades and tools"
+     Comment "Everon handbook page title: Trades (#4710)."
+    }
+    CustomStringTableItem "{BB69E8C9D11D12EB}" {
+     Id "LF-Handbook_Everon_UnderworldBody1"
+     Target_en_us "The underworld keeps its own account of you, and it never shows a number. People there know you as Unknown, Known, Trusted or Respected, and what they will show you grows with it. Crime, gang work and the outposts all raise the same standing, so you never start over."
+     Comment "Everon handbook page Underworld, paragraph 1 (#4710)."
+    }
+    CustomStringTableItem "{B32AD1B26234A8BA}" {
+     Id "LF-Handbook_Everon_UnderworldBody2"
+     Target_en_us "The fence buys what fell off a truck: crates, cartons and stolen goods, for cash and no questions. A police search can still seize contraband, and a serial number can lead back to you."
+     Comment "Everon handbook page Underworld, paragraph 2 (#4710)."
+    }
+    CustomStringTableItem "{3817905C3084EC12}" {
+     Id "LF-Handbook_Everon_UnderworldBody3"
+     Target_en_us "Bar staff at the Chotain and Levie bars hear things. Once the town knows you, they may pass on a tip. The place is marked on your map for that shift only."
+     Comment "Everon handbook page Underworld, paragraph 3 (#4710)."
+    }
+    CustomStringTableItem "{A97F0D3AAAD07078}" {
+     Id "LF-Handbook_Everon_UnderworldBody4"
+     Target_en_us "The north outpost stands about four kilometers from Saint-Philippe. Inside its fence is a safe zone with a quartermaster, a contraband buyer and a chalk board by the fire. The longer you are known there, the more the quartermaster shows: a radio for anyone, then pistols, then rifles."
+     Comment "Everon handbook page Underworld, paragraph 4 (#4710)."
+    }
+    CustomStringTableItem "{704EC6F650F6E205}" {
+     Id "LF-Handbook_Everon_UnderworldTitle"
+     Target_en_us "The underworld"
+     Comment "Everon handbook page title: Underworld (#4710)."
     }
     CustomStringTableItem "{6A9E43847B4BBA58}" {
      Id "LF-ID_CardTitle"

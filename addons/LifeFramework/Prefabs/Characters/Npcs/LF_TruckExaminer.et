@@ -1,0 +1,26 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "5C48C4BECA1E4D92"
+ components {
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{C26FBDBE31DF8B90}" {
+     ContextName "Check"
+     Position PointInfo "{1AB44800B3447F1E}" {
+      PivotID "Spine5"
+     }
+     Radius 2.4
+    }
+   }
+   additionalActions + {
+    LF_TruckCheckExaminerAction "{B6CC52B330466262}" {
+     ParentContextList {
+      "Check"
+     }
+     UIInfo UIInfo "{6E8DFDA13A583A84}" {
+      Name "#LF-TruckCheck_ActionPlain"
+     }
+    }
+   }
+  }
+ }
+}

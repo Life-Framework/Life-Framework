@@ -6,14 +6,24 @@
 #          node agent-box/harness.mjs --client 1 flow arrival-island
 ui
 click QuizOption1Button
+wait 1200
+click QuizNextButton
 wait 500
 click QuizOption0Button
+wait 1200
+click QuizNextButton
 wait 500
 click QuizOption2Button
+wait 1200
+click QuizNextButton
 wait 500
 click QuizOption1Button
+wait 1200
+click QuizNextButton
 wait 500
 click QuizOption0Button
+wait 1200
+click QuizNextButton
 wait 2500
 click QuizContinueButton
 wait 2500
@@ -24,20 +34,27 @@ click SignButton
 wait 12000
 send guide close
 wait 1000
-stand Fit_saint_philippe_arrival_town_hall_clerk
+stand Fit_saint_philippe_arrival_town_hall_clerk e2
 wait 1500
 shot ui island_0_clerk_waypoint
 use LF_QuestAction Fit_saint_philippe_arrival_town_hall_clerk
-wait 5000
+# The talk is driven the way a player does it: wait for the replies (the greeting plays first), move the
+# focus, confirm. `dialogue-wait choosing` is the "read, then answer"; a Select while a line plays only skips it.
+# Fallback if a key ever fails: `dialogue pick 0` (the first reply row), `dialogue bye`.
+dialogue-wait choosing greet
 shot ui island_1_greet
+input MenuDown
+wait 600
+input MenuUp
+wait 600
 input MenuSelect
-wait 9000
+dialogue-wait choosing welcome_papers
 input MenuSelect
-wait 7000
+dialogue-wait choosing welcome_room
 input MenuSelect
-wait 9000
+dialogue-wait choosing welcome_town
 input MenuSelect
-wait 6000
+dialogue-wait line menu
 shot ui island_2_welcome_pack
 wait 9000
 shot ui island_3_starter_car
