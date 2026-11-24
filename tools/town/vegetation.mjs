@@ -8,11 +8,12 @@
 //   town vegetation <place> <slot>                 boot the island, scan, print what the clearing would hide (writes nothing)
 //   town vegetation <place> <slot> --write         the same, then replace the kit's vegetation `clear` entries (run `town fit --refit` next)
 //   town vegetation <place> <slot> --verify        after the fit: scan again, fail when a tree or bush of the clearing is still drawn
-//   --margin <m>   metres the clearing reaches past the kit's footprint (default 1.5)
+//   --margin <m>   metres the clearing reaches past the kit's footprint (default 3)
 //   --reach <m>    metres the gate approach is cleared outward from the gate rows (default 8)
 //   --gate <rx>    which kit rows make the gate line (default "gate")
 //   --height <m>   box height above the ground under the carrier (default 12)
 //   --below <m>    how far each box reaches below the ground under its carrier (default 4: the ground falls away from the box centre)
+//   --repeat <s>   seconds between the carrier's passes (default 5): the forest streams in and out with the player, so a tree that arrives later is hidden by the next pass
 //   --scan-file f  read a saved `scan` answer (tmp/veg-scan-<place>-<slot>.txt) instead of booting the island
 //
 // The clearing is two boxes in the kit's frame: the footprint plus the margin, and a strip as wide as the gate rows reaching outward
@@ -28,8 +29,8 @@ export const help = "vegetation <place> <slot> [--write] [--verify] [--margin m]
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SLUG_RX = /^[a-z0-9][a-z0-9-]*$/;
 const r3 = (n) => Math.round(n * 1000) / 1000;
-const VALUED = new Set(["margin", "reach", "gate", "height", "below", "scan-file"]);
-const DEFAULTS = { margin: 1.5, reach: 8, gate: "gate", height: 12, below: 4 };
+const VALUED = new Set(["margin", "reach", "gate", "height", "below", "repeat", "scan-file"]);
+const DEFAULTS = { margin: 3, reach: 8, gate: "gate", height: 12, below: 4, repeat: 5 };
 
 // ------------------------------------------------------------------ pure parts
 
@@ -107,11 +108,11 @@ export function selectVegetation(entries, boxes, anchor) {
 }
 
 // The kit's boxed clear entries for those finds: one per box and distinct prefab, like the bank's door.
-export function clearEntries(selected, height = DEFAULTS.height, below = DEFAULTS.below) {
+export function clearEntries(selected, height = DEFAULTS.height, below = DEFAULTS.below, repeat = DEFAULTS.repeat) {
   const out = [];
   for (const { box, found } of selected) {
     for (const prefab of [...new Set(found.map((e) => e.prefab))].sort()) {
-      out.push({ prefab, box: { offset: [...box.offset], half: [...box.half], height, below } });
+      out.push({ prefab, box: { offset: [...box.offset], half: [...box.half], height, below, repeat } });
     }
   }
   return out;
@@ -178,8 +179,9 @@ export async function main(args, { root = ROOT } = {}) {
   const opts = { margin: num("margin"), reach: num("reach"), gate: flags.gate ?? DEFAULTS.gate };
   const height = num("height");
   const below = num("below");
-  if (![opts.margin, opts.reach, height, below].every(Number.isFinite)) {
-    console.log("town vegetation: --margin, --reach, --height and --below are numbers of metres");
+  const repeat = num("repeat");
+  if (![opts.margin, opts.reach, height, below, repeat].every(Number.isFinite)) {
+    console.log("town vegetation: --margin, --reach, --height, --below and --repeat are numbers (metres, seconds)");
     return 1;
   }
 
@@ -253,7 +255,7 @@ export async function main(args, { root = ROOT } = {}) {
     console.log(`box ${box.id}: kit offset ${box.offset.join(", ")} half ${box.half.join(" x ")}${box.side ? ` (outward ${box.side})` : ""}: ${found.length} trees and bushes`);
     for (const [name, n] of [...counts].sort((a, b) => b[1] - a[1])) console.log(`  ${String(n).padStart(3)}  ${name}`);
   }
-  const wanted = clearEntries(selected, height, below);
+  const wanted = clearEntries(selected, height, below, repeat);
   if (!flags.write) {
     console.log(`SUMMARY town-vegetation list ok boxes=${boxes.length} entries=${wanted.length} trees=${selected.reduce((s, x) => s + x.found.length, 0)} (add --write to put them in tools/town/kits/${kitName}.json)`);
     return 0;

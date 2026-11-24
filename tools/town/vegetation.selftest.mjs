@@ -5,7 +5,7 @@
 // kit (and that a second write replaces its own entries and leaves a door or a sign entry alone), and that `town fit` turns them into carriers
 // that reach as far below the ground as asked. Run: node tools/town/vegetation.selftest.mjs
 // red-proof: with isVegetation accepting every class the "camp box takes the two" case printed FAIL (the wrong-class entity came with it); with clearingBoxes ignoring the margin the
-// "camp box: the footprint plus the margin" case printed FAIL; with clearBoxesOf dropping `below` the "the carrier reaches 4 m below" case printed FAIL (2026-11-24).
+// "camp box: the footprint plus the margin" case printed FAIL; with clearBoxesOf dropping `below` the "the carrier reaches 4 m below" case printed FAIL; with it dropping `repeat` the "the carrier repeats every 5 s" case printed FAIL (2026-11-24).
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -86,13 +86,13 @@ if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.m
   check(Math.abs(lx - 0) < 0.01 && Math.abs(lz - 12) < 0.01, `localOf turns a world point into the kit's frame at yaw 90, got ${lx}, ${lz}`);
 
   // ---- the kit entries
-  const entries = veg.clearEntries(selected, 12, 4);
+  const entries = veg.clearEntries(selected, 12, 4, 5);
   check(entries.length === 3, `one entry per box and prefab, got ${entries.length}`);
-  check(entries.every((c) => c.box.height === 12 && c.box.below === 4), "every entry carries the height and the depth");
+  check(entries.every((c) => c.box.height === 12 && c.box.below === 4 && c.box.repeat === 5), "every entry carries the height, the depth and the repeat");
   const old = { prefab: "{DD}Prefabs/Structures/Doors/Door_01.et", box: { offset: [0, 0], half: [1, 1], height: 4 } };
   const withOld = veg.withVegetation({ ...kit, clear: [old] }, entries);
   check(withOld.clear.length === 4 && same(withOld.clear[0], old), "the door entry stays, the three vegetation entries follow");
-  const again = veg.withVegetation(withOld, veg.clearEntries(selected, 12, 4));
+  const again = veg.withVegetation(withOld, veg.clearEntries(selected, 12, 4, 5));
   check(same(again, withOld), "a second write is the same kit (it replaces its own entries)");
   const fewer = veg.withVegetation(withOld, []);
   check(same(fewer.clear, [old]), "no vegetation left drops only the vegetation entries");
@@ -101,14 +101,15 @@ if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.m
   // ---- the fit turns them into carriers
   const groups = fit.clearBoxesOf(withOld);
   const campGroup = groups.find((g) => same(g.offset, [0, 10]));
-  check(campGroup && campGroup.prefabs.length === 2 && campGroup.below === 4, `fit: the two camp prefabs share one box that reaches 4 m below, got ${JSON.stringify(campGroup)}`);
+  check(campGroup && campGroup.prefabs.length === 2 && campGroup.below === 4 && campGroup.repeat === 5, `fit: the two camp prefabs share one box that reaches 4 m below and repeats every 5 s, got ${JSON.stringify(campGroup)}`);
   check(groups.find((g) => same(g.offset, [0, 0]))?.below === 1, "fit: an entry with no `below` keeps the 1 m of the old boxes");
   const carriers = fit.clearBoxCarriers({ place: "demo", slot: "camp", anchor: { x: 1000, y: 7, z: 2000, yaw: 0 }, boxes: groups });
   const deep = carriers.find((c) => c.comps[0].set.m_vBoxHalfM === "12 0 12");
+  check(deep?.comps[0].set.m_fRepeatS === "5", `fit: the carrier repeats every 5 s, got ${JSON.stringify(deep?.comps[0].set)}`);
   check(deep?.comps[0].set.m_fBoxBelowM === "4", `fit: the carrier reaches 4 m below, got ${JSON.stringify(deep?.comps[0].set)}`);
   check(deep && same(deep.coords, [1000, 7, 2010]), `fit: the carrier stands at the box centre in the world, got ${JSON.stringify(deep?.coords)}`);
   const door = carriers.find((c) => c.comps[0].set.m_vBoxHalfM === "1 0 1");
-  check(door && !("m_fBoxBelowM" in door.comps[0].set), "fit: a box with the default depth writes no m_fBoxBelowM (the old layers stay byte-identical)");
+  check(door && !("m_fBoxBelowM" in door.comps[0].set) && !("m_fRepeatS" in door.comps[0].set), "fit: a box with the default depth and no repeat writes neither attribute (the old layers stay byte-identical)");
 
   // ---- the verify
   const after = [

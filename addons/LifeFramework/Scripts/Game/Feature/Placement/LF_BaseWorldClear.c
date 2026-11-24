@@ -62,7 +62,8 @@ class LF_BaseWorldClear
 	//! Hides every entity of the list inside an oriented box that is not a building (outdoor clutter: crates and pallets
 	//! of the base map in a yard). mins and maxs are local to mat; the same hide and the same prefab match as a building.
 	//! Returns how many entities were hidden now.
-	static int HideInBox(notnull BaseWorld world, vector mins, vector maxs, vector mat[4], notnull array<string> prefabs, string label)
+	//! quiet: a repeat pass (the carrier's m_fRepeatS) logs only when it hides something new.
+	static int HideInBox(notnull BaseWorld world, vector mins, vector maxs, vector mat[4], notnull array<string> prefabs, string label, bool quiet = false)
 	{
 		set<string> keys = new set<string>();
 		foreach (string prefab : prefabs)
@@ -80,7 +81,10 @@ class LF_BaseWorldClear
 
 		int hidden = HideFound(query);
 		if (hidden == 0)
-			LF_Debug.Warn(FEATURE, string.Format("base-world clear: nothing left to hide (%1 prefabs listed) in the box %2 at %3", keys.Count(), label, mat[3]));
+		{
+			if (!quiet)
+				LF_Debug.Warn(FEATURE, string.Format("base-world clear: nothing left to hide (%1 prefabs listed) in the box %2 at %3", keys.Count(), label, mat[3]));
+		}
 		else
 			LF_Debug.Info(FEATURE, string.Format("base-world clear: hid %1 vanilla props in the box %2 at %3", hidden, label, mat[3]));
 
@@ -166,6 +170,9 @@ class LF_BaseWorldClearComponent : ScriptComponent
 	[Attribute("1", desc: "Box mode: how far the box reaches below the ground under the carrier, metres. A slope drops away from the carrier's own height: a camp on one needs more than 1 m (#4724)")]
 	protected float m_fBoxBelowM;
 
+	[Attribute("0", desc: "Box mode: hide again every this many seconds; 0 = once at load. The forest's trees and bushes stream in and out with the player, so one that streams in after the first pass, or again after the player walked away, is hidden by the next (#4724)")]
+	protected float m_fRepeatS;
+
 	[Attribute("3", desc: "How far from this entity the building origin may be on x and z, metres")]
 	protected float m_fRadiusM;
 
@@ -213,6 +220,9 @@ class LF_BaseWorldClearComponent : ScriptComponent
 		if (m_sBuilding.IsEmpty())
 		{
 			ApplyBox(owner);
+			if (m_fRepeatS > 0)
+				GetGame().GetCallqueue().CallLater(ApplyBox, Math.Max(m_fRepeatS, 1) * 1000, true, owner, true);
+
 			return;
 		}
 
@@ -236,8 +246,11 @@ class LF_BaseWorldClearComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! No building: the box stands on the ground under the carrier, so the layer stores no height.
-	protected void ApplyBox(IEntity owner)
+	protected void ApplyBox(IEntity owner, bool quiet = false)
 	{
+		if (!owner)
+			return;
+
 		if (m_vBoxHalfM[0] <= 0 || m_vBoxHalfM[2] <= 0)
 		{
 			LF_Debug.Error(LF_BaseWorldClear.FEATURE, string.Format("base-world clear: a carrier at %1 has neither a building nor a box", owner.GetOrigin()));
@@ -253,6 +266,13 @@ class LF_BaseWorldClearComponent : ScriptComponent
 			prefabs.Insert(prefab);
 		}
 
-		LF_BaseWorldClear.HideInBox(owner.GetWorld(), Vector(-m_vBoxHalfM[0], -m_fBoxBelowM, -m_vBoxHalfM[2]), Vector(m_vBoxHalfM[0], m_fBoxHeightM, m_vBoxHalfM[2]), mat, prefabs, owner.GetName());
+		LF_BaseWorldClear.HideInBox(owner.GetWorld(), Vector(-m_vBoxHalfM[0], -m_fBoxBelowM, -m_vBoxHalfM[2]), Vector(m_vBoxHalfM[0], m_fBoxHeightM, m_vBoxHalfM[2]), mat, prefabs, owner.GetName(), quiet);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnDelete(IEntity owner)
+	{
+		GetGame().GetCallqueue().Remove(ApplyBox);
+		super.OnDelete(owner);
 	}
 }

@@ -684,11 +684,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -699,11 +700,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -714,11 +716,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -729,11 +732,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -744,11 +748,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -759,11 +764,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -774,11 +780,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -789,11 +796,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -804,11 +812,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -819,11 +828,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -834,11 +844,12 @@
           9.851
         ],
         "half": [
-          11.3,
-          11.351
+          12.8,
+          12.851
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -846,14 +857,31 @@
       "box": {
         "offset": [
           -6.603,
-          -5.5
+          -7
         ],
         "half": [
           7.3,
           4
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{68C5231808D63103}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2f.et",
+      "box": {
+        "offset": [
+          -6.603,
+          -7
+        ],
+        "half": [
+          7.3,
+          4
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -861,14 +889,15 @@
       "box": {
         "offset": [
           -6.603,
-          -5.5
+          -7
         ],
         "half": [
           7.3,
           4
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
       }
     },
     {
@@ -876,14 +905,31 @@
       "box": {
         "offset": [
           -6.603,
-          -5.5
+          -7
         ],
         "half": [
           7.3,
           4
         ],
         "height": 12,
-        "below": 4
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{C8E68C4C6AF159DA}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2sw.et",
+      "box": {
+        "offset": [
+          -6.603,
+          -7
+        ],
+        "half": [
+          7.3,
+          4
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
       }
     }
   ]

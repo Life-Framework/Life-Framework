@@ -1,9 +1,10 @@
 GenericEntity Fit_outpost_north_camp_clear_box1 {
  components {
   LF_BaseWorldClearComponent "{D6DD52D8D82EFF01}" {
-   m_vBoxHalfM 11.3 0 11.351
+   m_vBoxHalfM 12.8 0 12.851
    m_fBoxHeightM 12
    m_fBoxBelowM 4
+   m_fRepeatS 5
    m_aPrefabs {
     "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et"
     "{1F1980176A5052DC}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rosa_canina_0s.et"
@@ -27,14 +28,17 @@ GenericEntity Fit_outpost_north_camp_clear_box2 {
    m_vBoxHalfM 7.3 0 4
    m_fBoxHeightM 12
    m_fBoxBelowM 4
+   m_fRepeatS 5
    m_aPrefabs {
     "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et"
+    "{68C5231808D63103}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2f.et"
     "{727831E6D77F3360}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3f.et"
     "{A35E15EBC6033C07}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1.et"
+    "{C8E68C4C6AF159DA}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2sw.et"
    }
   }
  }
- coords 7738.397 7.55 8321.5
+ coords 7738.397 7.55 8320
 }
 GenericEntity Fit_outpost_north_camp_outpost_board : "{6C4AFD9C193BC4EC}Prefabs/Outposts/LF_OutpostBoard.et" {
  coords 7734.8 8.666 8334.6
