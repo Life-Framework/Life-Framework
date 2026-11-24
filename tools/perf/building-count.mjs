@@ -11,6 +11,7 @@
 //   entities   every entity block (a building, a child, a prefab's own children), an upper bound: an
 //              override of an inherited child counts again
 //   lights     LightEntity blocks
+//   fill       lights that write CastShadow 0: counted in `lights`, but not against the lights limit (they measured no cost)
 //   shadow     lights with CastShadow 1, plus lights that leave CastShadow unset (vanilla lamps that leave
 //              it unset report IsCastShadow() true in game, so unset is counted as a caster)
 //   unset      lights with no CastShadow line: write it, either way
@@ -130,12 +131,13 @@ const prop = (lines, key) => {
 
 // Totals for a list of entity blocks, following prefab references (a reference's own root block is the
 // referencing entity, so only its insides are added). depth guards a reference loop.
-const COUNTS = ["entities", "lights", "shadow", "unset", "point"];
-const newTotals = () => ({ entities: 0, lights: 0, shadow: 0, unset: 0, point: 0, unresolved: new Set(), byId: new Map() });
+const COUNTS = ["entities", "lights", "fill", "shadow", "unset", "point"];
+const newTotals = () => ({ entities: 0, lights: 0, fill: 0, shadow: 0, unset: 0, point: 0, unresolved: new Set(), byId: new Map() });
 
 // What one light adds to the totals (sign +1) or takes back (-1). `cast` and `type` are null when the block does not write them.
 function lightDelta(t, rec, sign) {
   t.lights += sign;
+  if (rec.cast === "0") t.fill += sign;
   if (rec.cast === null) t.unset += sign;
   if (rec.cast !== "0") {
     t.shadow += sign;
@@ -266,7 +268,10 @@ export function verdict(t, size) {
   const b = BUDGET[size];
   const over = [];
   if (t.entities > b.entities) over.push(`entities ${t.entities} > ${b.entities}`);
-  if (t.lights > b.lights) over.push(`lights ${t.lights} > ${b.lights}`);
+  // A light that writes CastShadow 0 is a fill: unshadowed lights measured no cost (docs/architecture/performance.md part 2, 128 in one
+  // room), so only the others count against the lights limit; the shadow and point rows already bound what costs.
+  const costly = t.lights - (t.fill ?? 0);
+  if (costly > b.lights) over.push(`lights ${costly} > ${b.lights}`);
   if (t.shadow > b.shadow) over.push(`shadow casters ${t.shadow} > ${b.shadow}`);
   if (t.point > b.point) over.push(`point lights casting shadows ${t.point} > ${b.point}`);
   if (t.unset > 0) over.push(`${t.unset} light(s) leave CastShadow unset (write CastShadow 0 or 1)`);
@@ -287,12 +292,12 @@ export async function runPerfBuilding(args, root = ROOT) {
     return 2;
   }
   const resolve = await makeResolver(root);
-  const total = { entities: 0, lights: 0, shadow: 0, unset: 0, point: 0, unresolved: new Set() };
+  const total = { entities: 0, lights: 0, fill: 0, shadow: 0, unset: 0, point: 0, unresolved: new Set() };
   const rows = [];
   for (const f of found.files) {
     const t = countTree(parseEntities(readFileSync(f, "utf8")), resolve);
     rows.push({ file: relative(root, f).replace(/\\/g, "/"), ...t, unresolved: [...t.unresolved] });
-    for (const k of ["entities", "lights", "shadow", "unset", "point"]) total[k] += t[k];
+    for (const k of ["entities", "lights", "fill", "shadow", "unset", "point"]) total[k] += t[k];
     for (const u of t.unresolved) total.unresolved.add(u);
   }
   const over = verdict(total, size);
@@ -300,7 +305,7 @@ export async function runPerfBuilding(args, root = ROOT) {
   if (args.includes("--json")) {
     console.log(JSON.stringify(result, null, 2));
   } else {
-    for (const r of rows) console.log(`${r.file}: entities ${r.entities}, lights ${r.lights} (shadow ${r.shadow}, unset ${r.unset}, point-shadow ${r.point})`);
+    for (const r of rows) console.log(`${r.file}: entities ${r.entities}, lights ${r.lights} (fill ${r.fill}, shadow ${r.shadow}, unset ${r.unset}, point-shadow ${r.point})`);
     if (total.unresolved.size) console.log(`unresolved (not counted inside): ${[...total.unresolved].slice(0, 5).join(", ")}${total.unresolved.size > 5 ? ` +${total.unresolved.size - 5} more` : ""}`);
     for (const o of over) console.log(`OVER  ${o}`);
     console.log(`SUMMARY perf-building ${over.length ? "fail" : "ok"} ${slug} size=${size} entities=${total.entities}/${BUDGET[size].entities} lights=${total.lights}/${BUDGET[size].lights} shadow=${total.shadow}/${BUDGET[size].shadow}`);

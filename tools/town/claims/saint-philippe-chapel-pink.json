@@ -3,7 +3,7 @@
   "place": "saint-philippe",
   "slot": "chapel-pink",
   "building": "saint-philippe-districts/b17",
-  "kit": "chapel",
+  "kit": "chapel-pink",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_chapel-pink.layer",
   "kinds": [
     "Church"

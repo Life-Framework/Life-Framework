@@ -51,6 +51,8 @@ export const PLACE_RADIUS = 60;
 // system on; the component is what it runs: the jail's cell, the shop a counter sells from. A kind absent here needs nothing but its
 // marker (a clerk or teller is a resident the pack's timetable spawns at the marker). Keep the value a class name.
 export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "LF_ShopComponent", ClothingCounter: "LF_ShopComponent", GunCounter: "LF_ShopComponent", CafeTable: "LF_ShopComponent" };
+// A placed vanilla street lamp (the timber yard's work lights): street lighting, outside the building budget.
+export const isStreetLamp = (node) => /\/Infrastructure\/Lamps\/LampStreet/.test(node?.ref ?? "");
 export const PLACE_LIMITS = { lights: 24, shadow: 12, entities: 1500 };
 // The market, chess and range slots (#3078): the trader's stall runs LF_TraderManagerComponent, the chess table LF_ChessTableComponent,
 // and a range lane is SCR_FiringRangeTarget, an entity class (BaseBuilding), not a component: `layerBacking` reads those heads too.
@@ -367,9 +369,15 @@ export function checkPlace(data, opts = {}) {
         errors.push(`slot ${row.slot}: claim size '${size}' is not small, medium or large`);
         continue;
       }
-      const t = countTree(parseEntities(row.layer), opts.resolve, seen);
+      // A vanilla street lamp standing in a yard is street lighting, not part of the building: the building budget does not count it
+      // (it is a spot, and the shadow limit of its row cannot be met by writing CastShadow on a vanilla prefab), the place limits do.
+      const nodes = parseEntities(row.layer);
+      const t = countTree(nodes.filter((n) => !isStreetLamp(n)), opts.resolve, seen);
+      const street = countTree(nodes.filter(isStreetLamp), opts.resolve, seen);
       const over = verdict(t, size);
-      perf.push({ slot: row.slot, size, centre: row.ground?.centre ?? null, entities: t.entities, lights: t.lights, shadow: t.shadow, unset: t.unset, point: t.point, over, unresolved: [...t.unresolved] });
+      // `lights` is what the limit counts: the fills (CastShadow 0) are listed beside it, they measured no cost.
+      const lit = (x) => x.lights - x.fill;
+      perf.push({ slot: row.slot, size, centre: row.ground?.centre ?? null, entities: t.entities + street.entities, lights: lit(t) + lit(street), fill: t.fill + street.fill, shadow: t.shadow + street.shadow, unset: t.unset, point: t.point, street: street.lights, over, unresolved: [...t.unresolved, ...street.unresolved] });
       for (const o of over) errors.push(`slot ${row.slot} (${size}): over the building budget: ${o}`);
       if (t.unresolved.size) warnings.push(`slot ${row.slot}: ${t.unresolved.size} prefab(s) could not be read, so their insides are not counted (e.g. ${[...t.unresolved][0]})`);
     }
@@ -502,8 +510,9 @@ export async function main(args, { root = ROOT } = {}) {
     for (const w of result.warnings) console.log(`WARN  ${w}`);
     for (const e of result.errors) console.log(`ERROR ${e}`);
     const lights = result.perf.reduce((n, p) => n + p.lights, 0);
+    const fills = result.perf.reduce((n, p) => n + (p.fill ?? 0), 0);
     const ents = result.perf.reduce((n, p) => n + p.entities, 0);
-    console.log(`SUMMARY town-check ${result.ok ? "ok" : "fail"} ${place}: ${result.fitted} fitted slot(s) of ${result.slots.length + result.unfitted.length} mapped${flags.has("--complete") ? ", --complete" : ""}, ${result.errors.length} error(s), ${result.warnings.length} warning(s)${result.perf.length ? `, ${ents} entities and ${lights} lights added` : ""}`);
+    console.log(`SUMMARY town-check ${result.ok ? "ok" : "fail"} ${place}: ${result.fitted} fitted slot(s) of ${result.slots.length + result.unfitted.length} mapped${flags.has("--complete") ? ", --complete" : ""}, ${result.errors.length} error(s), ${result.warnings.length} warning(s)${result.perf.length ? `, ${ents} entities and ${lights} lights (+${fills} unshadowed fills) added` : ""}`);
   }
   return result.ok ? 0 : 1;
 }
