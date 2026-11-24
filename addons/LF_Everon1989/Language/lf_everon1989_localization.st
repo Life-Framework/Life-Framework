@@ -7669,6 +7669,31 @@ StringTable {
      Target_en_us "The town clerk registers new arrivals and issues the identity card."
      Comment "Sign card for the registry office (the town clerk, arrival chain), What section."
     }
+    CustomStringTableItem "{417E814520B4A6E6}" {
+     Id "LF-Sign_Respray_How"
+     Target_en_us "Drive onto the pad, then use the *Paint* rows on the bench. Each row shows its price."
+     Comment "Sign card for the respray bay, How section. Capitalized phrases are the action names the player sees."
+    }
+    CustomStringTableItem "{1826A6E9419EB857}" {
+     Id "LF-Sign_Respray_Needs"
+     Target_en_us "Your own car on the pad and money for the paint"
+     Comment "Sign card for the respray bay, Needs section."
+    }
+    CustomStringTableItem "{F8F838E6DEF8B257}" {
+     Id "LF-Sign_Respray_Next"
+     Target_en_us "The new paint stays on the car."
+     Comment "Sign card for the respray bay, Next section."
+    }
+    CustomStringTableItem "{6A97F0B737C6D8D6}" {
+     Id "LF-Sign_Respray_Title"
+     Target_en_us "Respray bay"
+     Comment "Title of the pole sign at the garage's respray bay pad (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Respray bay."
+    }
+    CustomStringTableItem "{154B94E6FF67BED5}" {
+     Id "LF-Sign_Respray_What"
+     Target_en_us "The respray bay: park your own car on the pad by the garage bench and pick a paint job."
+     Comment "Sign card for the respray bay, What section."
+    }
     CustomStringTableItem "{6BB6BAED2EF2DAC0}" {
      Id "LF-Sign_RoadFarm_How"
      Target_en_us "Fuel drop: bring a full barrel to the tank by the machine shed on the fuel delivery job. The payphone at the gate calls the town."
