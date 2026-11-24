@@ -6814,6 +6814,21 @@ StringTable {
      Target_en_us "A walled yard owned by one organization."
      Comment "Sign card for the organization hideout yard, What section."
     }
+    CustomStringTableItem "{E27A60C4195DB38F}" {
+     Id "LF-Sign_HighstoneMine_How"
+     Target_en_us "Swing a pickaxe at the big rust-red rocks (not the grey granite) and pick up the iron nuggets. Smelt three nuggets into a bar at the furnace on Coalman's Brow; sell the bars at the iron counter in the dock wholesale warehouse."
+     Comment "Sign card for the Highstone mine plate, How section."
+    }
+    CustomStringTableItem "{5C1E7A93D20B4F68}" {
+     Id "LF-Sign_HighstoneMine_Title"
+     Target_en_us "Highstone iron mine"
+     Comment "Title of the pole plate at the iron mine on Highstone hill (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Highstone iron mine."
+    }
+    CustomStringTableItem "{0B94D3E6A71C58F2}" {
+     Id "LF-Sign_HighstoneMine_What"
+     Target_en_us "An open cut in the hillside with iron ore rocks along its foot. Nobody is on shift here: bring your own pickaxe."
+     Comment "Sign card for the Highstone mine plate, What section."
+    }
     CustomStringTableItem "{4259F2E50006FDFF}" {
      Id "LF-Sign_Home_CafeOwner_Title"
      Target_en_us "Mr. O. Marchand"
