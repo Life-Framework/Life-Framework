@@ -220,6 +220,10 @@ the game profile). Hooks:
   `MenuRight`, `MenuSelect`, `MenuBack`, `LF_OpenDebugMenu`, and the digit keys
   `LF_Keypad0`..`LF_Keypad9`) for 300 ms and at least three client frames, so a slow frame
   cannot swallow it. Movement actions are refused.
+  **View pitch:** `input CharacterTurnUp <deg>` turns the view by that much (relative);
+  `input CharacterPitch <deg>` sets it (absolute, clamped to ±85). Use the absolute one for a
+  sweep: a relative turn sent while the client stalls can be lost, and every later step then
+  lands that far off. On #4803 the suspect stared at the floor and `aim` read `none` for minutes.
   **Talking to an NPC:** drive a dialogue the way a player does. Start the talk, then
   `dialogue-wait choosing <node>` (the line plays first; a Select while it plays only skips it),
   then `input MenuDown` / `MenuUp` to move the focus and `input MenuSelect` to answer, or
