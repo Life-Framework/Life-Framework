@@ -19,7 +19,8 @@ import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 const TILL = "Fit_saint_philippe_hardware_hardware_miners_till";
 const DESK = "Fit_saint_philippe_woodlot_desk";
 const SAW = "Fit_saint_philippe_woodlot_saw";
-const BUYER = "Fit_saint_philippe_merchant_timber_timber_buyer";
+// The yard's timber buyer beside the saw (#4875); BUYER=Fit_saint_philippe_merchant_timber_timber_buyer plays the town counter.
+const BUYER = process.env.BUYER ?? "Fit_saint_philippe_woodlot_buyer";
 // Walking speeds the harness teleports past, for the walk-adjusted figure (metres per second): a jog, and a jog under a shoulder log (cap 0.7).
 const JOG_MPS = 4.5;
 const LOADED_MPS = 4.5 * 0.7;
@@ -244,14 +245,15 @@ async function run(args) {
       step("3c the sawmill's run ends with its output line", !!sawn, sawn.slice(0, 160) || "no Processing output line");
     }
   }
-  // The planks drop at the saw. A plank is a hand-carry item (HandCarryItem_Base): one in the hands at a time, so the hand-haul
-  // loop is one plank per trip to the buyer. Carry each sawn plank over and sell it there (the hardware buyer's premium row).
+  // The planks drop at the saw as bundles (#4875: a plank stacks to 4 and the saw drops a log's 4 planks as one). A bundle is
+  // a hand-carry item: one in the hands, so a trip to the buyer takes one bundle. Carry each over and sell it there (the
+  // hardware buyer's premium row; the yard's timber buyer stands beside the saw).
   let planks = 0;
   let earned = 0;
   let sold = 0;
   let cashBefore = cash();
   let buyerTrips = 0;
-  for (let k = 0; k < sawnPlanks; k++) {
+  for (let k = 0; planks < sawnPlanks && k < sawnPlanks; k++) {
     if (k > 0) {
       on({ verb: "stand", entityName: SAW });
       wait(1500);
@@ -266,23 +268,29 @@ async function run(args) {
       carriedNow = carried("WoodPlank");
     }
     if (carriedNow < 1) break;
-    planks++;
     on({ verb: "stand", entityName: BUYER });
     wait(1500);
     const buyerAt = feetAt();
     walkM += dist(here, buyerAt);
     here = buyerAt;
     buyerTrips++;
-    const before = cash();
-    const sell = on({ verb: "use", className: "LF_TraderSellAction", entityName: BUYER });
-    wait(2000);
-    const gain = cash() - before;
-    if (sell.status === "ok" && gain > 0) {
+    // The harness `use` presses the first sell row ("Sell 1 Wooden plank"); a player presses "Sell all" once. Press
+    // until the bundle is gone, all at the buyer: presses are not trips. Count the planks from the server's sale lines
+    // (`carries` counts a hand-held item twice: its gadget slot and the hand storage).
+    for (let press = 0; press < 12 && carried("WoodPlank") > 0; press++) {
+      const before = cash();
+      const mark = serverLog().length;
+      const sell = on({ verb: "use", className: "LF_TraderSellAction", entityName: BUYER });
+      wait(1500);
+      const gain = cash() - before;
+      const units = [...serverLog().slice(mark).matchAll(/\[LFDebug:Trader\] sold [^\n]*WoodPlank\.et x(\d+)/g)].reduce((s, m) => s + Number(m[1]), 0);
+      if (sell.status !== "ok" || gain <= 0) break;
       earned += gain;
-      sold++;
+      sold += units;
+      planks += units;
     }
   }
-  step("3d each sawn plank is carried to the buyer", planks >= 1 && planks === sawnPlanks, `carried ${planks} of ${sawnPlanks} sawn, one per trip (a hand-carry item)`);
+  step("3d the sawn planks go to the buyer as bundles", planks >= 1 && planks === sawnPlanks && buyerTrips < sawnPlanks, `carried ${planks} of ${sawnPlanks} sawn in ${buyerTrips} trip(s) (a bundle a trip)`);
   // 4. The sale at the timber buyer (the hardware buyer row: the premium price, a demand cap that refills).
   step("4 the planks are sold at the timber buyer", sold >= 1 && sold === planks, `${sold} sold, cash $${cashBefore} -> $${cash()} (+$${earned}) over ${buyerTrips} trip(s)`);
 
@@ -301,6 +309,10 @@ async function run(args) {
   const walkMin = (walkM / JOG_MPS + loadedM / LOADED_MPS) / 60;
   const adjMin = loopMin + walkMin;
   const adjPerHour = dollarsPerHour(earned, adjMin);
+  // A whole cycle ends where the next one starts: the walk back from the buyer to the stump (the next pine stands as far).
+  const backM = dist(here, [tx, tz]);
+  const cycleMin = adjMin + backM / JOG_MPS / 60;
+  console.log(`ARC  with the ${Math.round(backM)} m walk back to the next tree: ${cycleMin.toFixed(1)} min a cycle, $${dollarsPerHour(earned, cycleMin)}/h`);
   console.log(`ARC  whole arc ${arcMin.toFixed(1)} min wall clock (axe shopping included); fell, haul, saw and sell ${loopMin.toFixed(1)} min with teleports`);
   console.log(`ARC  walk a player makes: ${Math.round(walkM)} m on foot + ${Math.round(loadedM)} m under a log = ${walkMin.toFixed(1)} min; loop with the walk ${adjMin.toFixed(1)} min`);
   console.log(`ARC  axe -$${AXE_PRICE}; ${sold} plank(s) sold +${earned} from ${felled.logs} log(s) (${hoisted} hoisted, ${sawnPlanks} sawn, ${buyerTrips} trips to the buyer); measured $${perHour}/h over the loop, $${adjPerHour}/h with the walk, $${dollarsPerHour(earned - AXE_PRICE, arcMin)}/h over the arc with the axe`);

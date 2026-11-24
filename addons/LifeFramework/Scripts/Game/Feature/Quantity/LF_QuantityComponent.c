@@ -480,6 +480,11 @@ class LF_QuantityComponent : ScriptComponent
 			if (LF_Stores.HoldsApart(item))
 				keepSeperate = true;
 
+			// The hands hold one item: a bundle taken into them swaps with the one held (the owner's hand storage
+			// drops the old one). Merging first would top up the held bundle and then drop it, the bigger one (#4875).
+			if (LF_HandInventoryStorageComponent.Cast(storageOwner))
+				keepSeperate = true;
+
 			if (!keepSeperate)
 			{
 				BaseInventoryStorageComponent storageRestriction;

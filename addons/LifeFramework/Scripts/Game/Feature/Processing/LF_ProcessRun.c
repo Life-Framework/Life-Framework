@@ -182,13 +182,21 @@ class LF_ProcessRun
 		int dropped;
 		foreach (LF_ProcessingOutput output : job.m_aOutputs)
 		{
-			for (int i = 0; i < output.m_iOutputAmount; i++)
+			// A hand-carry output that stacks (planks) drops as carried bundles: one trip takes a bundle (#4875).
+			int left = output.m_iOutputAmount;
+			while (left > 0)
 			{
 				IEntity made = LF_Utils.SpawnEntityPrefab(output.m_OutputPrefab, job.m_vDrop, job.m_vRotation);
-				if (made)
-					dropped++;
-				else
+				if (!made)
+				{
 					LF_Debug.Error(FEATURE, string.Format("run at %1: an output of %2 did not spawn", job.m_sMachineId, output.m_OutputPrefab));
+					left--;
+					continue;
+				}
+
+				int held = TakeIntoBundle(made, left);
+				dropped += held;
+				left -= held;
 			}
 
 			LF_Debug.Log(FEATURE, string.Format("processed %1 x%2 (%3 batch(es), timed)", output.m_OutputPrefab, output.m_iOutputAmount, job.m_iBatches));
@@ -215,6 +223,43 @@ class LF_ProcessRun
 		LF_ProcessXp.PayBatches(user, job.m_sMachineId, job.m_iBatches);
 
 		LF_Utils.NotifyEntity(user, LF_ProcessAction.ToastText(job.m_aOutputs), "", 4.0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: how many of \p left units one dropped stack holds when the item stacks to \p maxQuantity
+	//! (0 or below: no stack limit).
+	static int BundleSize(int left, int maxQuantity)
+	{
+		if (left < 1)
+			return 0;
+
+		if (maxQuantity <= 0)
+			return left;
+
+		return LF_Utils.MinInt(left, maxQuantity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A dropped hand-carry output that stacks takes up to its stack size of the \p left units owed:
+	//! the hands hold one item, so a stack is the load of one trip. Anything else holds one unit.
+	//! \return The units \p made now holds (at least 1).
+	static int TakeIntoBundle(notnull IEntity made, int left)
+	{
+		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(made);
+		if (!quantity || !made.FindComponent(LF_HandCarryComponent))
+			return 1;
+
+		int size = BundleSize(left, quantity.GetMaxQuantity());
+		if (size <= 1)
+			return 1;
+
+		if (!quantity.SetQuantity(size))
+		{
+			LF_Debug.Error(FEATURE, string.Format("a bundle of %1 x%2 was refused; it drops as one", LF_Utils.GetPrefabName(made), size));
+			return 1;
+		}
+
+		return size;
 	}
 
 	//------------------------------------------------------------------------------------------------
