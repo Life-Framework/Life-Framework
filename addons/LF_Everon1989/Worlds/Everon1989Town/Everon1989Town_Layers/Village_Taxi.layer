@@ -1,0 +1,19 @@
+GenericEntity Places_TaxiRank {
+ components {
+  LF_PlaceComponent "{4B8E2D5A91C7F3E0}" {
+   m_sKind "TaxiRank"
+   m_sId "saint-philippe.taxi"
+  }
+ }
+ coords 151 0 240.5
+}
+Vehicle Town_Taxi_Cab : "{E84B8E35FC8F4B7B}Prefabs/Vehicles/Liveries/LF_S105_Taxi.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+   m_bJobCar 1
+  }
+ }
+ coords 150.512 0.001 237
+ angleY 90
+}
