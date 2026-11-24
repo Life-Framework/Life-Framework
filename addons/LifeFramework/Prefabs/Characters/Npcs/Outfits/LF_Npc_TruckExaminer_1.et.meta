@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{194B8115D8E97886}Prefabs/Characters/Npcs/Outfits/LF_Npc_TruckExaminer_1.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

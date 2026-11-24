@@ -20,7 +20,7 @@
     "footprint": {
       "source": "rows",
       "min": [
-        -69,
+        -78,
         -2
       ],
       "max": [
@@ -30,7 +30,7 @@
     },
     "front": "+z",
     "counters": [],
-    "adapt": "A fenced truck yard on open apron: the host is the weighbridge office (the sales hut). Everything stands on the ground (terrain rows, run town fit --terrain): the lot counter with id truck-yard in front of the hut, a row of four civilian Ural display trucks along the long shed, the spawn bay on the lane west of the counter (set in the lot spawn point, world axes; no cones, the maintainer wants none in town) and two Truck Sales signs. Rows are rigid: shift, never stretch."
+    "adapt": "A fenced truck yard on open apron: the host is the weighbridge office (the sales hut). Everything stands on the ground (terrain rows, run town fit --terrain): the lot counter with id truck-yard in front of the hut, a row of four civilian Ural display trucks along the long shed, the spawn bay on the lane west of the counter (set in the lot spawn point, world axes; no cones, the maintainer wants none in town) and two Truck Sales signs. Rows are rigid: shift, never stretch. The truck licence check (WK-W21): the examiner stands by the hut; the TruckCheckStart marker is on the open apron at the west end, north of the display row and facing east; four LF_TruckCheckGate poles (orders 0 to 3, ten metres apart, vanilla flagpole mesh, no cones) run east along the apron lane."
   },
   "rows": [
     {
@@ -267,6 +267,158 @@
             "m_vRimColor": "0.9 0.9 0.9",
             "m_vPaintColor": "0.12 0.3 0.55",
             "m_vTextColor": "1 1 1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "examiner",
+      "name": "Truckyard_Examiner",
+      "prefab": "{194B8115D8E97886}Prefabs/Characters/Npcs/Outfits/LF_Npc_TruckExaminer_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -8.5,
+        0,
+        5.2
+      ],
+      "yaw": -90,
+      "class": "LF_NpcBaseEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "check-start",
+      "name": "Truckyard_CheckStart",
+      "prefab": null,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -76,
+        0,
+        22
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_PlaceComponent",
+          "guid": "A7C4000000000051",
+          "set": {
+            "m_sKind": "\"TruckCheckStart\"",
+            "m_sId": "\"truck_check_start\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "check-gate-0",
+      "name": "Truckyard_CheckGate_0",
+      "prefab": "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -66,
+        0,
+        22
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_TruckCheckGateComponent",
+          "guid": "B7ECFB790AA2CB09",
+          "set": {
+            "m_iOrder": "0",
+            "m_fRadius": "4"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "check-gate-1",
+      "name": "Truckyard_CheckGate_1",
+      "prefab": "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -56,
+        0,
+        22
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_TruckCheckGateComponent",
+          "guid": "B7ECFB790AA2CB09",
+          "set": {
+            "m_iOrder": "1",
+            "m_fRadius": "4"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "check-gate-2",
+      "name": "Truckyard_CheckGate_2",
+      "prefab": "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -46,
+        0,
+        22
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_TruckCheckGateComponent",
+          "guid": "B7ECFB790AA2CB09",
+          "set": {
+            "m_iOrder": "2",
+            "m_fRadius": "4"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "check-gate-3",
+      "name": "Truckyard_CheckGate_3",
+      "prefab": "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -36,
+        0,
+        22
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_TruckCheckGateComponent",
+          "guid": "B7ECFB790AA2CB09",
+          "set": {
+            "m_iOrder": "3",
+            "m_fRadius": "4"
           },
           "blocks": []
         }
