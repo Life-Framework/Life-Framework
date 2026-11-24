@@ -22,6 +22,9 @@ GenericEntity : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
    components {
     LF_SignComponent "{C8DC6C24E38F2C19}" {
      m_sSignId "shift_board"
+     m_vRimColor 0.12 0.1 0.08
+     m_vPaintColor 0.9 0.86 0.74
+     m_vTextColor 0.12 0.1 0.08
     }
     ActionsManagerComponent "{E98B19291CF15797}" {
      additionalActions + {
