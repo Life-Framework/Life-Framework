@@ -57,6 +57,11 @@
       "why": "The teller stands inside the bank on its floor (y 0.2) behind the vanilla post-office counter; the terrain probe misses the building floor (#931)."
     },
     {
+      "match": "^Fit_eastcompound_smelter_smelter_furnace$",
+      "kind": "odd-scale",
+      "why": "The vanilla BoilerLarge_02 is 0.65 x 1.9 m, a house stove; at 1.7x (1.1 x 3.3 m with its flue pipe) it is the works furnace of the iron smelter, backed by a 6 m brick stack (#3244). The eye-height shot smelter-furnace-eye-after shows it in proportion to the workshop door and the stack; a plain 1.6x reads the same but loses the pipe run into the stack."
+    },
+    {
       "match": "^(Farm_StandCabbage|Cabbage_0)",
       "kind": "odd-scale",
       "why": "Vanilla has no cabbage-head mesh, only the whole-plant CabbageCrop_01 (0.84 x 0.91 m at scale 1). Cabbage.et scales it to 0.5, so the plant measures 0.46 m, inside the cabbage 0.15-0.6 m range. A larger scale would put a 0.9 m plant on a stall table."
