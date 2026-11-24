@@ -19,13 +19,15 @@ TX, TZ = L["till"]["x"], L["till"]["z"]
 px = kit["texture_px"]["tile"]
 
 # ================================================================ materials
-# Panel veneer: a light honey oak, straight grain, satin (lightened 2026-11-24, #4903: the mid oak read near-black in the dim shops).
-base, rough, hgt = K.wood(px, (0.88, 0.76, 0.56), grain_px=4, ring=0.10, rough=0.78)
-save_material("SC_Lambris", base, rough, 0.0, normal_from_height(hgt, 0.6), 1.0)
+# Panel veneer: a plain mid-tone oak, soft wide grain, satin. 2026-11-24 (#4903): the mid oak read near-black in the dim
+# shops; the honey fix then glared orange with hard vertical streaks (4 px grain, strong rings, deep normal). Now a calmer,
+# greyer brown with broad low-contrast grain, so it reads as a plain 1980s counter at eye height.
+base, rough, hgt = K.wood(px, (0.86, 0.75, 0.60), grain_px=10, ring=0.04, rough=0.80)
+save_material("SC_Lambris", base, rough, 0.0, normal_from_height(hgt, 0.25), 1.0)
 
 # Frame and mouldings: the same oak stained darker, brown rather than red.
-base, rough, hgt = K.wood(px, (0.70, 0.57, 0.40), grain_px=4, ring=0.12, rough=0.82)
-save_material("SC_WoodDark", base, rough, 0.0, normal_from_height(hgt, 0.7), 1.0)
+base, rough, hgt = K.wood(px, (0.68, 0.57, 0.44), grain_px=8, ring=0.05, rough=0.82)
+save_material("SC_WoodDark", base, rough, 0.0, normal_from_height(hgt, 0.3), 1.0)
 
 # Worktop: beige speckled laminate, worn a little paler where hands rest, a few scratches.
 b = np.ones((px, px, 3)) * np.array([0.66, 0.61, 0.52])
