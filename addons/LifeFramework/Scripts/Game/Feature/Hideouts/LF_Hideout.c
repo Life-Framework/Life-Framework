@@ -590,6 +590,10 @@ class LF_Hideout
 		if (!s_Emptied)
 			s_Emptied = new LF_HideoutEmptiedListener();
 
+		// The bus warns on a second Subscribe of the same instance, so ask it first.
+		if (LF_EventBus.IsSubscribed(LF_OnOrganizationEmptied, s_Emptied))
+			return;
+
 		LF_EventBus.Subscribe(LF_OnOrganizationEmptied, s_Emptied);
 	}
 
