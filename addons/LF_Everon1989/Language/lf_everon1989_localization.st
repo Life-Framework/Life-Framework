@@ -7134,6 +7134,21 @@ StringTable {
      Target_en_us "The cell yard for wanted people brought in by the police."
      Comment "Sign card for the jail yard behind the police station, What section."
     }
+    CustomStringTableItem "{73CF950899F68295}" {
+     Id "LF-Sign_LabourOffice_How"
+     Target_en_us "Walk up to the counter and *Take* a perk at level 10 or 20, or *Change* it for a fee"
+     Comment "Sign card for the labor office plate, How section. The capitalized word is the action name the player sees."
+    }
+    CustomStringTableItem "{E98D42AB4B7294F5}" {
+     Id "LF-Sign_LabourOffice_Title"
+     Target_en_us "Labor Office"
+     Comment "Title of the plate on the town hall wall behind the labor office counter (Everon 1989 pack, #4180). Printed on the sign and shown in the prompt as Read: Labor Office."
+    }
+    CustomStringTableItem "{BDB94D06C6D49D8B}" {
+     Id "LF-Sign_LabourOffice_What"
+     Target_en_us "The labor office counter in the town hall. Pick a trade perk here at levels 10 and 20, or change it for a fee."
+     Comment "Sign card for the labor office plate, What section."
+    }
     CustomStringTableItem "{9651118BDCD77FA5}" {
      Id "LF-Sign_LawlessZone_How"
      Target_en_us "Stay out if you came for a quiet day. Carry only what you can afford to lose. Bring friends."

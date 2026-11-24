@@ -44,14 +44,41 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        1,
+        0.15,
         0.2,
-        -1.5
+        -1.13
       ],
       "yaw": 0,
       "wall": "free",
       "floor": "f0",
       "lift": 0.03
+    },
+    {
+      "id": "labour-sign",
+      "name": "Labour_Sign",
+      "prefab": "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        0.15,
+        0.78,
+        -0.53
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"labour_office\"",
+            "m_vRimColor": "0.05 0.2 0.35",
+            "m_vPaintColor": "0.93 0.93 0.9",
+            "m_vTextColor": "0.05 0.2 0.35"
+          },
+          "blocks": []
+        }
+      ],
+      "free": true
     }
   ]
 }
