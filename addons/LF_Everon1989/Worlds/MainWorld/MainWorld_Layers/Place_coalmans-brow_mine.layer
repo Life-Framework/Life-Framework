@@ -45,6 +45,12 @@ DecalEntity Fit_coalmans_brow_mine_mine_pad_e : "{AF4AA779A4546D51}Prefabs/Decal
  angleY 140
  scale 6
 }
+DecalEntity Fit_coalmans_brow_mine_mine_pad_f : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords 4334 0 10409.4
+ angleX -90
+ angleY 20
+ scale 8
+}
 GenericEntity Fit_coalmans_brow_mine_mine_heap_l : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 4324 35.094 10410
  angleY 180

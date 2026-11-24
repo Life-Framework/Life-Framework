@@ -129,6 +129,25 @@
       "mount": "terrain"
     },
     {
+      "id": "mine-pad-f",
+      "name": "Mine_PadF",
+      "prefab": "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4,
+        0,
+        5.4
+      ],
+      "yaw": 20,
+      "pitch": -90,
+      "scale": 8,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
       "id": "mine-heap-l",
       "name": "Mine_HeapL",
       "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",

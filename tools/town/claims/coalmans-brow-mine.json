@@ -10,7 +10,7 @@
     "Workplace",
     "Processor"
   ],
-  "rows": 51,
+  "rows": 52,
   "destruction": {
     "mode": "none",
     "reason": "hostless plot: no building stands in the slot"

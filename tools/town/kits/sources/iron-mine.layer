@@ -226,3 +226,9 @@ DecalEntity Mine_PadE : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_
  angleY 140
  scale 6
 }
+DecalEntity Mine_PadF : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords 4 0 5.4
+ angleX -90
+ angleY 20
+ scale 8
+}
