@@ -219,13 +219,13 @@
     {
       "id": "butcher-rack-1-dry-00",
       "name": "Butcher_rack_1_dry_00",
-      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
       "role": "dressing",
       "verb": "on butcher-rack-1",
       "offset": [
         -5.33,
         0.794,
-        -0.1
+        -0.71
       ],
       "yaw": 90,
       "floor": "f0",
@@ -234,58 +234,43 @@
     {
       "id": "butcher-rack-1-dry-01",
       "name": "Butcher_rack_1_dry_01",
-      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
       "role": "dressing",
       "verb": "on butcher-rack-1",
       "offset": [
         -5.33,
         0.794,
-        0.2
+        -0.26
       ],
-      "yaw": 104,
+      "yaw": 98,
       "floor": "f0",
       "attach": "shelf:butcher-rack-1"
     },
     {
       "id": "butcher-rack-1-dry-02",
       "name": "Butcher_rack_1_dry_02",
-      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
       "role": "dressing",
       "verb": "on butcher-rack-1",
       "offset": [
         -5.33,
         0.794,
-        0.5
+        0.19
       ],
-      "yaw": 90,
-      "floor": "f0",
-      "attach": "shelf:butcher-rack-1"
-    },
-    {
-      "id": "butcher-rack-1-dry-03",
-      "name": "Butcher_rack_1_dry_03",
-      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
-      "role": "dressing",
-      "verb": "on butcher-rack-1",
-      "offset": [
-        -5.33,
-        0.794,
-        0.8
-      ],
-      "yaw": 104,
+      "yaw": 106,
       "floor": "f0",
       "attach": "shelf:butcher-rack-1"
     },
     {
       "id": "butcher-rack-1-dry-10",
       "name": "Butcher_rack_1_dry_10",
-      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
       "role": "dressing",
       "verb": "on butcher-rack-1",
       "offset": [
         -5.33,
         1.78,
-        -0.1
+        -0.71
       ],
       "yaw": 90,
       "floor": "f0",
@@ -294,45 +279,30 @@
     {
       "id": "butcher-rack-1-dry-11",
       "name": "Butcher_rack_1_dry_11",
-      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
       "role": "dressing",
       "verb": "on butcher-rack-1",
       "offset": [
         -5.33,
         1.78,
-        0.2
+        -0.26
       ],
-      "yaw": 104,
+      "yaw": 98,
       "floor": "f0",
       "attach": "shelf:butcher-rack-1"
     },
     {
       "id": "butcher-rack-1-dry-12",
       "name": "Butcher_rack_1_dry_12",
-      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
       "role": "dressing",
       "verb": "on butcher-rack-1",
       "offset": [
         -5.33,
         1.78,
-        0.5
+        0.19
       ],
-      "yaw": 90,
-      "floor": "f0",
-      "attach": "shelf:butcher-rack-1"
-    },
-    {
-      "id": "butcher-rack-1-dry-13",
-      "name": "Butcher_rack_1_dry_13",
-      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
-      "role": "dressing",
-      "verb": "on butcher-rack-1",
-      "offset": [
-        -5.33,
-        1.78,
-        0.8
-      ],
-      "yaw": 104,
+      "yaw": 106,
       "floor": "f0",
       "attach": "shelf:butcher-rack-1"
     },

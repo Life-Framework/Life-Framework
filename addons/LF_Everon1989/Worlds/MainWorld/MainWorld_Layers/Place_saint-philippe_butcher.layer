@@ -49,37 +49,29 @@ GenericEntity Fit_saint_philippe_butcher_butcher_rack_1 : "{D6E93EF9D3232D16}Pre
  coords 4475.757 12.002 10775.096
  angleY -10
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_00 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4475.524 12.594 10775.268
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_00 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4476.125 12.594 10775.374
  angleY -10
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_01 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4475.229 12.594 10775.216
- angleY 4
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_01 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4475.682 12.594 10775.296
+ angleY -2
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_02 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4474.933 12.594 10775.164
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_02 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4475.238 12.594 10775.218
+ angleY 6
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_10 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4476.125 13.58 10775.374
  angleY -10
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_03 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4474.638 12.594 10775.112
- angleY 4
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_11 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4475.682 13.58 10775.296
+ angleY -2
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_10 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4475.524 13.58 10775.268
- angleY -10
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_11 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4475.229 13.58 10775.216
- angleY 4
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_12 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4474.933 13.58 10775.164
- angleY -10
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_13 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4474.638 13.58 10775.112
- angleY 4
+GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_dry_12 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4475.238 13.58 10775.218
+ angleY 6
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_leg_0 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
  coords 4475.475 13.087 10775.26
