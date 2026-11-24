@@ -1,14 +1,14 @@
-// red-proof: #3244 2026-11-24, `tools\cli test --no-build --red LF_Test_IronChainHarness`: RED PROOF OK (RedProof() skips the level set and the coal grant: the smelter still refuses the worker, coalgive 3 adds 0). Green with `--only`.
+// red-proof: #4856 2026-11-24, the harness stand-ins moved to the copper refinery (the iron smelter has no gate to set): same RedProof() hooks. Earlier: #3244 2026-11-24, `tools\cli test --no-build --red LF_Test_IronChainHarness`: RED PROOF OK (RedProof() skips the level set and the coal grant: the smelter still refuses the worker, coalgive 3 adds 0). Green with `--only`.
 
-//! harness/iron-chain (#3244): the session proof's stand-ins. SMELTING 8 is 3000 XP, over the 2000 daily cap, so no
-//! one earns the smelter's gate in a day: the proof sets it with `levelset` (LF_JobLevels.SetLevelUnchecked, #4773) and
-//! the smelter then reads that level and lets the worker in. `coalgive` puts coal lumps in the pack, clamped to 1..20.
+//! harness/iron-chain (#3244): the session proof's stand-ins. The iron smelter is open at SMELTING 1 (#4856); the copper refinery keeps SMELTING 15, over the 2000 daily cap, so no
+//! one earns a gate that high in a day: the proof sets it with `levelset` (LF_JobLevels.SetLevelUnchecked, #4773) and
+//! the refinery then reads that level and lets the worker in. `coalgive` puts coal lumps in the pack, clamped to 1..20.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_IronChainHarness : LF_Test
 {
 	protected static const string WORKER = "test-iron-chain-harness";
 	protected static const string JOB = "SMELTING";
-	protected static const string MACHINE = "smelter-iron";
+	protected static const string MACHINE = "refinery-copper";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -34,7 +34,7 @@ class LF_Test_IronChainHarness : LF_Test
 
 		// The smelter turns a level-1 worker away in words.
 		string refusal = LF_ProcessAction.LevelRefusal(machine, LF_JobLevels.LevelOf(WORKER, JOB));
-		ctx.True(!refusal.IsEmpty(), "level 1 is refused at the smelter");
+		ctx.True(!refusal.IsEmpty(), "level 1 is refused at the refinery");
 
 		// Red proof: the level is never set, as before #3244.
 		int got = 0;
@@ -42,9 +42,9 @@ class LF_Test_IronChainHarness : LF_Test
 			got = LF_JobLevels.SetLevelUnchecked(WORKER, JOB, machine.m_iMinLevel);
 
 		ctx.Equal(track.XpForLevel(machine.m_iMinLevel), got, "the set returns the XP now held");
-		ctx.Equal(machine.m_iMinLevel, LF_JobLevels.LevelOf(WORKER, JOB), "the worker is at the smelter's level");
+		ctx.Equal(machine.m_iMinLevel, LF_JobLevels.LevelOf(WORKER, JOB), "the worker is at the refinery's level");
 		ctx.Equal(track.XpForLevel(machine.m_iMinLevel), LF_JobLevels.XpOf(WORKER, JOB), "the XP is exactly what the level costs");
-		ctx.EqualStr("", LF_ProcessAction.LevelRefusal(machine, LF_JobLevels.LevelOf(WORKER, JOB)), "the smelter lets the worker in");
+		ctx.EqualStr("", LF_ProcessAction.LevelRefusal(machine, LF_JobLevels.LevelOf(WORKER, JOB)), "the refinery lets the worker in");
 
 		// The set books no cap: the first real award still pays.
 		int xpBefore = LF_JobLevels.XpOf(WORKER, JOB);

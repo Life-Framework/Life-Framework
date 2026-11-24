@@ -1,7 +1,7 @@
 // red-proof: observed 2026-11-24 `tools/cli test --no-build --red LF_Test_HarnessCheckpoint`: RED PROOF OK (the apply skipped, so cash, bank, levels, licence and underworld tier read back unchanged). Green with `--only`.
 //! The harness checkpoint (#4825): `checkpoint 7` puts a fresh character at hour 7 of the 10-hour arc. This test
 //! applies agent-box/checkpoints/hour-7.json (the runner mirrors it to $profile:LifeFramework/checkpoints/) to a
-//! fixture character and reads back cash, bank, the MINER and DELIVERY (hauling) levels, the driving licence and the
+//! fixture character and reads back cash, bank, the MINER, DELIVERY (hauling) and SMELTING levels, the driving licence and the
 //! underworld tier through the public accessors; the gated entry refuses outside a harness build.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HarnessCheckpoint : LF_Test
@@ -14,7 +14,7 @@ class LF_Test_HarnessCheckpoint : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A jobs table with the two trades the hour-7 file names: levels 2 to 10 at 100 xp steps of growing size.
+	//! A jobs table with the trades the hour-7 file names: levels 2 to 10 at 100 xp steps of growing size.
 	protected static LF_JobsConfig MakeConfig()
 	{
 		LF_JobsConfig config = new LF_JobsConfig();
@@ -23,6 +23,7 @@ class LF_Test_HarnessCheckpoint : LF_Test
 		config.m_aTracks.Insert(LF_JobTrackDef.Make("MINER", steps));
 		config.m_aTracks.Insert(LF_JobTrackDef.Make("DELIVERY", steps));
 		config.m_aTracks.Insert(LF_JobTrackDef.Make("FARMER", steps));
+		config.m_aTracks.Insert(LF_JobTrackDef.Make("SMELTING", steps));
 		config.m_aXpAwards = {};
 		config.m_aLicenceGates = {};
 		return config;
@@ -64,6 +65,7 @@ class LF_Test_HarnessCheckpoint : LF_Test
 
 		ctx.Equal(10, LF_JobLevels.LevelOf(UID, "MINER"), "MINER is level 10");
 		ctx.Equal(10, LF_JobLevels.LevelOf(UID, "DELIVERY"), "DELIVERY is level 10");
+		ctx.Equal(4, LF_JobLevels.LevelOf(UID, "SMELTING"), "SMELTING is level 4 (the iron smelter has been fed since hour 5, #4856)");
 		ctx.Equal(3, LF_JobLevels.LevelOf(UID, "FARMER"), "FARMER is level 3");
 		LF_LicenseManagerComponent licences = LF_Component<LF_LicenseManagerComponent>.Find(character);
 		ctx.NotNull(licences, "the character carries a licence manager");

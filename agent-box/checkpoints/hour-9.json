@@ -7,6 +7,7 @@
   "medicRank": 0,
   "levels": {
     "MINER": 10,
+    "SMELTING": 4,
     "DELIVERY": 10,
     "FARMER": 3
   },

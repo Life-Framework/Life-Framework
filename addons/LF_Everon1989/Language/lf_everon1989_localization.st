@@ -7079,6 +7079,16 @@ StringTable {
      Target_en_us "The village hostel: a bed for anyone with nowhere to sleep."
      Comment "What line of the hostel sign."
     }
+    CustomStringTableItem "{494F8AAE164272B0}" {
+     Id "LF-Sign_HoursPlate_Title"
+     Target_en_us "Opening Hours"
+     Comment "Title of the enamel plate beside a shop door (Everon 1989 pack, #4834). Printed on the plate in capitals and shown in the prompt as Read: Opening Hours. The row under it, OPEN and the span, is written from the keeper's timetable."
+    }
+    CustomStringTableItem "{5CA9B1E1C3CA3394}" {
+     Id "LF-Sign_HoursPlate_What"
+     Target_en_us "The hours the shopkeeper is at the counter. The plate is written from the keeper's timetable, so it always agrees with the shop."
+     Comment "Sign card for the opening-hours plate, What section."
+    }
     CustomStringTableItem "{BFF98FD4BBA45C34}" {
      Id "LF-Sign_Housewares_Title"
      Target_en_us "Housewares"
@@ -9561,7 +9571,7 @@ StringTable {
     }
     CustomStringTableItem "{5C28C1EA8C7DD082}" {
      Id "LF-Unlock_Smelting_02"
-     Target_en_us "Iron bars from iron nuggets"
+     Target_en_us "Smelter runs: up to 6 bars"
      Comment "What Smelting level 2 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{A2CD7E9EC5EAAB06}" {
@@ -9576,7 +9586,7 @@ StringTable {
     }
     CustomStringTableItem "{94282D37869E26CB}" {
      Id "LF-Unlock_Smelting_05"
-     Target_en_us "Bar molds: bigger batches"
+     Target_en_us "Bar molds: up to 7 bars a run"
      Comment "What Smelting level 5 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{5ADBBA78337241F0}" {
@@ -9586,17 +9596,17 @@ StringTable {
     }
     CustomStringTableItem "{4A5D95FC44DA822A}" {
      Id "LF-Unlock_Smelting_07"
-     Target_en_us "Faster smelting"
+     Target_en_us "Faster smelting: 45-second runs"
      Comment "What Smelting level 7 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{71CEF0C3AA3BE4C8}" {
      Id "LF-Unlock_Smelting_08"
-     Target_en_us "The smelter at the east-central works"
+     Target_en_us "Larger run: up to 8 bars"
      Comment "What Smelting level 8 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{1B5A72594151EE44}" {
      Id "LF-Unlock_Smelting_09"
-     Target_en_us "Steel bars at the smelter"
+     Target_en_us "Hotter fire: 35-second runs"
      Comment "What Smelting level 9 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{C17C8C6540A10D8A}" {
@@ -9631,7 +9641,7 @@ StringTable {
     }
     CustomStringTableItem "{03AB2A26283A3864}" {
      Id "LF-Unlock_Smelting_16"
-     Target_en_us "Bigger batches at the smelter"
+     Target_en_us "Bigger batches: up to 10 bars a run"
      Comment "What Smelting level 16 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{77666FBC2DB85F86}" {

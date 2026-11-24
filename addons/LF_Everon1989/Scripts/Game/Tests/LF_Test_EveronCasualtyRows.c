@@ -33,6 +33,7 @@ class LF_Test_EveronCasualtyRows : LF_Test
 		ctx.Equal(5, config.m_aRows.Count(), "the pack lists five casualty rows");
 		ctx.True(config.m_iIntervalSeconds >= 900 && config.m_iIntervalSeconds <= 1800, "a roll every 15 to 30 minutes: about three calls an hour");
 		ctx.Equal(1, config.m_iPerMedic, "one open casualty per medic on duty");
+		ctx.True(config.ExpirySeconds() >= 480 && config.ExpirySeconds() <= 720, "a casualty lasts 8 to 12 minutes: read the board, draw an ambulance, drive (#4852)");
 
 		array<string> islandKinds = {};
 		ISLAND_KINDS.Split(",", islandKinds, false);

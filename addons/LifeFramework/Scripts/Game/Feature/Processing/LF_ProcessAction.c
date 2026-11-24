@@ -77,11 +77,12 @@ class LF_ProcessAction : ScriptedUserAction
 		}
 
 		// The machine's job-level gate (#3226): the server decides, the player reads the job's words.
-		string levelRefusal = LevelRefusal(m_Machine, LevelFor(pUserEntity, m_Machine));
+		int level = LevelFor(pUserEntity, m_Machine);
+		string levelRefusal = LevelRefusal(m_Machine, level);
 		if (!levelRefusal.IsEmpty())
 		{
 			LF_Debug.Info("Processing", string.Format("refused process at %1: %2 level below %3", m_sMachineId, m_Machine.m_sLevelJob, m_Machine.m_iMinLevel));
-			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text(levelRefusal), "", 4.0);
+			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Shown(levelRefusal), "", 4.0);
 			return;
 		}
 
@@ -97,7 +98,7 @@ class LF_ProcessAction : ScriptedUserAction
 
 		// As many whole batches as the inventory covers, up to the machine's cap.
 		array<int> held = HeldAmounts(inventoryManager, m_aProcessingInputs);
-		int batches = BatchesFor(held, m_aProcessingInputs, MaxBatches(m_Machine));
+		int batches = BatchesFor(held, m_aProcessingInputs, MaxBatchesAt(m_Machine, level));
 		if (batches < 1)
 		{
 			ResourceName missing;
@@ -120,14 +121,15 @@ class LF_ProcessAction : ScriptedUserAction
 		// A timed machine keeps the outputs back: they drop at the machine when the time is up (#3229).
 		if (m_Machine && m_Machine.m_iProcessSeconds > 0)
 		{
-			if (!LF_ProcessRun.Start(pOwnerEntity, pUserEntity, m_sMachineId, outputs, batches, m_Machine.m_iProcessSeconds, m_vDropOffset, m_vRotation))
+			int seconds = SecondsAt(m_Machine, level);
+			if (!LF_ProcessRun.Start(pOwnerEntity, pUserEntity, m_sMachineId, outputs, batches, seconds, m_vDropOffset, m_vRotation))
 			{
 				RestoreInputs(inventoryManager, inputs);
 				LF_Debug.Error("Processing", string.Format("rejected process at %1: the timed run did not start, inputs given back", m_sMachineId));
 				return;
 			}
 
-			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text("#LF-Process_Started", m_Machine.m_iProcessSeconds.ToString()), "", 4.0);
+			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text("#LF-Process_Started", seconds.ToString()), "", 4.0);
 			return;
 		}
 
@@ -260,7 +262,7 @@ class LF_ProcessAction : ScriptedUserAction
 	//! The player's level in the machine's gate job; 0 when the machine has no gate.
 	protected static int LevelFor(IEntity user, LF_ResourceMachineDef machine)
 	{
-		if (LevelRefusal(machine, 0).IsEmpty())
+		if (!machine || machine.m_sLevelJob.IsEmpty())
 			return 0;
 
 		return LF_JobLevels.LevelOfBody(user, machine.m_sLevelJob);
@@ -285,6 +287,43 @@ class LF_ProcessAction : ScriptedUserAction
 			return 1;
 
 		return LF_Utils.MaxInt(1, machine.m_iMaxBatches);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The batch cap of a worker at \p level: the row's cap, raised by any step of m_aSteps at or below the level (#4861).
+	static int MaxBatchesAt(LF_ResourceMachineDef machine, int level)
+	{
+		int cap = MaxBatches(machine);
+		if (!machine || !machine.m_aSteps)
+			return cap;
+
+		foreach (LF_MachineStep step : machine.m_aSteps)
+		{
+			if (step && step.m_iLevel <= level && step.m_iMaxBatches > cap)
+				cap = step.m_iMaxBatches;
+		}
+
+		return cap;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The seconds a run takes for a worker at \p level: the row's time, cut by any step of m_aSteps at or below the level; 0 for an instant machine (#4861).
+	static int SecondsAt(LF_ResourceMachineDef machine, int level)
+	{
+		if (!machine || machine.m_iProcessSeconds <= 0)
+			return 0;
+
+		int seconds = machine.m_iProcessSeconds;
+		if (!machine.m_aSteps)
+			return seconds;
+
+		foreach (LF_MachineStep step : machine.m_aSteps)
+		{
+			if (step && step.m_iLevel <= level && step.m_iProcessSeconds > 0 && step.m_iProcessSeconds < seconds)
+				seconds = step.m_iProcessSeconds;
+		}
+
+		return seconds;
 	}
 
 	//------------------------------------------------------------------------------------------------

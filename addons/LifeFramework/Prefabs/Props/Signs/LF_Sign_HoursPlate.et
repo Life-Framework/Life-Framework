@@ -1,0 +1,14 @@
+GenericEntity : "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et" {
+ ID "0989B2367DE867D6"
+ components {
+  LF_SignComponent "{A19037297E81C6EC}" {
+   m_sSignId "hours_plate"
+   m_sStyle "enamel"
+   m_sSize "plate"
+   m_sRowSource "hours_plate"
+   m_vRimColor 0.95 0.95 0.92
+   m_vPaintColor 0.05 0.16 0.32
+   m_vTextColor 1 1 1
+  }
+ }
+}
