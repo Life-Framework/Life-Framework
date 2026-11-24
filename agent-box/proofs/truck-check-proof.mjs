@@ -17,7 +17,9 @@ import { ROOT, arrive, clientBox, newestLog, parseState, readSession, sessionDir
 //     a gate out of order fails the run and the truck is removed.
 //  4. After the retake wait: take it again, drive gates 0, 1, 2, 3 one at a time (a picture after each):
 //     GATE_OK three times, PASSED, "holds the truck licence" in the server log, the truck removed.
-//  5. The lot now sells: buy the first truck (the Ural, $9,500 from the bank).
+//  5. The lot now sells: buy the first truck on the sheet. The price is read from the catalogue, never typed in: the
+//     pack's price rows for the truck yard times the owner's vehicles.buyPercent (the lot charges base x buyPercent
+//     / 100: the flagship's 80 made the Cargo truck $9,600 and the Ural $7,600 while the proof pinned $9,500).
 const ATM = "Fit_saint_philippe_atms_drop_b79";
 const LOT = "Fit_ne_compound_truckyard_lot";
 const EXAMINER = "Fit_ne_compound_truckyard_examiner";
@@ -26,7 +28,38 @@ const TAKE_ACTION = "LF_TruckCheckExaminerAction";
 const BUY_ACTION = "LF_VehicleBuyAction";
 const ATM_ROW = "LF_ATMQuickAction";
 const FEE = 300;
-const TRUCK = 9500;
+const PRICES_CONF = join("addons", "LF_Everon1989", "Configs", "Vehicles", "LF_VehiclePrices_Everon1989.conf");
+const OWNER_CONFIG = join("server", "flagship", "config.json");
+const YARD = "truck-yard";
+
+// What the truck yard charges for each of its rows: every price entry in the pack's conf whose m_sLotId is the yard,
+// base price x buyPercent / 100 rounded as the economy report does. [{ prefab, price }] in file order.
+export function yardPrices(confText, buyPercent) {
+  const out = [];
+  for (const block of String(confText).split(/LF_VehiclePriceEntry\s+"\{[0-9A-Fa-f]+\}"\s*\{/).slice(1)) {
+    if (!new RegExp(`m_sLotId\\s+"${YARD}"`).test(block)) continue;
+    const base = /m_iBasePrice\s+(\d+)/.exec(block);
+    const prefab = /m_Prefab\s+"\{[0-9A-Fa-f]+\}([^"]+)"/.exec(block);
+    if (base && prefab) out.push({ prefab: prefab[1], price: Math.round(Number(base[1]) * buyPercent / 100) });
+  }
+  return out;
+}
+
+// The owner config's vehicles.buyPercent; 100 when the file or the key is missing.
+export function buyPercentOf(ownerJsonText) {
+  try {
+    const n = Number(JSON.parse(ownerJsonText)?.vehicles?.buyPercent);
+    return Number.isFinite(n) && n > 0 ? n : 100;
+  } catch {
+    return 100;
+  }
+}
+
+function readYardPrices() {
+  const conf = existsSync(join(ROOT, PRICES_CONF)) ? readFileSync(join(ROOT, PRICES_CONF), "utf8") : "";
+  const owner = existsSync(join(ROOT, OWNER_CONFIG)) ? readFileSync(join(ROOT, OWNER_CONFIG), "utf8") : "";
+  return yardPrices(conf, buyPercentOf(owner));
+}
 
 const escape = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const count = (log, re) => (String(log).match(re) || []).length;
@@ -55,6 +88,15 @@ function selftest() {
     + `licence desk: driving licence issued to ${uid} for 150\n`
     + `bought #LF-Vehicle_Ural4320 from the lot sheet for ${uid}\n`;
   const fails = [];
+  const entry = (n, op, prefab, base, lot) => ` LF_VehiclePriceEntry "{3436A0417A00000${n}}" {\n  m_sOp "${op}"\n  m_Prefab "{F1FBD0972FA5FE0${n}}${prefab}"\n  m_iBasePrice ${base}\n  m_sLotId "${lot}"\n }\n`;
+  const conf = `LF_VehiclePricesConfig {\n${entry(1, "patch", "Prefabs/M923A1.et", 12000, "truck-yard")}${entry(2, "add", "Prefabs/Ural.et", 9500, "truck-yard")}${entry(3, "add", "Prefabs/UAZ.et", 2500, "car-lot")}}\n`;
+  const rows = yardPrices(conf, 80);
+  if (rows.length !== 2 || rows[0].price !== 9600 || rows[1].price !== 7600) fails.push(`yardPrices read ${JSON.stringify(rows)}, wanted the two yard rows at 9600 and 7600`);
+  if (yardPrices(conf, 100)[1]?.price !== 9500) fails.push("yardPrices at 100 percent is not the base price");
+  if (buyPercentOf('{"vehicles":{"buyPercent":80}}') !== 80 || buyPercentOf("not json") !== 100 || buyPercentOf("{}") !== 100) fails.push("buyPercentOf");
+  // The real catalogue: the two yard rows exist, and a price change moves with the file, not with the proof.
+  const real = readYardPrices();
+  if (real.length < 1) fails.push("the pack's price conf lists no truck-yard row");
   if (!gateSaid(log, uid, 0, "GATE_OK")) fails.push("gateSaid missed gate 0");
   if (gateSaid(log, uid, 1, "GATE_OK")) fails.push("gateSaid matched a gate that was not reached");
   if (gateSaid(log, "someone-else", 0, "GATE_OK")) fails.push("gateSaid matched another account");
@@ -121,6 +163,9 @@ async function run() {
   if (/WelcomeGuideDismissButton/.test(String(on(1, { verb: "ui" }).detail))) on(1, { verb: "click", widget: "WelcomeGuideDismissButton" });
   wait(1000);
   expect(!!uid, "client 1 has a recorded session identity");
+  const yard = readYardPrices();
+  expect(yard.length > 0, `the truck yard's rows are read from the catalogue (${yard.map((r) => `${r.prefab.replace(/^.*\//, "")} $${r.price}`).join(", ")})`);
+  const dearest = Math.max(0, ...yard.map((r) => r.price));
 
   // 1. Money: $12,000 in the pocket, all of it into the bank at the island ATM, then $500 back out for the fee.
   on(1, { verb: "resetplayer", cash: 12000 }, 15000);
@@ -135,7 +180,7 @@ async function run() {
   on(1, { verb: "use", className: `${ATM_ROW}__5` }, 10000); // deposit all
   wait(1500);
   const banked = stateOf();
-  expect(banked.cash === 0 && banked.bank >= TRUCK + FEE, `the cash is banked (cash ${banked.cash}, bank ${banked.bank})`);
+  expect(banked.cash === 0 && banked.bank >= dearest + FEE, `the cash is banked (cash ${banked.cash}, bank ${banked.bank})`);
   const withdraw = () => { on(1, { verb: "use", className: `${ATM_ROW}__3` }, 10000); wait(1500); }; // withdraw $500
   for (let i = 0; i < 4; i++) withdraw();
   const funded = stateOf();
@@ -225,7 +270,8 @@ async function run() {
   wait(3000);
   shot("truck_check_bought");
   expect(lotBoughtLine(serverLog(), uid), "the yard sells a truck to the licence holder (server log)");
-  expect(bankBefore - stateOf().bank === TRUCK, `the truck's $${TRUCK} left the bank`);
+  const paid = bankBefore - stateOf().bank;
+  expect(yard.some((r) => r.price === paid), `the truck's $${paid} left the bank: one of the yard's catalogue prices (${yard.map((r) => r.price).join(", ")})`);
 
   keepPictures(dir);
   console.log(fails.length ? `truck-check-proof: FAIL (${fails.length})` : "truck-check-proof: PASS");
