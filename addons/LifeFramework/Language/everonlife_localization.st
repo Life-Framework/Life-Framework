@@ -16186,6 +16186,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Dispatch"
      Comment "Title of dispatch toasts."
     }
+    CustomStringTableItem "{83D3279735869111}" {
+     Id "LF-ShiftBoard_NoSite"
+     Target_en_us "This board belongs to no work site."
+     Comment "Shift board line when the board stands at no workplace (#4712)."
+    }
+    CustomStringTableItem "{36443057824AB08E}" {
+     Id "LF-ShiftBoard_None"
+     Target_en_us "Nobody has worked here this week yet."
+     Comment "Shift board line when no XP was earned at the site this week (#4712)."
+    }
+    CustomStringTableItem "{6765440F09DD00A1}" {
+     Id "LF-ShiftBoard_Read"
+     Target_en_us "Read the shift board"
+     Comment "Action on a work site's printed shift board (#4712)."
+    }
+    CustomStringTableItem "{89B6F4DEDEDE2542}" {
+     Id "LF-ShiftBoard_Row"
+     Target_en_us "%1. %2, %3 %4, %5 XP"
+     Comment "One row of the shift board (#4712). %1 = place, %2 = worker name, %3 = trade, %4 = trade level, %5 = XP earned at this site this week. Example: 1. Ada Newcomer, Mining 7, 1,240 XP"
+    }
+    CustomStringTableItem "{F6462EE479F213FD}" {
+     Id "LF-ShiftBoard_Title"
+     Target_en_us "This week's shift board"
+     Comment "Title of a work site's printed shift board (WK-W22, #4712)."
+    }
+    CustomStringTableItem "{BFADD852A420193D}" {
+     Id "LF-ShiftBoard_Unnamed"
+     Target_en_us "A worker"
+     Comment "Shift board name when the server knows no name for a worker (#4712)."
+    }
     CustomStringTableItem "{5B17BCD5B61026B6}" {
      Id "LF-Shop_Browse"
      Target_en_us "Browse goods"
@@ -18022,6 +18052,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Training_Title"
      Target_en_us "Training desk"
      Comment "Training desk: toast title."
+    }
+    CustomStringTableItem "{60A9BDB3CFCA73FA}" {
+     Id "LF-TruckCheck_Action"
+     Target_en_us "Take the truck check ({currency:sym}300)"
+     Comment "Action on the examiner: pay the fee and take the lent truck for the licence check (#4696)."
+    }
+    CustomStringTableItem "{AFE6468581F2B50C}" {
+     Id "LF-TruckCheck_FailedAway"
+     Target_en_us "You walked away from the truck. Check failed. Retake in about %1 minutes."
+     Comment "Toast: 300 m from the lent truck. %1 = retake wait in in-game minutes."
+    }
+    CustomStringTableItem "{D6AC02B80EEAA64F}" {
+     Id "LF-TruckCheck_FailedLeft"
+     Target_en_us "You left the truck too long. Check failed. Retake in about %1 minutes."
+     Comment "Toast: out of the lent truck for 60 s. %1 = retake wait in in-game minutes."
+    }
+    CustomStringTableItem "{87A36948E99E3AA1}" {
+     Id "LF-TruckCheck_FailedWreck"
+     Target_en_us "The truck is wrecked. Check failed. Retake in about %1 minutes."
+     Comment "Toast: the lent truck was destroyed or is gone. %1 = retake wait in in-game minutes."
+    }
+    CustomStringTableItem "{13750B36D26E7656}" {
+     Id "LF-TruckCheck_Held"
+     Target_en_us "You already hold the truck license."
+     Comment "Examiner: the player has the truck license."
+    }
+    CustomStringTableItem "{822EE47BBD34375A}" {
+     Id "LF-TruckCheck_NoCash"
+     Target_en_us "The truck check costs {currency:sym}%1. Bring the cash."
+     Comment "Examiner: the player carries less than the fee. %1 = the fee."
+    }
+    CustomStringTableItem "{380BE3A3C6FE2658}" {
+     Id "LF-TruckCheck_RetakeWait"
+     Target_en_us "You failed the last check. Come back in about %1 minutes."
+     Comment "Examiner: the retake wait has not ended. %1 = in-game minutes left."
+    }
+    CustomStringTableItem "{A91A792F66DB0BA1}" {
+     Id "LF-TruckCheck_Running"
+     Target_en_us "You are already on a truck check."
+     Comment "Examiner: a check run is already open for the player."
+    }
+    CustomStringTableItem "{918ADAB133D71046}" {
+     Id "LF-TruckCheck_Started"
+     Target_en_us "The truck is yours for the check. Climb in and drive the gates in order."
+     Comment "Examiner: the fee is paid, the truck is lent and the run is open."
+    }
+    CustomStringTableItem "{54F1741326492E7E}" {
+     Id "LF-TruckCheck_Title"
+     Target_en_us "Truck check"
+     Comment "Toast title for every truck check answer (#4696)."
+    }
+    CustomStringTableItem "{1BD47FB3CC76FC81}" {
+     Id "LF-TruckCheck_Unavailable"
+     Target_en_us "The examiner cannot lend a truck right now."
+     Comment "Examiner: the truck could not be lent (no truck prefab or the gates refused)."
     }
     CustomStringTableItem "{D820B2BCD7FC410A}" {
      Id "LF-UIKit_Keep"

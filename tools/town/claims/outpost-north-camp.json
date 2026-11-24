@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "place": "outpost-north",
+  "slot": "camp",
+  "plot": "p3",
+  "hostless": true,
+  "kit": "outpost-north",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_outpost-north_camp.layer",
+  "kinds": [],
+  "rows": 34,
+  "destruction": {
+    "mode": "none",
+    "reason": "hostless plot: no building stands in the slot"
+  },
+  "date": "2026-11-24"
+}
