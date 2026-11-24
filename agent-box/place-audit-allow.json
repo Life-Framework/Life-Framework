@@ -206,16 +206,6 @@
       "why": "The two work lamps are wall lamps hung 2.8 m up on the -z wall of the plant shed (kit rows verb against wall, wall -z); a grid bay holds the kit without the shed shell, so the trace down reads open terrain (contact sheet, #3857). town fit seats them on the host wall."
     },
     {
-      "match": "^(Kit_plant_reagent_store_lamp_|PlantReagentStore_Lamp)",
-      "kind": "contact",
-      "why": "A ceiling chandelier (LF_LightCeiling_Interior) hangs over a counter or a bare floor with nothing under its bounds: the audit reads the gap as hovering or hanging off its support. It is hung from the slab by its rod (#4718)."
-    },
-    {
-      "match": "^(Kit_plant_reagent_store_lamp_|PlantReagentStore_Lamp)",
-      "kind": "overhang",
-      "why": "A ceiling chandelier (LF_LightCeiling_Interior) hangs over a counter or a bare floor with nothing under its bounds: the audit reads the gap as hovering or hanging off its support. It is hung from the slab by its rod (#4718)."
-    },
-    {
       "match": "^Fit_saint_philippe_general_store_general_store_till ",
       "kind": "contact",
       "why": "The till rests on the host counter (CounterShop_01, flat top 1.039 m, island height 16.486): a row of probe radios at the same height read a contact gap of 0 cm over the whole of that top (2026-11-21, #3888 baseline cleanup), while the 3x3 contact trace reads a support 7 to 11 cm higher only under this till, moving with its x and not with its z. The same till prefab on the miner counter beside it measures clean. A measurement artefact of the host furniture, not a sunk till."
@@ -349,6 +339,16 @@
       "match": "^Fit_saint_philippe_(pharmacy|clinic|police)_\\1_lamp_\\d",
       "kind": "floating",
       "why": "A ceiling fixture (LF_LightCeiling_Interior, a chandelier hung from the slab of the island host building) has nothing under it but the room: the audit reads the counter or floor 0.4 to 0.9 m below its hanging bottom. The kit row is a free mount at the ceiling height (#4718)."
+    },
+    {
+      "match": "^Fit_saint_philippe_(pharmacy|clinic|police)_\\1_lamp_\\d",
+      "kind": "contact",
+      "why": "A ceiling chandelier (LF_LightCeiling_Interior) hangs over a counter or a bare floor with nothing under its bounds: the audit reads the gap as hovering or hanging off its support. It is hung from the slab by its rod (#4718)."
+    },
+    {
+      "match": "^Fit_saint_philippe_(pharmacy|clinic|police)_\\1_lamp_\\d",
+      "kind": "overhang",
+      "why": "A ceiling chandelier (LF_LightCeiling_Interior) hangs over a counter or a bare floor with nothing under its bounds: the audit reads the gap as hovering or hanging off its support. It is hung from the slab by its rod (#4718)."
     },
     {
       "match": "^Fit_outpost_north_camp_outpost_gate_sandbag_",
