@@ -1269,6 +1269,7 @@ class LF_AgentHarness
 
 		s_bLoop = true;
 		s_pLoopMode = mode;
+		LF_HarnessPerf.ResetPollGap();
 		GetGame().GetCallqueue().CallLater(Poll, 400, true);
 		// Registered before any screen's own per-frame poll, so it runs first each frame (#199).
 		GetGame().GetCallqueue().CallLater(HoldInput, 0, true);
@@ -1278,6 +1279,7 @@ class LF_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	static void Poll()
 	{
+		LF_HarnessPerf.NotePoll();
 		FinishCapture();
 		string perfDetail;
 		int perfId = LF_HarnessPerf.TakeResult(perfDetail);
