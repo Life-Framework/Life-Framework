@@ -33,7 +33,7 @@ The **pharmacy** north of the clinic sells aspirin ($10), gauze ($8) and tourniq
 | Paramedic | $530 | $50 | Morphine | 4 hours |
 | Doctor | $560 | $40 | Surgical gauze | top |
 
-Reviving and delivering patients earns **medic job experience** and a **bonus**: **$10** a revive and **$15** a patient put in a hospital bed (the bed's own revive is included, so a bed delivery is $15, not $25). Reviving yourself earns nothing. The bonus stops at your rank's cap each hour and is paid with your shift when you clock out.
+Reviving and delivering patients earns **medic job experience** and a **bonus**: **$10** a revive and **$15** a patient put in a hospital bed (the bed's own revive is included, so a bed delivery is $15, not $25). Reviving yourself earns nothing. A **hurt resident** from a medic call also counts: hold **Treat the patient** beside them (about 8 s, one field dressing). They get up and walk off, the call closes and you earn the $10 revive bonus once per patient. The bonus stops at your rank's cap each hour and is paid with your shift when you clock out.
 
 **Casualty calls.** Casualty calls come in on the board while you are on duty. About every 20 minutes a hurt resident goes down at a work site (a mine, the woodlot, the farm compound, the dock or the roadside fuel stop) and the call shows on the clinic's medic board and your pager with the place and what happened ("Miner down at the mine, crushed hand"). Drive there, revive them or carry them to the ambulance. One call per medic on duty, two at most; an untreated call leaves the board after a while and the resident is gone.
 
