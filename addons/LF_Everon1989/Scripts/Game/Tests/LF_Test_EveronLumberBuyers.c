@@ -122,7 +122,7 @@ class LF_Test_EveronLumberBuyers : LF_Test
 			return;
 
 		CheckGood(ctx, demand, market, "plank", PLANK, "hardware", 8, 40, 20, 6, 4, 1, 5);
-		CheckGood(ctx, demand, market, "hardwood board", BOARD, "hardware", 15, 60, 40, 7, 4, 1, 5);	// #4826: the truck rung
+		CheckGood(ctx, demand, market, "hardwood board", BOARD, "hardware", 15, 32, 28, 7, 4, 1, 5);	// #4826: the truck rung; #4898: purse 32 +28/h for the measured 7.9 min cycle
 		CheckGood(ctx, demand, market, "fence post", POST, "seed-feed", 11, 12, 6, 5, 3, 2, 5);
 		CheckGood(ctx, demand, market, "firewood bundle", FIREWOOD, "bakery", 4, 30, 30, 2, 1, 2, 10);
 		CheckNoLoop(ctx, demand, market);

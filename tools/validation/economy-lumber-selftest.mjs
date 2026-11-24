@@ -70,7 +70,7 @@ const h = handHaulHour(100, 4, 1, 20, { runMps: 2, premiumMetres: 10, wholesaleM
 expect(near(h.logs, 5 + (3600 - 5 * 110) / 200, 0.001) && near(h.trips, h.logs, 0.001), `the premium planks take the near trip, the rest the far one (got ${JSON.stringify(h)})`);
 expect(plankBundleOf('LF_QuantityComponent "{5AD2B81F97B9381B}" {\n   m_iMaxQuantity 4\n  }') === 4 && plankBundleOf("MeshObject {}") === null, "the plank bundle is read from the prefab");
 expect(logSpeedCapOf("   m_fSpeedCap 0.7\n") === 0.7 && logSpeedCapOf("") === null, "the log speed cap is read from the prefab");
-expect(loops[2].logsPerHour === 24, "the truck loop is 6 logs x 4 cycles = 24 logs an hour");
+expect(near(loops[2].logsPerHour, 45.6, 0.05), `the truck loop is 6 logs a 7.9 min cycle = 45.6 logs an hour (#4898, got ${loops[2].logsPerHour})`);
 expect(loops[0].detail[0].premiumSteady === 20 && loops[0].detail[0].premiumFirst === 40, "the plank purse caps premium at 20 steady, 40 first");
 expect(loops.every((l) => !l.flagged), `every fixture loop pays at least the $350 Cadet shift (got ${loops.map((l) => l.steady).join(", ")})`);
 const thin = computeLoops({ ...inp, duty: { police: 2000, medic: 2000 } });
