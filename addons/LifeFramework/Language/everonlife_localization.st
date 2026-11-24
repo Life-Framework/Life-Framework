@@ -16865,6 +16865,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Rules"
      Comment "Sign card section heading: cooldowns, wanted level, other rules."
     }
+    CustomStringTableItem "{F5CEEA586CBB4B8F}" {
+     Id "LF-Sign_ShiftBoard_Next"
+     Target_en_us "Keep working this site to climb the board."
+     Comment "Sign catalog next text of the posted shift board's Read card (sign id shift_board): what to do after reading it."
+    }
     CustomStringTableItem "{3EFD6AD0426C7BB2}" {
      Id "LF-Sign_ShiftBoard_Title"
      Target_en_us "Shift board"
