@@ -214,7 +214,9 @@ LF_DialogueScene.Begin  -- start(npc) -->  LF_Dialogue.Start: NPC has a dialogue
 No new bindings. The scene activates `MenuContext` and `MenuWithEditorContext` each frame and
 reads `LF_Keypad0` to `LF_Keypad4` (number row and numpad; 0 is the always-last Goodbye row), `MenuUp`, `MenuDown`, `MenuSelect` and
 `MenuBack`, all of which already carry keyboard and pad bindings. A pad picks with the left stick up and down and confirm (A) and leaves with B. Input is ignored for 350 ms after each change so the key that opened a line does not
-skip it.
+skip it. A key acts when it goes down, not on each tick it stays down (`PressEdge`, `DigitEdge`): the
+agent harness holds an injected key for at least three frames so a slow frame cannot swallow it
+(#4720), and that hold picks once.
 
 ## Licence
 
