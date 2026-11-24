@@ -48,6 +48,10 @@ class LF_Test_EveronCasualtyRows : LF_Test
 			string text = WidgetManager.Translate(row.m_sSummary);
 			ctx.True(!text.IsEmpty() && text != row.m_sSummary, "the summary is in the pack string table: " + row.m_sSummary);
 			ctx.True(text.Contains(" at ") || text.Contains(" on "), "the summary says where: " + text);
+
+			// #4863: the casualty wears a work outfit that fits the place, from the pack's outfit presets.
+			ctx.True(row.m_sOutfit.Contains("Configs/NpcOutfits/"), "the row names an outfit preset: " + row.m_sPlaceKind);
+			ctx.True(LF_NpcOutfitDresser.Garments(row.m_sOutfit).Count() >= 3, "the outfit has a torso, trousers and shoes: " + row.m_sPlaceKind);
 		}
 
 		ctx.True(weights > 0, "the rows have a weight in all");

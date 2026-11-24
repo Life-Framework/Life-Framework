@@ -13,12 +13,20 @@ class LF_CasualtyCallRow
 	[Attribute("1", UIWidgets.Auto, "Weight against the other rows; 0 or less is never picked")]
 	int m_iWeight;
 
-	static LF_CasualtyCallRow Make(string placeKind, string summary, int weight)
+	[Attribute("", UIWidgets.ResourceNamePicker, "Work outfit the casualty wears (#4863): an LF_NpcOutfitPreset conf under Configs/NpcOutfits/ that fits the place. Empty leaves the resident in the prefab's default look", "conf class=LF_NpcOutfitPreset")]
+	ResourceName m_sOutfit;
+
+	[Attribute("0", UIWidgets.CheckBox, "The place is a built deck or floor (a quay, a gallery): the body may lie on a built surface and under a roof; it still needs level, uncrowded ground")]
+	bool m_bBuilt;
+
+	static LF_CasualtyCallRow Make(string placeKind, string summary, int weight, ResourceName outfit = "", bool built = false)
 	{
 		LF_CasualtyCallRow row = new LF_CasualtyCallRow();
 		row.m_sPlaceKind = placeKind;
 		row.m_sSummary = summary;
 		row.m_iWeight = weight;
+		row.m_sOutfit = outfit;
+		row.m_bBuilt = built;
 		return row;
 	}
 }
