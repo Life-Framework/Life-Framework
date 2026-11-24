@@ -240,7 +240,7 @@ class LF_GatherAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True if the user holds the configured tool (right hand, left gadget, or
+	//! True if the user holds the configured tool (right hand, left gadget, drawn weapon, or
 	//! anywhere in inventory when m_CheckInventoryForToolRequirement is set).
 	protected bool LF_HasGatherTool(IEntity user)
 	{
@@ -255,15 +255,9 @@ class LF_GatherAction : ScriptedUserAction
 	{
 		if (!tool) return true;
 
-		CharacterControllerComponent characterController = LF_Component<CharacterControllerComponent>.Find(user);
-		if (characterController)
-		{
-			IEntity rightHandItem = characterController.GetRightHandItem();
-			if (LF_Utils.EntityInherits(rightHandItem, tool)) return true;
-
-			IEntity leftHandItem = characterController.GetAttachedGadgetAtLeftHandSlot();
-			if (LF_Utils.EntityInherits(leftHandItem, tool)) return true;
-		}
+		array<IEntity> held = {};
+		LF_GatherTools.HeldItems(user, held);
+		if (LF_GatherTools.AnyIsTool(held, tool)) return true;
 
 		if (checkInventory)
 		{
