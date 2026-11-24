@@ -8,11 +8,11 @@
   "kinds": [
     "PubBar"
   ],
-  "rows": 18,
+  "rows": 46,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_chotain_pub_Place"
   },
-  "date": "2026-11-23"
+  "date": "2026-11-24"
 }
