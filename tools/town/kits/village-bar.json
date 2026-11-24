@@ -268,7 +268,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -1.82,
+        -1.75,
         0.94,
         -4.17
       ],
@@ -281,7 +281,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -2.12,
+        -2,
         0.94,
         -4.17
       ],
@@ -294,7 +294,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -2.42,
+        -2.5,
         0.94,
         -4.17
       ],
@@ -307,7 +307,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -2.72,
+        -2.75,
         0.94,
         -4.17
       ],
@@ -320,7 +320,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -1.92,
+        -1.75,
         1.43,
         -4.17
       ],
@@ -333,7 +333,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -2.22,
+        -2,
         1.43,
         -4.17
       ],
@@ -346,7 +346,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -2.52,
+        -2.5,
         1.43,
         -4.17
       ],
@@ -359,7 +359,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -2.82,
+        -2.75,
         1.43,
         -4.17
       ],
@@ -372,7 +372,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -1.82,
+        -1.75,
         1.92,
         -4.17
       ],
@@ -385,7 +385,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -2.12,
+        -2,
         1.92,
         -4.17
       ],
@@ -398,7 +398,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -2.42,
+        -2.5,
         1.92,
         -4.17
       ],
@@ -411,7 +411,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-1",
       "offset": [
-        -2.72,
+        -2.75,
         1.92,
         -4.17
       ],
@@ -424,7 +424,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        1.28,
+        1.35,
         0.94,
         -4.17
       ],
@@ -437,7 +437,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        0.98,
+        1.1,
         0.94,
         -4.17
       ],
@@ -450,7 +450,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        0.68,
+        0.6,
         0.94,
         -4.17
       ],
@@ -463,7 +463,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        0.38,
+        0.35,
         0.94,
         -4.17
       ],
@@ -476,7 +476,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        1.18,
+        1.35,
         1.43,
         -4.17
       ],
@@ -489,7 +489,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        0.88,
+        1.1,
         1.43,
         -4.17
       ],
@@ -502,7 +502,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        0.58,
+        0.6,
         1.43,
         -4.17
       ],
@@ -515,7 +515,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        0.28,
+        0.35,
         1.43,
         -4.17
       ],
@@ -528,7 +528,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        1.28,
+        1.35,
         1.92,
         -4.17
       ],
@@ -541,7 +541,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        0.98,
+        1.1,
         1.92,
         -4.17
       ],
@@ -554,7 +554,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        0.68,
+        0.6,
         1.92,
         -4.17
       ],
@@ -567,7 +567,7 @@
       "role": "dressing",
       "verb": "on bar-shelf-2",
       "offset": [
-        0.38,
+        0.35,
         1.92,
         -4.17
       ],
@@ -580,7 +580,7 @@
       "role": "dressing",
       "verb": "on bar-counter-1",
       "offset": [
-        -1.85,
+        -2.05,
         1.39,
         -0.8
       ],
@@ -593,7 +593,7 @@
       "role": "dressing",
       "verb": "on bar-counter-1",
       "offset": [
-        -1.2,
+        -1,
         1.39,
         -0.75
       ],
@@ -606,7 +606,7 @@
       "role": "dressing",
       "verb": "on bar-counter-2",
       "offset": [
-        -0.35,
+        -0.55,
         1.39,
         -0.8
       ],
@@ -619,7 +619,7 @@
       "role": "dressing",
       "verb": "on bar-counter-2",
       "offset": [
-        0.3,
+        0.5,
         1.39,
         -0.75
       ],
@@ -632,7 +632,7 @@
       "role": "dressing",
       "verb": "on bar-counter-3",
       "offset": [
-        1.15,
+        0.95,
         1.39,
         -0.8
       ],
@@ -645,7 +645,7 @@
       "role": "dressing",
       "verb": "on bar-counter-3",
       "offset": [
-        1.8,
+        2,
         1.39,
         -0.75
       ],
