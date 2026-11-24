@@ -6229,6 +6229,21 @@ StringTable {
      Target_en_us "The village butcher: dried meat, canned meat and cured cuts."
      Comment "What line of the butcher sign (#3228)."
     }
+    CustomStringTableItem "{6DED683EC28D2099}" {
+     Id "LF-Sign_ChotainPub_How"
+     Target_en_us "Walk in and talk to the barkeeper at the bar. Open every day."
+     Comment "How line of the Chotain pub sign (#4902)."
+    }
+    CustomStringTableItem "{59C3E1528834575E}" {
+     Id "LF-Sign_ChotainPub_Title"
+     Target_en_us "Chotain Pub"
+     Comment "Title painted on the Chotain bar fascia and chalk board facing the road (#4902). Shown in the prompt as Read: Chotain Pub."
+    }
+    CustomStringTableItem "{25C671A25EC655F1}" {
+     Id "LF-Sign_ChotainPub_What"
+     Target_en_us "The village pub: beer and bottles over the bar, and the barkeeper hears the talk of the road."
+     Comment "What line of the Chotain pub sign (#4902)."
+    }
     CustomStringTableItem "{7C4173595794A1E9}" {
      Id "LF-Sign_ClothingStore_How"
      Target_en_us "*Ask the clerk* at the counter, or look at a mannequin in the window and the shop floor"
