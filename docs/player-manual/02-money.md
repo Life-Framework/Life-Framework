@@ -40,6 +40,7 @@ Prices are the ones the alpha server charges. Full shop lists are in [Shops](05-
 | Shovel, axe, pickaxe | $45, $120, $150 |
 | Repair kit | $80 to $90 |
 | Handset radio | $250 |
+| Gang radio (gun counter, anyone) | $60 |
 | Furniture | $20 to $260 |
 | **Driving licence** (town hall) | $100 |
 | **Firearm permit** (gun store) | $250 |
