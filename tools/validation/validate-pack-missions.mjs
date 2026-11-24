@@ -205,7 +205,7 @@ function selftest() {
   const COVES = '  "{AAAAAAAAAAAAAAA2}Configs/Fishing/LF_Coves_Everon1989.conf"\n';
   const FIRST = '  "{AAAAAAAAAAAAAAA1}Configs/A/LF_A.conf"\n';
   const townGood = isl.replace(COVES, "");
-  if (Object.keys(TOWN_EXCLUDED_OVERLAYS).length !== 8) fails.push("the exclusion list changed: update this selftest");
+  if (Object.keys(TOWN_EXCLUDED_OVERLAYS).length !== 9) fails.push("the exclusion list changed: update this selftest");
   const tOnly = checkTownOverlays(townGood, isl).filter((e) => !/names LF_/.test(e));
   if (tOnly.length) fails.push(`a town with every non-excluded overlay was reported: ${tOnly.join("; ")}`);
   if (!checkTownOverlays(townGood.replace(FIRST, ""), isl).some((e) => /does not list the island overlay/.test(e))) fails.push("planted fault not reported: town missing an island overlay");

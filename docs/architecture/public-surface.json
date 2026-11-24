@@ -3,6 +3,7 @@
   "configClasses": [
     "LF_BuyerDemandConfig",
     "LF_BuyerPrices",
+    "LF_CasualtyCallConfig",
     "LF_CharacterConfig",
     "LF_ChopShopConfig",
     "LF_ClinicShortageConfig",
