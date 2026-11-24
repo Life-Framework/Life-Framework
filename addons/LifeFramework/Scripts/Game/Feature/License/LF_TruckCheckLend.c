@@ -221,6 +221,17 @@ class LF_TruckCheckLend
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return The player's character the truck was lent to, or null (no loan, or the character is gone).
+	static IEntity PlayerOf(string uid)
+	{
+		LF_TruckCheckLendRow row = Lent().Get(uid);
+		if (!row || !GetGame() || !GetGame().GetWorld())
+			return null;
+
+		return GetGame().GetWorld().FindEntityByID(row.m_Player);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int LentCount()
 	{
 		return Lent().Count();
