@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "kit": "labour",
+  "system": "level",
+  "source": {
+    "file": "addons/LifeFramework/Prefabs/Props/LF_LabourCounter.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "origin-entity"
+  },
+  "scope": "counter",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{76D7178C2C1F92A9}Prefabs/Structures/Services/Government/MunicipalOffice_E_01/MunicipalOffice_E_01_Base.et"
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0,
+        0
+      ],
+      "max": [
+        0,
+        0
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "The labour office counter (perk pick at levels 10 and 20, the $500 change; #4416, #4684) stands in the town hall's ground-floor hall beside the licence desk row, in the arrival kit's frame, so the slot shares the arrival slot's building and anchor. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "labour-counter",
+      "name": "Labour_Counter",
+      "prefab": "{5E7A1C93D24B86F1}Prefabs/Props/LF_LabourCounter.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        1,
+        0.2,
+        -1.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "lift": 0.03
+    }
+  ]
+}
