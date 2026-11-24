@@ -28,6 +28,7 @@ GenericEntity Fit_eastrise_mine_mine_ore_2 : "{5A986136ADB1EC2C}Prefabs/Resource
  components {
   LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
    m_fBaseScale 1.6
+   m_sNodeId "coal-seam"
   }
  }
  coords 6681.3 148.933 7929.6
@@ -37,6 +38,7 @@ GenericEntity Fit_eastrise_mine_mine_ore_3 : "{5A986136ADB1EC2C}Prefabs/Resource
  components {
   LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
    m_fBaseScale 1.6
+   m_sNodeId "coal-seam"
   }
  }
  coords 6684.3 148.802 7928.7
@@ -46,6 +48,7 @@ GenericEntity Fit_eastrise_mine_mine_ore_5 : "{5A986136ADB1EC2C}Prefabs/Resource
  components {
   LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
    m_fBaseScale 1.6
+   m_sNodeId "coal-seam"
   }
  }
  coords 6689.7 148.406 7928.7
@@ -55,6 +58,7 @@ GenericEntity Fit_eastrise_mine_mine_ore_6 : "{5A986136ADB1EC2C}Prefabs/Resource
  components {
   LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
    m_fBaseScale 1.6
+   m_sNodeId "coal-seam"
   }
  }
  coords 6692.4 148.131 7929.6
@@ -160,4 +164,13 @@ GenericEntity Fit_eastrise_mine_mine_ore_field {
   }
  }
  coords 6685.5 148.688 7929.2
+}
+GenericEntity Fit_eastrise_mine_mine_coal_heap : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 6686 149.194 7921.4
+ scale 0.7
+}
+GenericEntity Fit_eastrise_mine_mine_coal_heap_s : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 6679.8 149.663 7920.1
+ angleY 90
+ scale 0.5
 }

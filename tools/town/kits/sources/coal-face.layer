@@ -142,3 +142,13 @@ GenericEntity Mine_FenceE3 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/
  coords 12.6 0 4
  angleY 90
 }
+GenericEntity Mine_CoalHeap : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 5 0.06 0.4
+ angleY 0
+ scale 0.7
+}
+GenericEntity Mine_CoalHeapS : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords -1.2 0.04 -0.9
+ angleY 90
+ scale 0.5
+}

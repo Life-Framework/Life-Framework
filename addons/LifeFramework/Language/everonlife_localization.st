@@ -11777,6 +11777,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The server restarts in %1 minute(s)."
      Comment "Toast to every player at each restart warning step (Ops O6, #1265). %1 = minutes left."
     }
+    CustomStringTableItem "{5D17A30C9E4B8F21}" {
+     Id "LF-OreGate_Title"
+     Target_en_us "Too hard for you yet"
+     Comment "Toast title when a pickaxe swing at an ore rock is refused for a low job level (a gated node row, #3243); the body is the job-level refusal in words."
+    }
     CustomStringTableItem "{7D34417334CA2E12}" {
      Id "LF-OrgFlagWall_Done"
      Target_en_us "Your gang now flies the new flag."
