@@ -109,6 +109,31 @@
       ],
       "wall": "+z",
       "floor": "f0"
+    },
+    {
+      "id": "anchor-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -0.397,
+        0,
+        -0.628
+      ],
+      "yaw": -180,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\"",
+            "m_sPlaceId": "\"saint-philippe.parcel\""
+          },
+          "blocks": []
+        }
+      ]
     }
   ]
 }

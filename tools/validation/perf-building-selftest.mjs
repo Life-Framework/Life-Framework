@@ -6,6 +6,7 @@
 // insides, CastShadow 0 / 1 / unset are told apart (unset counts as a caster), a point light casting a
 // shadow is flagged, an unresolved vanilla reference is listed, and the budget verdict names each limit.
 // red-proof: with findBuilding comparing the slug to the folder name exactly (case only) this printed "FAIL fuel-station finds FuelStation: want 1, got undefined" (2026-11-17).
+// red-proof: with parseEntities reading a `$grp LightEntity` block as one light this printed "FAIL a $grp lamp is one light per member: want 2, got 1" (2026-11-24).
 // red-proof: with the old countTree (no merge by ID) this printed "FAIL an ID override counts the light once: want 1, got 2" (2026-11-19).
 // red-proof: with countTree counting a light as a caster only on an explicit "CastShadow 1" this printed
 // "FAIL shadow: want 3 (one explicit, two unset): want 3, got 1" (2026-11-17).
@@ -177,6 +178,57 @@ want("small budget is over on shadow casters", over.some((o) => o.startsWith("sh
 want("unset lights are named", over.some((o) => o.includes("leave CastShadow unset")), true);
 want("budget sizes", Object.keys(BUDGET).join(","), "small,medium,large");
 want("a clean count passes", verdict({ entities: 10, lights: 1, shadow: 0, unset: 0, point: 0 }, "small").length, 0);
+
+// A vanilla lamp writes its lights as one `$grp LightEntity { LightAmbient { ID ... } LightUp { ID ... } }` block: each member is a
+// light, and a prefab that overrides the members by ID (CastShadow 0) settles them (#4763: the group counted as one unset light).
+const lampFiles = {
+  "Lamp.et": `GenericEntity : "{0000000000000041}Prefabs/Vanilla/LampBase.et" {
+ ID "F0"
+ {
+  $grp LightEntity {
+   LightAmbient {
+    ID "A1"
+    Radius 10
+   }
+   LightUp {
+    ID "A2"
+    Type Spot
+   }
+  }
+ }
+}
+`,
+  "LampFill.et": `GenericEntity : "{0000000000000042}Prefabs/Vanilla/Lamp.et" {
+ ID "B0"
+ {
+  LightEntity {
+   ID "A1"
+   CastShadow 0
+  }
+  LightEntity {
+   ID "A2"
+   CastShadow 0
+  }
+ }
+}
+`,
+};
+const lampRef = (ref) => {
+  const m = /Vanilla\/([^/]+\.et)$/.exec(ref);
+  return m && lampFiles[m[1]] ? { text: lampFiles[m[1]] } : null;
+};
+const lamp = countTree(parseEntities(lampFiles["Lamp.et"]), lampRef);
+want("a $grp lamp is one light per member", lamp.lights, 2);
+want("a $grp lamp's members are unset", lamp.unset, 2);
+want("a $grp lamp is not an entity of its own", lamp.entities, 3);
+const fill = countTree(parseEntities(lampFiles["LampFill.et"]), lampRef);
+want("a prefab overriding $grp members by ID counts them once", fill.lights, 2);
+want("the overrides settle the CastShadow", fill.unset + fill.shadow, 0);
+want("CastShadow 0 lights are fills", fill.fill, 2);
+// Fills are not charged to the lights limit (they measured no cost); costly lights still are.
+want("twelve fills pass a small budget", verdict({ entities: 10, lights: 12, fill: 12, shadow: 0, unset: 0, point: 0 }, "small").length, 0);
+want("four costly lights fail a small budget", verdict({ entities: 10, lights: 4, fill: 0, shadow: 0, unset: 0, point: 0 }, "small").some((o) => o.startsWith("lights 4 > 3")), true);
+want("fills do not hide the costly ones", verdict({ entities: 10, lights: 12, fill: 8, shadow: 0, unset: 0, point: 0 }, "small").some((o) => o.startsWith("lights 4 > 3")), true);
 
 console.log(failed ? `perf-building-selftest: ${failed} failure(s)` : "perf-building-selftest: OK (entities, refs, CastShadow 0/1/unset, point shadows, unresolved, verdict)");
 process.exit(failed ? 1 : 0);
