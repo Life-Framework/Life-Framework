@@ -108,7 +108,7 @@ class LF_Test_EveronTownOverlays : LF_Test
 		ctx.NotNull(catalogue, "the item catalogue loads");
 		if (catalogue)
 		{
-			ctx.NotNull(catalogue.FindItem("tool_pickaxe"), "mining: the pickaxe is priced");
+			ctx.NotNull(catalogue.FindItem("tool_pickaxe_worn"), "mining: the pickaxe is priced");
 			ctx.NotNull(catalogue.FindItem("jacket_denim_brown"), "mannequins: the denim jacket is priced");
 		}
 

@@ -297,9 +297,9 @@ the pump says "The tanks are dry. The depot truck is due."
 * **How to start:** take the **miner job** at the desk by the mine (**Take the job: Miner** on its clock; after a respawn take it again). Then buy a **pickaxe** ($150) at the miners' supply till in the
   hardware store. Any new miner can buy it.
 * **What you do:**
-  1. Hold the pickaxe and **swing at an iron rock**. Every few swings a piece of **iron ore** breaks off and drops at your feet; pick it up.
+  1. Hold the pickaxe and **swing at an iron rock**. Every few swings an **iron nugget** breaks off and drops at your feet; pick it up.
      A rock gives 5 pieces, shrinks as you work it, then crumbles and grows back after about 5 minutes. Each piece is miner XP.
-  2. Take the ore to the **furnace** and choose **Smelt iron ore**: **3 ore make 1 iron bar**. One run smelts up to 5 bars in 4 minutes;
+  2. Take the nuggets to the **furnace** and choose **Smelt iron nuggets**: **3 nuggets make 1 iron bar**. One run smelts up to 5 bars in 4 minutes;
      keep mining while it works, the bars drop at the furnace when it is done. Every finished batch is **Smelting** XP, a trade of its own with its own level; it is not Miner XP.
   3. Sell the bars at the **iron counter** in the **wholesale warehouse** at the dock, east of the main counter (**$20 a bar**; it buys 40, then about 24 more an hour). If it says
      it is full, the main wholesale counter buys more (from $20 a bar, falling as you sell).

@@ -12,7 +12,7 @@ class LF_Test_EveronMiningFirstRun : LF_Test
 	protected static const string OUTLET = "miners_supply";
 	protected static const string MACHINE = "furnace-iron-mine";
 	protected static const string BUYER_ID = "coalmans_brow_mine";
-	protected static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
+	protected static const ResourceName PICKAXE = "{D9D9C619E82ECEA7}Prefabs/Tools/Tiers/LF_Tool_Pickaxe_Worn.et";
 	protected static const ResourceName NUGGET = "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et";
 	protected static const ResourceName BAR = "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et";
 	protected static const int MIN_NET = 100;

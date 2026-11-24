@@ -1,35 +1,3 @@
-GenericEntity ATM_Debug {
- components {
-  ActionsManagerComponent "{5A4B0B84C86D5845}" {
-   ActionContexts {
-    UserActionContext "{5A4B0B84C86D5846}" {
-     ContextName "default"
-     Position PointInfo "{5A4B0B84C86D5847}" {
-      Offset 0 0.8 0
-     }
-     Radius 3
-    }
-   }
-   additionalActions {
-    LF_ATMAction "{5A4B0B84C86D5848}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{5A4B0B84C86D5849}" {
-      Name "#EL-ATM_Title"
-      Description "Gestionar cuenta bancaria"
-     }
-    }
-   }
-  }
-  RplComponent "{5A4B0B84C86D584A}" {
-   Enabled 1
-  }
- }
-  Flags 0x403 0
- coords 177 0 263.5
- angleY 180
-}
 GenericEntity Bank_Counter_West {
  components {
   LF_AmbientEmitterComponent "{C91E5F69BE9C12FE}" {

@@ -11,6 +11,8 @@ class LF_Test_EveronMiningLoop : LF_Test
 	protected static const string OUTLET = "miners_supply";
 	protected static const string JOB = "MINER";
 	protected static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
+	//! The till lists the worn rung as the entry pickaxe ($150, MINER level 1); a bare Pickaxe row beside it was a duplicate (#4680).
+	protected static const ResourceName PICKAXE_WORN = "{D9D9C619E82ECEA7}Prefabs/Tools/Tiers/LF_Tool_Pickaxe_Worn.et";
 	protected static const ResourceName IRON_ROCK = "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et";
 	protected static const ResourceName FURNACE = "{CF27D083C01F1C36}Prefabs/Processor/LF_MineFurnace.et";
 	protected static const ResourceName NUGGET = "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et";
@@ -54,7 +56,7 @@ class LF_Test_EveronMiningLoop : LF_Test
 			return;
 
 		LF_CatalogueItem item;
-		LF_OutletOffer offer = LF_ItemCatalogue.OfferFor(catalogue, OUTLET, PICKAXE, item);
+		LF_OutletOffer offer = LF_ItemCatalogue.OfferFor(catalogue, OUTLET, PICKAXE_WORN, item);
 		ctx.NotNull(offer, "the miners' supply till sells the pickaxe");
 		if (!offer)
 			return;

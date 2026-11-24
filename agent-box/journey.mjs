@@ -401,9 +401,9 @@ export const ACTIONS = {
     h.pause(1500);
   },
   atm(h) {
-    h.on(1, { verb: "stand", entityName: "ATM_Debug" });
+    h.on(1, { verb: "stand", entityName: "Town_ATM_Bank" });
     h.pause(1500);
-    h.on(1, { verb: "use", className: "LF_ATMAction", entityName: "ATM_Debug" }, 10000);
+    h.on(1, { verb: "use", className: "LF_ATMAction", entityName: "Town_ATM_Bank" }, 10000);
     if (!h.text(1, "DepositButton", 8000).found) return;
     h.ctx.amount = num(h.states[1], "cash") >= DEPOSIT ? DEPOSIT : SMALL_DEPOSIT;
     for (const digit of String(h.ctx.amount)) h.on(1, { verb: "click", widget: `Key${digit}Button` });

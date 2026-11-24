@@ -62,6 +62,13 @@
         "the villa's own barred cell, ground floor west: the jail cell rides in the police slot's building (b32)"
       ]
     },
+    "labour": {
+      "building": "b45",
+      "shared": true,
+      "why": [
+        "the labour office counter (perk pick at levels 10 and 20, the perk change; #4416, #4684) rides in the town hall b45, the arrival slot's building, as the experience scope plans it (W13)"
+      ]
+    },
     "clinic": {
       "building": "b39",
       "alternatives": [
