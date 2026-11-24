@@ -10,3 +10,295 @@ GenericEntity Pharmacy_Display_Tourniquet : "{DDF32314117FBA79}Prefabs/Props/Com
  coords 136.247 1.239 266.109
  angleY 180
 }
+GenericEntity Pharmacy_host_w1_b1_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.291 0.789 261.958
+ angleY -90
+}
+GenericEntity Pharmacy_host_w1_b1_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 141.291 0.789 262.288
+ angleY -90
+}
+GenericEntity Pharmacy_host_w1_b1_4 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 141.291 0.789 262.618
+ angleY -90
+}
+GenericEntity Pharmacy_host_w1_b2_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.291 1.282 262.458
+ angleY -90
+}
+GenericEntity Pharmacy_host_w1_b2_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 141.291 1.282 262.778
+ angleY -90
+}
+GenericEntity Pharmacy_host_w1_b3_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 141.291 1.775 261.628
+ angleY -90
+}
+GenericEntity Pharmacy_host_w1_b3_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.291 1.775 261.958
+ angleY -90
+}
+GenericEntity Pharmacy_host_w1_b3_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 141.291 1.775 262.288
+ angleY -90
+}
+GenericEntity Pharmacy_host_w1_b3_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.291 1.775 262.618
+ angleY -90
+}
+GenericEntity Pharmacy_host_w2_b1_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.464 0.789 267.753
+ angleY 90
+}
+GenericEntity Pharmacy_host_w2_b1_2 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 134.464 0.789 267.423
+ angleY 90
+}
+GenericEntity Pharmacy_host_w2_b1_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.464 0.789 267.093
+ angleY 90
+}
+GenericEntity Pharmacy_host_w2_b1_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.464 0.789 266.763
+ angleY 90
+}
+GenericEntity Pharmacy_host_w2_b2_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.464 1.282 267.583
+ angleY 90
+}
+GenericEntity Pharmacy_host_w2_b2_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 134.464 1.282 266.923
+ angleY 90
+}
+GenericEntity Pharmacy_host_w2_b2_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.464 1.282 266.603
+ angleY 90
+}
+GenericEntity Pharmacy_host_w2_b3_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.464 1.775 267.753
+ angleY 90
+}
+GenericEntity Pharmacy_host_w2_b3_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.464 1.775 267.423
+ angleY 90
+}
+GenericEntity Pharmacy_host_w2_b3_4 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 134.464 1.775 266.763
+ angleY 90
+}
+GenericEntity Pharmacy_host_w3_b1_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.292 0.789 260.174
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 141.292 0.789 260.504
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b1_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.292 0.789 260.834
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b1_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 141.292 0.789 261.164
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b2_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 141.292 1.282 260.344
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b2_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.292 1.282 260.674
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b2_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 141.292 1.282 261.004
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b2_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.292 1.282 261.324
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b3_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 141.292 1.775 260.174
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b3_2 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 141.292 1.775 260.504
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b3_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.292 1.775 260.834
+ angleY -90
+}
+GenericEntity Pharmacy_host_w3_b3_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 141.292 1.775 261.164
+ angleY -90
+}
+GenericEntity Pharmacy_host_w4_b1_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 138.953 0.789 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 138.623 0.789 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b1_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 138.293 0.789 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b1_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 137.963 0.789 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b2_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 138.783 1.282 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b2_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 138.453 1.282 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b2_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 138.123 1.282 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b2_4 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 137.803 1.282 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b3_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 138.953 1.775 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b3_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 138.623 1.775 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b3_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 138.293 1.775 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w4_b3_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 137.963 1.775 268.792
+ angleY 180
+}
+GenericEntity Pharmacy_host_w5_b1_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 134.468 0.789 261.243
+ angleY 90
+}
+GenericEntity Pharmacy_host_w5_b1_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.468 0.789 260.913
+ angleY 90
+}
+GenericEntity Pharmacy_host_w5_b1_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.468 0.789 260.583
+ angleY 90
+}
+GenericEntity Pharmacy_host_w5_b1_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.468 0.789 260.253
+ angleY 90
+}
+GenericEntity Pharmacy_host_w5_b2_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.468 1.282 261.073
+ angleY 90
+}
+GenericEntity Pharmacy_host_w5_b2_2 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 134.468 1.282 260.743
+ angleY 90
+}
+GenericEntity Pharmacy_host_w5_b2_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.468 1.282 260.093
+ angleY 90
+}
+GenericEntity Pharmacy_host_w5_b3_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.468 1.775 261.243
+ angleY 90
+}
+GenericEntity Pharmacy_host_w5_b3_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.468 1.775 260.913
+ angleY 90
+}
+GenericEntity Pharmacy_host_w5_b3_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 134.468 1.775 260.583
+ angleY 90
+}
+GenericEntity Pharmacy_host_n1_b1_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 137.504 0.792 268.84
+ angleY 180
+}
+GenericEntity Pharmacy_host_n1_b1_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 136.904 0.792 268.84
+ angleY 180
+}
+GenericEntity Pharmacy_host_n1_b2_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 136.804 1.289 268.84
+ angleY 180
+}
+GenericEntity Pharmacy_host_n1_b3_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 137.504 1.778 268.84
+ angleY 180
+}
+GenericEntity Pharmacy_host_n1_b3_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 137.204 1.778 268.84
+ angleY 180
+}
+GenericEntity Pharmacy_host_n1_b3_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 136.904 1.778 268.84
+ angleY 180
+}
+GenericEntity Pharmacy_host_n2_b1_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.453 0.792 268.78
+ angleY 90
+}
+GenericEntity Pharmacy_host_n2_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.453 0.792 268.48
+ angleY 90
+}
+GenericEntity Pharmacy_host_n2_b1_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.453 0.792 268.18
+ angleY 90
+}
+GenericEntity Pharmacy_host_n2_b2_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.453 1.289 268.63
+ angleY 90
+}
+GenericEntity Pharmacy_host_n2_b2_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.453 1.289 268.08
+ angleY 90
+}
+GenericEntity Pharmacy_host_n2_b3_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.453 1.778 268.78
+ angleY 90
+}
+GenericEntity Pharmacy_host_n2_b3_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 134.453 1.778 268.48
+ angleY 90
+}
+GenericEntity Pharmacy_host_n2_b3_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.453 1.778 268.18
+ angleY 90
+}
+GenericEntity Pharmacy_host_c1_b1_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 135.1 1.286 259.107
+ angleY 90
+}
+GenericEntity Pharmacy_host_c1_b1_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 134.65 1.286 259.107
+ angleY 90
+}
+GenericEntity Pharmacy_host_c1_b2_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 134.43 1.775 259.107
+ angleY 90
+}
+GenericEntity Pharmacy_host_c2_b1_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.193 1.286 259.68
+ angleY 0
+}
+GenericEntity Pharmacy_host_c2_b1_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.193 1.286 259.23
+ angleY 0
+}
+GenericEntity Pharmacy_host_c2_b2_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 141.193 1.775 259.01
+ angleY 0
+}

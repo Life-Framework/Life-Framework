@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{C05B64C4DF2982E7}Configs/Dialogue/LF_DialogueIndex_OldMan/LF_DialogueIndex_CoalYardClerk.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
