@@ -8,6 +8,13 @@ GenericEntity : "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et"
   }
   ActionsManagerComponent "{3147BCBA482017D3}" {
    ActionContexts {
+    UserActionContext "{1FA16A902EC664E4}" {
+     ContextName "flag_03"
+     Position PointInfo "{0B1817A5C80F7151}" {
+      Offset -0.475 1 -1.5
+     }
+     Radius 0.5
+    }
     UserActionContext "{3CCC9AA8A996D317}" {
      ContextName "flag_01"
      Position PointInfo "{A08267E6D642C375}" {
@@ -19,13 +26,6 @@ GenericEntity : "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et"
      ContextName "flag_02"
      Position PointInfo "{41663D63D90170F0}" {
       Offset -2.375 1 -1.5
-     }
-     Radius 0.5
-    }
-    UserActionContext "{1FA16A902EC664E4}" {
-     ContextName "flag_03"
-     Position PointInfo "{0B1817A5C80F7151}" {
-      Offset -0.475 1 -1.5
      }
      Radius 0.5
     }
