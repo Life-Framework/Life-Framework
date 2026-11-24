@@ -39,12 +39,31 @@ GenericEntity Fit_powerplant_buyer_coal_buyer : "{52895A24E4FC994C}Prefabs/Trade
 GenericEntity Fit_powerplant_buyer_coal_clerk : "{DFBF063F590C7160}Configs/Npcs/LF_Npc_Townsfolk_CoalYardClerk.et" {
  coords 5872 4.094 9799.6
 }
+GenericEntity Fit_powerplant_buyer_coal_hut : "{E30E1250FD927736}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_beige.et" {
+ coords 5872 0 9796
+}
+GenericEntity Fit_powerplant_buyer_coal_scale : "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et" {
+ coords 5874.6 3.906 9800.4
+ angleY 90
+}
+GenericEntity Fit_powerplant_buyer_coal_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "coal-buyer"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 5872 6.544 9799.28
+ scale 0.7
+}
 GenericEntity Fit_powerplant_buyer_coal_heap_l : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 5866 4.5 9795
  angleY 90
 }
 GenericEntity Fit_powerplant_buyer_coal_heap_m : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 5872 4.102 9793.5
+ coords 5872 4.148 9790.5
 }
 GenericEntity Fit_powerplant_buyer_coal_heap_r : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 5878 3.719 9795

@@ -160,6 +160,68 @@
       "mount": "terrain"
     },
     {
+      "id": "coal-hut",
+      "name": "Coal_Hut",
+      "prefab": "{E30E1250FD927736}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_beige.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "offset": [
+        -24,
+        0,
+        -1
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "coal-scale",
+      "name": "Coal_Scale",
+      "prefab": "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "offset": [
+        -21.4,
+        0,
+        3.4
+      ],
+      "yaw": 90
+    },
+    {
+      "id": "coal-fascia",
+      "name": "Coal_Fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "on floor",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "offset": [
+        -24,
+        2.45,
+        2.28
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"coal-buyer\"",
+            "m_vRimColor": "0.12 0.1 0.08",
+            "m_vPaintColor": "0.9 0.86 0.74",
+            "m_vTextColor": "0.12 0.1 0.08"
+          },
+          "blocks": []
+        }
+      ],
+      "lift": 2.45,
+      "scale": 0.7
+    },
+    {
       "id": "coal-heap-l",
       "name": "Coal_HeapL",
       "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
@@ -184,7 +246,7 @@
       "offset": [
         -24,
         0.082,
-        -3.5
+        -6.5
       ],
       "yaw": 0,
       "wall": "free",
