@@ -389,6 +389,11 @@
       "kind": "clips",
       "layer": "Place_outpost-north_camp.layer",
       "why": "The camo net stands over the outpost pallet stack on its own corner poles, so its bounding box encloses the pallets by design; the net is a canopy, not a solid (#4180)."
+    },
+    {
+      "match": "^Fit_saint_philippe_districts_garage_parts_(oil_[45]|toolbox) ",
+      "kind": "floating",
+      "why": "The cans and the toolbox on the top board of the garage parts shelf (#4904) rest on that board (the vanilla ShelfUniversal_01_wide, board at 1.574 m over its floor, which the layer contact settle hit). The trace down reads the cans on the middle board 0.19 m below them and calls it floating; the board between them is the shelf mesh."
     }
   ]
 }
