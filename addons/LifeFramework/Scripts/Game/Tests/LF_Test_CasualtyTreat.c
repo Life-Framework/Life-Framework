@@ -1,4 +1,4 @@
-// red-proof: 2026-11-24 `tools/cli test --no-build --red LF_Test_CasualtyTreat`: RED PROOF OK ("the revive bonus is pending (expected 10, got 0)", "MEDIC xp rose", "a second treat finds no casualty"). Green with --only.
+// red-proof: 2026-11-24 `tools/cli test --no-build --red LF_Test_CasualtyTreat`: RED PROOF OK (the revive bonus check: expected 10, got 0; "MEDIC xp rose", "a second treat finds no casualty"). Green with --only.
 //! medic/casualty-treat (#4828): an on-duty medic beside a casualty from the generator (#4827) treats them:
 //! the patient wakes, the call closes (off the open list), the dressing is used up, one $10 revive bonus is
 //! pending and paid at clock-out, and MEDIC xp rose. A second treat on the same casualty pays nothing. An
