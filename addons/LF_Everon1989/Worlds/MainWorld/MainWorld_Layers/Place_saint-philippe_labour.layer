@@ -1,0 +1,15 @@
+GenericEntity Fit_saint_philippe_labour_Place {
+ components {
+  LF_PlaceComponent "{D6C95FFB9DF312BE}" {
+   m_sKind "LabourOffice"
+   m_sId "saint-philippe.labour"
+  }
+  LF_FittedBuildingComponent "{3421491C7DA96484}" {
+  }
+ }
+ coords 4418.9 12.7 10647.5
+}
+GenericEntity Fit_saint_philippe_labour_labour_counter : "{5E7A1C93D24B86F1}Prefabs/Props/LF_LabourCounter.et" {
+ coords 4420.099 12.73 10646.154
+ angleY -8
+}

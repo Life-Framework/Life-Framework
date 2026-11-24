@@ -169,6 +169,11 @@
       "places": ["TownBoard", "MapBoard"]
     },
     {
+      "id": "labour", "required": false, "kit": "labour", "host": "street", "with": "arrival", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 110 },
+      "places": ["LabourOffice"]
+    },
+    {
       "id": "jail", "required": false, "kit": "jail", "host": "street", "with": "police", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 110 },
       "places": ["JailCell"]

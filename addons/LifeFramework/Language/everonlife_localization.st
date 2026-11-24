@@ -8545,7 +8545,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7AD691E65BE531F0}" {
      Id "LF-Item_CoalLump_Description"
-     Target_en_us "A lump of coal. Smelters burn it to turn iron ore into bars."
+     Target_en_us "A lump of coal. Smelters burn it to turn iron nuggets into bars."
      Comment "Item description of the coal lump (#3230)."
     }
     CustomStringTableItem "{E90681E4967BF028}" {
@@ -10200,7 +10200,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{344D05FF039E5DB8}" {
      Id "LF-License_MinerIron_Desc"
-     Target_en_us "Permits cutting iron ore with a pick. Mine work only."
+     Target_en_us "Permits mining iron with a pick. Mine work only."
      Target_es_es "Permite extraer hierro con pico. Solo para trabajo de mina."
      Comment "Licence description"
     }
@@ -14586,7 +14586,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{0A0EEB9828847F4A}" {
      Id "LF-Process_RunningLeft"
      Target_en_us "%1: %2 left"
-     Comment "Action row on a timed machine while it runs (first-2h review B10). %1 = the machine action (Smelt iron ore), %2 = time left as m:ss."
+     Comment "Action row on a timed machine while it runs (first-2h review B10). %1 = the machine action (Smelt iron nuggets), %2 = time left as m:ss."
     }
     CustomStringTableItem "{9D4E21B7C0A35F86}" {
      Id "LF-Process_Started"

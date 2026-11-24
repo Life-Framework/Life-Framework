@@ -18,7 +18,7 @@ wait 1200
 shot ui paper_shop
 click CloseButton
 wait 500
-layer ATM_Debug
+layer Town_ATM_Bank
 wait 800
 shot ui paper_atm
 input MenuBack
