@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "605CCE609C5B639F"
+ components {
+  MeshObject "{4B91213AC4388C75}" {
+   Object "{C21C28B41B464093}Assets/Items/Fishing/FishTrout/FishTrout.xob"
+  }
+ }
+ coords 0 0 0
+}

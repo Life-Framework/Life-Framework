@@ -15,7 +15,8 @@
       "addons/LifeFramework/Prefabs/Characters/Npcs/Outfits/LF_Npc_Trader_1.et",
       "addons/LF_Everon1989/Prefabs/Props/Market/LF_ProduceCrate_Apple.et",
       "tools/town/kits/sources/orchard.layer",
-      "tools/town/kits/sources/cafe.layer"
+      "tools/town/kits/sources/cafe.layer",
+      "tools/town/kits/sources/market-fish.layer"
     ]
   },
   "scope": "room",
@@ -40,7 +41,7 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "Street kit: the stall stands on the pavement along the street side of the building (b01 is the house the square's north side runs past, its street at building-local -x). The stall faces the street (yaw -90), the trader's prefab on its counter, the chalk price board 3 m along the pavement at the stall's end. Offsets are building-local, no world coordinates. Rows are rigid: shift, never stretch. Dressing (A20): the vendor stands behind the counter with a spare crate of cabbages at his side, a market umbrella shades the street end of the stall, crates of apples and plums sit on the counter ends, and the price board stands at the other end turned toward the customer. Fish stall (#4646): a second stand 6.4 m along the pavement, vanilla MarketStand_01, two green crates of ice on the counter, a bucket and a price board at its far end. No body stands in it: the fishmonger (Baptiste Pichon, resident dock_fishmonger) takes the `counter` anchor behind it, bound to the market place with m_sPlaceId so no other `counter` within 30 m claims it. No fish item lies on the counter (a free fish sells at the wholesale)."
+    "adapt": "Street kit: the stall stands on the pavement along the street side of the building (b01 is the house the square's north side runs past, its street at building-local -x). The stall faces the street (yaw -90), the trader's prefab on its counter, the chalk price board 3 m along the pavement at the stall's end. Offsets are building-local, no world coordinates. Rows are rigid: shift, never stretch. Dressing (A20): the vendor stands behind the counter with a spare crate of cabbages at his side, a market umbrella shades the street end of the stall, crates of apples and plums sit on the counter ends, and the price board stands at the other end turned toward the customer. Fish stall (#4646): a second stand 6.4 m along the pavement, vanilla MarketStand_01, two green crates of whole fish (mackerel, trout) on the counter with a shop scale and two big fish laid out between them, a third crate of perch on the pavement, a bucket and a price board at its far end. No body stands in it: the fishmonger (Baptiste Pichon, resident dock_fishmonger) takes the `counter` anchor behind it, bound to the market place with m_sPlaceId so no other `counter` within 30 m claims it. Every fish on the stall is a mesh-only decor prefab (no pickup, nothing sells at the wholesale); there is no ice mesh in the game, so the crates are heaped to the rim instead."
   },
   "rows": [
     {
@@ -185,7 +186,7 @@
     {
       "id": "fish-crate",
       "name": "Fish_Crate",
-      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
+      "prefab": "{A9C5A2042D3CB200}Prefabs/Props/Market/LF_FishCrate_Mackerel.et",
       "role": "dressing",
       "verb": "on fish-stall",
       "offset": [
@@ -200,7 +201,7 @@
     {
       "id": "fish-crate-2",
       "name": "Fish_Crate_2",
-      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
+      "prefab": "{B53ED78726EE7B92}Prefabs/Props/Market/LF_FishCrate_Trout.et",
       "role": "dressing",
       "verb": "on fish-stall",
       "offset": [
@@ -211,6 +212,67 @@
       "yaw": -90,
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "fish-scale",
+      "name": "Fish_Scale",
+      "prefab": "{2A0C495C5BB7E833}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_Base.et",
+      "role": "dressing",
+      "verb": "on fish-stall",
+      "offset": [
+        -14.9,
+        1.03,
+        -4.6
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fish-bass",
+      "name": "Fish_Bass",
+      "prefab": "{BD66C45C63DFAC81}Prefabs/Props/Market/LF_FishDecor_Bass.et",
+      "role": "dressing",
+      "verb": "on fish-stall",
+      "offset": [
+        -14.9,
+        1.107,
+        -4.95
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fish-tuna",
+      "name": "Fish_Tuna",
+      "prefab": "{8A1CDDD1EB92D7E7}Prefabs/Props/Market/LF_FishDecor_TunaSmall.et",
+      "role": "dressing",
+      "verb": "on fish-stall",
+      "offset": [
+        -14.9,
+        1.101,
+        -4.27
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fish-crate-3",
+      "name": "Fish_Crate_3",
+      "prefab": "{205372D08C3BE977}Prefabs/Props/Market/LF_FishCrate_Perch.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -16.3,
+        0,
+        -5.55
+      ],
+      "yaw": -80,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
     },
     {
       "id": "fish-bucket",

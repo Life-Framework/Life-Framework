@@ -1,0 +1,106 @@
+GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ ID "F0DBA538AC2A0552"
+ coords 0 0 0
+ {
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "68CD0B33BC57AA5B"
+   coords -0.234 0.066 -0.019
+   angles -5.648 9.789 -4.506
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "8CF4D24066678550"
+   coords -0.156 0.064 -0.017
+   angles 5.749 173.205 -7.24
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "B6A6A3778401E474"
+   coords -0.078 0.071 -0.001
+   angles 0.496 -3.05 -6.528
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "62DA4E47ED43D6E2"
+   coords 0 0.067 0.018
+   angles -1.945 178.284 4.061
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "8409DCA6A1567E5F"
+   coords 0.078 0.068 -0.02
+   angles -0.537 7.455 9.705
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "6707F5B186C7617F"
+   coords 0.156 0.069 -0.008
+   angles -3.013 189.467 -9.164
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "4EA8419A1DCEAB7C"
+   coords 0.234 0.07 0.008
+   angles 2.246 -1.369 -3.765
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "A180DC179C48AFB9"
+   coords -0.195 0.117 0.016
+   angles -3.222 173.085 10.842
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "BF2220AB2BCEF408"
+   coords -0.117 0.117 -0.018
+   angles -0.191 -0.653 6.015
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "EB60E7B3329016FB"
+   coords -0.039 0.119 -0.013
+   angles -4.973 176.648 2.442
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "E929DF242EA429AE"
+   coords 0.039 0.113 0.016
+   angles 4.202 -9.416 10.8
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "03FC8F53480CD3A2"
+   coords 0.117 0.117 -0.001
+   angles -1.812 177.965 -1.861
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "7474A80AE04F41AE"
+   coords 0.195 0.116 -0.012
+   angles -0.768 -5.34 -2.956
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "37499C53DBCC34C7"
+   coords -0.234 0.165 -0.001
+   angles 6.84 7.511 -11.3
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "445BFE43B48CBBE6"
+   coords -0.156 0.163 0.017
+   angles -1.582 181.056 5.118
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "335DE5CEB4FF1D96"
+   coords -0.078 0.163 0.007
+   angles -2.684 -0.075 -0.796
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "16ED7DA3CE5B75BB"
+   coords 0 0.166 0.012
+   angles 5.919 175.409 -11.889
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "ED4A3576E74D9B84"
+   coords 0.078 0.169 -0.005
+   angles -0.359 -10.694 -10.072
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "C7102052F3666671"
+   coords 0.156 0.162 -0.006
+   angles -1.689 176.993 6.279
+  }
+  GenericEntity : "{F01FE5B2BF9EC150}Prefabs/Props/Market/LF_FishDecor_Mackerel.et" {
+   ID "84AC0EB5305FCFE4"
+   coords 0.234 0.165 -0.007
+   angles -1.225 -5.66 0.677
+  }
+ }
+}

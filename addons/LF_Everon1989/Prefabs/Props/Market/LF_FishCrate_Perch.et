@@ -1,0 +1,61 @@
+GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ ID "F0DBA538AC2A0552"
+ coords 0 0 0
+ {
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "2E39B954395D630B"
+   coords -0.245 0.088 0.015
+   angles -1.365 -4.257 6.376
+  }
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "B5E55FA1C0494928"
+   coords -0.147 0.085 -0.015
+   angles -2.822 182.432 -11.235
+  }
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "983A70C0AA5787F3"
+   coords -0.049 0.086 -0.006
+   angles 6.253 -6.155 -4.408
+  }
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "8EEEBD0287575F56"
+   coords 0.049 0.083 0.02
+   angles -7.51 178.638 0.934
+  }
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "824FDD69234FED61"
+   coords 0.147 0.084 -0.013
+   angles 1.198 6.21 -3.116
+  }
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "239FB6A93C87428E"
+   coords 0.245 0.089 -0.003
+   angles -4.032 177.729 -2.121
+  }
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "465E9886ED39EBC6"
+   coords -0.196 0.15 -0.003
+   angles -1.777 180.483 -9.63
+  }
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "B484F6A33C793262"
+   coords -0.098 0.15 -0.012
+   angles -7.775 -3.037 -0.023
+  }
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "EC4C5B28E6A24271"
+   coords 0 0.155 0.018
+   angles 6.925 189.521 7.766
+  }
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "383729A5B5F33BD4"
+   coords 0.098 0.154 -0.017
+   angles -4.147 -0.564 6.897
+  }
+  GenericEntity : "{1F634FBC9F16AA42}Prefabs/Props/Market/LF_FishDecor_Perch.et" {
+   ID "28A778AB6F761247"
+   coords 0.196 0.151 -0.002
+   angles 2.074 183.59 8.481
+  }
+ }
+}
