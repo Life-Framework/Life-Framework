@@ -6229,6 +6229,11 @@ StringTable {
      Target_en_us "The village butcher: dried meat, canned meat and cured cuts."
      Comment "What line of the butcher sign (#3228)."
     }
+    CustomStringTableItem "{6A1C42D90B7E35F8}" {
+     Id "LF-Sign_Clinic_Title"
+     Target_en_us "Clinic"
+     Comment "Title painted on the clinic's fascia on Saint-Philippe (#4905): one short word so the lettering fills the board like the pharmacy's. The sign card under it reuses the hospital text."
+    }
     CustomStringTableItem "{7C4173595794A1E9}" {
      Id "LF-Sign_ClothingStore_How"
      Target_en_us "*Ask the clerk* at the counter, or look at a mannequin in the window and the shop floor"
