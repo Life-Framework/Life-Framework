@@ -10,7 +10,7 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 //   node agent-box/session.mjs down
 const ACTION = "LF_ShiftBoardReadAction";
 const SITES = {
-  mine: { board: "Fit_coalmans_brow_mine_mine_board", job: "MINER", trade: "Mining", xp: 1500 },
+  mine: { board: "Mapper_coalmans_brow_mine_M1", job: "MINER", trade: "Mining", xp: 1500 },
   sawmill: { board: "Mapper_everon_sawmill_yard_M1", job: "LUMBERJACK", trade: "Lumber", xp: 900 },
 };
 

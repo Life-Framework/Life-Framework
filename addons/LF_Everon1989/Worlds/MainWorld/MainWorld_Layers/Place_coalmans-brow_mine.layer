@@ -124,17 +124,6 @@ GenericEntity Fit_coalmans_brow_mine_mine_sign : "{B7B489CA36A0E9F8}Prefabs/Prop
  coords 4343 33.797 10413
  angleY -90
 }
-GenericEntity Fit_coalmans_brow_mine_mine_board : "{B747EFA4D94F3C2F}Prefabs/Props/LF_ShiftBoardPost.et" {
- components {
-  LF_SignComponent "{C8DC6C24E38F2C19}" {
-   m_vRimColor 0.12 0.1 0.08
-   m_vPaintColor 0.9 0.86 0.74
-   m_vTextColor 0.12 0.1 0.08
-  }
- }
- coords 4326.8 35.025 10403
- angleY -120
-}
 GenericEntity Fit_coalmans_brow_mine_mine_hut : "{B9F18808252E22C3}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_yellow.et" {
  coords 4332 0 10398.8
 }
@@ -262,6 +251,10 @@ GenericEntity Fit_coalmans_brow_mine_mine_rock_8 : "{1F0AA3EA77753B5D}Prefabs/Ro
 GenericEntity Fit_coalmans_brow_mine_mine_rock_9 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
  coords 4339.8 0 10419.9
  angleY 10
+}
+GenericEntity Mapper_coalmans_brow_mine_M1 : "{A4E81D6C2F9B3057}Prefabs/Props/LF_ShiftBoard.et" {
+ coords 4336.51 34.313 10406.491
+ angleY 0
 }
 GenericEntity Fit_coalmans_brow_mine_whistle_morning : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
  components {
