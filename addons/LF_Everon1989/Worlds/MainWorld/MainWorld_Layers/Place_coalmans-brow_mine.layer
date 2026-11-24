@@ -124,6 +124,61 @@ GenericEntity Fit_coalmans_brow_mine_mine_sign : "{B7B489CA36A0E9F8}Prefabs/Prop
  coords 4343 33.797 10413
  angleY -90
 }
+GenericEntity Fit_coalmans_brow_mine_mine_hut : "{B9F18808252E22C3}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_yellow.et" {
+ coords 4332 0 10398.8
+}
+GenericEntity Fit_coalmans_brow_mine_mine_rack : "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et" {
+ coords 4334.4 33.991 10399.8
+ angleY 90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_bench : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+ coords 4336.6 33.734 10399.8
+ angleY 90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_bench_lamp : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 4336.63 34.768 10400.1
+ angleY 180
+}
+GenericEntity Fit_coalmans_brow_mine_mine_barrel_1 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 4329.3 34.752 10397.4
+}
+GenericEntity Fit_coalmans_brow_mine_mine_barrel_2 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 4329.3 34.788 10396.4
+ angleY 40
+}
+GenericEntity Fit_coalmans_brow_mine_mine_barrel_lamp : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 4329.3 35.842 10397.4
+}
+GenericEntity Fit_coalmans_brow_mine_mine_barrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords 4337.6 33.759 10402.6
+ angleY 25
+}
+GenericEntity Fit_coalmans_brow_mine_mine_cart_1 : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords 4329.2 34.594 10406.4
+}
+GenericEntity Fit_coalmans_brow_mine_mine_cart_2 : "{852265665B92CD53}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_wheelbase_cargo_rusty.et" {
+ coords 4329.2 34.95 10408.2
+}
+GenericEntity Fit_coalmans_brow_mine_mine_timber_l : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 4332 34.588 10404.4
+ angleY 90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_logs : "{4D1517866E9C2362}Prefabs/Props/Forest/WoodPile/WoodPile_02_A.et" {
+ coords 4329.1 34.73 10399.7
+ angleY 90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_fence_s1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4326 0 10394.4
+}
+GenericEntity Fit_coalmans_brow_mine_mine_fence_s2 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4330 0 10394.4
+}
+GenericEntity Fit_coalmans_brow_mine_mine_fence_s3 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4338 0 10394.4
+}
+GenericEntity Fit_coalmans_brow_mine_mine_fence_s4 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4342 0 10394.4
+}
 GenericEntity Fit_coalmans_brow_mine_mine_anchor_counter {
  components {
   LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {

@@ -30,7 +30,7 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). Two spoil heaps stand on the uphill side (the buried shaft end that was the portal left its coal chunks floating above the ground, 0.2.1 final check V4, so it is gone); a pick pile and a lantern wait beside them; a granite rock face of nine boulders in two tiers closes the north side of the apron and the six iron ore rocks lie at its foot, 1.6 times the stone's size and streaked rust red so they stand apart from the grey granite, which stands 1.5 m further back (first-2h review B8), 2.7 m apart in a staggered row so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk, the miner's supply counter (the pickaxe, so a new miner buys it where they take the job, first-2h review B3) and the sign on the other, all on the side the track comes in from. The iron buyer is not here: bars are sold at the dock wholesale warehouse. Rows are rigid: shift, never stretch."
+    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). Two spoil heaps stand on the uphill side (the buried shaft end that was the portal left its coal chunks floating above the ground, 0.2.1 final check V4, so it is gone); a pick pile and a lantern wait beside them; a granite rock face of nine boulders in two tiers closes the north side of the apron and the six iron ore rocks lie at its foot, 1.6 times the stone's size and streaked rust red so they stand apart from the grey granite, which stands 1.5 m further back (first-2h review B8), 2.7 m apart in a staggered row so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk, the miner's supply counter (the pickaxe, so a new miner buys it where they take the job, first-2h review B3) and the sign on the other, all on the side the track comes in from. The iron buyer is not here: bars are sold at the dock wholesale warehouse. The camp is dressed as a worked 1989 site (#4180, playtest round 3 F3): a yellow site hut with its tool rack and bench (a lamp on the bench top) stands on the south side of the yard, two blue barrels (a lamp on one) and firewood logs beside it, two ore carts and a plank stack on the west, a wheelbarrow by the bench, and a fence line along the south edge with a gap for the track. Every prop is a vanilla one that rests on a slope (a pallet or a slab sinks or hovers on this hill, so no duckboards); the shift board and the sound emitters are hand rows in the layer that a refit drops, so a refit re-appends them from the committed layer. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -366,6 +366,268 @@
       ],
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-hut",
+      "name": "Mine_Hut",
+      "prefab": "{B9F18808252E22C3}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_yellow.et",
+      "offset": [
+        2,
+        0,
+        -5.2
+      ],
+      "yaw": 0
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-rack",
+      "name": "Mine_ToolRack",
+      "prefab": "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et",
+      "offset": [
+        4.4,
+        0,
+        -4.2
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-bench",
+      "name": "Mine_Bench",
+      "prefab": "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et",
+      "offset": [
+        6.6,
+        0,
+        -4.2
+      ],
+      "yaw": 90,
+      "lift": 0.09
+    },
+    {
+      "role": "light",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-bench-lamp",
+      "name": "Mine_BenchLamp",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "offset": [
+        6.63,
+        0,
+        -3.9
+      ],
+      "yaw": 180,
+      "lift": 1.11
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-barrel-1",
+      "name": "Mine_Barrel_1",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "offset": [
+        -0.7,
+        0,
+        -6.6
+      ],
+      "yaw": 0,
+      "lift": 0.06
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-barrel-2",
+      "name": "Mine_Barrel_2",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "offset": [
+        -0.7,
+        0,
+        -7.6
+      ],
+      "yaw": 40,
+      "lift": 0.08
+    },
+    {
+      "role": "light",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-barrel-lamp",
+      "name": "Mine_BarrelLamp",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "offset": [
+        -0.7,
+        0,
+        -6.6
+      ],
+      "yaw": 0,
+      "lift": 1.15
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-barrow",
+      "name": "Mine_Barrow",
+      "prefab": "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et",
+      "offset": [
+        7.6,
+        0,
+        -1.4
+      ],
+      "yaw": 25
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-cart-1",
+      "name": "Mine_Cart_1",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "offset": [
+        -0.8,
+        0,
+        2.4
+      ],
+      "yaw": 0,
+      "lift": -0.3
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-cart-2",
+      "name": "Mine_Cart_2",
+      "prefab": "{852265665B92CD53}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_wheelbase_cargo_rusty.et",
+      "offset": [
+        -0.8,
+        0,
+        4.2
+      ],
+      "yaw": 0
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-timber-l",
+      "name": "Mine_TimberL",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "offset": [
+        2,
+        0,
+        0.4
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-logs",
+      "name": "Mine_Logs",
+      "prefab": "{4D1517866E9C2362}Prefabs/Props/Forest/WoodPile/WoodPile_02_A.et",
+      "offset": [
+        -0.9,
+        0,
+        -4.3
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-fence-s1",
+      "name": "Mine_FenceS1",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "offset": [
+        -4,
+        0,
+        -9.6
+      ],
+      "yaw": 0
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-fence-s2",
+      "name": "Mine_FenceS2",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "offset": [
+        0,
+        0,
+        -9.6
+      ],
+      "yaw": 0
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-fence-s3",
+      "name": "Mine_FenceS3",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "offset": [
+        8,
+        0,
+        -9.6
+      ],
+      "yaw": 0
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-fence-s4",
+      "name": "Mine_FenceS4",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "offset": [
+        12,
+        0,
+        -9.6
+      ],
+      "yaw": 0
     },
     {
       "id": "mine-anchor-counter",
