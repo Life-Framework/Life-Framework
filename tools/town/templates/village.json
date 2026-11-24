@@ -52,6 +52,12 @@
       "places": ["FarmPlot"]
     },
     {
+      "id": "speedtrap", "required": false, "kit": "speed-trap", "host": "plot", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near" },
+      "plot": { "minWidth": 10, "minDepth": 30, "prefabs": [] },
+      "places": []
+    },
+    {
       "id": "board", "required": true, "kit": "board", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 80 },
       "places": ["TownBoard"]

@@ -1,0 +1,17 @@
+GenericEntity Fit_meaux_speedtrap_speedtrap_r0_1 : "{395925C97F4D53DE}Prefabs/Props/Signs/LF_SpeedLimit30.et" {
+ coords 4558.1 11.386 9380
+ angleY 180
+}
+GenericEntity Fit_meaux_speedtrap_speedtrap_r0_2 : "{2311E06DD41A54BF}Prefabs/Props/Signs/LF_SpeedLimit50.et" {
+ coords 4558.1 12.003 9408
+}
+GenericEntity Fit_meaux_speedtrap_speedtrap_r0_3 : "{937A43570DF08420}Prefabs/Props/Signs/LF_SpeedLimit100.et" {
+ coords 4558.1 11.595 9370
+ angleY 180
+}
+Vehicle Fit_meaux_speedtrap_speedtrap_patrol_car : "{D1C459F87589D01D}Prefabs/Vehicles/Liveries/LF_S105_Police.et" {
+ coords 4562.4 11.894 9394
+}
+GenericEntity Fit_meaux_speedtrap_speedtrap_barrier : "{64C9C1D1C2C1B38D}Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et" {
+ coords 4562.4 12.07 9400.5
+}
