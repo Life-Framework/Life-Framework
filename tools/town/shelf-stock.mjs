@@ -48,7 +48,7 @@ export const SHOPS = {
     gondola: {
       fixture: "Prefabs/Props/Commercial/ShelfShop_01.et",
       boards: [1, 2, 3],
-      perBoard: 5,
+      perBoard: 7,
     },
     // The boundary of the store: the host's own model bounds, leaving it with unpaid goods is shoplifting.
     restockSeconds: 120,
