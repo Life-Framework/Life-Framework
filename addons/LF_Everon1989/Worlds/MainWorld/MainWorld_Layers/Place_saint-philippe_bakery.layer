@@ -153,3 +153,15 @@ GenericEntity Fit_saint_philippe_bakery_bakery_lamp_2 : "{0E2929AAD09289D1}Prefa
  coords 4480.995 15.45 10746.761
  angleY -100
 }
+GenericEntity Fit_saint_philippe_bakery_bakery_fill_1 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4478.683 15.4 10746.049
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_fill_2 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4480.062 15.4 10746.292
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_fill_3 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4481.638 15.4 10746.57
+ angleY -100
+}

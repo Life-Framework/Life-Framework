@@ -10,7 +10,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const TRUCK_MIN = 600, EXPORT_MIN = 650;
+const TRUCK_MIN = 600, TRUCK_MAX = 800, EXPORT_MIN = 650;
 const fails = [];
 const run = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "economy", "--json"], { cwd: root, encoding: "utf8", windowsHide: true, maxBuffer: 64 * 1024 * 1024 });
 let rep = null;
@@ -28,6 +28,8 @@ if (rep) {
   for (const t of truck) {
     if (!t.loop) fails.push(`FAIL ${t.label} is missing from the report`);
     else if (!(t.loop.steady >= TRUCK_MIN)) fails.push(`FAIL ${t.label} $${t.loop.steady}/h steady is under the $${TRUCK_MIN}/h high-tier rung`);
+    // #4898: the measured island cycle put hardwood by truck near $900/h steady; the band tops out at $800, first hour too.
+    else if (t.loop.steady > TRUCK_MAX || t.loop.first > TRUCK_MAX) fails.push(`FAIL ${t.label} $${t.loop.steady}/h steady, $${t.loop.first}/h first hour is over the $${TRUCK_MAX}/h top of the truck band`);
   }
   const lowestTruck = Math.min(...truck.map((t) => t.loop?.steady ?? 0));
   for (const r of rep.dutyLadder ?? []) {
