@@ -1,6 +1,6 @@
 //! Hit zone of a resource you work with a tool: a tree (axe) or an ore rock (pickaxe).
 //! Only the tools listed on LF_DestructibleResourceComponent deal damage, compared by
-//! prefab GUID. An ore rock (LF_OreNodeComponent) takes every accepted hit itself on
+//! prefab GUID; a prefab that inherits a listed tool (a tier of it) counts too. An ore rock (LF_OreNodeComponent) takes every accepted hit itself on
 //! the server and the zone heals back, so the rock is never destroyed by health.
 class LF_DestructibleResourceHitZone : SCR_HitZone
 {
@@ -57,15 +57,31 @@ class LF_DestructibleResourceHitZone : SCR_HitZone
 		if (!settings || !settings.m_aTools)
 			return 0.0;
 
-		ResourceName currentTool = LF_Utils.GetPrefabName(damageContext.damageSource);
-		foreach (LF_ResourceDestructionTool tool : settings.m_aTools)
-		{
-			if (tool && LF_Utils.SamePrefab(tool.m_rTool, currentTool))
-				return tool.m_fHitDamage;
-		}
+		float damage = HitDamageOf(settings, damageContext.damageSource);
+		if (damage > 0)
+			return damage;
 
+		ResourceName currentTool = LF_Utils.GetPrefabName(damageContext.damageSource);
 		if (damageContext.damageType == EDamageType.MELEE && !currentTool.IsEmpty())
 			LF_Debug.Info("Resources", string.Format("%1 takes no damage from %2: not one of its tools", LF_Utils.GetPrefabName(owner), currentTool));
+
+		return 0.0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The damage one hit with `tool` deals on a node with these settings; 0 when the tool is not one of
+	//! its tools. A listed tool is the base of a family: a tier prefab that inherits it (worn, standard and
+	//! fine pickaxe, #4188) counts as that tool, so nothing lists every tier (#4790).
+	static float HitDamageOf(LF_DestructibleResourceComponentClass settings, IEntity tool)
+	{
+		if (!settings || !settings.m_aTools || !tool)
+			return 0.0;
+
+		foreach (LF_ResourceDestructionTool row : settings.m_aTools)
+		{
+			if (row && LF_Utils.EntityInherits(tool, row.m_rTool))
+				return row.m_fHitDamage;
+		}
 
 		return 0.0;
 	}
