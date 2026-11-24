@@ -3235,6 +3235,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Card taken down. It stays logged in the locker."
      Comment "Toast after unpinning (#148)."
     }
+    CustomStringTableItem "{DE6F4994046855A2}" {
+     Id "LF-CasualtyTreat_Action"
+     Target_en_us "Treat the patient"
+     Comment "Hold action on a hurt resident from a medic call (casualty), offered to an on-duty medic."
+    }
+    CustomStringTableItem "{95C4237C07E41A13}" {
+     Id "LF-CasualtyTreat_Done"
+     Target_en_us "Patient treated. The call is closed."
+     Comment "Toast to the medic after treating a casualty."
+    }
     CustomStringTableItem "{C4A100000000A004}" {
      Id "LF-Chain_Cider_Name"
      Target_en_us "Cider"

@@ -33,7 +33,7 @@ The **pharmacy** north of the clinic sells aspirin ($10), gauze ($8) and tourniq
 | Paramedic | $530 | $50 | Morphine | 4 hours |
 | Doctor | $560 | $40 | Surgical gauze | top |
 
-Reviving and delivering patients earns **medic job experience** and a **bonus**: **$10** a revive and **$15** a patient put in a hospital bed (the bed's own revive is included, so a bed delivery is $15, not $25). Reviving yourself earns nothing. The bonus stops at your rank's cap each hour and is paid with your shift when you clock out.
+Reviving and delivering patients earns **medic job experience** and a **bonus**: **$10** a revive and **$15** a patient put in a hospital bed (the bed's own revive is included, so a bed delivery is $15, not $25). Reviving yourself earns nothing. A **hurt resident** from a medic call also counts: hold **Treat the patient** beside them (about 8 s, one field dressing). They get up and walk off, the call closes and you earn the $10 revive bonus once per patient. The bonus stops at your rank's cap each hour and is paid with your shift when you clock out.
 
 **Ambulance pool board.** On duty, press **F** at the ambulance pool board and pick your rank's ambulance ("Take the Orderly ambulance": the white UAZ452 with AMBULANCE on the sides, Orderly and EMT; "Take the Paramedic ambulance": the white S1203, Paramedic and Doctor). It stands in the bay in front of the board, unlocked for medics on duty only. Taking another one sends your last back, unless someone is sitting in it. The board lists only the ambulances your rank may take.
 
