@@ -47,7 +47,7 @@
         0,
         7.6
       ],
-      "yaw": 0
+      "yaw": 180
     },
     {
       "id": "outpost-site",
@@ -240,7 +240,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.28
+      "lift": 0.188
     },
     {
       "id": "outpost-generator",
@@ -257,7 +257,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.063
+      "lift": 0
     },
     {
       "id": "outpost-mast",
@@ -323,7 +323,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.078
+      "lift": 0.016
     },
     {
       "id": "outpost-pallet-1",
@@ -340,7 +340,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.09
+      "lift": 0.006
     },
     {
       "id": "outpost-pallet-box-1",
@@ -357,7 +357,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.118
+      "lift": 0.041
     },
     {
       "id": "outpost-barrel-1",
@@ -374,7 +374,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.046
+      "lift": 0
     },
     {
       "id": "outpost-canvas-cover-crates",
@@ -424,7 +424,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.031
+      "lift": 0
     },
     {
       "id": "outpost-stool-n",
@@ -441,7 +441,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.038
+      "lift": 0
     },
     {
       "id": "outpost-stool-s",
@@ -458,7 +458,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.03
+      "lift": 0
     },
     {
       "id": "outpost-bench-box",
@@ -475,7 +475,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.105
+      "lift": 0.024
     },
     {
       "id": "outpost-workbench-1",
@@ -492,7 +492,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.135
+      "lift": 0.015
     },
     {
       "id": "outpost-workbench-2",
@@ -509,7 +509,7 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain",
-      "lift": 0.108
+      "lift": 0.019
     },
     {
       "id": "outpost-canopy-mechanic",
@@ -694,38 +694,6 @@
       }
     },
     {
-      "prefab": "{1F1980176A5052DC}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rosa_canina_0s.et",
-      "box": {
-        "offset": [
-          -6.304,
-          9.851
-        ],
-        "half": [
-          12.8,
-          12.851
-        ],
-        "height": 12,
-        "below": 4,
-        "repeat": 5
-      }
-    },
-    {
-      "prefab": "{2A1012C2B5B4F1FA}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rubus_idaeus_1s.et",
-      "box": {
-        "offset": [
-          -6.304,
-          9.851
-        ],
-        "half": [
-          12.8,
-          12.851
-        ],
-        "height": 12,
-        "below": 4,
-        "repeat": 5
-      }
-    },
-    {
       "prefab": "{2FE01B5E743D5205}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_1s.et",
       "box": {
         "offset": [
@@ -742,7 +710,7 @@
       }
     },
     {
-      "prefab": "{5D1A7A4A41161E8A}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rubus_idaeus_0s.et",
+      "prefab": "{425761285F36BF16}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_1s.et",
       "box": {
         "offset": [
           -6.304,
@@ -758,7 +726,7 @@
       }
     },
     {
-      "prefab": "{6813E89F9EF2BDAC}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_rosa_canina_1s.et",
+      "prefab": "{68C5231808D63103}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2f.et",
       "box": {
         "offset": [
           -6.304,
@@ -790,7 +758,7 @@
       }
     },
     {
-      "prefab": "{86FE6FFC07B02673}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3x.et",
+      "prefab": "{960EA50FD57CD7D5}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_1sw.et",
       "box": {
         "offset": [
           -6.304,
@@ -806,7 +774,7 @@
       }
     },
     {
-      "prefab": "{C1F4CA4F9D788CE5}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3s.et",
+      "prefab": "{9C6CE0F73E3AED80}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_1f.et",
       "box": {
         "offset": [
           -6.304,
@@ -822,7 +790,23 @@
       }
     },
     {
-      "prefab": "{CF0A210B7AC7B329}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_2.et",
+      "prefab": "{A35E15EBC6033C07}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1.et",
+      "box": {
+        "offset": [
+          -6.304,
+          9.851
+        ],
+        "half": [
+          12.8,
+          12.851
+        ],
+        "height": 12,
+        "below": 4,
+        "repeat": 5
+      }
+    },
+    {
+      "prefab": "{C8E68C4C6AF159DA}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2sw.et",
       "box": {
         "offset": [
           -6.304,
@@ -870,22 +854,6 @@
       }
     },
     {
-      "prefab": "{68C5231808D63103}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2f.et",
-      "box": {
-        "offset": [
-          -6.603,
-          -7
-        ],
-        "half": [
-          7.3,
-          4
-        ],
-        "height": 12,
-        "below": 4,
-        "repeat": 5
-      }
-    },
-    {
       "prefab": "{727831E6D77F3360}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_3f.et",
       "box": {
         "offset": [
@@ -902,33 +870,18 @@
       }
     },
     {
-      "prefab": "{A35E15EBC6033C07}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1.et",
+      "prefab": "{59D79F785D414D67}PrefabLibrary/DefaultLibrary/Rocks/Granite/Granite_Stone_01/Granite_ForestStone_01.et",
+      "note": "the granite stone that stood in the gate opening on plot p1 (#4675 follow-up)",
       "box": {
         "offset": [
-          -6.603,
-          -7
+          -7.25,
+          2.92
         ],
         "half": [
-          7.3,
-          4
+          2.5,
+          2.5
         ],
-        "height": 12,
-        "below": 4,
-        "repeat": 5
-      }
-    },
-    {
-      "prefab": "{C8E68C4C6AF159DA}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2sw.et",
-      "box": {
-        "offset": [
-          -6.603,
-          -7
-        ],
-        "half": [
-          7.3,
-          4
-        ],
-        "height": 12,
+        "height": 6,
         "below": 4,
         "repeat": 5
       }
