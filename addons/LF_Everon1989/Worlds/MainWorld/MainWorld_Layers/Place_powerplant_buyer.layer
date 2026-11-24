@@ -7,13 +7,36 @@ GenericEntity Fit_powerplant_buyer_Place {
  }
  coords 5896 5.8 9797
 }
+DecalEntity Fit_powerplant_buyer_pad_a : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
+ coords 5874 0 9800
+ angleX -90
+ scale 8
+}
+DecalEntity Fit_powerplant_buyer_pad_b : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords 5884 0 9803
+ angleX -90
+ angleY 90
+ scale 8
+}
+DecalEntity Fit_powerplant_buyer_pad_c : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords 5869 0 9804
+ angleX -90
+ angleY -160
+ scale 6
+}
+DecalEntity Fit_powerplant_buyer_pad_d : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
+ coords 5878 0 9796
+ angleX -90
+ angleY -60
+ scale 6
+}
 GenericEntity Fit_powerplant_buyer_coal_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
  coords 5872 4.134 9801
 }
 GenericEntity Fit_powerplant_buyer_coal_buyer : "{52895A24E4FC994C}Prefabs/Trader/LF_CoalBuyer_Everon1989.et" {
  coords 5872 5.174 9801
 }
-LF_NpcBaseEntity Fit_powerplant_buyer_coal_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+GenericEntity Fit_powerplant_buyer_coal_clerk : "{DFBF063F590C7160}Configs/Npcs/LF_Npc_Townsfolk_CoalYardClerk.et" {
  coords 5872 4.094 9799.6
 }
 GenericEntity Fit_powerplant_buyer_coal_heap_l : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {

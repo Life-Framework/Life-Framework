@@ -111,3 +111,15 @@ GenericEntity Fit_saint_philippe_hardware_hardware_tool_station : "{B6CCB3CFBFD0
  coords 4537.673 16.458 10628.036
  angleY 171
 }
+GenericEntity Fit_saint_philippe_hardware_hardware_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4538.363 19.650 10630.069
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4535.400 19.650 10629.600
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4532.437 19.650 10629.131
+ angleY -99
+}

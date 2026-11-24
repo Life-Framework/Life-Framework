@@ -134,6 +134,22 @@
           "blocks": []
         }
       ]
+    },
+    {
+      "id": "parcel-lamp-1",
+      "name": "Parcel_Lamp_1",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        0,
+        2.65,
+        0
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }

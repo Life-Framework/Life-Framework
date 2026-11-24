@@ -341,17 +341,17 @@
       "why": "The same bird flock (SCR_Bird) the engine moves: the seagull flock spawns at its row on the dock apron (y 1.59, 0 m over the ground) and the probe finds the flock entity wherever it has wandered (#4586)."
     },
     {
-      "match": "^Fit_saint_philippe_([a-z_]+)_\\1_lamp_\\d",
+      "match": "^Fit_saint_philippe_(?:districts_)?([a-z_]+)_\\1_lamp_\\d",
       "kind": "floating",
       "why": "A ceiling fixture (LF_LightCeiling_Interior, a chandelier hung from the slab of the island host building) has nothing under it but the room: the audit reads the counter or floor 0.4 to 0.9 m below its hanging bottom. The kit row is a free mount at the ceiling height (#4718)."
     },
     {
-      "match": "^Fit_saint_philippe_([a-z_]+)_\\1_lamp_\\d",
+      "match": "^Fit_saint_philippe_(?:districts_)?([a-z_]+)_\\1_lamp_\\d",
       "kind": "contact",
       "why": "A ceiling chandelier (LF_LightCeiling_Interior) hangs over a counter or a bare floor with nothing under its bounds: the audit reads the gap as hovering or hanging off its support. It is hung from the slab by its rod (#4718)."
     },
     {
-      "match": "^Fit_saint_philippe_([a-z_]+)_\\1_lamp_\\d",
+      "match": "^Fit_saint_philippe_(?:districts_)?([a-z_]+)_\\1_lamp_\\d",
       "kind": "overhang",
       "why": "A ceiling chandelier (LF_LightCeiling_Interior) hangs over a counter or a bare floor with nothing under its bounds: the audit reads the gap as hovering or hanging off its support. It is hung from the slab by its rod (#4718)."
     },
@@ -372,6 +372,18 @@
       "kind": "odd-scale",
       "layer": "Place_meaux_speedtrap.layer",
       "why": "The Meaux speed-trap lay-by pad is the vanilla GravelPile_01_base at scale 0.5 (4.5 x 2.7 m instead of the 8.3 m heap), turned 90 degrees to clear the verge wall; it is the smallest gravel mesh vanilla has, and 0.5 is the audit's own lower limit (#4778)."
+    },
+    {
+      "match": "^Fit_outpost_north_camp_outpost_camo_net_pallets ",
+      "kind": "odd-scale",
+      "layer": "Place_outpost-north_camp.layer",
+      "why": "The camo net over the north outpost pallets is the vanilla CamoNet_Small_Soviet, 13.6 x 12.5 m at scale 1, a canopy for a vehicle park. At 0.5 it is 6.8 x 6.3 m, which covers the pallet stack and the crate row; 0.5 is the audit's own lower limit (#4180)."
+    },
+    {
+      "match": "^Fit_outpost_north_camp_outpost_pallet_box_1 ",
+      "kind": "clips",
+      "layer": "Place_outpost-north_camp.layer",
+      "why": "The camo net stands over the outpost pallet stack on its own corner poles, so its bounding box encloses the pallets by design; the net is a canopy, not a solid (#4180)."
     }
   ]
 }
