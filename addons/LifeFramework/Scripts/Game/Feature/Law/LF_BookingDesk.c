@@ -280,6 +280,16 @@ class LF_BookingDesk
 		foreach (LF_CrimeEntry counted : sheet.m_aCounted)
 			offer.m_aCodes.Insert(counted.m_sCrimeId);
 
+		// A jail-only code adds no fine, so the fine count leaves it out, but it is a conviction all the same: the one
+		// of its stacking group with the longest time counts, and its licence ban (murder takes the permit) is booked.
+		array<LF_CrimeEntry> bySentence = {};
+		LF_LawCodeRules.Counted(codes, false, bySentence);
+		foreach (LF_CrimeEntry served : bySentence)
+		{
+			if (served.m_bJailOnly && !offer.m_aCodes.Contains(served.m_sCrimeId))
+				offer.m_aCodes.Insert(served.m_sCrimeId);
+		}
+
 		PlaceTime(offer);
 		offer.m_iMadeAtMs = System.GetTickCount();
 		Offers().Set(suspectUid, offer);

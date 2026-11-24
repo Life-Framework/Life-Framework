@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "template": "coal-yard",
+  "place": "powerplant",
+  "status": "approved",
+  "note": "Hand-written for the power plant coal buyer (#4491, the buyer of the East Rise coal, #3243). The plant is the works at 5834, 9786 (the tall smokestack, hall, fuel tanks and the open metal shed b01) on the north-east coast. No building hosts the yard, so its one slot is a hostless plot like East Rise (#3243): the kit anchors on the plot centre and every row rests on the probed ground. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": {
+      "at": "2026-11-24",
+      "tool": "tools\\cli scout",
+      "command": "tools\\cli scout 5834,9786 --radius 130",
+      "view": 60,
+      "gameBuild": "Arma Reforger build 26266485 (installed 2026-11-08)",
+      "world": "Worlds/CoreOnEveron/CoreOnEveron.ent"
+    },
+    "buildings": 14,
+    "freePlots": 8
+  },
+  "slots": {
+    "buyer": {
+      "plot": "p1",
+      "kit": "power-plant-coal",
+      "hostless": true,
+      "why": [
+        "free plot p1 (72 x 74 m, ground 3.7 to 7.9 m) is the open meadow just east of the plant's covered metal shed b01, the closest open ground to the hall and the smokestack that a truck can reach from the plant's east loop road",
+        "the yard stands on the west edge of the plot, 4 m off the shed's roof line, so it reads as part of the plant; the counter faces north to the road and the coal heaps and the hopper bay stand behind and beside it"
+      ]
+    }
+  }
+}

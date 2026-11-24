@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "kind": "coal-yard",
+  "about": "The coal yard where the East Rise coal ends: a buyer behind a counter with a premium buyer on it, coal heaps, a hopper, a truck bay, work lights and a sign, on open ground beside a power plant. No building hosts it, so the slot is hostless: its kit rests on the probed ground of one free plot. Same shape as coal-seam.json, with the map mark as a `WholesaleCounter` place. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "buyer",
+      "required": true,
+      "kit": "power-plant-coal",
+      "host": "plot",
+      "poi": "WholesaleCounter",
+      "needs": {
+        "interior": "optional",
+        "prefer": "near"
+      },
+      "plot": {
+        "minWidth": 30,
+        "minDepth": 20,
+        "prefabs": []
+      },
+      "places": [
+        "WholesaleCounter"
+      ]
+    }
+  ]
+}
