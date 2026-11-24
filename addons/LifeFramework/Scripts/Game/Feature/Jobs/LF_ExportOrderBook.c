@@ -127,8 +127,13 @@ class LF_ExportOrderBook
 
 		if (s_iNextOpenMinute < 0)
 		{
-			while (orders.Count() < config.m_iOpenSlots)
+			// Bounded: a kind with no price is skipped, so a book of unpriced kinds must not spin.
+			int tries = config.m_iOpenSlots * config.m_aTemplates.Count();
+			while (orders.Count() < config.m_iOpenSlots && tries > 0)
+			{
 				Open(config, now);
+				tries--;
+			}
 			s_iNextOpenMinute = now + config.m_iRefillMinutes;
 			return;
 		}
@@ -147,6 +152,12 @@ class LF_ExportOrderBook
 	{
 		LF_ExportOrderTemplate template = config.m_aTemplates[s_iNextTemplate % config.m_aTemplates.Count()];
 		s_iNextTemplate++;
+		int pay = config.PayForTemplate(template);
+		if (pay <= 0)
+		{
+			LF_Debug.Error(FEATURE, string.Format("export order kind %1 not opened: no wholesale price for %2 (template or market row)", template.m_sId, template.m_Goods));
+			return;
+		}
 
 		LF_ExportOrder order = new LF_ExportOrder();
 		order.m_iId = s_iNextId;
@@ -156,7 +167,7 @@ class LF_ExportOrderBook
 		order.m_sGoodsName = template.m_sGoodsName;
 		order.m_sDestination = template.m_sDestination;
 		order.m_iCount = template.m_iCount;
-		order.m_iPay = config.PayFor(template.m_iCount, template.m_iWholesale);
+		order.m_iPay = pay;
 		order.m_iDeadlineMinute = now + template.m_iGameMinutes;
 		Orders().Insert(order);
 		LF_Debug.Info(FEATURE, string.Format("order %1 open: %2 x %3 for $%4 by %5", order.m_iId, order.m_iCount, order.m_sTemplate, order.m_iPay, order.DeadlineText()));
