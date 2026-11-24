@@ -19,12 +19,12 @@ TX, TZ = L["till"]["x"], L["till"]["z"]
 px = kit["texture_px"]["tile"]
 
 # ================================================================ materials
-# Panel veneer: a neutral mid oak, straight grain, satin.
-base, rough, hgt = K.wood(px, (0.47, 0.41, 0.31), grain_px=4, ring=0.10, rough=0.78)
+# Panel veneer: a light honey oak, straight grain, satin (lightened 2026-11-24, #4903: the mid oak read near-black in the dim shops).
+base, rough, hgt = K.wood(px, (0.88, 0.76, 0.56), grain_px=4, ring=0.10, rough=0.78)
 save_material("SC_Lambris", base, rough, 0.0, normal_from_height(hgt, 0.6), 1.0)
 
 # Frame and mouldings: the same oak stained darker, brown rather than red.
-base, rough, hgt = K.wood(px, (0.33, 0.27, 0.20), grain_px=4, ring=0.12, rough=0.82)
+base, rough, hgt = K.wood(px, (0.70, 0.57, 0.40), grain_px=4, ring=0.12, rough=0.82)
 save_material("SC_WoodDark", base, rough, 0.0, normal_from_height(hgt, 0.7), 1.0)
 
 # Worktop: beige speckled laminate, worn a little paler where hands rest, a few scratches.

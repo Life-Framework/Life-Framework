@@ -85,6 +85,18 @@ GenericEntity Fit_saint_philippe_butcher_butcher_rack_1_leg_31 : "{0D111763BAACC
  coords 4474.719 14.073 10775.228
  angleY -10
 }
+GenericEntity Fit_saint_philippe_butcher_butcher_chiller_meat_1 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4476.966 12.725 10775.959
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_chiller_meat_2 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 4477.517 12.717 10776.056
+ angleY -80
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_chiller_meat_3 : "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et" {
+ coords 4478.069 12.725 10776.154
+ angleY -10
+}
 GenericEntity Fit_saint_philippe_butcher_butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  components {
   LF_SignComponent "{6E3FF3980D87CACE}" {
@@ -101,15 +113,19 @@ GenericEntity Fit_saint_philippe_butcher_anchor_counter {
  coords 4472.976 12.039 10776.474
  angleY -100
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4479.453 15.75 10778.327
+GenericEntity Fit_saint_philippe_butcher_butcher_fill_1 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4472.883 14.7 10775.849
  angleY -100
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4475.021 15.75 10777.546
+GenericEntity Fit_saint_philippe_butcher_butcher_fill_2 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4474.951 14.7 10776.213
  angleY -100
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4470.589 15.75 10776.764
+GenericEntity Fit_saint_philippe_butcher_butcher_fill_3 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4476.527 14.7 10776.491
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_fill_4 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4478.004 14.7 10776.752
  angleY -100
 }

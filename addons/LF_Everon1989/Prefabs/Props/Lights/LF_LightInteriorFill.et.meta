@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
