@@ -107,7 +107,7 @@ class LF_ToolConditionComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The tool of this kind the character holds in the hands (right hand, left-hand gadget, or a hand
+	//! The tool of this kind the character holds in the hands (right hand, left-hand gadget, the drawn weapon, or a hand
 	//! tool such as the rod), or null. A tool in a pocket or the pack does not count.
 	static LF_ToolConditionComponent Held(IEntity character, string kind)
 	{
@@ -117,17 +117,13 @@ class LF_ToolConditionComponent : ScriptComponent
 		if (s_HeldForTestsBy != EntityID.INVALID && character.GetID() == s_HeldForTestsBy)
 			return Matching(GetGame().GetWorld().FindEntityByID(s_HeldForTestsTool), kind);
 
-		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(character);
-		if (controller)
-		{
-			LF_ToolConditionComponent right = Matching(controller.GetRightHandItem(), kind);
-			if (right)
-				return right;
-
-			LF_ToolConditionComponent left = Matching(controller.GetAttachedGadgetAtLeftHandSlot(), kind);
-			if (left)
-				return left;
-		}
+		// The hands as every tool check reads them: right hand, left gadget and the drawn weapon (a drawn
+		// pickaxe or axe is the current weapon, #4865).
+		array<IEntity> hands = {};
+		LF_GatherTools.HeldItems(character, hands);
+		LF_ToolConditionComponent inHands = HeldAmong(hands, kind);
+		if (inHands)
+			return inHands;
 
 		SCR_GadgetManagerComponent gadgets = SCR_GadgetManagerComponent.Cast(character.FindComponent(SCR_GadgetManagerComponent));
 		if (gadgets)
@@ -140,6 +136,19 @@ class LF_ToolConditionComponent : ScriptComponent
 		if (kind == LF_ToolBench.KIND_ROD)
 			return Matching(LF_HandTool.HeldTool(character, LF_ToolBench.KIND_ROD), kind);
 
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first of these held items that is a tool of this kind, or null.
+	static LF_ToolConditionComponent HeldAmong(notnull array<IEntity> hands, string kind)
+	{
+		foreach (IEntity item : hands)
+		{
+			LF_ToolConditionComponent tool = Matching(item, kind);
+			if (tool)
+				return tool;
+		}
 		return null;
 	}
 
