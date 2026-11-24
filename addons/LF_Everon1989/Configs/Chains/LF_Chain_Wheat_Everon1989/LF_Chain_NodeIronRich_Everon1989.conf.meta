@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{093148FF238F8764}Configs/Chains/LF_Chain_Wheat_Everon1989/LF_Chain_NodeIronRich_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass PS5 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

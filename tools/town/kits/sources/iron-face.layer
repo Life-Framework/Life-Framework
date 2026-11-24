@@ -38,11 +38,11 @@ GenericEntity Mine_Ore_4 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.e
  coords 4.8 0 8.6
  angleY 340
 }
-GenericEntity Mine_Ore_5 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+GenericEntity Mine_Ore_5 : "{8406DCAC1238E2A3}Prefabs/Resources/Mining/LF_IronOreRich_Everon1989.et" {
  coords 7 0 7.7
  angleY 40
 }
-GenericEntity Mine_Ore_6 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+GenericEntity Mine_Ore_6 : "{8406DCAC1238E2A3}Prefabs/Resources/Mining/LF_IronOreRich_Everon1989.et" {
  coords 9.2 0 8.6
  angleY 290
 }

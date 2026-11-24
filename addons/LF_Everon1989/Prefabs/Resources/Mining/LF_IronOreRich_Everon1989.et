@@ -1,0 +1,16 @@
+GenericEntity : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ ID "7C747900FB304FAC"
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_sNodeId "iron-rich"
+  }
+  MeshObject "{59F0709385A10D16}" {
+   Materials {
+    MaterialAssignClass "{D1181D22455478EF}" {
+     SourceMaterial "Common/Materials/Physics/stone"
+     AssignedMaterial "{E135AE1F3781B039}Assets/Resources/Mining/OreVein/Data/OreVein_IronRich.emat"
+    }
+   }
+  }
+ }
+}

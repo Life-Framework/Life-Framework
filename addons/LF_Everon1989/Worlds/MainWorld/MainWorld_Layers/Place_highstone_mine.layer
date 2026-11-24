@@ -24,6 +24,15 @@ GenericEntity Fit_highstone_mine_mine_lantern : "{53B76331BB3E6024}Prefabs/Props
  coords 4952 115.106 8467.6
  angleY 90
 }
+GenericEntity Fit_highstone_mine_mine_ore_1 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 4951.5 115.586 8472.6
+ angleY 110
+}
 GenericEntity Fit_highstone_mine_mine_ore_2 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
  components {
   LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
@@ -42,7 +51,16 @@ GenericEntity Fit_highstone_mine_mine_ore_3 : "{2C571D6F7C05E095}Prefabs/Resourc
  coords 4959.3 115.711 8473.7
  angleY 165
 }
-GenericEntity Fit_highstone_mine_mine_ore_5 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+GenericEntity Fit_highstone_mine_mine_ore_4 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 4961.8 115.538 8472
+ angleY -20
+}
+GenericEntity Fit_highstone_mine_mine_ore_5 : "{8406DCAC1238E2A3}Prefabs/Resources/Mining/LF_IronOreRich_Everon1989.et" {
  components {
   LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
    m_fBaseScale 1.6
@@ -51,7 +69,7 @@ GenericEntity Fit_highstone_mine_mine_ore_5 : "{2C571D6F7C05E095}Prefabs/Resourc
  coords 4964.7 115.467 8473.7
  angleY 40
 }
-GenericEntity Fit_highstone_mine_mine_ore_6 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+GenericEntity Fit_highstone_mine_mine_ore_6 : "{8406DCAC1238E2A3}Prefabs/Resources/Mining/LF_IronOreRich_Everon1989.et" {
  components {
   LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
    m_fBaseScale 1.6
