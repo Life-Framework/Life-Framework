@@ -110,9 +110,42 @@ class LF_TruckCheckGateComponent : ScriptComponent
 		}
 
 		LF_EDrivingCheck outcome = LF_DrivingCheck.ReachGate(uid, m_iOrder);
+		LF_Debug.Info(LF_DrivingCheck.FEATURE, string.Format("truck check gate %1: %2 reached it, the check says %3", m_iOrder, uid, typename.EnumToString(LF_EDrivingCheck, outcome)));
 		if (outcome != LF_EDrivingCheck.GATE_OK)
 			LF_TruckCheckLoan.Release(uid);
 
+		// Say it in the driver's words: this gate, the pass, or the wrong gate. The lent row still names the player.
+		string key = ToastKey(outcome);
+		if (!key.IsEmpty())
+			LF_Utils.NotifyEntity(LF_TruckCheckLend.PlayerOf(uid), key, "#LF-TruckCheck_Title", 4.0, ToastArg(outcome, m_iOrder));
+
 		return outcome;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the toast for the check's answer at a gate; "" when there is nothing to say (no open run).
+	static string ToastKey(LF_EDrivingCheck outcome)
+	{
+		switch (outcome)
+		{
+			case LF_EDrivingCheck.GATE_OK: return "#LF-TruckCheck_Gate";
+			case LF_EDrivingCheck.PASSED: return "#LF-TruckCheck_Passed";
+			case LF_EDrivingCheck.FAILED_COURSE: return "#LF-TruckCheck_FailedCourse";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the toast's %1: the gate's number for a gate passed (1 to 4), the retake minutes for a failure.
+	static string ToastArg(LF_EDrivingCheck outcome, int order)
+	{
+		if (outcome == LF_EDrivingCheck.GATE_OK)
+			return (order + 1).ToString();
+
+		if (outcome == LF_EDrivingCheck.FAILED_COURSE)
+			return LF_DrivingCheck.RETAKE_MINUTES.ToString();
+
+		return "";
 	}
 }
