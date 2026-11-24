@@ -11,13 +11,41 @@ class LF_ParkAtHarness
 {
 	static const string FEATURE = "AgentHarness";
 	static const string VERB = "parkat";
+	static const string STOLEN_VERB = "markstolen";
 	static const float DEFAULT_METRES = 8;	// lf-fixed: inside the run-plate reach (30 m), clear of a car length
 
 	//------------------------------------------------------------------------------------------------
 	//! Pure: whether a harness tool string is this verb.
 	static bool IsVerb(string tool)
 	{
-		return tool.StartsWith(VERB + " ");
+		return tool.StartsWith(VERB + " ") || tool == STOLEN_VERB || tool.StartsWith(STOLEN_VERB + " ");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: `markstolen` marks the sending player's newest car in the world stolen (what a hotwire does, #412),
+	//! so a proof tests the STOLEN read of the report and Run plate on every run instead of on a hotwire roll.
+	//! \return "ok markstolen plate=<plate>" or "error <reason>"
+	static string RunMarkStolen(IEntity character)
+	{
+		if (!LF_DevGate.HarnessBuild())
+		{
+			LF_Debug.Warn(FEATURE, "markstolen refused: not a LF_HARNESS build");
+			return "error harness_only";
+		}
+
+		string vehicleId = LF_VehicleOwnership.LatestInWorld(LF_Utils.GetPlayerUid(character));
+		IEntity vehicle = LF_VehicleOwnership.GetVehicle(vehicleId);
+		if (!vehicle)
+			return "error no_vehicle";
+
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
+		if (!vehicleLock)
+			return "error no_vehicle_lock";
+
+		vehicleLock.SetStolen(true);
+		string plate = LF_VehicleOwnership.GetPlate(vehicleId);
+		LF_Debug.Info(FEATURE, string.Format("markstolen: %1 marked stolen (stand-in for a hotwire)", plate));
+		return "ok markstolen plate=" + plate;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -25,6 +53,9 @@ class LF_ParkAtHarness
 	//! \return "ok ..." or "error <reason>"
 	static string Run(IEntity character, string tool)
 	{
+		if (tool == STOLEN_VERB || tool.StartsWith(STOLEN_VERB + " "))
+			return RunMarkStolen(character);
+
 		if (!LF_DevGate.HarnessBuild())
 		{
 			LF_Debug.Warn(FEATURE, "parkat refused: not a LF_HARNESS build");
@@ -82,13 +113,19 @@ modded class LF_AgentHarnessVerbs
 {
 	override bool Handle(LF_AgentCommand cmd)
 	{
-		if (cmd.Verb != LF_ParkAtHarness.VERB)
+		if (cmd.Verb != LF_ParkAtHarness.VERB && cmd.Verb != LF_ParkAtHarness.STOLEN_VERB)
 			return super.Handle(cmd);
 
 		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
 		if (!character)
 		{
 			LF_AgentHarness.Answer(cmd.Id, "error", "no_character");
+			return true;
+		}
+
+		if (cmd.Verb == LF_ParkAtHarness.STOLEN_VERB)
+		{
+			character.LF_AskHarnessScanner(cmd.Id, LF_ParkAtHarness.STOLEN_VERB);
 			return true;
 		}
 
