@@ -819,6 +819,31 @@ StringTable {
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
      Comment "Pack patch of the clerk dialogue's line work_errand (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{A8E4F39A5417F36C}" {
+     Id "LF-Dialogue_CoalYardClerk_Bye"
+     Target_en_us "Mind the Ural on your way out."
+     Comment "Dialogue caption, spoken by the coal_yard_clerk NPC (voiced; tools/assets/dialogue/coal_yard_clerk). Changing it needs: tools\\cli asset dialogue coal_yard_clerk"
+    }
+    CustomStringTableItem "{4D96CA00AC8455EE}" {
+     Id "LF-Dialogue_CoalYardClerk_Greet"
+     Target_en_us "Coal yard. Put your lumps on the counter and I pay cash for every one. The plant burns what it burns."
+     Comment "Dialogue caption, spoken by the coal_yard_clerk NPC (voiced; tools/assets/dialogue/coal_yard_clerk). Changing it needs: tools\\cli asset dialogue coal_yard_clerk"
+    }
+    CustomStringTableItem "{A5A762CBA4542A07}" {
+     Id "LF-Dialogue_CoalYardClerk_How"
+     Target_en_us "My purse only goes so deep. When it runs dry I will say so, and you come back in an hour. It fills again."
+     Comment "Dialogue caption, spoken by the coal_yard_clerk NPC (voiced; tools/assets/dialogue/coal_yard_clerk). Changing it needs: tools\\cli asset dialogue coal_yard_clerk"
+    }
+    CustomStringTableItem "{A1251A8EA9279A1E}" {
+     Id "LF-Dialogue_CoalYardClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the coal_yard_clerk NPC."
+    }
+    CustomStringTableItem "{7E7BA5E2E588DF3E}" {
+     Id "LF-Dialogue_CoalYardClerk_SayHow"
+     Target_en_us "How much will you take?"
+     Comment "Dialogue reply the player can pick when talking to the coal_yard_clerk NPC."
+    }
     CustomStringTableItem "{7D9807E24C9AA3E9}" {
      Id "LF-Dialogue_DeskSergeant_Booking"
      Target_en_us "Booking? Sign the sheet where it's marked. Name, charge, time. Then the stamp, and it's official."
@@ -8278,6 +8303,11 @@ StringTable {
      Id "LF-Townsfolk_CafeOwner_Role"
      Target_en_us "Cafe owner"
      Comment "Townsfolk (The relocated, #1960): what Odilon Marchand does, the role line under the name."
+    }
+    CustomStringTableItem "{7C2B4E90A13D5F68}" {
+     Id "LF-Townsfolk_CoalYardClerk_Name"
+     Target_en_us "Gaston Roux"
+     Comment "Townsfolk (power plant coal yard, #4491): the yard clerk's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{D20E34A328504890}" {
      Id "LF-Townsfolk_HarbourMaster_Name"

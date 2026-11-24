@@ -34,6 +34,82 @@
   },
   "rows": [
     {
+      "id": "pad-a",
+      "name": "Coal_PadA",
+      "prefab": "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -22,
+        0,
+        3
+      ],
+      "yaw": 0,
+      "pitch": -90,
+      "scale": 8,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "pad-b",
+      "name": "Coal_PadB",
+      "prefab": "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -12,
+        0,
+        6
+      ],
+      "yaw": 90,
+      "pitch": -90,
+      "scale": 8,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "pad-c",
+      "name": "Coal_PadC",
+      "prefab": "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -27,
+        0,
+        7
+      ],
+      "yaw": 200,
+      "pitch": -90,
+      "scale": 6,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "pad-d",
+      "name": "Coal_PadD",
+      "prefab": "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -18,
+        0,
+        -1
+      ],
+      "yaw": 300,
+      "pitch": -90,
+      "scale": 6,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
       "id": "coal-counter",
       "name": "Coal_Counter",
       "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
@@ -70,7 +146,7 @@
     {
       "id": "coal-clerk",
       "name": "Coal_Clerk",
-      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "prefab": "{DFBF063F590C7160}Configs/Npcs/LF_Npc_Townsfolk_CoalYardClerk.et",
       "role": "npc",
       "verb": "on floor",
       "offset": [
@@ -81,8 +157,7 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain",
-      "class": "LF_NpcBaseEntity"
+      "mount": "terrain"
     },
     {
       "id": "coal-heap-l",
