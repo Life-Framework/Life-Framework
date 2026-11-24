@@ -1,0 +1,91 @@
+GenericEntity : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ ID "F0DBA538AC2A0552"
+ coords 0 0 0
+ {
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "931B3299EA50E779"
+   coords -0.225 0.072 -0.001
+   angles 1.943 -3.835 -0.265
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "74D60A0BD7CB5C6C"
+   coords -0.135 0.07 -0.01
+   angles -6.433 190.415 7.596
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "A9701E965681F65B"
+   coords -0.045 0.066 -0.007
+   angles -0.898 -1.303 9.783
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "83EA0CB9A72C3E67"
+   coords 0.045 0.068 -0.008
+   angles 1.014 190.25 -6.934
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "D1F9DC6A01DD2570"
+   coords 0.135 0.066 -0.011
+   angles -3.512 1.405 -4.02
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "094F43CA343238CF"
+   coords 0.225 0.068 0.005
+   angles -4.964 188.596 5.906
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "816A07212B4B7101"
+   coords -0.18 0.115 0.017
+   angles -7.252 185.213 -10.509
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "3E55066862708FBA"
+   coords -0.09 0.12 0.004
+   angles 3.531 2.391 1.405
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "B61823C8309EA3FC"
+   coords 0 0.115 0.015
+   angles 1.658 179.203 3.177
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "DE789D71BFBC178A"
+   coords 0.09 0.118 -0.011
+   angles -4.77 -10.575 -2.583
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "B3E6FCFA31AB4960"
+   coords 0.18 0.12 0.006
+   angles -0.21 190.926 1.242
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "6F6120F543DACED5"
+   coords -0.225 0.166 -0.013
+   angles -3.749 -4.249 4.672
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "E7C3F1CC489AAA64"
+   coords -0.135 0.164 -0.003
+   angles -5.412 179.721 -1.123
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "3A55D67786E53D03"
+   coords -0.045 0.167 -0.01
+   angles 4.611 -5.219 -9.876
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "83188810F942B436"
+   coords 0.045 0.167 -0.013
+   angles 7.622 179.34 -0.446
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "D6EFC90D98E52C02"
+   coords 0.135 0.167 0.015
+   angles -3.391 2.108 -1.554
+  }
+  GenericEntity : "{961149EF7494CA91}Prefabs/Props/Market/LF_FishDecor_Trout.et" {
+   ID "A98C42DDF269F15F"
+   coords 0.225 0.163 -0.009
+   angles -4.084 173.672 -4.881
+  }
+ }
+}
