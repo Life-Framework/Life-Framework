@@ -178,7 +178,7 @@ The drops are on the east side (a house near the district road) and four along t
      With a van or truck, back it up to the saw (rear within about 3 m): when you carry no logs, the action reads
      **Feed from the truck** and the saw takes the logs straight from the vehicle and puts the cut back in it. A locked
      vehicle feeds nothing. Every processing station works this way.
-  3. Sell **planks ($8)** and **hardwood boards ($12)** at the **timber counter**. If its purse is full it tells you to
+  3. Sell **planks ($8)** and **hardwood boards ($15)** at the **timber counter**. If its purse is full it tells you to
      "try the wholesale warehouse at the dock". The dock pays a lower, falling price for planks, boards, posts and firewood.
 * **Pay:** about **$400 an hour** carrying softwood by hand. A truck and hardwood boards pay a little more.
 * **Needs:** an axe. Job levels unlock sawing and faster felling (a refusal says what is missing).
