@@ -7,7 +7,7 @@ class LF_CasualtyCallRow
 	[Attribute("", UIWidgets.EditBox, "LF_Places kind the casualty is found at, e.g. lumber_site")]
 	string m_sPlaceKind;
 
-	[Attribute("", UIWidgets.EditBox, "Summary on the medic board and pager: a localization key, e.g. #LF-Casualty_Fall")]
+	[Attribute("", UIWidgets.EditBox, "Summary on the medic board and pager: a localization key from the pack string table")]
 	string m_sSummary;
 
 	[Attribute("1", UIWidgets.Auto, "Weight against the other rows; 0 or less is never picked")]

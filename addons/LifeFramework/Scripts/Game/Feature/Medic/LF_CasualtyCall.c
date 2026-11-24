@@ -28,9 +28,9 @@ class LF_CasualtyCalls
 	static const string SERVICE = "medic";
 	static const string CALLER_PREFIX = "casualty:";
 	//! How often the server checks whether a roll is due.
-	static const int CHECK_MS = 10000;
+	static const int CHECK_MS = 10000; // lf-fixed: poll rate of the roll check; the roll interval is m_iIntervalSeconds
 	//! How long clearing waits again while a medic is moving the patient.
-	static const int DEFER_MS = 60000;
+	static const int DEFER_MS = 60000; // lf-fixed: retry while a body is moved, not a game rule
 
 	protected static ref array<ref LF_Casualty> s_aOpen;
 	protected static int s_iSequence;
