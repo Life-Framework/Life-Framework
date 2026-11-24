@@ -11404,43 +11404,23 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{CA9A4B5596B7F647}" {
      Id "LF-Notify_TitleEms"
-     Target_en_us "[EMS] EMERGENCY"
+     Target_en_us "Emergency"
      Comment "Fallback toast title for an EMS alert with no title of its own."
-    }
-    CustomStringTableItem "{10C684BAFB8726FC}" {
-     Id "LF-Notify_TitleError"
-     Target_en_us "[ERROR]"
-     Comment "Fallback toast title for an error toast with no title of its own."
-    }
-    CustomStringTableItem "{935DFAAFB015C5B0}" {
-     Id "LF-Notify_TitleInfo"
-     Target_en_us "[INFO]"
-     Comment "Fallback toast title for an info toast with no title of its own."
     }
     CustomStringTableItem "{0EDECFCE6CD087EF}" {
      Id "LF-Notify_TitlePolice"
-     Target_en_us "[{POLICE}] ALERT"
+     Target_en_us "{Police} alert"
      Comment "Fallback toast title for a police alert with no title of its own."
     }
     CustomStringTableItem "{47BF95CEC2D7EE59}" {
      Id "LF-Notify_TitleRobbery"
-     Target_en_us "[ALARM] ROBBERY"
+     Target_en_us "Robbery alarm"
      Comment "Fallback toast title for a robbery alarm with no title of its own."
     }
     CustomStringTableItem "{134C8AE505DFAE31}" {
      Id "LF-Notify_TitleSms"
-     Target_en_us "[SMS] MESSAGE"
+     Target_en_us "New message"
      Comment "Fallback toast title for a received text message with no title of its own."
-    }
-    CustomStringTableItem "{AAE5379432E08885}" {
-     Id "LF-Notify_TitleSuccess"
-     Target_en_us "[SUCCESS]"
-     Comment "Fallback toast title for a success toast with no title of its own."
-    }
-    CustomStringTableItem "{EEDE8B6F5C239B08}" {
-     Id "LF-Notify_TitleWarning"
-     Target_en_us "[WARNING]"
-     Comment "Fallback toast title for a warning toast with no title of its own."
     }
     CustomStringTableItem "{B687CB4145329863}" {
      Id "LF-NpcRole_farmer_Bye"
