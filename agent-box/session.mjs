@@ -38,7 +38,7 @@
 import "../tools/lib/quiet-gate.mjs";
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
@@ -510,6 +510,28 @@ export function selftestSession() {
       rmSync(dir, { recursive: true, force: true });
     }
   }
+  {
+    // red-proof 2026-11-24 (#4867): with mirrorCheckpoints returning [] the files check below failed.
+    const dir = mkdtempSync(join(tmpdir(), "lf-ckpt-"));
+    try {
+      const src = join(dir, "src");
+      mkdirSync(src);
+      writeFileSync(join(src, "hour-7.json"), '{"cash":1}');
+      writeFileSync(join(src, "hour-0.json"), "{}");
+      writeFileSync(join(src, "notes.md"), "x");
+      const out = mirrorCheckpoints(join(dir, "server"), src).map((f) => f.replaceAll("\\", "/").split("/").pop());
+      if (out.join() !== "hour-0.json,hour-7.json") failures.push(`mirrorCheckpoints wrote ${out.join()}`);
+      if (readFileSync(join(fixtureDir(join(dir, "server")), "checkpoints", "hour-7.json"), "utf8") !== '{"cash":1}') failures.push("mirrorCheckpoints did not put hour-7.json in $profile:LifeFramework/checkpoints");
+      if (mirrorCheckpoints(join(dir, "server2"), join(dir, "none")).length !== 0) failures.push("a missing checkpoints folder was not a no-op");
+      // The real folder ships every hour 0 to 10 and the server's reader looks for exactly these names.
+      const real = mirrorCheckpoints(join(dir, "server3"));
+      if (real.length < 11) failures.push(`the repo ships ${real.length} checkpoint files, want hours 0 to 10`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+    const cli = readFileSync(join(ROOT, "tools", "cli.mjs"), "utf8");
+    if (!cli.includes("session.mirrorCheckpoints(paths.server)")) failures.push("sessionLaunch no longer mirrors the checkpoints folder (#4867)");
+  }
   const p = sessionPaths("S", 2);
   if (p.clients.length !== 2) failures.push("sessionPaths did not list 2 clients");
   if (p.clients[1].box !== join("S", "client2", "profile", "agent-box")) failures.push(`client 2 box is ${p.clients[1].box}`);
@@ -897,6 +919,20 @@ export function seedProfile(serverDir, seeds) {
   return seeds.map((s) => {
     const f = join(dir, basename(s.name));
     writeFileSync(f, s.text);
+    return f;
+  });
+}
+
+// The harness checkpoints (`harness.mjs checkpoint <hour>`, #4825) are read from $profile:LifeFramework/checkpoints/.
+// Every `up` copies the whole agent-box/checkpoints folder there (what the test runner does, #4845), so `checkpoint N`
+// works in any session without `--seed`. Returns the files written (none when the source folder is missing).
+export function mirrorCheckpoints(serverDir, srcDir = join(ROOT, "agent-box", "checkpoints")) {
+  if (!existsSync(srcDir)) return [];
+  const dest = join(fixtureDir(serverDir), "checkpoints");
+  mkdirSync(dest, { recursive: true });
+  return readdirSync(srcDir).filter((n) => n.endsWith(".json")).sort().map((n) => {
+    const f = join(dest, n);
+    copyFileSync(join(srcDir, n), f);
     return f;
   });
 }
