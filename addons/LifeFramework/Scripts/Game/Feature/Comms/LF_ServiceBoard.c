@@ -103,6 +103,27 @@ class LF_ServiceBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: take the call a caller placed to a service off its board, because its job is done or its
+	//! subject is gone (a treated or cleared casualty, #4852). eturn How many board lines left.
+	static int Close(string service, string callerUid)
+	{
+		if (!s_aCalls || callerUid.IsEmpty())
+			return 0;
+
+		int closed;
+		for (int i = s_aCalls.Count() - 1; i >= 0; i--)
+		{
+			if (s_aCalls[i].m_sService != service || s_aCalls[i].m_sCallerUid != callerUid)
+				continue;
+
+			LF_Debug.Info(FEATURE, string.Format("call #%1 on the %2 board closed (%3)", s_aCalls[i].m_iSequence, service, callerUid));
+			s_aCalls.Remove(i);
+			closed++;
+		}
+		return closed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void PurgeExpired(int nowMs)
 	{
 		if (!s_aCalls)
@@ -307,13 +328,20 @@ class LF_ServiceBoard
 }
 
 //------------------------------------------------------------------------------------------------
-//! Bus subscriber: pins board-channel calls to their service's board.
+//! Bus subscriber: pins board-channel calls to their service's board and takes a closed call off it.
 class LF_ServiceBoardSubscriber : LF_EventSubscriber
 {
 	static ref LF_ServiceBoardSubscriber s_Subscriber;
 
 	override bool Handle(notnull LF_Event busEvent)
 	{
+		LF_OnServiceCallClosed closed = LF_OnServiceCallClosed.Cast(busEvent);
+		if (closed)
+		{
+			LF_ServiceBoard.Close(closed.m_sService, closed.m_sCallerUid);
+			return true;
+		}
+
 		LF_OnServiceCall call = LF_OnServiceCall.Cast(busEvent);
 		if (!call)
 			return false;
@@ -328,10 +356,14 @@ class LF_ServiceBoardSubscriber : LF_EventSubscriber
 			return;
 
 		if (s_Subscriber)
+		{
 			LF_EventBus.Unsubscribe(LF_OnServiceCall, s_Subscriber);
+			LF_EventBus.Unsubscribe(LF_OnServiceCallClosed, s_Subscriber);
+		}
 
 		s_Subscriber = new LF_ServiceBoardSubscriber();
 		LF_EventBus.Subscribe(LF_OnServiceCall, s_Subscriber);
+		LF_EventBus.Subscribe(LF_OnServiceCallClosed, s_Subscriber);
 	}
 
 	static void ResetStatics()
