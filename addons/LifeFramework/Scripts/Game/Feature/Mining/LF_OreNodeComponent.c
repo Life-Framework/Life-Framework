@@ -187,7 +187,7 @@ class LF_OreNodeComponent : ScriptComponent
 			return 0;
 		}
 
-		LF_ToolWear.OnUse(miner, LF_ToolBench.KIND_PICKAXE);
+		LF_ToolWear.OnUse(miner, LF_ToolBench.KIND_PICKAXE, tool);
 
 		if (hitDir.LengthSq() < 0.0001)
 			hitDir = owner.GetOrigin() - hitPos;

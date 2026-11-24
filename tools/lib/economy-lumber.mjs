@@ -91,9 +91,16 @@ export const GOODS = {
 const SOFTWOOD_LOG = "32F5A906D8A573BC";
 const HARDWOOD_LOG = "FC7D57CC9C0798D7";
 
-/** Route assumptions (docs/roadmap/lumber.md "Money ladder"); `opts.lumber` overrides any of them. */
+/**
+ * Route assumptions (docs/roadmap/lumber.md "Money ladder"); `opts.lumber` overrides any of them. The hand-haul trips
+ * are the island's (#4875): the nearest softwood is a pine about 200 m from the Saint-Philippe yard; a log rides the
+ * shoulder at `runMps` times the log's speed cap (`loadedMps`, read from the log prefab when it holds one); the planks go
+ * to the yard's buyers (the premium timber buyer and the wholesale crate, about 15 m from the saw) in bundles of
+ * `plankBundle` (the plank's stack size, read from WoodPlank.et), one bundle a trip at jog speed.
+ */
 export const LUMBER_ASSUMPTIONS = {
-  walkMps: 1.1, runMps: 3.4, haulMetres: 150, treeSize: 2, sawSeconds: { plank: 10, post: 8, firewood: 6, board: 15 },
+  runMps: 3.4, loadedMps: 3.4 * 0.7, haulMetres: 200, premiumMetres: 15, wholesaleMetres: 15, plankBundle: 1,
+  treeSize: 2, sawSeconds: { plank: 10, post: 8, firewood: 6, board: 15 },
   /** Share of the logs a mixed hand hauler cuts into each product. */
   mix: { plank: 0.5, post: 1 / 6, firewood: 1 / 3 },
   truck: { logsPerCycle: 6, cyclesPerHour: 4, firewoodShare: 1 / 6 },
@@ -150,11 +157,28 @@ export function simulateProduct(units, buyer, curve, carry = false, hours = 24) 
   return { first, steady, premiumFirst, premiumSteady, wholesaleSteady: units - premiumSteady };
 }
 
-/** Logs an hour from the hand-haul route: chop each log, walk it to the yard, run back, saw it. */
-export function handHaulLogsPerHour(chopSecondsPerLog, sawSeconds, a) {
-  const cycle = chopSecondsPerLog + a.haulMetres / a.walkMps + a.haulMetres / a.runMps + sawSeconds;
-  return 3600 / cycle;
+/** Seconds of one log on the hand-haul route before its planks are sold: chop, carry it to the saw, run back, saw it. */
+export function handHaulLogSeconds(chopSecondsPerLog, sawSeconds, a) {
+  return chopSecondsPerLog + a.haulMetres / a.loadedMps + a.haulMetres / a.runMps + sawSeconds;
 }
+
+/**
+ * Logs an hour on the hand-haul route with the plank trips (#4875). Each log costs `logSeconds`, plus `tripsPerLog`
+ * round trips to a buyer (one bundle each, at jog speed). The first `premiumPlanks` planks of the hour go to the premium
+ * buyer (`premiumMetres` away), the rest to the wholesale buyer (`wholesaleMetres` away). Returns { logs, trips }.
+ */
+export function handHaulHour(logSeconds, planksPerLog, tripsPerLog, premiumPlanks, a) {
+  const trip = (m) => (2 * m) / a.runMps;
+  const premiumCycle = logSeconds + tripsPerLog * trip(a.premiumMetres);
+  const wholesaleCycle = logSeconds + tripsPerLog * trip(a.wholesaleMetres);
+  const premiumLogs = planksPerLog > 0 ? premiumPlanks / planksPerLog : 0;
+  const premiumTime = premiumLogs * premiumCycle;
+  const logs = premiumTime >= 3600 ? 3600 / premiumCycle : premiumLogs + (3600 - premiumTime) / wholesaleCycle;
+  return { logs, trips: logs * tripsPerLog };
+}
+
+/** Round trips to a buyer one log's planks take: a bundle a trip. */
+export const tripsPerLog = (planksPerLog, bundle) => (planksPerLog > 0 ? Math.ceil(planksPerLog / Math.max(1, bundle)) : 0);
 
 /** The loops from resolved inputs (pure: the selftest feeds it directly). */
 export function computeLoops(inp) {
@@ -175,13 +199,18 @@ export function computeLoops(inp) {
   const soft = inp.yields.softwood, hard = inp.yields.hardwood;
   const chopSoft = soft.chopSecondsPerLog, chopHard = hard.chopSecondsPerLog;
   const out = inp.outputs;
-  // Hand-haul softwood, planks only.
-  const plankLogs = handHaulLogsPerHour(chopSoft, a.sawSeconds.plank, a);
-  make("hand-planks", "hand-haul softwood -> planks", plankLogs, [["plank", plankLogs * out.plank]]);
-  // Hand-haul softwood, a mix of planks, posts and firewood (the saw time follows the mix).
+  // Hand-haul softwood, planks only: every log's planks are carried to a buyer, a bundle a trip (#4875).
+  const plankTrips = tripsPerLog(out.plank, a.plankBundle);
+  const plank = handHaulHour(handHaulLogSeconds(chopSoft, a.sawSeconds.plank, a), out.plank, plankTrips, buyer("plank").refillPerHour, a);
+  make("hand-planks", "hand-haul softwood -> planks", plank.logs, [["plank", plank.logs * out.plank]],
+    `${Math.round(plank.trips * 10) / 10} trips/h to the buyers (${plankTrips} a log, bundles of ${a.plankBundle})`);
+  // Hand-haul softwood, a mix of planks, posts and firewood (the saw time follows the mix). Only the plank logs make
+  // buyer trips; posts and firewood are pocket goods that ride along to their buyers.
   const mixSaw = Object.entries(a.mix).reduce((s, [k, w]) => s + w * a.sawSeconds[k], 0);
-  const mixLogs = handHaulLogsPerHour(chopSoft, mixSaw, a);
-  make("hand-mixed", "hand-haul softwood -> planks, posts, firewood", mixLogs, Object.entries(a.mix).map(([k, w]) => [k, mixLogs * w * out[k]]));
+  const mixTrips = a.mix.plank * plankTrips;
+  const mix = handHaulHour(handHaulLogSeconds(chopSoft, mixSaw, a), a.mix.plank * out.plank, mixTrips, buyer("plank").refillPerHour, a);
+  make("hand-mixed", "hand-haul softwood -> planks, posts, firewood", mix.logs, Object.entries(a.mix).map(([k, w]) => [k, mix.logs * w * out[k]]),
+    `${Math.round(mix.trips * 10) / 10} plank trips/h; posts and firewood ride in the pockets`);
   // Truck hardwood: the cycle count is the stated assumption, boards plus firewood from the offcuts.
   const truckLogs = a.truck.logsPerCycle * a.truck.cyclesPerHour;
   make("truck-hardwood", "truck hardwood -> boards, firewood", truckLogs,
@@ -192,6 +221,18 @@ export function computeLoops(inp) {
 }
 
 const read = (p) => (existsSync(p) ? readFileSync(p, "utf8") : "");
+
+/** The stack size a plank prefab sets on its LF_QuantityComponent (null when it sets none). */
+export function plankBundleOf(text) {
+  const m = /LF_QuantityComponent "\{[0-9A-F]+\}" \{[^}]*?m_iMaxQuantity (\d+)/.exec(String(text));
+  return m ? Number(m[1]) : null;
+}
+
+/** The speed cap a shoulder-carried log sets (a fraction of jog speed; null when it sets none). */
+export function logSpeedCapOf(text) {
+  const m = /m_fSpeedCap ([\d.]+)/.exec(String(text));
+  return m ? Number(m[1]) : null;
+}
 
 /** The merged list section as [{ id, f(name) }]. */
 function listOf(addonsDir, name, packLayers, owner) {
@@ -218,8 +259,16 @@ function outputPerLog(machines, inputGuid, outGuid) {
 
 /** Everything `buildReport` needs: reads the configs, resolves fallbacks, returns { loops, sources, problems }. */
 export function buildLumber({ addonsDir, packLayers, owner, duty, opts = {} }) {
-  const a = { ...LUMBER_ASSUMPTIONS, ...(opts.lumber ?? {}) };
   const sources = [], problems = [];
+  // The carry rules from the prefabs: the plank's stack size is the bundle a trip, the log's speed cap slows the haul.
+  const wood = (name) => read(join(addonsDir, "LifeFramework", "Prefabs", "Resources", "WoodCutting", name));
+  const fromPrefab = {};
+  const bundle = plankBundleOf(wood("WoodPlank.et"));
+  if (bundle) fromPrefab.plankBundle = bundle;
+  else sources.push(`plank bundle assumed ${LUMBER_ASSUMPTIONS.plankBundle} (no stack size in WoodPlank.et)`);
+  const cap = logSpeedCapOf(wood("WoodLog_01_Small.et"));
+  if (cap) fromPrefab.loadedMps = LUMBER_ASSUMPTIONS.runMps * cap;
+  const a = { ...LUMBER_ASSUMPTIONS, ...fromPrefab, ...(opts.lumber ?? {}) };
   const treeText = read(join(addonsDir, "LifeFramework", "Configs", "Lumber", "LF_TreeSpecies.conf"));
   const chainText = read(join(addonsDir, "LifeFramework", "Configs", "Resources", "ResourceChains.conf"));
   const trees = treeText ? parseConf(treeText) : null;
@@ -261,7 +310,7 @@ export function renderLumber(l) {
   for (const p of l.problems) L.push(`  problem: ${p}`);
   if (!l.loops.length) return L;
   const a = l.assumptions;
-  L.push(`lumber loops (a size-${a.treeSize} tree; hand haul ${a.haulMetres} m at ${a.walkMps} m/s loaded, ${a.runMps} m/s back; steady = purse refill only, first = full purse, wholesale ${a.carryCurve ? "carries over between hours" : "back at base each hour"}):`);
+  L.push(`lumber loops (a size-${a.treeSize} tree; hand haul ${a.haulMetres} m with a log at ${Math.round(a.loadedMps * 100) / 100} m/s, ${a.runMps} m/s back; planks in bundles of ${a.plankBundle}, a bundle a trip to the premium buyer ${a.premiumMetres} m or the wholesale buyer ${a.wholesaleMetres} m away; steady = purse refill only, first = full purse, wholesale ${a.carryCurve ? "carries over between hours" : "back at base each hour"}):`);
   for (const x of l.loops) {
     const duty = x.ratios.map((r) => `${r.job} ${money(r.pay)} = ${r.ratio === Infinity ? "inf" : r.ratio.toFixed(1)}x`).join(", ");
     L.push(`  LOOP ${x.label}: ~${x.logsPerHour} logs/h, steady ${money(x.steady)}/h, first hour ${money(x.first)}/h; duty ${duty} ${rungText(x)}`);

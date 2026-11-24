@@ -62,120 +62,24 @@
       "for_key": "#LF-Foreman_LUMBERJACK_Next_Top"
     },
     "next_02": {
-      "text": "Next up, level 2. Fell pine on the north ridge. Keep the blade sharp.",
+      "text": "Next up, level 2. Felling permit: fell trees with an axe. Keep the blade sharp.",
       "for_key": "#LF-Foreman_LUMBERJACK_Next_02"
     },
     "next_03": {
-      "text": "Next up, level 3. Gloves: fewer splinters. Keep the blade sharp.",
+      "text": "Next up, level 3. Sawmill hand license: saw logs into planks. Keep the blade sharp.",
       "for_key": "#LF-Foreman_LUMBERJACK_Next_03"
     },
     "next_04": {
-      "text": "Next up, level 4. The timber counter buys logs. Keep the blade sharp.",
+      "text": "Next up, level 4. Seasoned logger license: fell trees twice as fast. Keep the blade sharp.",
       "for_key": "#LF-Foreman_LUMBERJACK_Next_04"
     },
-    "next_05": {
-      "text": "Next up, level 5. Firewood for the bakery. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_05"
-    },
-    "next_06": {
-      "text": "Next up, level 6. Faster felling. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_06"
-    },
-    "next_07": {
-      "text": "Next up, level 7. Log sawing at the sawmill. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_07"
-    },
-    "next_08": {
-      "text": "Next up, level 8. Chainsaw from the hardware store. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_08"
-    },
-    "next_09": {
-      "text": "Next up, level 9. Hornbeam Valley hardwood. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_09"
-    },
     "next_10": {
-      "text": "Next up, level 10. The smokehouse buys firewood. Keep the blade sharp.",
+      "text": "Next up, level 10. First perk: pick Double yield or Swift hands at the labor office. Keep the blade sharp.",
       "for_key": "#LF-Foreman_LUMBERJACK_Next_10"
     },
-    "next_11": {
-      "text": "Next up, level 11. Log trailer: carry more per run. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_11"
-    },
-    "next_12": {
-      "text": "Next up, level 12. Chance of a double log. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_12"
-    },
-    "next_13": {
-      "text": "Next up, level 13. Planks from the sawmill. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_13"
-    },
-    "next_14": {
-      "text": "Next up, level 14. Better price at the timber counter. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_14"
-    },
-    "next_15": {
-      "text": "Next up, level 15. Chain wear slows down. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_15"
-    },
-    "next_16": {
-      "text": "Next up, level 16. Sawmill shifts. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_16"
-    },
-    "next_17": {
-      "text": "Next up, level 17. Régina sawmill bulk buyer. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_17"
-    },
-    "next_18": {
-      "text": "Next up, level 18. Larger double-log chance. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_18"
-    },
-    "next_19": {
-      "text": "Next up, level 19. Timber haul orders. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_19"
-    },
     "next_20": {
-      "text": "Next up, level 20. Lumber truck loans. Keep the blade sharp.",
+      "text": "Next up, level 20. Second perk: Light touch and Good word join the choices at the labor office. Keep the blade sharp.",
       "for_key": "#LF-Foreman_LUMBERJACK_Next_20"
-    },
-    "next_21": {
-      "text": "Next up, level 21. Rare hardwood stands. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_21"
-    },
-    "next_22": {
-      "text": "Next up, level 22. Faster sawing. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_22"
-    },
-    "next_23": {
-      "text": "Next up, level 23. Bulk planks to building work. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_23"
-    },
-    "next_24": {
-      "text": "Next up, level 24. Second double-log chance. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_24"
-    },
-    "next_25": {
-      "text": "Next up, level 25. Logging crew bonus. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_25"
-    },
-    "next_26": {
-      "text": "Next up, level 26. Felling wedges: no pinched saw. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_26"
-    },
-    "next_27": {
-      "text": "Next up, level 27. Sawmill foreman's tools. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_27"
-    },
-    "next_28": {
-      "text": "Next up, level 28. Hardwood contracts. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_28"
-    },
-    "next_29": {
-      "text": "Next up, level 29. Lumber foreman badge. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_29"
-    },
-    "next_30": {
-      "text": "Next up, level 30. Master Lumberjack title and the mill's ledger. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_30"
     }
   },
   "replies": {

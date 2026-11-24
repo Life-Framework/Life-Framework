@@ -117,10 +117,11 @@ class LF_Test_BuyerDemandSell : LF_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		// Five planks (one entity each) to a buyer that wants three: paid for three, the other two stay.
-		for (int i = 0; i < 3; i++)
+		// Five planks (a bundle of 4 and one, #4875) to a buyer that wants three: paid for three, the other two stay.
+		// Sold item by item until the purse is spent; whichever item goes first, the buyer takes three in all.
+		for (int i = 0; i < 3 && LF_MoneyUtils.GetCash(seller) < 124; i++)
 		{
-			ctx.True(SellFirst(ctx, seller, PLANK, traderOwner) == LF_ETraderSale.SOLD, "plank " + (i + 1) + " goes to the buyer that wants 3");
+			ctx.True(SellFirst(ctx, seller, PLANK, traderOwner) == LF_ETraderSale.SOLD, "plank sale " + (i + 1) + " goes to the buyer that wants 3");
 		}
 
 		ctx.Equal(124, LF_MoneyUtils.GetCash(seller), "the seller is paid 24 cash for the 3 planks the buyer took");
@@ -134,9 +135,9 @@ class LF_Test_BuyerDemandSell : LF_Test
 		// An hour later the purse has refilled (the clock is the saved stamp, moved back an hour).
 		int now = System.GetUnixTime();
 		LF_BuyerDemandBook.Restore(BUYER, PLANK, LF_BuyerPurse.Make(plankRow, 0, now - HOUR));
-		for (int j = 0; j < 2; j++)
+		for (int j = 0; j < 2 && LF_InventoryUtils.GetAmount(seller, PLANK) > 0; j++)
 		{
-			ctx.True(SellFirst(ctx, seller, PLANK, traderOwner) == LF_ETraderSale.SOLD, "an hour later the buyer takes plank " + (j + 1) + " again");
+			ctx.True(SellFirst(ctx, seller, PLANK, traderOwner) == LF_ETraderSale.SOLD, "an hour later the buyer takes plank sale " + (j + 1) + " again");
 		}
 
 		ctx.Equal(140, LF_MoneyUtils.GetCash(seller), "the 2 planks pay 16 cash");

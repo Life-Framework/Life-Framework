@@ -1,0 +1,13 @@
+GenericEntity Places_OrgDesk {
+ components {
+  LF_PlaceComponent "{6D1A93F2C58E4B07}" {
+   m_sKind "OrgDesk"
+   m_sId "saint-philippe.org"
+  }
+ }
+ coords 293.197 1.047 267.229
+}
+GenericEntity Town_Org_FlagWall : "{E0EE8DD048907D65}Prefabs/Organizations/LF_OrgFlagWall.et" {
+ coords 297.909 0 265.01
+ angleY 90
+}

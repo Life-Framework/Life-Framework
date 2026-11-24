@@ -136,10 +136,14 @@ class LF_PlayerMenuTrade
 
 	//------------------------------------------------------------------------------------------------
 	//! \return "Level 13 opens: ...", naming the next level's unlock; empty at the top or with no row.
+	//! A milestone row (#4869) opens nothing: its text names its own level and is shown as it is.
 	static string UnlockLine(notnull LF_PlayerMenuSkill skill)
 	{
 		if (skill.m_sNextUnlockKey.IsEmpty())
 			return string.Empty;
+
+		if (LF_TradeUnlocks.IsMilestoneKey(skill.m_sNextUnlockKey))
+			return LF_Terms.Text(skill.m_sNextUnlockKey);
 
 		return LF_Terms.Text("#LF-PlayerMenu_SkillOpens", (skill.m_iLevel + 1).ToString(), LF_Terms.Text(skill.m_sNextUnlockKey));
 	}

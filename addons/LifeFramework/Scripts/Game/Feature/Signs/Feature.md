@@ -134,6 +134,10 @@ The priced sign (#1946, `m_sPriceLotShopId`) is the second kind: `LF_PricedSignP
 the sign fills its title from it. It names no read action (the face is painted on each client, no
 RPC), so a client cannot ask the server for it. Test `signs/priced-provider`.
 
+## Enamel plate and the opening-hours plate (#4834, 2026-11-24)
+
+`Configs/Signs/LF_SignStyles_Plate.conf` (a family file, merged by `LF_SignStyles.ApplyFamilyFiles`) adds the `enamel` style (layout `LF_SignStyle_Enamel.layout`: four white rim bars drawn on the 1024 x 512 shown area, then the ground, title and rows; the row layout is the fascia's) and the `plate` size (no carrier: the vanilla `SignWall_01_90x45` body is the face, target 1024 x 1024, shown 1024 x 512). `LF_Sign_HoursPlate` (inherits `LF_Sign_PlateSmall`, sign id `hours_plate`, row source `hours_plate`, style `enamel`, size `plate`, deep blue paint, white lettering) is the first enamel plate; `LF_Sign_PlateSmall` itself keeps the legacy face. The layout's rim is authored for the plate size: a taller plate size gets its own enamel layout. Tests `signs/hours-plate-face` (WORLD) and, in the pack, `everon/hours-plate`.
+
 ## Styled faces (#3296, 2026-11-18)
 
 The overhaul's model (`docs/architecture/sign-system.md`): a face is style x size x content x finish.

@@ -17,12 +17,13 @@ class LF_Test_ResidentForeman : LF_Test
 	protected array<ref LF_TradeUnlockRow> Rows()
 	{
 		array<ref LF_TradeUnlockRow> rows = {};
-		rows.Insert(LF_TradeUnlockRow.Make("MINER", 2, "#T-Miner_02"));
-		rows.Insert(LF_TradeUnlockRow.Make("MINER", 3, "#T-Miner_03"));
-		rows.Insert(LF_TradeUnlockRow.Make("MINER", 4, "#T-Miner_04"));
-		rows.Insert(LF_TradeUnlockRow.Make("MINER", 7, "#T-Miner_07"));
-		rows.Insert(LF_TradeUnlockRow.Make("LUMBERJACK", 2, "#T-Lumber_02"));
-		rows.Insert(LF_TradeUnlockRow.Make("LUMBERJACK", 5, "#T-Lumber_05"));
+		rows.Insert(LF_TradeUnlockRow.Make("MINER", 2, "#T-Miner_02", LF_ETradeUnlockKind.MACHINE, "smelter-iron"));
+		rows.Insert(LF_TradeUnlockRow.Make("MINER", 3, "#T-Miner_03", LF_ETradeUnlockKind.MACHINE, "smelter-iron"));
+		rows.Insert(LF_TradeUnlockRow.Make("MINER", 4, "#T-Miner_04", LF_ETradeUnlockKind.MACHINE, "smelter-iron"));
+		rows.Insert(LF_TradeUnlockRow.Make("MINER", 5, "#T-Miner_05")); // a milestone: the foreman never announces it (#4869)
+		rows.Insert(LF_TradeUnlockRow.Make("MINER", 7, "#T-Miner_07", LF_ETradeUnlockKind.MACHINE, "smelter-iron"));
+		rows.Insert(LF_TradeUnlockRow.Make("LUMBERJACK", 2, "#T-Lumber_02", LF_ETradeUnlockKind.MACHINE, "smelter-iron"));
+		rows.Insert(LF_TradeUnlockRow.Make("LUMBERJACK", 5, "#T-Lumber_05", LF_ETradeUnlockKind.MACHINE, "smelter-iron"));
 		return rows;
 	}
 
@@ -34,7 +35,7 @@ class LF_Test_ResidentForeman : LF_Test
 		// The next unlock follows the level, and skips a level that opens nothing.
 		ctx.Equal(2, LF_ResidentForeman.NextLevel(rows, "MINER", 1), "a new miner hears about level 2");
 		ctx.Equal(4, LF_ResidentForeman.NextLevel(rows, "MINER", 3), "a level 3 miner hears about level 4");
-		ctx.Equal(7, LF_ResidentForeman.NextLevel(rows, "MINER", 4), "a gap in the table is skipped: level 7 is next after 4");
+		ctx.Equal(7, LF_ResidentForeman.NextLevel(rows, "MINER", 4), "a gap and a milestone row (level 5) are skipped: level 7 is next after 4");
 		ctx.Equal(0, LF_ResidentForeman.NextLevel(rows, "MINER", 7), "nothing is left after the last row");
 		ctx.Equal(5, LF_ResidentForeman.NextLevel(rows, "LUMBERJACK", 2), "the lumberjack table is its own");
 		ctx.Equal(0, LF_ResidentForeman.NextLevel(rows, "FARMER", 1), "a trade with no rows has no next");

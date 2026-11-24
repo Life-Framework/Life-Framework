@@ -95,21 +95,87 @@ class LF_GatherTools
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The weapon the character has drawn, or null. A drawn axe or pickaxe is the current weapon,
+	//! not the right-hand item or the left gadget (#4854).
+	static IEntity CurrentWeaponItem(IEntity user)
+	{
+		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(user);
+		if (!controller)
+			return null;
+
+		BaseWeaponManagerComponent weapons = controller.GetWeaponManagerComponent();
+		if (!weapons)
+			return null;
+
+		BaseWeaponComponent weapon = weapons.GetCurrentWeapon();
+		if (!weapon)
+			return null;
+
+		return weapon.GetOwner();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every item in the user's hands: the right-hand item, the left gadget and the drawn weapon, each once.
+	//! The one place a tool check reads the hands; HasToolIn and HeldTool both go through it.
+	static void HeldItems(IEntity user, notnull array<IEntity> held)
+	{
+		if (!user)
+			return;
+
+		IEntity right;
+		IEntity gadget;
+		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(user);
+		if (controller)
+		{
+			right = controller.GetRightHandItem();
+			gadget = controller.GetAttachedGadgetAtLeftHandSlot();
+		}
+		CollectHeld(right, gadget, CurrentWeaponItem(user), held);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The three hand sources as a list, each item once, nulls dropped. Split from HeldItems so a test
+	//! can hand it a weapon without waiting on the engine's draw animation.
+	static void CollectHeld(IEntity right, IEntity gadget, IEntity weapon, notnull array<IEntity> held)
+	{
+		AddHeld(held, right);
+		AddHeld(held, gadget);
+		AddHeld(held, weapon);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void AddHeld(notnull array<IEntity> held, IEntity item)
+	{
+		if (item && held.Find(item) == -1)
+			held.Insert(item);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when one of these held items is the tool or a tier of it (inheritance, #4797).
+	static bool AnyIsTool(notnull array<IEntity> held, ResourceName tool)
+	{
+		foreach (IEntity item : held)
+		{
+			if (LF_Utils.EntityInherits(item, tool))
+				return true;
+		}
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The first of the user's hands that holds a tool this node accepts: its prefab, or empty.
 	static ResourceName HeldTool(IEntity user, LF_ResourceNodeDef row, bool checkInventory)
 	{
 		if (!user || !NeedsTool(row))
 			return ResourceName.Empty;
 
-		CharacterControllerComponent controller = LF_Component<CharacterControllerComponent>.Find(user);
-		if (controller)
+		array<IEntity> held = {};
+		HeldItems(user, held);
+		foreach (IEntity item : held)
 		{
-			ResourceName right = LF_Utils.GetPrefabName(controller.GetRightHandItem());
-			if (Accepts(row, right))
-				return right;
-			ResourceName left = LF_Utils.GetPrefabName(controller.GetAttachedGadgetAtLeftHandSlot());
-			if (Accepts(row, left))
-				return left;
+			ResourceName prefab = LF_Utils.GetPrefabName(item);
+			if (Accepts(row, prefab))
+				return prefab;
 		}
 
 		if (checkInventory)

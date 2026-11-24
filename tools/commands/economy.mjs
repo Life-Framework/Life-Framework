@@ -5,8 +5,9 @@ import { buildReport, renderReport } from "../lib/economy.mjs";
 import { dutyLadder, renderDutyLadder } from "../lib/economy-lumber.mjs";
 import { dutyReport } from "../lib/economy-duty.mjs";
 import { perksReport } from "../lib/economy-perks.mjs";
+import { buildExport, renderExport } from "../lib/economy-export.mjs";
 
-export const help = "economy [--mission LF_Everon1989] [--run-minutes parcel=6,fuel=8,taxi=10] [--taxi-metres 2000] [--wholesale-carry] [--hours 1,2,4,6] [--root <dir>] [--json]   what a newcomer earns and can buy by hour 1, 2, 4 and 6 (core + pack overlays + server/flagship/config.json): rank duty pay with each rank's shift, bonus cap and rung (the 0.3.0 pay ladder, #4178), taxi fares, contracts, licence fees, and flags for loops, empty fish and zero pay; the lumber loops (#3270) and the mining chains (#3240) with steady and first-hour $/h and a flag for a loop under the Cadet shift, then each chain with full perks (WK-W11_2: double yield and good word) beside the novice line, flagged under its rung or past crime (--wholesale-carry keeps the wholesale curve between hours)";
+export const help = "economy [--mission LF_Everon1989] [--run-minutes parcel=6,fuel=8,taxi=10] [--taxi-metres 2000] [--wholesale-carry] [--hours 1,2,4,6] [--root <dir>] [--json]   what a newcomer earns and can buy by hour 1, 2, 4 and 6 (core + pack overlays + server/flagship/config.json): rank duty pay with each rank's shift, bonus cap and rung (the 0.3.0 pay ladder, #4178), taxi fares, contracts, licence fees, and flags for loops, empty fish and zero pay; the lumber loops (#3270) and the mining chains (#3240) with steady and first-hour $/h and a flag for a loop under the Cadet shift, then each chain with full perks (WK-W11_2: double yield and good word) beside the novice line, flagged under its rung or past crime (--wholesale-carry keeps the wholesale curve between hours); the smelting ladder (#4861, #4869): iron by pickup at each smelter step level, flagged past its rung";
 
 /** The duty rungs of a built report (#4178): { duty: { rows, flags }, lines } for every police and medic rank. */
 export function ladderReport(report) {
@@ -62,6 +63,8 @@ export async function main(args = []) {
   const perks = perksSection(report);
   report.perks = perks;
   report.flags.push(...perks.flags);
+  report.exportOrders = buildExport(report, join(opt.root, "addons"));
+  report.flags.push(...(report.exportOrders?.flags ?? []));
   if (opt.json) console.log(JSON.stringify(report, null, 2));
   else {
     // The duty rungs print right after the duty pay lines, before the purchases; the full-perks lines follow the chains.
@@ -71,6 +74,9 @@ export async function main(args = []) {
     lines.splice(at < 0 ? lines.length : at, 0, ...ladder.lines);
     const flagsAt = lines.findIndex((l) => /^flags?\b/i.test(l));
     lines.splice(flagsAt < 0 ? lines.length : flagsAt, 0, ...perks.lines);
+    // The export orders (#4826) follow the full-perks lines, before the flags.
+    const exportAt = lines.findIndex((l) => l.startsWith("flag"));
+    lines.splice(exportAt < 0 ? lines.length : exportAt, 0, ...renderExport(report.exportOrders));
     for (const line of lines) console.log(line);
   }
   return 0;

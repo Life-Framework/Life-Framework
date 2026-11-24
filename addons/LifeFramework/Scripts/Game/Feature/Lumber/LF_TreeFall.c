@@ -154,7 +154,7 @@ class LF_TreeFall
 	//------------------------------------------------------------------------------------------------
 	//! Harness: the nearest standing map tree within `radius` that passes every felling rule, the axe,
 	//! the reach and stamina aside (a tree in a garden by a house or on a verge does not count).
-	static IEntity NearestFellable(vector from, float radius)
+	static IEntity NearestFellable(vector from, float radius, LF_TreeWoodClass onlyClass = LF_TreeWoodClass.NONE)
 	{
 		BaseWorld world = GetGame().GetWorld();
 		LF_TreeFellingConfig config = LF_TreeFellingConfig.Get();
@@ -178,6 +178,9 @@ class LF_TreeFall
 			facts.m_bHasAxe = true;
 			facts.m_sPrefab = LF_FellAction.TreePrefabOf(entity);
 			if (facts.m_sPrefab.IsEmpty())
+				continue;
+
+			if (onlyClass != LF_TreeWoodClass.NONE && LF_TreeFelling.KindOf(facts.m_sPrefab, config).m_eClass != onlyClass)
 				continue;
 
 			vector at = entity.GetOrigin();
@@ -709,7 +712,8 @@ modded class LF_GameModeRoleplay
 //! Harness `treefall` (dev gate on the server): the motion proof of a fell.
 //!   treefall fell [radius|key]  the server fells the tree a key from `find` names (or the nearest one) through
 //!                           LF_FellAction.TryFell as if the axe were in hand; the reply names the key and refusal
-//!   treefall find [radius]  the nearest standing tree that passes every felling rule but the axe and reach: `key=<key> pos=<x> <y> <z>`
+//!   treefall find [radius] [softwood|hardwood]  the nearest standing tree that passes every felling rule but the axe and reach: `key=<key> pos=<x> <y> <z>`
+//!   treefall logs [radius]  the nearest loose log: `logs=<n> pos=<x> <y> <z>` (walk to it, then `pickup WoodLog`)
 //!   treefall state          this peer's falling copies and branch props: `anims=<n> debris=<n>`
 //!   treefall census         counts every map tree of the world by prefab family and how many an axe can fell
 //!                           by placed path and by ancestry; the result is `tree census` lines in the log (LF_TreeCensus)
@@ -743,7 +747,13 @@ modded class LF_AgentHarnessVerbs
 			if (!cmd.Arg2.IsEmpty())
 				findRadius = cmd.Arg2.ToFloat();
 
-			IEntity fellable = LF_TreeFall.NearestFellable(character.GetOrigin(), findRadius);
+			LF_TreeWoodClass onlyClass = LF_TreeWoodClass.NONE;
+			if (cmd.Arg3 == "softwood")
+				onlyClass = LF_TreeWoodClass.SOFTWOOD;
+			else if (cmd.Arg3 == "hardwood")
+				onlyClass = LF_TreeWoodClass.HARDWOOD;
+
+			IEntity fellable = LF_TreeFall.NearestFellable(character.GetOrigin(), findRadius, onlyClass);
 			if (!fellable)
 			{
 				LF_AgentHarness.Answer(cmd.Id, "error", string.Format("no fellable tree (rules passed, axe and reach aside) within %1 m", findRadius));
@@ -755,9 +765,47 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
+		if (cmd.Arg1 == "logs" && character)
+		{
+			// The nearest loose log within a radius, so a proof can walk to it (the logs lie along the fall line, past pickup reach).
+			float logRadius = 30;
+			if (!cmd.Arg2.IsEmpty())
+				logRadius = cmd.Arg2.ToFloat();
+
+			LF_FelledTreeQuery logQuery = new LF_FelledTreeQuery();
+			GetGame().GetWorld().QueryEntitiesBySphere(character.GetOrigin(), logRadius, logQuery.Collect, null, EQueryEntitiesFlags.ALL);
+			IEntity nearestLog;
+			float nearestGap = float.MAX;
+			int logCount = 0;
+			foreach (IEntity candidate : logQuery.m_aEntities)
+			{
+				ResourceName candidateName = LF_Utils.GetPrefabName(candidate);
+				if (!LF_Utils.SamePrefab(candidateName, LF_FellAction.LOG_PREFAB) && !LF_Utils.SamePrefab(candidateName, LF_FellAction.HARDWOOD_LOG_PREFAB))
+					continue;
+
+				logCount++;
+				float logGap = vector.Distance(candidate.GetOrigin(), character.GetOrigin());
+				if (logGap < nearestGap)
+				{
+					nearestGap = logGap;
+					nearestLog = candidate;
+				}
+			}
+
+			if (!nearestLog)
+			{
+				LF_AgentHarness.Answer(cmd.Id, "error", string.Format("no loose log within %1 m", logRadius));
+				return true;
+			}
+
+			vector logAt = nearestLog.GetOrigin();
+			LF_AgentHarness.Answer(cmd.Id, "ok", string.Format("logs=%1 pos=%2 %3 %4", logCount, logAt[0], logAt[1], logAt[2]));
+			return true;
+		}
+
 		if (cmd.Arg1 != "fell" || !character)
 		{
-			LF_AgentHarness.Answer(cmd.Id, "error", "usage: treefall find [radius] | fell [radius|key] | state (find and fell need a character)");
+			LF_AgentHarness.Answer(cmd.Id, "error", "usage: treefall find [radius] [softwood|hardwood] | logs [radius] | fell [radius|key] | state (find and fell need a character)");
 			return true;
 		}
 

@@ -54,6 +54,22 @@ class LF_ResourceNodeDef
 }
 
 //------------------------------------------------------------------------------------------------
+//! A perk of a machine that a worker earns with level (#4861): from m_iLevel in the row's
+//! m_sLevelJob the machine runs a bigger batch cap and/or a shorter run. 0 leaves that part as it was.
+[BaseContainerProps()]
+class LF_MachineStep
+{
+	[Attribute("0", UIWidgets.Auto, "Level in the machine's m_sLevelJob from which this step applies")]
+	int m_iLevel;
+
+	[Attribute("0", UIWidgets.Auto, "Whole batches one interaction runs at most from this level. 0: unchanged; a step never lowers the cap")]
+	int m_iMaxBatches;
+
+	[Attribute("0", UIWidgets.Auto, "Seconds a run takes from this level. 0: unchanged; a step never lengthens a run")]
+	int m_iProcessSeconds;
+}
+
+//------------------------------------------------------------------------------------------------
 //! One machine recipe. The placed processor keeps LF_ProcessAction and names this id.
 [BaseContainerProps()]
 class LF_ResourceMachineDef
@@ -78,6 +94,9 @@ class LF_ResourceMachineDef
 
 	[Attribute("0", UIWidgets.Auto, "Seconds a run takes: the inputs go in, the outputs drop at the machine after the delay, one run at a time per machine. 0: instant (#3229)")]
 	int m_iProcessSeconds;
+
+	[Attribute("", UIWidgets.Object, "Perks earned with level in m_sLevelJob: a bigger batch cap and/or a shorter run from a level on (#4861)")]
+	ref array<ref LF_MachineStep> m_aSteps;
 
 	[Attribute("", UIWidgets.EditBox, "jobs.xpAwards action a finished batch pays the worker (smelt_batch for a furnace, #4337). Empty: no XP")]
 	string m_sXpAction;

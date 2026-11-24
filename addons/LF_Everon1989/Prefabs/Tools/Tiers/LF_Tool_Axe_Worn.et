@@ -21,5 +21,8 @@ GenericEntity : "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et" {
     }
    }
   }
+  LF_ToolConditionComponent "{645604DF3148C643}" {
+   m_iTier 0
+  }
  }
 }

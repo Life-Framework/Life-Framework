@@ -18,6 +18,7 @@ import { join } from "node:path";
 import { parseConf, guidOf } from "../economy/profit-loops.mjs";
 import { SECTIONS, mergeList, sectionLayers } from "../pack/layers.mjs";
 import { rungCheck, rungText } from "./economy-lumber.mjs";
+import { RUNGS, fullPerksHourly, rungOf } from "./economy-perks.mjs";
 
 export const MINING_ASSUMPTIONS_FILE = ["tools", "economy", "mining-assumptions.json"];
 const num = (v, d = 0) => (typeof v === "number" ? v : d);
@@ -153,7 +154,58 @@ export function recipeOf(chains, machineId, chain) {
   return {
     gatheredPerBatch: gathered.n, outputPerBatch: num(outs[0].props.m_iOutputAmount, 1), reagentPerBatch,
     maxBatches: num(m.props.m_iMaxBatches, 1), processSeconds: num(m.props.m_iProcessSeconds, 0),
+    // The level steps of the machine (#4861): from m_iLevel in the gate trade a bigger batch cap and/or a shorter run.
+    steps: (m.props.m_aSteps?.list ?? []).map((st) => ({ level: num(st.props.m_iLevel), maxBatches: num(st.props.m_iMaxBatches), processSeconds: num(st.props.m_iProcessSeconds) })).sort((x, y) => x.level - y.level),
   };
+}
+
+/**
+ * The recipe a worker of `level` runs (#4861, LF_ProcessAction.MaxBatchesAt and SecondsAt): the machine's own cap and
+ * time, the cap raised and the run cut by every step at or below the level (a step never lowers a cap or lengthens a run).
+ */
+export function recipeAt(recipe, level) {
+  let { maxBatches, processSeconds } = recipe;
+  for (const st of recipe.steps ?? []) {
+    if (st.level > level) continue;
+    if (st.maxBatches > maxBatches) maxBatches = st.maxBatches;
+    if (st.processSeconds > 0 && st.processSeconds < processSeconds) processSeconds = st.processSeconds;
+  }
+  return { ...recipe, maxBatches, processSeconds };
+}
+
+/** The band check of a smelting ladder: rows past the top of the base rung, or full perks past the crime ceiling, as text. */
+export function bandProblems(rows) {
+  const baseRung = RUNGS.find((x) => x.id === rows[0].rung);
+  const problems = [];
+  for (const r of rows.slice(1)) {
+    if (baseRung && r.steady >= baseRung.upTo) problems.push(`level ${r.level}: steady $${r.steady}/h is past the top of the ${baseRung.id} rung ($${baseRung.upTo})`);
+    const rung = RUNGS.find((x) => x.id === r.rung);
+    if (rung && r.full > rung.crimeCeiling) problems.push(`level ${r.level}: full perks $${r.full}/h is past the ${rung.id} crime ceiling ($${rung.crimeCeiling})`);
+  }
+  return problems;
+}
+
+/**
+ * One chain's money at the machine's step levels (the first row is the base machine, level 1): { level, maxBatches,
+ * processSeconds, steady, first, full (steady with both perks), tripsPerHour, processMinutes, rung } each. The band is the
+ * rung the base loop sits on: a step that lifts the steady hourly past its top, or the full-perks line past the crime
+ * ceiling of the rung it then sits on, is flagged (the pay ladder of economy-lumber.mjs LADDER and economy-perks.mjs RUNGS).
+ */
+export function smeltingLadder(inp) {
+  const steps = inp.recipe?.steps ?? [];
+  if (steps.length === 0) return null;
+  const levels = [1, ...new Set(steps.map((x) => x.level))].sort((x, y) => x - y);
+  const rows = levels.map((level) => {
+    const r = recipeAt(inp.recipe, level);
+    const loop = computeMiningLoop({ ...inp, recipe: r });
+    return {
+      level, maxBatches: r.maxBatches, processSeconds: r.processSeconds, steady: loop.steady, first: loop.first,
+      full: fullPerksHourly(loop), tripsPerHour: loop.tripsPerHour, processMinutes: loop.processMinutes, rung: rungOf(loop.steady)?.id ?? "none",
+    };
+  });
+  const baseRung = RUNGS.find((x) => x.id === rows[0].rung);
+  const problems = bandProblems(rows);
+  return { id: inp.chain.id, label: inp.chain.label, rows, band: baseRung ? { rung: baseRung.id, floor: baseRung.floor, top: baseRung.upTo } : null, problems };
 }
 
 const curveOf = (row) => ({
@@ -172,7 +224,7 @@ export function buildMining({ root, addonsDir, packLayers, owner, duty, opts = {
   const chains = chainsText ? parseConf(chainsText) : null;
   const goods = listOf(addonsDir, "market.goods", packLayers, owner);
   const demand = listOf(addonsDir, "buyerDemand.rows", packLayers, owner);
-  const loops = [];
+  const loops = [], ladders = [];
   for (const c of a.chains) {
     let recipe = null;
     if (c.recipe) {
@@ -193,10 +245,13 @@ export function buildMining({ root, addonsDir, packLayers, owner, duty, opts = {
         sources.push(`${c.id}: premium row ${c.buyer}, $${premium.price} a unit, purse ${premium.cap} +${premium.refillPerHour}/h`);
       } else sources.push(`${c.id}: no ${c.buyer} premium row, wholesale only`);
     }
-    loops.push(computeMiningLoop({ chain: c, assumptions: a, recipe, curve, premium, duty, carry: !!opts.lumber?.carryCurve }));
+    const inp = { chain: c, assumptions: a, recipe, curve, premium, duty, carry: !!opts.lumber?.carryCurve };
+    loops.push(computeMiningLoop(inp));
+    const ladder = recipe ? smeltingLadder(inp) : null;
+    if (ladder) ladders.push(ladder);
   }
   for (const l of loops) problems.push(...l.problems);
-  return { loops, sources, problems, assumptions: a };
+  return { loops, ladders, sources, problems, assumptions: a };
 }
 
 const money = (n) => `$${n}`;
@@ -214,14 +269,19 @@ export function renderMining(m) {
     L.push(`  LOOP ${x.label}: steady ${money(x.steady)}/h net, first hour ${money(x.first)}/h; duty ${duty} ${rungText(x)}`);
     L.push(`    trip ${x.tripMinutes} min (gather ${x.gatherMinutes}, plant ${x.processMinutes}, drive ${x.driveMinutes}), ${x.tripsPerHour} trips/h, ${x.unitsPerHour} units/h (${x.premiumSteady} premium steady); gross ${money(x.grossSteady)}/h less ${money(x.costPerHour)} reagent and fuel${x.note ? `; ${x.note}` : ""}`);
   }
+  for (const x of m.ladders ?? []) {
+    L.push(`smelting ladder (#4861, ${x.label}: the machine's level steps, a worker of that level; band = the ${x.band?.rung} rung, $${x.band?.floor} to $${x.band?.top}/h):`);
+    for (const r of x.rows) L.push(`  LEVEL ${r.level}: ${r.maxBatches} bars a run, ${r.processSeconds} s a run, plant ${r.processMinutes} min, ${r.tripsPerHour} trips/h, steady ${money(r.steady)}/h net, full perks ${money(r.full)}/h (${r.rung} rung)`);
+  }
   L.push(`  sources: ${m.sources.join("; ")}`);
   return L;
 }
 
 /** FLAG rows for the chains below the rung, in the report's flag shape. */
 export function miningFlags(m) {
-  return m.loops.filter((x) => x.flagged).map((x) => ({
+  const band = (m.ladders ?? []).flatMap((x) => x.problems.map((p) => ({ kind: "smelting-band", id: `smelting:${x.id}`, text: `smelting ladder ${x.label}: ${p}` })));
+  return band.concat(m.loops.filter((x) => x.flagged).map((x) => ({
     kind: "mining-duty", id: `mining:${x.id}`,
     text: `mining chain ${x.label} pays ${money(x.steady)}/h net steady; duty pay is ${x.ratios.map((r) => `${ratioText(r.ratio)} (${r.job} ${money(r.pay)})`).join(" and ")}, under the $${x.floor}/h Cadet shift`,
-  }));
+  })));
 }

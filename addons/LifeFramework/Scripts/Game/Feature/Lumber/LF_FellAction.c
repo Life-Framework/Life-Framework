@@ -36,7 +36,7 @@ class LF_FellAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True when the axe is in the user's hands (right hand or the left gadget slot).
+	//! True when the axe is in the user's hands (drawn as the weapon, in the right hand or the left gadget slot).
 	static bool HoldsAxe(IEntity user)
 	{
 		if (!user)

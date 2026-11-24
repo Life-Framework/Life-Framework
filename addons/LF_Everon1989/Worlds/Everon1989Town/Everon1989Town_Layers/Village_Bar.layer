@@ -1,0 +1,18 @@
+GenericEntity Places_PubBar {
+ components {
+  LF_PlaceComponent "{47E0A2C9B1D86F35}" {
+   m_sKind "PubBar"
+   m_sId "saint-philippe.pub"
+  }
+ }
+ coords 124.3 0 282.1
+}
+LF_NpcBaseEntity Town_Pub_Barkeeper : "{4439B0A5C0000003}Configs/Npcs/LF_Npc_Townsfolk_Barkeeper.et" {
+ components {
+  LF_CounterOutletComponent "{4439B0A5C4000003}" {
+   m_sBuyerId "bar_saint_philippe"
+  }
+ }
+ coords 124.3 0 281.4
+ angleY 0
+}

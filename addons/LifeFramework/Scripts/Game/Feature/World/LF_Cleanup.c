@@ -296,6 +296,11 @@ class LF_Cleanup
 		if (!s_mLastNearMs)
 			s_mLastNearMs = new map<string, int>();
 
+		// Goods a store owns on its shelves are displays, not litter (#4819).
+		set<string> shelf = new set<string>();
+		foreach (string storeKey, LF_StoreComponent store : LF_Stores.Stores())
+			store.CollectShelfIds(shelf);
+
 		array<IEntity> doomed = {};
 		int kept;
 		foreach (IEntity entity : entities)
@@ -308,7 +313,7 @@ class LF_Cleanup
 			if (!rule)
 				continue;
 
-			string stay = ProtectedReason(entity);
+			string stay = ProtectedReason(entity, shelf);
 			if (stay.IsEmpty())
 			{
 				string key = entity.GetID().ToString();
@@ -343,10 +348,14 @@ class LF_Cleanup
 
 	//------------------------------------------------------------------------------------------------
 	//! Why an entity is never swept whatever the rule says, or an empty string.
-	static string ProtectedReason(IEntity entity)
+	//! shelf: the ids of every store's display copies (LF_StoreComponent.CollectShelfIds).
+	static string ProtectedReason(IEntity entity, notnull set<string> shelf)
 	{
 		if (s_mExempt && s_mExempt.Contains(entity.GetID().ToString()))
 			return "registered exempt";
+
+		if (shelf.Contains(entity.GetID().ToString()))
+			return "store shelf display";
 
 		if (!entity.GetName().IsEmpty())
 			return "named mission entity";

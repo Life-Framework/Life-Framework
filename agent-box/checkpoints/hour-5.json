@@ -1,0 +1,18 @@
+{
+  "hour": 5,
+  "note": "the iron chain by pickup, a till or a store safe",
+  "cash": 150,
+  "bank": 4750,
+  "policeRank": 0,
+  "medicRank": 0,
+  "levels": {
+    "MINER": 7,
+    "SMELTING": 1,
+    "DELIVERY": 4,
+    "FARMER": 3
+  },
+  "standing": {
+    "UNDERWORLD": 40
+  },
+  "licences": "DRIVING_LICENCE,MINER_COAL,MINER_IRON"
+}

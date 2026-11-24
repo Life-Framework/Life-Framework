@@ -1,0 +1,17 @@
+{
+  "hour": 4,
+  "note": "moonshine at the still barn, first marked notes",
+  "cash": 120,
+  "bank": 4100,
+  "policeRank": 0,
+  "medicRank": 0,
+  "levels": {
+    "MINER": 6,
+    "DELIVERY": 2,
+    "FARMER": 3
+  },
+  "standing": {
+    "UNDERWORLD": 10
+  },
+  "licences": "DRIVING_LICENCE,MINER_COAL"
+}

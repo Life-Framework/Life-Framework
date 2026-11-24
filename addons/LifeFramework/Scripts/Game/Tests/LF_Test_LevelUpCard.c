@@ -14,7 +14,7 @@ class LF_Test_LevelUpCard : LF_Test
 	{
 		LF_TradeUnlocksConfig.Reload();
 		LF_TradeUnlocksConfig table = LF_TradeUnlocksConfig.Get();
-		table.m_aRows.Insert(LF_TradeUnlockRow.Make("MINER", 7, "#LF-PlayerMenu_Skill_MINER"));
+		table.m_aRows.Insert(LF_TradeUnlockRow.Make("MINER", 7, "#LF-PlayerMenu_Skill_MINER", LF_ETradeUnlockKind.MACHINE, "smelter-iron"));
 
 		// RedProof(): the build is skipped, so no card exists (`--red`).
 		LF_LevelUpCardLines card;
@@ -30,7 +30,7 @@ class LF_Test_LevelUpCard : LF_Test
 			ctx.EqualStr("#LF-Level_TradeTier_2", card.m_sTierKey, "level 7 is the Hand band");
 			ctx.EqualStr(LF_TradeUnlocks.KeyFor("MINER", 7), card.m_sUnlockKey, "the unlock is the table's row for the new level");
 			ctx.EqualStr("#LF-PlayerMenu_Skill_MINER", card.m_sUnlockKey, "the seeded row is the one named");
-			ctx.True(card.OpensLine() != "", "a level with an unlock prints an Opens line");
+			ctx.EqualStr(LF_Terms.Text("#LF-LevelUpCard_Opens", LF_Terms.Text("#LF-PlayerMenu_Skill_MINER")), card.OpensLine(), "a level with a real unlock prints an Opens line");
 			ctx.True(card.LevelLine().IndexOf("7") >= 0, "the level line carries the level");
 		}
 
@@ -59,7 +59,11 @@ class LF_Test_LevelUpCard : LF_Test
 		LF_LevelUpCardLines jump = LF_LevelUpCard.Build("FARMER", 1, 3);
 		ctx.True(jump != null, "a two-level jump builds one card");
 		if (jump)
+		{
 			ctx.EqualStr("#LF-PlayerMenu_Skill_FARMER", jump.m_sUnlockKey, "the card shows the unlock of the level reached");
+			// The row is a milestone (#4869): it opens nothing, so its text shows as it is, with no "Opens:".
+			ctx.EqualStr(LF_Terms.Text("#LF-PlayerMenu_Skill_FARMER"), jump.OpensLine(), "a milestone row prints its text with no Opens prefix");
+		}
 
 		LF_TradeUnlocksConfig.Reload();
 	}

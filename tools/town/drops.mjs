@@ -57,6 +57,13 @@ export const DROP_KITS = {
   "livery-bay": { prefab: "{837750C2B0CBF9D9}Prefabs/Props/LF_LiveryBay.et", source: "addons/LifeFramework/Prefabs/Props/LF_LiveryBay.et" },
   // The medic fleet board (#4432, #4566): a cork board on the clinic wall, its bay 6 m in front. No slot kit names it; the clinic board card seats its one board with this entry.
   "medic-fleet-board": { prefab: "{7626F19FBE72C466}Prefabs/Props/Medic/LF_MedicCarPoolBoard.et", source: "addons/LifeFramework/Prefabs/Props/Medic/LF_MedicCarPoolBoard.et" },
+  // The opening-hours plate beside a shop door (#4834): LF_Sign_HoursPlate (enamel style, prints the keeper's hours), flush on the customer-side wall
+  // at eye height (pivot 1.5 m over the ground: `lift` stands its base over the ground for the wall seat, `dy` raises it after), out of every
+  // door's swing and walk-up (`bounds` is the body's box from `place bounds`, for the door test).
+  "hours-plates": {
+    prefab: "{379F4E8692F36269}Prefabs/Props/Signs/LF_Sign_HoursPlate.et", source: "addons/LifeFramework/Prefabs/Props/Signs/LF_Sign_HoursPlate.et",
+    lift: 0.25, dy: 1.25, scale: 0.8, bounds: { min: [-0.467, -0.225, -0.002], max: [0.433, 0.225, 0.034] },
+  },
   "house-sale": { prefab: "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et", source: "addons/LifeFramework/Prefabs/Props/Property/LF_HouseSaleSign.et" },
 };
 const OUTSIDE = 1.0; // the mailbox starts this far outside the footprint; the wall seat slides it the rest of the way
@@ -92,7 +99,7 @@ export function exitDistance(poly, x, z, dx, dz) {
 // (metres) off the dossier's floor height, for a drop on sloping ground.
 // `turn` (0 to 3, quarter turns) puts the mailbox on another side than the entrance side (0), for a building whose entrance
 // side is a loading dock or a canopy.
-export function dropKit(building, slotId, sideways = null, lift = GROUND_LIFT, turn = 0, kitName = "parcel-drops") {
+export function dropKit(building, slotId, sideways = null, lift = GROUND_LIFT, turn = 0, kitName = "parcel-drops", alongAt = null) {
   const prop = DROP_KITS[kitName] ?? DROP_KITS["parcel-drops"];
   const front = "+z";
   const a = anchorFor(building, { anchoring: { front, floorY: building.firstFloor ?? 0 } });
@@ -114,6 +121,8 @@ export function dropKit(building, slotId, sideways = null, lift = GROUND_LIFT, t
     ox = r3(Math.max(-(half - 0.6), Math.min(half - 0.6, ox)));
   }
   if (sideways !== null) ox = r3(half * sideways);
+  // `along` (metres, from the kit's centre line, + toward the kit's +x): an exact spot on the wall, for a plate on a pier between a window and a door.
+  if (alongAt !== null && Number.isFinite(alongAt)) ox = r3(alongAt);
   const reachOut = r3(reach + OUTSIDE);
   const offset = [r3(lx * reachOut + lz * ox), lift, r3(lz * reachOut - lx * ox)];
   const yaw = r3((Math.atan2(lx, lz) * 180) / Math.PI);
@@ -150,8 +159,23 @@ const entityLine = (e) => `GenericEntity ${e.name} : "${e.ref}" {${e.placeId ? `
   }
  }` : ""}
  coords ${e.coords.join(" ")}
- angleY ${e.yaw}
+ angleY ${e.yaw}${e.scale ? `
+ scale ${e.scale}` : ""}
 }`;
+
+// Pure: the prop's oriented box in the audit's shape ({ c, h, a }) at its final spot: the seated row `ent` (coords, yaw), a hair off the wall
+// (WALL_AIR along its facing) and raised by `dy`.
+export function boxAt(bounds, ent, dy, scale = 1) {
+  const k = (ent.yaw * Math.PI) / 180;
+  const at = [ent.coords[0] + Math.sin(k) * WALL_AIR, ent.coords[1] + dy, ent.coords[2] + Math.cos(k) * WALL_AIR];
+  const mid = [0, 1, 2].map((i) => ((bounds.min[i] + bounds.max[i]) / 2) * scale);
+  const [ox, oz] = toWorld(mid[0], mid[2], ent.yaw);
+  return {
+    c: [at[0] + ox, at[1] + mid[1], at[2] + oz],
+    h: [0, 1, 2].map((i) => ((bounds.max[i] - bounds.min[i]) / 2) * scale),
+    a: [[Math.cos(k), 0, -Math.sin(k)], [0, 1, 0], [Math.sin(k), 0, Math.cos(k)]],
+  };
+}
 
 // One drop's plan: the shared town-fit planner, with an in-memory mapping and template for the drop's own place.
 export async function planDrop({ drop, slotId, dossier, root, shell, readGame, kitName = "parcel-drops", accept = null }) {
@@ -164,10 +188,17 @@ export async function planDrop({ drop, slotId, dossier, root, shell, readGame, k
   // A mapping entry's own `sideways` and `lift` (set after a look or the audit shows the default spot clips) skip the search.
   // `accept(entity)` (optional, #3886): a seat on the wall is only taken when it returns true, so a caller that knows the doors
   // slides the prop along the wall to the next spot; a wall with no accepted spot is a refused plan.
-  const tries = drop.sideways !== undefined ? [drop.sideways] : accept ? [null, 0, 0.45, -0.45, 0.8, -0.8, 0.25, -0.25, 0.65, -0.65, 0.95, -0.95] : [null, 0, 0.45, -0.45, 0.8, -0.8];
+  // A prop with `bounds` (a wall plate at eye height) is taken only out of every door's swing and walk-up, as `town homes` does for its sign.
+  const prop = DROP_KITS[kitName];
+  if (!accept && prop?.bounds) {
+    const { doorHit, loadDoors } = await import("./homes.mjs");
+    const doors = loadDoors(root, dossier.place.slug);
+    accept = (ent) => !doorHit(boxAt(prop.bounds, ent, drop.dy ?? prop.dy ?? 0, prop.scale ?? 1), doors);
+  }
+  const tries = drop.sideways !== undefined || drop.along !== undefined ? [drop.sideways ?? null] : accept ? [null, 0, 0.45, -0.45, 0.8, -0.8, 0.25, -0.25, 0.65, -0.65, 0.95, -0.95] : [null, 0, 0.45, -0.45, 0.8, -0.8];
   let accepted = false;
   for (const sideways of tries) {
-    const { id, kit } = dropKit(building, slotId, sideways, drop.lift ?? GROUND_LIFT, drop.turn ?? 0, kitName);
+    const { id, kit } = dropKit(building, slotId, sideways, drop.lift ?? prop?.lift ?? GROUND_LIFT, drop.turn ?? 0, kitName, drop.along ?? null);
     const opts = { place: drop.place, slot: slotId, dossier, mapping, template, kits: { [kit.kit]: kit }, skipClaims: true, fetch: false };
     plan = { ...(await planFitSeated(opts, { root, readGame, shell })), rowId: id, building };
     if (!plan.ok) break;
@@ -179,12 +210,13 @@ export async function planDrop({ drop, slotId, dossier, root, shell, readGame, k
   if (accept && plan?.ok && !accepted) plan = { ...plan, ok: false, errors: [...(plan.errors ?? []), "no spot on this wall clears the doors"] };
   // Off the wall by WALL_AIR along the mailbox's facing (the wall it was seated on is behind it).
   const e = plan?.ok ? plan.ents.rowEnts[0] : null;
-  const prop = DROP_KITS[kitName];
+  if (e && prop?.scale) e.scale = prop.scale;
   if (e && prop?.placeId) Object.assign(e, { placeId: prop.placeId(drop), placeComp: prop.placeComp, placeClass: prop.placeClass, placeIdField: prop.placeIdField, placeFields: prop.placeFields?.(drop) });
   const onWall = !!plan?.seat?.rows?.[0]?.wall;
   // A mapping entry's `dy` (metres, after the wall seat): the ground at the seated spot is higher or lower than the dossier's
   // floor height of the host, as the contact sheet (`look contact`) reads it. Unlike `lift` it never moves the wall seat (#3880).
-  if (e && Number.isFinite(drop.dy)) e.coords = [e.coords[0], r3(e.coords[1] + drop.dy), e.coords[2]];
+  const dy = Number.isFinite(drop.dy) ? drop.dy : prop?.dy;
+  if (e && Number.isFinite(dy)) e.coords = [e.coords[0], r3(e.coords[1] + dy), e.coords[2]];
   if (e && onWall) {
     const a = (e.yaw * Math.PI) / 180;
     e.coords = [r3(e.coords[0] + Math.sin(a) * WALL_AIR), e.coords[1], r3(e.coords[2] + Math.cos(a) * WALL_AIR)];

@@ -50,6 +50,58 @@ Saint-Philippe holds most of them; the sawmill, the fishing coves, the lake and 
 (fuel delivery at work level 4, about 6 paid runs; taxi at level 6, about 15) and licences (felling, sawing, tools). A refusal message says what is
 missing and where to get it.
 
+<!-- unlocks -->
+**What each level opens.** The level-up card and the F2 skill card name what a level really gives you. A level that opens nothing says so: it reads "Mining 12: a seasoned hand" and promises no perk. The levels that open something (a licence, a machine step, a perk pick, a fish, a delivery job) are these; every other level from 2 to 30 is a milestone.
+
+| Trade | Level | Opens |
+|---|---|---|
+| Farming | 2 | Orchard hand license: pick apples |
+| Farming | 3 | Water collection permit: draw clean water |
+| Farming | 4 | Plum picker license: pick plums |
+| Farming | 5 | Seasoned field hand license: pick fruit and draw water twice as fast |
+| Farming | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Farming | 20 | Second perk: Light touch and Good word join the choices at the labor office |
+| Mining | 2 | Coal face permit: cut coal with a pick |
+| Mining | 3 | Copper seam permit: cut copper ore |
+| Mining | 4 | Iron seam permit: mine iron |
+| Mining | 5 | Seasoned miner license: cut any ore twice as fast |
+| Mining | 6 | Gold seam permit: cut gold ore |
+| Mining | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Mining | 20 | Second perk: Light touch and Good word join the choices at the labor office |
+| Lumber | 2 | Felling permit: fell trees with an axe |
+| Lumber | 3 | Sawmill hand license: saw logs into planks |
+| Lumber | 4 | Seasoned logger license: fell trees twice as fast |
+| Lumber | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Lumber | 20 | Second perk: Light touch and Good word join the choices at the labor office |
+| Fishing | 2 | Bass: you can now land them |
+| Fishing | 3 | Tuna: you can now land them |
+| Fishing | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Fishing | 20 | Second perk: Light touch and Good word join the choices at the labor office |
+| Smelting | 2 | Smelter runs: up to 6 bars |
+| Smelting | 5 | Bar molds: up to 7 bars a run |
+| Smelting | 6 | The Morton cement works |
+| Smelting | 7 | Faster smelting: 45-second runs |
+| Smelting | 8 | Larger run: up to 8 bars |
+| Smelting | 9 | Hotter fire: 35-second runs |
+| Smelting | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Smelting | 15 | The Levie refinery |
+| Smelting | 16 | Bigger batches: up to 10 bars a run |
+| Smelting | 20 | Second perk: Light touch joins the choices at the labor office |
+| Salvage | 10 | First perk: pick Double yield or Swift hands at the labor office |
+| Salvage | 20 | Second perk: Light touch joins the choices at the labor office |
+| Delivery | 4 | Fuel delivery: sign up at the depot counter |
+| Delivery | 5 | Truck check: pass it at the truck yard for freight work |
+| Delivery | 6 | Taxi fares: sign up at the depot counter |
+| Delivery | 10 | Export orders: take one at the export board |
+| Police | 10 | First perk: pick Fast cuff or Long radar at the {Police} station |
+| Police | 20 | Second perk: take the one of Fast cuff and Long radar you passed over |
+| Medic | 2 | First aid certificate: treat the injured |
+| Medic | 3 | Advanced first aid certificate: advanced treatment |
+| Medic | 4 | Resuscitation certificate: revive the unconscious |
+| Medic | 10 | First perk: pick Quick revive or Quick aid at the clinic |
+| Medic | 20 | Second perk: Steady carry joins the choices at the clinic |
+<!-- /unlocks -->
+
 **First shift of the day.** The first 30 minutes you earn experience in a trade each day pay **double**. The clock starts
 at your first paid outcome, not when you clock in. After the 30 minutes the rest of that day pays the normal rate. Each
 trade has its own first shift, and a new day opens it again. A server restart opens it again too.
@@ -178,7 +230,7 @@ The drops are on the east side (a house near the district road) and four along t
      With a van or truck, back it up to the saw (rear within about 3 m): when you carry no logs, the action reads
      **Feed from the truck** and the saw takes the logs straight from the vehicle and puts the cut back in it. A locked
      vehicle feeds nothing. Every processing station works this way.
-  3. Sell **planks ($8)** and **hardwood boards ($12)** at the **timber counter**. If its purse is full it tells you to
+  3. Sell **planks ($8)** and **hardwood boards ($15)** at the **timber counter**. If its purse is full it tells you to
      "try the wholesale warehouse at the dock". The dock pays a lower, falling price for planks, boards, posts and firewood.
 * **Pay:** about **$400 an hour** carrying softwood by hand. A truck and hardwood boards pay a little more.
 * **Needs:** an axe. Job levels unlock sawing and faster felling (a refusal says what is missing).
@@ -306,9 +358,9 @@ the pump says "The tanks are dry. The depot truck is due."
      it is full, the main wholesale counter buys more (from $20 a bar, falling as you sell).
 * **Pay:** about **$500 an hour**, with nothing to drive. Two players share the six rocks and the furnace comfortably.
 * **Shift board:** a cork **shift board** stands in the mine yard near the miner's desk. **Read the shift board** lists the week's top five workers at the mine by the trade XP they earned there, with their trade level. The list empties every Monday at 06:00 UTC.
-* **Wear:** every swing at a rock wears your pickaxe a little (an axe wears with each tree felled, a fishing rod with each fish landed). A notice tells you when the tool is getting worn, when it is badly worn, and after every use once it is worn out. A worn-out tool still works. The hardware bench repairs it for $12 and a scrap of metal once it is placed in town.
-* **Better tools:** the miners' supply till in the hardware store also sells the pickaxe, axe and fishing rod in three finishes: worn ($150), standard ($600) and fine ($1,800). A better finish wears slower. The standard pickaxe or axe needs trade level 3 and the fine one level 6; below that the till refuses in words.
-* **Needs:** the miner job and a pickaxe. Higher miner levels open the coal and copper rocks as those sites arrive. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the smelter wants Smelting level 8, the refinery level 15.
+* **Wear:** every swing at a rock wears the pickaxe you swing a little (an axe wears with each tree felled, a fishing rod with each fish landed). Each tool keeps its own condition: a new pickaxe starts in top shape whatever your old one looked like, and a worn one stays worn in your pack, on the ground, in someone else's hands and after a restart. A notice names the tool when it is getting worn, when it is badly worn, and after every use once it is worn out. A worn-out tool still works. At the hardware bench, hold the tool you want fixed: $12 and a scrap of metal bring that one tool back to top shape.
+* **Better tools:** the miners' supply till in the hardware store also sells the pickaxe, axe and fishing rod in three finishes: worn ($150), standard ($600) and fine ($1,800). A better finish wears slower: a worn tool loses twice as much per use as a standard one, a fine one half as much. The standard pickaxe or axe needs trade level 3 and the fine one level 6; below that the till refuses in words.
+* **Needs:** the miner job and a pickaxe. Higher miner levels open the coal and copper rocks as those sites arrive. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the iron smelter takes anyone from Smelting level 1 (you earn the trade by smelting), while the copper refinery wants Smelting level 15 and the cement works Smelting level 6. At the iron smelter the level grows the run: up to 6 bars at level 2, 7 at level 5, 8 at level 8 and 10 at level 16, and the run itself drops from 60 to 45 seconds at level 7 and to 35 at level 9 (the level-up card names each one). Where a trade has a level gate, the refusal says it in words: "Needs Smelting 15".
 
 
 ## Export orders
@@ -316,7 +368,7 @@ the pump says "The tanks are dry. The depot truck is due."
 **Status:** 🚧 coming. The board and the crane spot work, but they are not on the dock yet.
 
 * **Where:** the **EXPORT ORDERS** board on the warehouse wall by the quay, and the **crane spot** (a pallet box on the quay apron by the harbour crane).
-* **How it works:** the board lists up to three orders, such as *20 x iron bars to the steamer | $920 by 13:00*. Scroll to **Take the order** on a line to take it (haulers at Delivery level 10 or higher; one order at a time). Bring every unit to the crane spot, in your pockets or in a vehicle backed up to the pallet box, and choose **Hand in the export order**.
-* **Pay:** the order's price in cash (wholesale plus 15 percent) and Delivery experience. A short count takes nothing: bring the rest and hand in again. Miss the deadline and the order closes and your standing in town drops; it never costs money.
+* **How it works:** the board lists up to three orders, such as *40 x iron bars to the steamer | $1040 by 23:00*. Scroll to **Take the order** on a line to take it (haulers at Delivery level 10 or higher; one order at a time). Bring every unit to the crane spot, in your pockets or in a vehicle backed up to the pallet box, and choose **Hand in the export order**.
+* **Pay:** the order's price in cash (the market's wholesale price plus 15 percent, plus an order bonus) and Delivery experience. Every kind of order pays about $700 an hour of mining or sawing: 40 iron bars $1,040, 20 copper bars $960, 100 coal $985, 120 planks $1,018. A short count takes nothing: bring the rest and hand in again. Miss the deadline and the order closes and your standing in town drops; it never costs money.
 
 * **Paper:** a paid shift hands you a payslip, a parcel run a delivery note, and a sale at the granary or a buyer a weigh slip. Each shows what was sold or paid and the date; choose **Read receipt** on it to read it.

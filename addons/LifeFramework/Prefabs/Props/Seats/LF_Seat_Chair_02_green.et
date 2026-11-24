@@ -6,7 +6,7 @@ GenericEntity : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_gre
     UserActionContext "{D6C190A831D424CA}" {
      ContextName "LF_Seat1"
      Position PointInfo "{AD594F59479C0562}" {
-      Offset 0 0.5 0.15
+      Offset 0 0.55 0.15
      }
      Radius 0.9
     }
