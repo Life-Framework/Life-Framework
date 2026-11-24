@@ -281,3 +281,27 @@ GenericEntity Fit_saint_philippe_police_police_kit_wanted_board : "{3F233EFE851C
  coords 4548.817 19.35 10751.407
  angleY -99
 }
+GenericEntity Fit_saint_philippe_police_police_kit_booking_desk : "{8C7B017B6B96B4DA}Prefabs/Props/Police/LF_BookingDesk.et" {
+ coords 4554.045 18.236 10748.124
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_police_police_kit_booking_inkwell : "{E73C26C2B63B5A06}Prefabs/Props/Civilian/InkwellDecorative_01/InkwellDecorative_01_base.et" {
+ coords 4554.1 19.14 10747.778
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_police_police_kit_law_book_lectern : "{A4C17E2B9D305F68}Prefabs/Props/Police/LF_LawBookLectern.et" {
+ coords 4548.281 18.236 10742.758
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_police_police_kit_rank_board : "{6F2A9C41B7D305E8}Prefabs/Props/Police/LF_RankBoard.et" {
+ coords 4546.882 19.7 10746.989
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_police_police_kit_commendation_plaque : "{B1E4D7A290C86F35}Prefabs/Props/Police/LF_CommendationPlaque.et" {
+ coords 4551.018 19.7 10750.897
+ angleY 81
+}
+GenericEntity Fit_saint_philippe_police_police_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4549.402 20.9 10749.311
+ angleY 171
+}

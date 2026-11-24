@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "kind": "ore-face",
+  "about": "A second open-cut mine on a hillside: ore rocks a miner breaks with a pickaxe, fencing, timber, work lights and a sign, but no job desk, furnace or buyer (the iron goes on to a smelter). No building stands there, so the slot is hostless: its kit rests on the probed ground of one free plot. Same shape as quarry.json, with the map mark as a `mine` row in the kit. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "mine", "required": true, "kit": "iron-face", "host": "plot", "poi": "mine",
+      "needs": { "interior": "optional", "prefer": "near" },
+      "plot": { "minWidth": 16, "minDepth": 16, "prefabs": [] },
+      "places": ["Workplace", "mine"]
+    }
+  ]
+}

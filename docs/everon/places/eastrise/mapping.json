@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "template": "coal-seam",
+  "place": "eastrise",
+  "status": "approved",
+  "note": "Hand-written for the East Rise coal seam (#3243, the 0.3.0 gap audit's iron chain: coal beside Highstone iron). East Rise is the open ridge meadow at 6712, 7944, east of road r01. No building stands on it (the nearest is a barn 43 m away), so its one slot is a hostless plot like Highstone (#3242): the kit anchors on the plot centre and every row rests on the probed ground. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": {
+      "at": "2026-11-24",
+      "tool": "tools\\cli scout",
+      "command": "tools\\cli scout 6712,7944 --radius 150",
+      "view": 60,
+      "gameBuild": "Arma Reforger build 26266485 (installed 2026-11-08)",
+      "world": "Worlds/CoreOnEveron/CoreOnEveron.ent"
+    },
+    "buildings": 6,
+    "freePlots": 8
+  },
+  "slots": {
+    "mine": {
+      "plot": "p1",
+      "kit": "coal-face",
+      "hostless": true,
+      "why": [
+        "free plot p1 (66 x 82 m, ground 144.3 to 153 m) on the meadow just east of the N-S road r01: the closest open ground to the ridge centre, 43 m from the road so a truck backs in from the track",
+        "the ground rises gently to the east; the coal face and the rock wall stand on the uphill side and the loading apron opens to the road on the west side"
+      ]
+    }
+  }
+}

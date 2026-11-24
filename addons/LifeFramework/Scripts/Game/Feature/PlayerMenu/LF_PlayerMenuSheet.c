@@ -29,6 +29,7 @@ class LF_PlayerMenuSheet
 	static const string PART_WANTED = "PlayerMenuWanted";
 	static const string PART_TAB_NEXT = "PlayerMenuNextButton";
 	static const string PART_TAB_GANG = "PlayerMenuGangButton";
+	static const string PART_TAB_FILE = "PlayerMenuFileButton";
 	static const string PART_PORTRAIT = "PlayerMenuPortrait";
 	static const string PART_JOB = "PlayerMenuJob";
 	static const string PART_STANDING = "PlayerMenuStanding_";
@@ -80,6 +81,8 @@ class LF_PlayerMenuSheet
 	static const int TAB_NEXT = 2;
 	//! "Gang": shown only to a player in a gang (LF_PlayerMenuGangTab.HasTabLocal).
 	static const int TAB_GANG = 3;
+	//! "My file": tickets, bookings and seized licences (LF_PlayerMenuFileTab). Shown to everyone.
+	static const int TAB_FILE = 4;
 
 	protected static ref LF_UIScreen s_Screen;
 	//! The character drawn in the preview (a dummy in the preview world), cleared when the file closes.
@@ -178,7 +181,7 @@ class LF_PlayerMenuSheet
 	{
 		Hide();
 		s_iTab = TAB_PERSON;
-		if (tab == TAB_PROGRESS || tab == TAB_NEXT || tab == TAB_GANG)
+		if (tab == TAB_PROGRESS || tab == TAB_NEXT || tab == TAB_GANG || tab == TAB_FILE)
 			s_iTab = tab;
 
 		s_Sheet = new LF_PlayerMenuSheet();
@@ -193,6 +196,8 @@ class LF_PlayerMenuSheet
 			LF_ActivityPage.Ask();
 		else if (s_iTab == TAB_GANG)
 			AskGang();
+		else if (s_iTab == TAB_FILE)
+			AskFile();
 
 		return screen;
 	}
@@ -352,6 +357,8 @@ class LF_PlayerMenuSheet
 			parts = BuildNext(s_Data);
 		else if (s_iTab == TAB_GANG)
 			parts = BuildGang(s_Data);
+		else if (s_iTab == TAB_FILE)
+			parts = BuildFile(s_Data);
 		else
 			parts = BuildPerson(s_Data);
 
@@ -375,7 +382,7 @@ class LF_PlayerMenuSheet
 		screen.CloseOnDeath();
 		screen.CloseWhenUncontrolled();
 		HoldHint();
-		if (s_Data && s_iTab != TAB_NEXT && s_iTab != TAB_GANG)
+		if (s_Data && s_iTab != TAB_NEXT && s_iTab != TAB_GANG && s_iTab != TAB_FILE)
 			screen.SetListHeight(PART_LIST, ListHeight(s_Data, s_iTab));
 
 		if (s_Data && s_iTab == TAB_PERSON)
@@ -383,7 +390,7 @@ class LF_PlayerMenuSheet
 
 		if (s_iTab == TAB_NEXT)
 			LF_ActivityPage.Fill(screen);
-		else if (s_iTab != TAB_GANG)
+		else if (s_iTab != TAB_GANG && s_iTab != TAB_FILE)
 			FillList(screen, s_Data);
 
 		// Focus starts on the open tab's key, so a pad user sees where they are.
@@ -394,6 +401,8 @@ class LF_PlayerMenuSheet
 			openTab = PART_TAB_NEXT;
 		else if (s_iTab == TAB_GANG)
 			openTab = PART_TAB_GANG;
+		else if (s_iTab == TAB_FILE)
+			openTab = PART_TAB_FILE;
 
 		screen.FocusPart(openTab);
 		LF_Debug.Info(LF_PlayerMenuServer.FEATURE, "file open on tab " + s_iTab.ToString());
@@ -442,6 +451,11 @@ class LF_PlayerMenuSheet
 			tabs.Insert(TAB_GANG);
 		}
 
+		// "My file" is for everyone: it ends the row.
+		names.Insert(PART_TAB_FILE);
+		keys.Insert("#LF-PlayerMenu_TabFile");
+		tabs.Insert(TAB_FILE);
+
 		array<string> texts = {};
 		foreach (int i, string key : keys)
 		{
@@ -483,6 +497,36 @@ class LF_PlayerMenuSheet
 		bool changed = LF_PlayerMenuGangView.Apply(wire);
 		if (changed && IsOpen() && s_Sheet && s_iTab == TAB_GANG)
 			GetGame().GetCallqueue().CallLater(s_Sheet.ShowLater, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: asks the server for the player's file (the My file tab opened; the last answer prints meanwhile).
+	protected static void AskFile()
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (controller)
+			controller.LF_AskPlayerMenuFile();
+		else
+			LF_Debug.Warn(LF_PlayerMenuServer.FEATURE, "file tab not asked: no player controller");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The server's file answer (LF_PlayerMenuFileTabWire). A changed answer prints the My file tab again when it is open.
+	static void OnFileData(string wire)
+	{
+		bool changed = LF_PlayerMenuFileView.Apply(wire);
+		if (changed && IsOpen() && s_Sheet && s_iTab == TAB_FILE)
+			GetGame().GetCallqueue().CallLater(s_Sheet.ShowLater, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The My file page: LF_PlayerMenuFileTab fills it between the header and the footer.
+	static array<ref LF_UIPart> BuildFile(LF_PlayerMenuData data)
+	{
+		array<ref LF_UIPart> parts = Header(TAB_FILE, data);
+		LF_PlayerMenuFileTab.Build(parts, LF_PlayerMenuFileView.Data());
+		Footer(parts);
+		return parts;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -723,7 +767,7 @@ class LF_PlayerMenuSheet
 			return;
 		}
 
-		if (name == PART_TAB_PERSON || name == PART_TAB_PROGRESS || name == PART_TAB_NEXT || name == PART_TAB_GANG)
+		if (name == PART_TAB_PERSON || name == PART_TAB_PROGRESS || name == PART_TAB_NEXT || name == PART_TAB_GANG || name == PART_TAB_FILE)
 		{
 			int tab = TAB_PERSON;
 			if (name == PART_TAB_PROGRESS)
@@ -732,6 +776,8 @@ class LF_PlayerMenuSheet
 				tab = TAB_NEXT;
 			else if (name == PART_TAB_GANG)
 				tab = TAB_GANG;
+			else if (name == PART_TAB_FILE)
+				tab = TAB_FILE;
 
 			if (tab == s_iTab)
 				return;
@@ -741,6 +787,8 @@ class LF_PlayerMenuSheet
 				LF_ActivityPage.Ask();
 			else if (tab == TAB_GANG)
 				AskGang();
+			else if (tab == TAB_FILE)
+				AskFile();
 
 			// The press runs inside the old sheet; build the next one after it has finished.
 			GetGame().GetCallqueue().CallLater(ShowLater, 0, false);

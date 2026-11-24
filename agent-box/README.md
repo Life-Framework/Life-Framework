@@ -185,6 +185,9 @@ the game profile). Hooks:
   ` | ` (`line:Balance=BALANCE ....... $1,200 | field:RegAge=30 |
   button:DepositButton=DEPOSIT`). The name is the part name the screen gave
   it, the same name `type` and `click` take. `#keys` are translated.
+- `dialogue-wait <line|choosing|waiting|closed> [node]` polls `dialogue` until the conversation scene is in
+  that phase (on that node), then waits out the 350 ms input guard; times out with `dialogue_not_<phase>`.
+  `dialogue <verb> [value]` sends a scene verb (`dialogue pick 0`).
 - `wait-text <text> [--timeout ms]` polls `ui text` until a label, field, or
   line contains the text (case-insensitive) or a widget has that name. Use it
   after `use` opens a screen and after a button the server answers
@@ -214,8 +217,15 @@ the game profile). Hooks:
   around the target, then out in wider rings, and logs `stand spot beside ... using ...`.
 - `Resident_<id>` as the entity name of `stand` and `use` addresses a spawned resident by their `LF_ResidentDef` id (`stand Resident_night_shift`, `use LF_DialogueTalkAction Resident_night_shift`): spawned residents have no layer name, and a bare `use` reaches the nearest one. Server side (`LF_ResidentHarness`); a client-local action such as the talk takes the nearest host of the action on the client (a client knows no resident ids), so `stand` beside the resident first; `entity_not_found` / `action_not_found` while the resident is not live (not due, or no player near their spot), so a proof retries after a wait.
 - `input` sets one allowlisted menu action (`MenuUp`, `MenuDown`, `MenuLeft`,
-  `MenuRight`, `MenuSelect`, `MenuBack`, `LF_OpenDebugMenu`) for about 80ms.
-  Movement actions are refused.
+  `MenuRight`, `MenuSelect`, `MenuBack`, `LF_OpenDebugMenu`, and the digit keys
+  `LF_Keypad0`..`LF_Keypad9`) for 300 ms and at least three client frames, so a slow frame
+  cannot swallow it. Movement actions are refused.
+  **Talking to an NPC:** drive a dialogue the way a player does. Start the talk, then
+  `dialogue-wait choosing <node>` (the line plays first; a Select while it plays only skips it),
+  then `input MenuDown` / `MenuUp` to move the focus and `input MenuSelect` to answer, or
+  `input LF_Keypad1` for reply 1 (`LF_Keypad0` is Goodbye). The scene ignores a fresh press for 350 ms
+  after each change, which `dialogue-wait` waits out. `dialogue pick <row>` and `dialogue bye` stay as
+  the fallback. The flows `arrival-chain`, `arrival-island` and `island-first-hour` do this.
 - `shoot <playerId>` (dev gate) deals one lethal KINETIC hit from the local character to that
   player through `HandleDamage`, the path a bullet takes, so the safe zone and the murder hook
   see it. Replies `shot player=N refused=R alive=A downed=D` (a lethal hit downs a player, #255).

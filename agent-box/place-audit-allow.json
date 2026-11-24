@@ -2,6 +2,11 @@
   "_note": "Placements that are meant to look this way. tools\\cli audit placement skips a problem whose kind matches and whose name or prefab matches the regex (docs/placement-audit.md). Give the reason a reviewer can check in a shot.",
   "allow": [
     {
+      "match": "^Fit_eastrise_mine_mine_(picks|cart|flood_r) ",
+      "kind": "contact",
+      "why": "The pick pile, cart and right flood lamp at the East Rise coal seam (#3243) rest on the probed ground of a meadow slope: the contact gap reads 1 to 5 cm under a 3x3 footprint because the ground varies 6 to 9 cm under each, which the walk-up contact sheet (c02, c06) does not show."
+    },
+    {
       "match": "^Grid_police_car_pool_R0_[23] ",
       "kind": "sunk",
       "why": "The two police cars in the car-pool grid cell (#4352) stand on their wheels: place settle measured each mesh bottom 1 mm over GridTerrain; the audit's terrain check reads the vehicle pivot, which sits below the wheel tops."
@@ -334,6 +339,21 @@
       "match": "^Fit_saint_philippe_dock_harbor_life_gulls ",
       "kind": "displaced",
       "why": "The same bird flock (SCR_Bird) the engine moves: the seagull flock spawns at its row on the dock apron (y 1.59, 0 m over the ground) and the probe finds the flock entity wherever it has wandered (#4586)."
+    },
+    {
+      "match": "^Fit_saint_philippe_(pharmacy|clinic|police)_\\1_lamp_\\d",
+      "kind": "floating",
+      "why": "A ceiling fixture (LF_LightCeiling_Interior, a chandelier hung from the slab of the island host building) has nothing under it but the room: the audit reads the counter or floor 0.4 to 0.9 m below its hanging bottom. The kit row is a free mount at the ceiling height (#4718)."
+    },
+    {
+      "match": "^Fit_saint_philippe_(pharmacy|clinic|police)_\\1_lamp_\\d",
+      "kind": "contact",
+      "why": "A ceiling chandelier (LF_LightCeiling_Interior) hangs over a counter or a bare floor with nothing under its bounds: the audit reads the gap as hovering or hanging off its support. It is hung from the slab by its rod (#4718)."
+    },
+    {
+      "match": "^Fit_saint_philippe_(pharmacy|clinic|police)_\\1_lamp_\\d",
+      "kind": "overhang",
+      "why": "A ceiling chandelier (LF_LightCeiling_Interior) hangs over a counter or a bare floor with nothing under its bounds: the audit reads the gap as hovering or hanging off its support. It is hung from the slab by its rod (#4718)."
     },
     {
       "match": "^Fit_outpost_north_camp_outpost_gate_sandbag_",

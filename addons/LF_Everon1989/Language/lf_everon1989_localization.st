@@ -4479,6 +4479,11 @@ StringTable {
      Target_en_us "Hostel"
      Comment "Map POI kind name (#2247): the hostel."
     }
+    CustomStringTableItem "{2E6ED01670A45CF3}" {
+     Id "LF-MapPoi_LabourOffice"
+     Target_en_us "Labor office"
+     Comment "Map POI name (#4748): the labor office counter in the town hall, where trade perks are picked; public place."
+    }
     CustomStringTableItem "{0C04F4D20CD6B427}" {
      Id "LF-MapPoi_LoggingYard"
      Target_en_us "Logging yard"
@@ -4509,6 +4514,11 @@ StringTable {
      Target_en_us "Orchard"
      Comment "Map POI name (rc-map-places): the orchard to pick fruit."
     }
+    CustomStringTableItem "{2D06279FDC639CA5}" {
+     Id "LF-MapPoi_OrgDesk"
+     Target_en_us "Gang registry"
+     Comment "Map POI name (#4748): the Saint-Philippe registry cabin, where the registrar keeps the gang book and the flag wall; public place."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F12}" {
      Id "LF-MapPoi_ParcelDepot"
      Target_en_us "Parcel depot"
@@ -4533,6 +4543,11 @@ StringTable {
      Id "LF-MapPoi_PostOffice"
      Target_en_us "Post office (van run)"
      Comment "Map badge label: a post office stand where the postal van run starts and ends."
+    }
+    CustomStringTableItem "{6D2B9F40C8E15A73}" {
+     Id "LF-MapPoi_PubBar"
+     Target_en_us "Bar"
+     Comment "Map POI name (#4701): the Chotain and Levie village bars; public places."
     }
     CustomStringTableItem "{D1EC93AD7C6358F0}" {
      Id "LF-MapPoi_Range"
@@ -5033,6 +5048,11 @@ StringTable {
      Id "LF-Postal_Loaded"
      Target_en_us "Sack loaded (%1). When all are in, drive to the Meaux post office, marked on your map."
      Comment "Toast after a sack is loaded: names the destination office (pack override of the core row)."
+    }
+    CustomStringTableItem "{349723BC9C46DF3D}" {
+     Id "LF-Process_SmeltIronBar"
+     Target_en_us "Smelt iron (2 nuggets and 1 coal make a bar)"
+     Comment "Action on the centre-east iron smelter (LF_IronSmelter.et, machine smelter-iron, Everon 1989 pack, #3244)."
     }
     CustomStringTableItem "{7955F10958310917}" {
      Id "LF-Process_SmeltIronOre"
@@ -6349,6 +6369,21 @@ StringTable {
      Target_en_us "Calls waiting for this service, newest first."
      Comment "Dispatch board sign card: what it is."
     }
+    CustomStringTableItem "{8A3D51F7C20E64B9}" {
+     Id "LF-Sign_EastRiseSeam_How"
+     Target_en_us "Swing a pickaxe at the black coal rocks (not the grey granite) and pick up the coal lumps. The dock's coal freighter takes coal on export orders."
+     Comment "Sign card for the East Rise coal seam plate, How section."
+    }
+    CustomStringTableItem "{16C7E2B04D9A8F53}" {
+     Id "LF-Sign_EastRiseSeam_Title"
+     Target_en_us "East Rise coal seam"
+     Comment "Title of the pole plate at the coal seam on the East Rise ridge (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: East Rise coal seam."
+    }
+    CustomStringTableItem "{C95B0A3E71D2F648}" {
+     Id "LF-Sign_EastRiseSeam_What"
+     Target_en_us "An open seam in the ridge with coal rocks along its foot. Nobody is on shift here: bring your own pickaxe."
+     Comment "Sign card for the East Rise coal seam plate, What section."
+    }
     CustomStringTableItem "{F962FB99DD0ED9A6}" {
      Id "LF-Sign_EveronSawmill_How"
      Target_en_us "*Saw logs into planks* or *Saw hardwood into boards* at a saw in the hall"
@@ -6799,6 +6834,21 @@ StringTable {
      Target_en_us "A walled yard owned by one organization."
      Comment "Sign card for the organization hideout yard, What section."
     }
+    CustomStringTableItem "{E27A60C4195DB38F}" {
+     Id "LF-Sign_HighstoneMine_How"
+     Target_en_us "Swing a pickaxe at the big rust-red rocks (not the grey granite) and pick up the iron nuggets. Smelt three nuggets into a bar at the furnace on Coalman's Brow; sell the bars at the iron counter in the dock wholesale warehouse."
+     Comment "Sign card for the Highstone mine plate, How section."
+    }
+    CustomStringTableItem "{5C1E7A93D20B4F68}" {
+     Id "LF-Sign_HighstoneMine_Title"
+     Target_en_us "Highstone iron mine"
+     Comment "Title of the pole plate at the iron mine on Highstone hill (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Highstone iron mine."
+    }
+    CustomStringTableItem "{0B94D3E6A71C58F2}" {
+     Id "LF-Sign_HighstoneMine_What"
+     Target_en_us "An open cut in the hillside with iron ore rocks along its foot. Nobody is on shift here: bring your own pickaxe."
+     Comment "Sign card for the Highstone mine plate, What section."
+    }
     CustomStringTableItem "{4259F2E50006FDFF}" {
      Id "LF-Sign_Home_CafeOwner_Title"
      Target_en_us "Mr. O. Marchand"
@@ -6933,6 +6983,21 @@ StringTable {
      Id "LF-Sign_Impound_What"
      Target_en_us "Cars left on the street at a server restart are towed here."
      Comment "Sign card for the impound desk, What section."
+    }
+    CustomStringTableItem "{3EAD5354C4AD368C}" {
+     Id "LF-Sign_IronSmelter_How"
+     Target_en_us "Carry two iron nuggets and a lump of coal for every bar. Stand at the furnace and press the smelt action; the bars come out of the door after a minute. Nuggets come from the Highstone mine, coal from East Rise; sell bars at the iron counter in the dock wholesale warehouse."
+     Comment "Sign card for the iron smelter plate, How section (#3244)."
+    }
+    CustomStringTableItem "{4105C72A62F3CEBF}" {
+     Id "LF-Sign_IronSmelter_Title"
+     Target_en_us "Iron smelter"
+     Comment "Title of the pole plate at the centre-east iron smelter (Everon 1989 pack, #3244). Printed on the sign and shown in the prompt as Read: Iron smelter."
+    }
+    CustomStringTableItem "{607FBEBDB66EA4BD}" {
+     Id "LF-Sign_IronSmelter_What"
+     Target_en_us "A brick furnace in the old works yard: a coal heap, a hopper and a truck bay. Smelting is a trade of its own: a bar here needs Smelting level 8."
+     Comment "Sign card for the iron smelter plate, What section (#3244)."
     }
     CustomStringTableItem "{8D07E91EFB59E777}" {
      Id "LF-Sign_Jail_How"

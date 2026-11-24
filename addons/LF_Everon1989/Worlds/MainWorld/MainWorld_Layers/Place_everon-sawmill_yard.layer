@@ -79,3 +79,7 @@ GenericEntity Fit_everon_sawmill_yard_source_sawmill_fence_4 : "{57873EAF69D5450
  coords 3060.385 0 5255.11
  angleY 49
 }
+GenericEntity Mapper_everon_sawmill_yard_M1 : "{A4E81D6C2F9B3057}Prefabs/Props/LF_ShiftBoard.et" {
+ coords 3090.49 118.469 5258.009
+ angleY 180
+}

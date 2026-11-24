@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "place": "eastcompound",
+  "slot": "smelter",
+  "building": "b01",
+  "kit": "iron-smelter",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_eastcompound_smelter.layer",
+  "kinds": [
+    "Workplace",
+    "plant"
+  ],
+  "rows": 11,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_eastcompound_smelter_Place"
+  },
+  "date": "2026-11-24"
+}

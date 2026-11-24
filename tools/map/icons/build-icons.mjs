@@ -101,6 +101,9 @@ const SHAPES = {
   truck: (k) => `<rect x="4" y="14" width="34" height="28" rx="2" ${S(k, 3.4)}/><path d="M38 22H50L60 32V42H38Z" fill="${k}"/><circle cx="15" cy="47" r="6" fill="${k}"/><circle cx="30" cy="47" r="6" fill="${k}"/><circle cx="51" cy="47" r="6" fill="${k}"/>`,
   car: (k) => `<path d="M6 42V34L16 22H44L56 34H58V42Z" fill="${k}"/><circle cx="18" cy="46" r="7" fill="${k}"/><circle cx="46" cy="46" r="7" fill="${k}"/>`,
   crate: (k) => `<rect x="10" y="14" width="44" height="40" ${S(k)}/><path d="M10 14L54 54M54 14L10 54" ${S(k, 3)}/>`,
+  // Gang registry: an open ledger, the registrar's book. Labor office: a cog, the working trades (#4748).
+  ledger: (k) => `<path d="M32 16Q20 8 6 12V52Q20 48 32 56Q44 48 58 52V12Q44 8 32 16Z" ${S(k)}/><path d="M32 16V56" ${S(k, 3)}/><path d="M12 22Q18 21 25 24M12 31Q18 30 25 33M39 24Q46 21 52 22M39 33Q46 30 52 31" ${S(k, 3)}/>`,
+  cog: (k) => `<circle cx="32" cy="32" r="17" ${S(k, 6)}/><circle cx="32" cy="32" r="5" fill="${k}"/><g stroke="${k}" stroke-width="${(9 * STROKE).toFixed(2)}" stroke-linecap="butt" fill="none"><path d="M32 4V15" transform="rotate(0 32 32)"/><path d="M32 4V15" transform="rotate(45 32 32)"/><path d="M32 4V15" transform="rotate(90 32 32)"/><path d="M32 4V15" transform="rotate(135 32 32)"/><path d="M32 4V15" transform="rotate(180 32 32)"/><path d="M32 4V15" transform="rotate(225 32 32)"/><path d="M32 4V15" transform="rotate(270 32 32)"/><path d="M32 4V15" transform="rotate(315 32 32)"/></g>`,
 };
 // ---- the badge: every pack pictogram is the same disc, rim and line weight; the group says the colour -----
 // (map rework 2026-11-22, "clean nice designed icons for each type of place"). Muted print inks, no neon.
@@ -128,6 +131,7 @@ const KIND_BADGE = {
   FarmYard: ["tractor", "work"], LoggingYard: ["axe", "work"],
   Orchard: ["appletree", "work"], Wheat: ["wheat", "work"], Woodlot: ["pine", "work"], Sawmill: ["sawmill", "work"], Scrap: ["scrap", "work"],
   Fish: ["fish", "work"], Smokehouse: ["smoked", "work"],
+  OrgDesk: ["ledger", "civic"], LabourOffice: ["cog", "civic"],
   PlotForSale: ["house", "home"], Story: ["flag", "story"], Fence: ["diamond", "underworld"],
 };
 function badge(glyph, group) {

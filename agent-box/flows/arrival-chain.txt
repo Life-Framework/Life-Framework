@@ -1,9 +1,31 @@
 # Arrival chain (M1-18): a fresh player registers at the clerk, gets the ID card, reads the town
 # board, runs one parcel, banks the cash, and returns to the clerk for the welcome.
-# Requires a fresh profile (form R-89 is the first screen); signing it spawns the character.
+# Requires a fresh profile (the rules quiz, then form R-89); signing the form spawns the character.
 # Dedicated session: node agent-box/session.mjs up --clients 1
 #                    node agent-box/harness.mjs --client 1 flow arrival-chain
 ui
+click QuizOption1Button
+wait 1200
+click QuizNextButton
+wait 500
+click QuizOption0Button
+wait 1200
+click QuizNextButton
+wait 500
+click QuizOption2Button
+wait 1200
+click QuizNextButton
+wait 500
+click QuizOption1Button
+wait 1200
+click QuizNextButton
+wait 500
+click QuizOption0Button
+wait 1200
+click QuizNextButton
+wait 2500
+click QuizContinueButton
+wait 2500
 type RegFirstName Ada
 type RegLastName Lovelace
 type RegAge 36
@@ -12,16 +34,27 @@ wait 7000
 shot ui arrival_0_spawn_hint
 state
 shot world Quest_Clerk
-# Talking to the clerk is a conversation scene: the greeting plays, the first reply
-# ("I am new in town.") runs the talk, the clerk answers, Back leaves.
+# Talking to the clerk is a conversation scene: the greeting plays, then the replies show. The flow
+# answers the way a player does: wait for `choosing`, MenuDown/MenuUp to move the focus, MenuSelect to
+# confirm (a Select while a line plays only skips it). The first reply runs the talk (papers, room, town),
+# the clerk ends on her menu, Back leaves. If a key ever fails: `dialogue pick 0`, `dialogue bye`.
 layer Quest_Clerk LF_QuestAction w
-wait 5000
+dialogue-wait choosing greet
 shot ui arrival_1_replies
+input MenuDown
+wait 600
+input MenuUp
+wait 600
 input MenuSelect
-wait 2000
+dialogue-wait choosing welcome_papers
+input MenuSelect
+dialogue-wait choosing welcome_room
+input MenuSelect
+dialogue-wait choosing welcome_town
+input MenuSelect
+dialogue-wait line menu
 shot ui arrival_1_card_handed
-input MenuSelect
-wait 1500
+dialogue-wait choosing menu
 shot ui arrival_2_errand
 input MenuBack
 wait 1500
@@ -51,7 +84,7 @@ input MenuBack
 wait 1500
 shot ui arrival_5_errand
 layer Quest_Clerk LF_QuestAction w
-wait 5000
+dialogue-wait choosing
 input MenuSelect
 wait 2000
 shot ui arrival_5_welcome
@@ -59,7 +92,7 @@ input MenuBack
 wait 1500
 state
 layer Quest_Clerk LF_QuestAction w
-wait 5000
+dialogue-wait choosing
 input MenuSelect
 wait 2000
 shot ui arrival_6_clerk_idle

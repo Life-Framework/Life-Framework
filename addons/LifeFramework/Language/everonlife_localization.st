@@ -13597,6 +13597,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The soil is dry. It needs water."
      Comment "Inspect toast: the plant can be watered now (#2664)."
     }
+    CustomStringTableItem "{570FA0D843201D55}" {
+     Id "LF-PlayerMenuFile_BackInDays"
+     Target_en_us "Back in %1 days"
+     Comment "Personal file My file tab: days left before you can get a seized license again. %1 = in-game days."
+    }
+    CustomStringTableItem "{7A5439052B9C5DB6}" {
+     Id "LF-PlayerMenuFile_BookedDaysAgo"
+     Target_en_us "%1 days ago"
+     Comment "Personal file My file tab: the latest booking was %1 in-game days ago (2 or more)."
+    }
+    CustomStringTableItem "{856FE81A052274CE}" {
+     Id "LF-PlayerMenuFile_BookedToday"
+     Target_en_us "Today"
+     Comment "Personal file My file tab: the latest booking was today."
+    }
+    CustomStringTableItem "{C34A076E3328C276}" {
+     Id "LF-PlayerMenuFile_BookedYesterday"
+     Target_en_us "Yesterday"
+     Comment "Personal file My file tab: the latest booking was yesterday."
+    }
+    CustomStringTableItem "{B55AA2D7B6581EFC}" {
+     Id "LF-PlayerMenuFile_BookingLatest"
+     Target_en_us "Latest"
+     Comment "Personal file My file tab: label of when the latest booking was."
+    }
+    CustomStringTableItem "{F481BAAD9F51B93E}" {
+     Id "LF-PlayerMenuFile_BookingsNone"
+     Target_en_us "No bookings on your record."
+     Comment "Personal file My file tab: you were never booked."
+    }
+    CustomStringTableItem "{37813A89028CFD07}" {
+     Id "LF-PlayerMenuFile_BookingsOnRecord"
+     Target_en_us "On your record"
+     Comment "Personal file My file tab: label of the count of bookings."
+    }
+    CustomStringTableItem "{2E215005E56BCC7F}" {
+     Id "LF-PlayerMenuFile_HeadBookings"
+     Target_en_us "BOOKINGS"
+     Comment "Personal file My file tab: card heading, times you were booked at the station."
+    }
+    CustomStringTableItem "{5CECE9A37CD53994}" {
+     Id "LF-PlayerMenuFile_HeadLicences"
+     Target_en_us "SEIZED LICENSES"
+     Comment "Personal file My file tab: card heading, licenses taken from you."
+    }
+    CustomStringTableItem "{4B7202437ACFD27E}" {
+     Id "LF-PlayerMenuFile_HeadTickets"
+     Target_en_us "OPEN TICKETS"
+     Comment "Personal file My file tab: card heading, tickets you have not paid."
+    }
+    CustomStringTableItem "{1B6D7F751FDA116C}" {
+     Id "LF-PlayerMenuFile_LicenceDriving"
+     Target_en_us "Driver license"
+     Comment "Personal file My file tab: name of the seized driving license."
+    }
+    CustomStringTableItem "{6EB166187A523AF2}" {
+     Id "LF-PlayerMenuFile_LicenceFirearm"
+     Target_en_us "Firearm permit"
+     Comment "Personal file My file tab: name of the seized firearm permit."
+    }
+    CustomStringTableItem "{57DD9D56B0F920CF}" {
+     Id "LF-PlayerMenuFile_LicenceOther"
+     Target_en_us "License"
+     Comment "Personal file My file tab: name of any other seized license."
+    }
+    CustomStringTableItem "{777ED663245DE584}" {
+     Id "LF-PlayerMenuFile_LicencesNone"
+     Target_en_us "No license has been seized."
+     Comment "Personal file My file tab: nothing was taken from you."
+    }
+    CustomStringTableItem "{573CBFF3D455E78C}" {
+     Id "LF-PlayerMenuFile_TicketLabel"
+     Target_en_us "Ticket %1: %2"
+     Comment "Personal file My file tab: one ticket row. %1 = ticket number, %2 = the offence."
+    }
+    CustomStringTableItem "{72B70C6B7BC67C28}" {
+     Id "LF-PlayerMenuFile_TicketsNone"
+     Target_en_us "No open tickets."
+     Comment "Personal file My file tab: you owe nothing on a ticket."
+    }
+    CustomStringTableItem "{450FC8E2C44F3CBF}" {
+     Id "LF-PlayerMenuFile_Waiting"
+     Target_en_us "Pulling your file..."
+     Comment "Personal file My file tab: shown until the server answers."
+    }
     CustomStringTableItem "{913159AB574CA2A1}" {
      Id "LF-PlayerMenuGang_Flag"
      Target_en_us "Flag"
@@ -14071,6 +14156,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-PlayerMenu_Summary"
      Target_en_us "Errands on file: %1 of %2 done"
      Comment "Personal file Progress tab summary. %1 = done, %2 = listed."
+    }
+    CustomStringTableItem "{30031590BAD269AF}" {
+     Id "LF-PlayerMenu_TabFile"
+     Target_en_us "My file"
+     Comment "Personal file tab button: your tickets, bookings and seized licences."
     }
     CustomStringTableItem "{E6EFC108394AC7CF}" {
      Id "LF-PlayerMenu_TabGang"
@@ -18058,10 +18148,10 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take the truck check ({currency:sym}300)"
      Comment "Action on the examiner: pay the fee and take the lent truck for the licence check (#4696)."
     }
-    CustomStringTableItem "{2A219B969BC5CBDC}" {
-     Id "LF-TruckCheck_ActionName"
+    CustomStringTableItem "{F0C30EB379F299C1}" {
+     Id "LF-TruckCheck_ActionPlain"
      Target_en_us "Take the truck check"
-     Comment "Prefab name of the examiner action; the engine cannot expand a term, so no fee here. The shown label is LF-TruckCheck_Action (#4697)."
+     Comment "Prefab name of the examiner action; the script shows LF-TruckCheck_Action with the fee (#4696)."
     }
     CustomStringTableItem "{AFE6468581F2B50C}" {
      Id "LF-TruckCheck_FailedAway"

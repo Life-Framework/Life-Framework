@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "place": "highstone",
+  "slot": "mine",
+  "plot": "p6",
+  "hostless": true,
+  "kit": "iron-face",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_highstone_mine.layer",
+  "kinds": [
+    "Workplace",
+    "mine"
+  ],
+  "rows": 28,
+  "destruction": {
+    "mode": "none",
+    "reason": "hostless plot: no building stands in the slot"
+  },
+  "date": "2026-11-24"
+}
