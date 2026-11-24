@@ -289,6 +289,10 @@ GenericEntity Fit_saint_philippe_police_police_kit_booking_inkwell : "{E73C26C2B
  coords 4554.1 19.14 10747.778
  angleY -99
 }
+GenericEntity Fit_saint_philippe_police_police_kit_booking_typewriter : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
+ coords 4553.867 19.142 10746.881
+ angleY -99
+}
 GenericEntity Fit_saint_philippe_police_police_kit_law_book_lectern : "{A4C17E2B9D305F68}Prefabs/Props/Police/LF_LawBookLectern.et" {
  coords 4548.281 18.236 10742.758
  angleY -99
