@@ -38,8 +38,15 @@ class LF_OrgFlagWall
 	static const string NAME_KEY_PREFIX = "LF-OrgFlag_Name_";
 	//! Samples per row on the wall.
 	static const int COLUMNS = 5;	// lf-fixed: the wall's layout; the prefab's action contexts use the same grid
-	//! Metres between two samples, both ways.
-	static const float SPACING = 1.2;	// lf-fixed: the wall's layout
+	//! Metres between two samples along a row: a waving cloth is about 1.5 m wide, so a pitch of 1.9 keeps
+	//! every cloth clear of its neighbour (at 1.2 they overlapped into one heap).
+	static const float SPACING = 1.9;	// lf-fixed: the wall's layout
+	//! Metres between two rows, so a cloth never reaches the poles of the row behind it.
+	static const float ROW_SPACING = 2.2;	// lf-fixed: the wall's layout
+	//! Metres the wall's first row stands out from the board.
+	static const float FIRST_ROW = 1.5;	// lf-fixed: the wall's layout
+	//! Every other row slides half a pitch sideways, so the row behind shows between the cloths in front.
+	static const float STAGGER = 0.95;	// lf-fixed: half of SPACING
 	//! Size of a sample against the full pole.
 	static const float SAMPLE_SCALE = 0.3;	// lf-fixed: the wall's layout
 
@@ -75,13 +82,18 @@ class LF_OrgFlagWall
 
 	//------------------------------------------------------------------------------------------------
 	//! Where a flag's sample stands, local to the wall: a grid COLUMNS wide in front of the board (its
-	//! front is -Z), the first row one metre out and each next row SPACING further.
+	//! front is -Z), the first row FIRST_ROW out and each next row ROW_SPACING further, every other row
+	//! slid STAGGER sideways. The whole grid is centred on the board.
 	static vector SampleOffset(int flag)
 	{
 		int index = flag - 1;
 		int column = index % COLUMNS;
 		int row = index / COLUMNS;
-		return Vector((column - (COLUMNS - 1) * 0.5) * SPACING, 0, -(1.0 + row * SPACING));
+		float x = (column - (COLUMNS - 1) * 0.5) * SPACING - STAGGER * 0.5;
+		if (row % 2 == 1)
+			x = x + STAGGER;
+
+		return Vector(x, 0, -(FIRST_ROW + row * ROW_SPACING));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -322,7 +334,11 @@ class LF_OrgFlagWallComponent : ScriptComponent
 			EntitySpawnParams params();
 			params.TransformMode = ETransformMode.LOCAL;
 			params.Parent = owner;
-			params.Transform[3] = LF_OrgFlagWall.SampleOffset(flag);
+			// Each sample stands on the ground under its own spot, not at the board's height: the grid is 8 m wide.
+			vector local = LF_OrgFlagWall.SampleOffset(flag);
+			vector spot = owner.CoordToParent(local);
+			local[1] = owner.GetWorld().GetSurfaceY(spot[0], spot[2]) - owner.GetOrigin()[1];
+			params.Transform[3] = local;
 			params.Scale = LF_OrgFlagWall.SAMPLE_SCALE;
 			IEntity sample = GetGame().SpawnEntityPrefabLocal(resource, owner.GetWorld(), params);
 			if (!sample)
