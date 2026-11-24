@@ -1,0 +1,226 @@
+{
+  "schema": 1,
+  "kit": "iron-smelter",
+  "system": "mining",
+  "source": {
+    "file": "tools/town/kits/sources/iron-smelter.layer",
+    "group": "*",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -12,
+        10
+      ],
+      "max": [
+        11,
+        22
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "The centre-east iron smelter on the open works apron in front of the compound workshop (the host): the kit frame is the workshop's, +z is its door side, and every row rests on the probed ground (`--terrain`). The brick furnace (the plant: 2 iron nuggets and 1 coal make a bar) stands at the door end; a coal heap with a barrow and bucket lies to its west, a hopper (shaft tippler, metal bin and a rail cart) and a Ural parked along the fence with its tail at the bin make the truck bay to the east, two flood lamps light the apron and the pole plate with its card stands in front. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "smelter-furnace",
+      "name": "Smelter_Furnace",
+      "prefab": "{CBFF9864374D9542}Prefabs/Processor/LF_IronSmelter.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -3.5,
+        0,
+        11.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-coal-heap",
+      "name": "Smelter_CoalHeap",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -11,
+        0.082,
+        12
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-barrow",
+      "name": "Smelter_Barrow",
+      "prefab": "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -7.5,
+        0,
+        14
+      ],
+      "yaw": 25,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-bucket",
+      "name": "Smelter_Bucket",
+      "prefab": "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -8.8,
+        0,
+        15.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-tippler",
+      "name": "Smelter_Tippler",
+      "prefab": "{8CBA9D089278A4D7}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_tippler.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6,
+        0,
+        12
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-bin",
+      "name": "Smelter_Bin",
+      "prefab": "{17ADCDC2721AC2E7}Prefabs/Props/Construction/ContainerMetal_01/ContainerMetal_01_low_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6,
+        0,
+        19
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-cart",
+      "name": "Smelter_Cart",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.5,
+        -0.329,
+        15.5
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-truck",
+      "name": "Smelter_Truck",
+      "prefab": "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -0.3,
+        0,
+        19
+      ],
+      "yaw": 270,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-flood-a",
+      "name": "Smelter_FloodA",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -1,
+        0,
+        14.5
+      ],
+      "yaw": 160,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-flood-b",
+      "name": "Smelter_FloodB",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        10,
+        0,
+        11
+      ],
+      "yaw": -160,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-sign",
+      "name": "Smelter_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        -6,
+        0,
+        18.5
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "guid": "026619B31213409D",
+          "set": {
+            "m_sSignId": "\"iron-smelter\"",
+            "m_vRimColor": "0.12 0.1 0.08",
+            "m_vPaintColor": "0.9 0.86 0.74",
+            "m_vTextColor": "0.12 0.1 0.08"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "kind": "smelter",
+  "about": "A works yard where the iron chain ends: an iron smelter on the apron in front of one workshop, with its coal heap, hopper, truck bay, work lights and sign. One slot, hosted by the yard's workshop building. Same shape as truckyard.json, with the map mark as a `plant` place. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "smelter", "required": true, "kit": "iron-smelter", "host": "building", "poi": "plant", "margin": 90,
+      "needs": { "interior": "optional", "minArea": 25, "prefer": "far", "types": ["garage", "shed", "industrial", "farm"] },
+      "places": ["Workplace", "plant"]
+    }
+  ]
+}
