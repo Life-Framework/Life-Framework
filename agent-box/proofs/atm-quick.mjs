@@ -56,10 +56,23 @@ async function runAtmQuickProof(args) {
   if (before.bank - afterWithdraw.bank !== 20) fails.push(`the bank fell by ${before.bank - afterWithdraw.bank}, not 20`);
   if (afterWithdraw.cash - before.cash !== 20) fails.push(`the cash rose by ${afterWithdraw.cash - before.cash}, not 20`);
 
-  // The deposit drawer: the row after "withdraw all" deposits all the cash on you.
+  // The deposit drawer: the row after "withdraw all" deposits all the cash on you. The last cash leaving froze the
+  // client for 25-30 s (#4870): `framegap` reads the longest wall time between two harness polls across the deposit.
+  on({ verb: "framegap" }, 10000);
   const d = on({ verb: "use", className: "LF_ATMQuickAction__5" }, 10000);
   wait(1500);
   const afterDeposit = money();
+  wait(3000);
+  // A client can answer no_session for a moment; ask again, and an answer that never comes is its own failure.
+  let gapReply = "";
+  for (let i = 0; i < 6 && !/max=\d+/.test(gapReply); i++) {
+    const r = on({ verb: "framegap" }, 20000);
+    if (r.status === "ok") gapReply = String(r.detail); else wait(2000);
+  }
+  const gap = Number((/max=(\d+)/.exec(gapReply) ?? [0, NaN])[1]);
+  console.log(`deposit all: longest client frame gap ${Number.isNaN(gap) ? "unknown (no framegap answer)" : `${gap} ms`}`);
+  if (Number.isNaN(gap)) fails.push("framegap never answered after the deposit");
+  else if (gap >= 1000) fails.push(`the client stalled ${gap} ms after depositing all its cash (#4870)`);
   shot("atm_island_after_deposit");
   console.log(`deposit all: bank ${afterWithdraw.bank} -> ${afterDeposit.bank}, cash ${afterWithdraw.cash} -> ${afterDeposit.cash}`);
   if (d.status !== "ok") fails.push(`the deposit row was refused: ${d.detail}`);

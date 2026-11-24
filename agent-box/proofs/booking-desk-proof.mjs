@@ -209,8 +209,21 @@ async function runBookingDeskProof() {
   const lookB = on(2, { verb: "look" }, 10000);
   step("1e B's action list at the desk shows both answers", (lookB.detail.match(/LF_BookingDeskAnswerAction/g) ?? []).length >= 2, lookB.detail);
   shot(2, "1_offer_pay_and_time");
+  // Paying froze the suspect's client for about 20 s (#4824): `framegap` reads the longest wall time between two
+  // harness polls (400 ms apart) from just before the answer until the pay has settled.
+  on(2, { verb: "framegap" }, 10000);
   const pay = answer(2, PAY, "1_answer_in_view");
   const after = state(2);
+  wait(3000);
+  // A client can answer no_session for a moment; ask again, and an answer that never comes is its own failure.
+  let gapReply = "";
+  for (let i = 0; i < 6 && !/max=\d+/.test(gapReply); i++) {
+    const r = on(2, { verb: "framegap" }, 20000);
+    if (r.status === "ok") gapReply = String(r.detail); else wait(2000);
+  }
+  const payGap = Number((/max=(\d+)/.exec(gapReply) ?? [0, NaN])[1]);
+  console.log(`client 2: longest frame gap across the pay ${Number.isNaN(payGap) ? "unknown (no framegap answer)" : `${payGap} ms`}`);
+  step("1f0 B's game keeps running while paying: no frame gap of 1 s or more", payGap < 1000, Number.isNaN(payGap) ? "no framegap answer" : `longest gap ${payGap} ms`);
   step("1f B pays: cash and bank drop by exactly the fine", pay.status === "ok" && money(before) - money(after) === fine, `use=${pay.status}; ${money(before)} -> ${money(after)}, fine $${fine}`);
   step("1g paid: the cuffs come off and the wanted level clears", after.cuffed === "0" && Number(after.wanted) === 0, `cuffed=${after.cuffed} wanted=${after.wanted}`);
   const lines = serverLog();
