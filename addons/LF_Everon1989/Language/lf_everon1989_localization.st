@@ -7504,6 +7504,21 @@ StringTable {
      Target_en_us "POSTAL SERVICE"
      Comment "Livery lettering on both side panels of the yellow post van (postal van run)."
     }
+    CustomStringTableItem "{913493F0D0E2A82D}" {
+     Id "LF-Sign_PowerPlantCoal_How"
+     Target_en_us "Put coal lumps on the buyer's counter. When the yard is full the buyer says so and tells you when to come back; the rest sells at the harbor wholesale at a lower price."
+     Comment "Sign card for the power plant coal yard plate, How section (#4491)."
+    }
+    CustomStringTableItem "{FD7C7A946FB9CE98}" {
+     Id "LF-Sign_PowerPlantCoal_Title"
+     Target_en_us "Power plant coal yard"
+     Comment "Title of the pole plate at the power plant coal yard (Everon 1989 pack, #4491). Printed on the sign and shown in the prompt as Read: Power plant coal yard."
+    }
+    CustomStringTableItem "{7D2517D3B1147690}" {
+     Id "LF-Sign_PowerPlantCoal_What"
+     Target_en_us "The power plant buys coal by the lump: 8 dollars each, up to a truck load, and it takes more as the day goes on. Bring coal from the East Rise seam."
+     Comment "Sign card for the power plant coal yard plate, What section (#4491)."
+    }
     CustomStringTableItem "{A1B2C3D4E5F60733}" {
      Id "LF-Sign_QuarryInfo_How"
      Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."

@@ -360,6 +360,12 @@
       "kind": "size",
       "layer": "Place_outpost-north_camp.layer",
       "why": "The gate line of the north outpost is the vanilla Sandbag_01_long_high_burlap and _end_high_burlap, a stacked sandbag wall run (3.4 m and 2.1 m long, shoulder high); the audit sizes a name with 'bag' as one 25 kg bag (#4675)."
+    },
+    {
+      "match": "^Fit_powerplant_buyer_coal_heap_[lmr] ",
+      "kind": "size",
+      "layer": "Place_powerplant_buyer.layer",
+      "why": "The three coal heaps of the power plant coal yard are the vanilla GravelPile_01_base (8.28 m across), the same prop the Coalman's Brow mine and the coal-pile kit use; a coal yard heap is meant to be that large (#4491)."
     }
   ]
 }
