@@ -88,3 +88,16 @@ GenericEntity Places_PharmacyCounterAnchor {
  coords 136.9 0.199 267.3
  angleY 180
 }
+GenericEntity Places_FenceYard {
+ components {
+  LF_PlaceComponent "{8F2C61D7A3B94E05}" {
+   m_sKind "FenceYard"
+   m_sId "saint-philippe.fence"
+  }
+ }
+ coords 186.498 0 306.571
+}
+GenericEntity Town_OutpostBoard : "{6C4AFD9C193BC4EC}Prefabs/Outposts/LF_OutpostBoard.et" {
+ coords 131.615 0.001 246.999
+ angleY -90
+}

@@ -372,6 +372,18 @@
       "kind": "odd-scale",
       "layer": "Place_meaux_speedtrap.layer",
       "why": "The Meaux speed-trap lay-by pad is the vanilla GravelPile_01_base at scale 0.5 (4.5 x 2.7 m instead of the 8.3 m heap), turned 90 degrees to clear the verge wall; it is the smallest gravel mesh vanilla has, and 0.5 is the audit's own lower limit (#4778)."
+    },
+    {
+      "match": "^Fit_outpost_north_camp_outpost_camo_net_pallets ",
+      "kind": "odd-scale",
+      "layer": "Place_outpost-north_camp.layer",
+      "why": "The camo net over the north outpost pallets is the vanilla CamoNet_Small_Soviet, 13.6 x 12.5 m at scale 1, a canopy for a vehicle park. At 0.5 it is 6.8 x 6.3 m, which covers the pallet stack and the crate row; 0.5 is the audit's own lower limit (#4180)."
+    },
+    {
+      "match": "^Fit_outpost_north_camp_outpost_pallet_box_1 ",
+      "kind": "clips",
+      "layer": "Place_outpost-north_camp.layer",
+      "why": "The camo net stands over the outpost pallet stack on its own corner poles, so its bounding box encloses the pallets by design; the net is a canopy, not a solid (#4180)."
     }
   ]
 }

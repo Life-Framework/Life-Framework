@@ -125,6 +125,7 @@ GenericEntity Fit_outpost_north_camp_outpost_canvas_cover_crates : "{BFC48B664ED
 GenericEntity Fit_outpost_north_camp_outpost_camo_net_pallets : "{79AA43911CC6C3E8}Prefabs/Structures/Military/CamoNets/Soviet/CamoNet_Small_Soviet.et" {
  coords 7728.9 8.906 8341
  angleY -90
+ scale 0.5
 }
 GenericEntity Fit_outpost_north_camp_outpost_stool_w : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
  coords 7739.5 7.945 8336.001

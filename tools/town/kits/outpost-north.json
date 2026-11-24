@@ -394,6 +394,7 @@
     },
     {
       "id": "outpost-camo-net-pallets",
+      "scale": 0.5,
       "name": "Outpost_CamoNet_Pallets",
       "prefab": "{79AA43911CC6C3E8}Prefabs/Structures/Military/CamoNets/Soviet/CamoNet_Small_Soviet.et",
       "role": "dressing",
