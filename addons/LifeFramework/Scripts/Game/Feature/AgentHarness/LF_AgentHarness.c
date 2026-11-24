@@ -1269,6 +1269,7 @@ class LF_AgentHarness
 
 		s_bLoop = true;
 		s_pLoopMode = mode;
+		LF_HarnessPerf.ResetPollGap();
 		GetGame().GetCallqueue().CallLater(Poll, 400, true);
 		// Registered before any screen's own per-frame poll, so it runs first each frame (#199).
 		GetGame().GetCallqueue().CallLater(HoldInput, 0, true);
@@ -1278,6 +1279,7 @@ class LF_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	static void Poll()
 	{
+		LF_HarnessPerf.NotePoll();
 		FinishCapture();
 		string perfDetail;
 		int perfId = LF_HarnessPerf.TakeResult(perfDetail);
@@ -2577,11 +2579,24 @@ class LF_AgentHarness
 		// An entity name seats this character at the wheel of that vehicle first (a teleport into the seat).
 		if (!vehicle && cmd.Arg1 != "")
 		{
-			// Names do not exist on a client: take the nearest vehicle within 6 m.
+			// Names do not exist on a client: take the nearest vehicle within 6 m. "veh_<text>" narrows it to the
+			// nearest vehicle whose prefab path contains <text> (round 7: the nearest car was the starter car, not the
+			// police car the proof meant); no such vehicle is seat_no_entity, never another car.
 			IEntity named;
 			array<IEntity> nearby = LF_Utils.GetNearbyVehicles(character.GetOrigin(), 6);
-			if (!nearby.IsEmpty())
-				named = nearby[0];
+			string prefabText;
+			if (cmd.Arg1.StartsWith("veh_"))
+				prefabText = cmd.Arg1.Substring(4, cmd.Arg1.Length() - 4);
+
+			foreach (IEntity candidate : nearby)
+			{
+				// lf-path-ok: harness substring filter typed by the tester
+				if (!prefabText.IsEmpty() && !LF_Utils.GetPrefabName(candidate).Contains(prefabText))
+					continue;
+
+				named = candidate;
+				break;
+			}
 			SCR_CompartmentAccessComponent seatAccess = SCR_CompartmentAccessComponent.Cast(access);
 			if (!named)
 			{

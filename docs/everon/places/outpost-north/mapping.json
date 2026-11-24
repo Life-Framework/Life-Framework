@@ -3,7 +3,7 @@
   "template": "outpost",
   "place": "outpost-north",
   "status": "approved",
-  "note": "Hand-written for #4675 (the north rebel outpost on the island). The site is the scout's of #4218 (docs/everon/places/outpost-north/site.md): no building stands in 120 m, so the one slot is a hostless plot (#3666) and the camp kit (#4555) anchors on the plot centre with every row resting on the probed ground. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "note": "Hand-written for #4675 (the north rebel outpost on the island). The site is the scout's of #4218 (docs/everon/places/outpost-north/site.md): no building stands in 120 m, so the one slot is a hostless plot (#3666) and the camp kit (#4555) anchors on the plot centre with every row resting on the probed ground. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18). Moved from plot p3 (a meadow falling 8 m to the sea) to the flat plot p1 on the plateau on 2026-11-24: the probed rows fall 0.65 m across the camp; the self-imposed 4 km minimum became about 3.9 km (the nearest row is 3.92 km out).",
   "dossier": {
     "schema": 1,
     "generated": "2026-11-23",
@@ -12,11 +12,11 @@
   },
   "slots": {
     "camp": {
-      "plot": "p3",
+      "plot": "p1",
       "hostless": true,
       "why": [
-        "free plot p3 (34 x 60 m, ground 3.6 to 11.5 m) is the meadow of the scout's site card, 23 m from the surveyed centre and the only plot that holds the 20 x 20 m camp and keeps every row at least 4 km from the village (the nearest row is about 4.03 km out); p1 on the plateau is flatter but 3.95 km out",
-        "no road within 120 m: a car reaches the gate over the pine floor along the free strip p2 on the plot's west side, and the pines hide the camp from the road"
+        "free plot p1 (50 x 56 m, ground 15.1 to 16.9 m) on the plateau west of the meadow: the camp moved here from p3 (#4675 follow-up) because p3 fell 8 m toward the sea and the maintainer found the camp on a hillside; the kit stands on the plot centre and covers about 20 x 20 m of it, about 3.92 km from Saint-Philippe at its nearest row (the earlier 4 km minimum was our own rule, not a game rule, and was relaxed to about 3.9 km for flat ground)",
+        "no road within 120 m: a car comes up the free strip p2 (x 7688, z 8237 to 8355) and crosses the south half of p1 to the gate, which faces south; the pines around the plateau hide the camp from the road"
       ]
     }
   }
