@@ -15,7 +15,7 @@ GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
     UserActionContext "{15718B2234EF9472}" {
      ContextName "LF_LiveryBay"
      Position PointInfo "{095C3E35B93D3E9C}" {
-      Offset 0 1 0
+      Offset 0 1.079 0
      }
      Radius 3
     }

@@ -11,7 +11,7 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
     UserActionContext "{9D3A5F72E8B1C046}" {
      ContextName "LF_GarbageDepot"
      Position PointInfo "{14C8E0B6A3F29D75}" {
-      Offset 0 0.9 0
+      Offset 0 0.956 0
      }
      Radius 2
     }
