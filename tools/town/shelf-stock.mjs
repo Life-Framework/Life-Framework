@@ -42,6 +42,14 @@ export const SHOPS = {
     // Boards, lowest first, that carry goods (0.588, 1.081, 1.574): eye and hand height, no floor board, no top.
     boards: [1, 2, 3],
     perBoard: 8,
+    // The sloped gondolas of the hall (`ShelfShop_01`, twelve units: the shelves a player faces from the door).
+    // Each takes the next item in the stock's order (wrapping), so the neighbours differ; a unit's points join
+    // that item's line. Board 0 (0.102) sits under the baskets, so it stays bare; 1, 2 and 3 carry goods.
+    gondola: {
+      fixture: "Prefabs/Props/Commercial/ShelfShop_01.et",
+      boards: [1, 2, 3],
+      perBoard: 5,
+    },
     // The boundary of the store: the host's own model bounds, leaving it with unpaid goods is shoplifting.
     restockSeconds: 120,
   },
@@ -96,11 +104,14 @@ export function stockItems(confText, stockId) {
 
 // Pure: the lines of the store from the units, the measured boards and the measured goods.
 // Returns { lines: [{ item, slots, max, restock }], skipped: [{ item, why }], problems }.
-export function planShelves({ units, items, itemRefs, boards, boardIdx, perBoard, gondolaZ }) {
+// `gondola` (optional) is a second fixture type: { units, boards, boardIdx, perBoard }. Its units, sorted, take the
+// items that fit its boards in turn (wrapping), and the points join that item's line, so one item stands on
+// the wall units and on several gondolas, one copy per point.
+export function planShelves({ units, items, itemRefs, boards, boardIdx, perBoard, gondolaZ, gondola = null }) {
   const problems = [];
   const skipped = [];
   // The units that stand in the gondola runs, in sorted order, one line each (front sides face the aisles).
-  const gondola = sortUnits(units.filter((u) => Math.abs(u.at[2] - gondolaZ) < 0.1));
+  const wallRun = sortUnits(units.filter((u) => Math.abs(u.at[2] - gondolaZ) < 0.1));
   const lines = [];
   let k = 0;
   for (const ref of itemRefs) {
@@ -109,7 +120,7 @@ export function planShelves({ units, items, itemRefs, boards, boardIdx, perBoard
       problems.push(`${itemKey(ref)}: not measured`);
       continue;
     }
-    const unit = gondola[k];
+    const unit = wallRun[k];
     if (!unit) {
       skipped.push({ item: ref, why: "no shelf unit left for it" });
       continue;
@@ -127,9 +138,44 @@ export function planShelves({ units, items, itemRefs, boards, boardIdx, perBoard
       continue;
     }
     k++;
-    lines.push({ item: ref, slots, max: slots.length, restock: Math.max(1, Math.round(slots.length / 6)) });
+    lines.push({ item: ref, slots, max: slots.length, restock: 1 });
   }
-  return { lines, skipped, problems, units: k };
+  let gondolaUnits = 0;
+  if (gondola) {
+    const fits = (ref, unit) => {
+      const item = items[itemKey(ref)];
+      if (!item) return [];
+      const pts = [];
+      for (const b of gondola.boardIdx) {
+        if (!gondola.boards[b]) {
+          problems.push(`gondola board ${b}: the shelf has ${gondola.boards.length} boards`);
+          continue;
+        }
+        pts.push(...slotsOf(unit, gondola.boards[b], item, { perBoard: gondola.perBoard, rows: 1 }));
+      }
+      return pts;
+    };
+    const sorted = sortUnits(gondola.units);
+    const stocked = itemRefs.filter((r) => fits(r, sorted[0]).length);
+    sorted.forEach((unit, j) => {
+      const ref = stocked[j % Math.max(stocked.length, 1)];
+      if (!ref) return;
+      const pts = fits(ref, unit);
+      if (!pts.length) return;
+      let line = lines.find((l) => l.item === ref);
+      if (!line) {
+        line = { item: ref, slots: [], max: 0, restock: 1 };
+        lines.push(line);
+      }
+      line.slots.push(...pts);
+      gondolaUnits++;
+    });
+  }
+  for (const l of lines) {
+    l.max = l.slots.length;
+    l.restock = Math.max(1, Math.round(l.slots.length / 6));
+  }
+  return { lines, skipped, problems, units: k, gondolaUnits };
 }
 
 // The prefab text. Component GUIDs derive from the store key, so a rerun writes the same file.
@@ -192,7 +238,14 @@ async function build(root, name) {
     items[itemKey(ref)] = itemOf(m.bounds);
   }
 
-  const plan = planShelves({ units, items, itemRefs, boards, boardIdx: shop.boards, perBoard: shop.perBoard, gondolaZ: shop.gondolaZ });
+  let gondola = null;
+  if (shop.gondola) {
+    const gf = await measureOne(root, shop.gondola.fixture, { minSize: 0.05 });
+    const gUnits = instancesOf(furniture, shop.gondola.fixture);
+    if (!gUnits.length) throw new Error(`${shop.hostFurniture} places no ${shop.gondola.fixture}`);
+    gondola = { units: gUnits, boards: boardsOf(gf.surfaces), boardIdx: shop.gondola.boards, perBoard: shop.gondola.perBoard };
+  }
+  const plan = planShelves({ units, items, itemRefs, boards, boardIdx: shop.boards, perBoard: shop.perBoard, gondolaZ: shop.gondolaZ, gondola });
 
   const host = await measureOne(root, shop.hostBuilding, { minSize: 0.05 });
   const b = host.bounds;
@@ -226,7 +279,7 @@ export async function main(args, { root = ROOT } = {}) {
   if (!existsSync(`${file}.meta`)) writeFileSync(`${file}.meta`, prefabMeta(freshGuid(guidsInUse(root)), rel));
   for (const l of r.plan.lines) console.log(`        ${itemKey(l.item).replace(/^.*\//, "")}: ${l.slots.length} shelf point(s), max ${l.max}, restock ${l.restock}`);
   for (const s of r.plan.skipped) console.log(`        skipped ${itemKey(s.item).replace(/^.*\//, "")}: ${s.why}`);
-  console.log(`SUMMARY shelf-stock ok ${name}: {${readGuid(`${file}.meta`)}}${rel}, ${r.plan.lines.length} line(s), ${r.plan.lines.reduce((n, l) => n + l.slots.length, 0)} shelf point(s) on ${r.plan.units} of ${r.units.length} shelf unit(s)`);
+  console.log(`SUMMARY shelf-stock ok ${name}: {${readGuid(`${file}.meta`)}}${rel}, ${r.plan.lines.length} line(s), ${r.plan.lines.reduce((n, l) => n + l.slots.length, 0)} shelf point(s) on ${r.plan.units} of ${r.units.length} wall unit(s) and ${r.plan.gondolaUnits} gondola(s)`);
   return 0;
 }
 
