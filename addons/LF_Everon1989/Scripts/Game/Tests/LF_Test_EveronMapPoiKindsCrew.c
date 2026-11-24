@@ -1,7 +1,8 @@
 // red-proof: RedProof() skips the row lookups, so the bar row reads as missing and every check below fails.
 //! everon/map-poi-kinds-crew (#4701): under the Everon 1989 header (the pack leg), the POI table has a public row
 //! for the village bars (`PubBar`: Chotain and Levie) with its own icon and a pack string that resolves, so both bars
-//! show on the public map. The gang registry (`OrgDesk`) joins once it has its own icon badge (split from #4701).
+//! show on the public map. The gang registry (`OrgDesk`) and the labor office (`LabourOffice`) have public rows too,
+//! each with its own pictogram badge (#4748).
 [LF_TestInfo(LF_TestTier.LOGIC, pack: true)]
 class LF_Test_EveronMapPoiKindsCrew : LF_Test
 {
@@ -39,5 +40,7 @@ class LF_Test_EveronMapPoiKindsCrew : LF_Test
 			return;
 
 		CheckKind(ctx, config, "PubBar", "#LF-MapPoi_PubBar", "poi_Pub");
+		CheckKind(ctx, config, "OrgDesk", "#LF-MapPoi_OrgDesk", "poi_OrgDesk");
+		CheckKind(ctx, config, "LabourOffice", "#LF-MapPoi_LabourOffice", "poi_LabourOffice");
 	}
 }
