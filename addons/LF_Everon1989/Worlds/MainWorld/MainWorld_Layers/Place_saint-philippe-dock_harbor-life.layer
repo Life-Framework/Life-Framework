@@ -30,3 +30,6 @@ GenericEntity Fit_saint_philippe_dock_harbor_life_bed_harbor_night : "{A8568D2A6
  coords 4410.003 1.625 11110
  angleY 81
 }
+GenericEntity Fit_saint_philippe_dock_harbor_life_ship_horn : "{4A360B5CEDDC0855}Prefabs/Atmosphere/LF_ShipHorn.et" {
+ coords 4400.5 4.6 11100
+}

@@ -1,18 +1,89 @@
-import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { arrive, clientBox, newestLog, parseState, readSession, sessionDir } from "../session.mjs";
+import { ROOT, arrive, clientBox, newestLog, parseState, readSession, sessionDir } from "../session.mjs";
 
-// The truck licence check at the north-east compound (#4697), one client on the island:
+// The truck licence check at the north-east compound, end to end (#4697), one client on the island:
 //   node agent-box/session.mjs up --mission island --profile full --wait
 //   node agent-box/session.mjs truck-check-proof
 //   node agent-box/session.mjs down
-// Stands at the examiner, takes the check ($300), then stands at the start spot and at each gate for a picture.
-// The harness cannot drive: gates 0 to 3 are crossed by hand (the PR's manual steps); `LF_Test_TruckCheckGate`
-// covers the gate order in script.
+// The harness cannot drive, so the `truckcheck` verb (LF_TruckCheckHarness, harness builds only) moves the lent
+// truck through the gates in short steps; the gates test its path between server ticks as they do for a driven truck.
+//  1. Cash: `resetplayer cash` then the island ATM (deposit all, withdraw $500 four times) leaves bank money for
+//     the truck and $2,000 in the pocket for the driving licence and the check fees; `truckcheck licence` buys the
+//     driving licence through the licence desk's server entry (the lot asks for it as well as the truck licence).
+//  2. No truck licence yet: the truck yard's lot refuses the buyer (server log, no cash moves).
+//  3. Failure path: take the check ($300 gone, the Ural lent), drive gates 0 and 1, then back into gate 0:
+//     a gate out of order fails the run and the truck is removed.
+//  4. After the retake wait: take it again, drive gates 0, 1, 2, 3 one at a time (a picture after each):
+//     GATE_OK three times, PASSED, "holds the truck licence" in the server log, the truck removed.
+//  5. The lot now sells: buy the first truck (the Ural, $9,500 from the bank).
+const ATM = "Fit_saint_philippe_atms_drop_b79";
+const LOT = "Fit_ne_compound_truckyard_lot";
 const EXAMINER = "Fit_ne_compound_truckyard_examiner";
 const START = "Fit_ne_compound_truckyard_check_start";
-const GATES = [0, 1, 2, 3].map((i) => `Fit_ne_compound_truckyard_check_gate_${i}`);
-const ACTION = "LF_TruckCheckExaminerAction";
+const TAKE_ACTION = "LF_TruckCheckExaminerAction";
+const BUY_ACTION = "LF_VehicleBuyAction";
+const ATM_ROW = "LF_ATMQuickAction";
+const FEE = 300;
+const TRUCK = 9500;
+
+const escape = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const count = (log, re) => (String(log).match(re) || []).length;
+
+// The gate lines the server logs: `truck check gate <n>: <uid> reached it, the check says <GATE_OK|PASSED|FAILED_COURSE>`.
+export function gateSaid(log, uid, gate, outcome) {
+  return new RegExp(`truck check gate ${gate}: ${escape(uid)} reached it, the check says ${outcome}`).test(String(log));
+}
+
+export const lentCount = (log, uid) => count(log, new RegExp(`truck check: ${escape(uid)} was lent`, "g"));
+export const deletedCount = (log, uid) => count(log, new RegExp(`truck check: ${escape(uid)}'s lent truck is deleted`, "g"));
+export const passedLine = (log, uid) => new RegExp(`truck check: ${escape(uid)} passed the course and holds the truck licence`).test(String(log));
+export const failedLine = (log, uid) => new RegExp(`truck check: ${escape(uid)} reached gate 0, expected 2`).test(String(log));
+export const lotRefusedLine = (log, uid) => new RegExp(`buy from the lot sheet refused for ${escape(uid)}: #LF-Lot_NeedsTruckLicence`).test(String(log));
+export const deskLine = (log, uid) => new RegExp(`licence desk: driving licence issued to ${escape(uid)}`).test(String(log));
+export const lotBoughtLine = (log, uid) => new RegExp(`bought [^\\n]* from the lot sheet for ${escape(uid)}`).test(String(log));
+
+function selftest() {
+  const uid = "00bbbddd-5e55-0000-0000-000000000001";
+  const log = `truck check gate 0: ${uid} reached it, the check says GATE_OK\n`
+    + `truck check: ${uid} was lent #1 at the start\n`
+    + `truck check: ${uid}'s lent truck is deleted\n`
+    + `truck check: ${uid} reached gate 0, expected 2\n`
+    + `truck check: ${uid} passed the course and holds the truck licence\n`
+    + `buy from the lot sheet refused for ${uid}: #LF-Lot_NeedsTruckLicence\n`
+    + `licence desk: driving licence issued to ${uid} for 150\n`
+    + `bought #LF-Vehicle_Ural4320 from the lot sheet for ${uid}\n`;
+  const fails = [];
+  if (!gateSaid(log, uid, 0, "GATE_OK")) fails.push("gateSaid missed gate 0");
+  if (gateSaid(log, uid, 1, "GATE_OK")) fails.push("gateSaid matched a gate that was not reached");
+  if (gateSaid(log, "someone-else", 0, "GATE_OK")) fails.push("gateSaid matched another account");
+  if (lentCount(log, uid) !== 1 || deletedCount(log, uid) !== 1) fails.push("lent/deleted counts");
+  if (!passedLine(log, uid) || !failedLine(log, uid) || !lotRefusedLine(log, uid) || !lotBoughtLine(log, uid) || !deskLine(log, uid)) fails.push("a one-line judge missed its line");
+  if (passedLine(log, "someone-else")) fails.push("passedLine matched another account");
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "truck-check-proof selftest: FAIL" : "truck-check-proof selftest: PASS");
+  return fails.length ? 1 : 0;
+}
+
+// The session's pictures are deleted with the session: copy this run's captures to tmp/truck-check-pics/ as JPG
+// (1280 px wide) before `session down`. Needs ffmpeg on the PATH; says so and goes on without it.
+function keepPictures(dir) {
+  const logs = join(dir, "client1", "logs");
+  if (!existsSync(logs)) { console.log(`no client logs at ${logs}; no pictures kept`); return; }
+  const newest = readdirSync(logs).map((n) => ({ n, t: statSync(join(logs, n)).mtimeMs })).sort((a, b) => b.t - a.t)[0];
+  const captures = join(logs, newest?.n ?? "", "el-captures");
+  if (!existsSync(captures)) { console.log(`no el-captures in ${captures}; no pictures kept`); return; }
+  const out = join(ROOT, "tmp", "truck-check-pics");
+  mkdirSync(out, { recursive: true });
+  let kept = 0;
+  for (const file of readdirSync(captures).filter((f) => /^truck_check_.*\.bmp$/.test(f))) {
+    const r = spawnSync("ffmpeg", ["-loglevel", "error", "-y", "-i", join(captures, file), "-vf", "scale=1280:-1", "-q:v", "4", join(out, file.replace(/\.bmp$/, ".jpg"))], { windowsHide: true });
+    if (r.status === 0) kept++;
+    else console.log(`ffmpeg failed for ${file}: ${String(r.stderr ?? r.error ?? "")}`);
+  }
+  console.log(`kept ${kept} picture(s) in ${out}`);
+}
 
 async function run() {
   const h = await import("../harness.mjs");
@@ -34,42 +105,135 @@ async function run() {
   const stateOf = () => {
     let r = on(1, { verb: "state" }, 10000);
     for (let i = 0; i < 8 && r.status !== "ok"; i++) { wait(2500); r = on(1, { verb: "state" }, 10000); }
-    return parseState(r.detail);
+    const s = parseState(r.detail);
+    return { cash: Number(s.cash), bank: Number(s.bank) };
   };
+  // The sheet offers a Buy button only on a row the buyer can pay (the dearer truck has none): click the first one.
+  const clickBuy = () => {
+    const widget = /Car\d+_Action/.exec(String(on(1, { verb: "ui" }).detail))?.[0] ?? "Car0_Action";
+    on(1, { verb: "click", widget });
+  };
+  const shot = (name) => on(1, { verb: "capture", mode: "ui", name }, 25000);
+  const uid = readSession(dir)?.clients?.find((c) => c.n === 1)?.identity?.uid ?? "";
 
   arrive(on, 1, wait);
   stateOf();
   if (/WelcomeGuideDismissButton/.test(String(on(1, { verb: "ui" }).detail))) on(1, { verb: "click", widget: "WelcomeGuideDismissButton" });
   wait(1000);
-  on(1, { verb: "stand", entityName: EXAMINER });
-  wait(2500);
-  on(1, { verb: "look" });
-  on(1, { verb: "capture", mode: "ui", name: "truck_check_examiner" }, 20000);
-  const take = on(1, { verb: "use", className: ACTION, entityName: EXAMINER }, 10000);
-  expect(take.status === "ok", `the examiner's action runs (${take.status})`);
-  wait(2500);
-  on(1, { verb: "capture", mode: "ui", name: "truck_check_taken" }, 20000);
-  const log = serverLog();
-  console.log((log.match(/.*truck check.*/gi) || []).slice(-8).join("\n"));
-  expect(/truck check/i.test(log), "the server logged the truck check");
+  expect(!!uid, "client 1 has a recorded session identity");
 
-  on(1, { verb: "stand", entityName: START, side: "w" });
-  wait(3000);
-  on(1, { verb: "look" });
-  on(1, { verb: "capture", mode: "ui", name: "truck_check_start" }, 20000);
-  for (const gate of GATES) {
-    on(1, { verb: "stand", entityName: gate, side: "w" });
-    wait(2000);
-    on(1, { verb: "look" });
-    on(1, { verb: "capture", mode: "ui", name: `truck_check_${gate.replace(/^.*_check_/, "")}` }, 20000);
+  // 1. Money: $12,000 in the pocket, all of it into the bank at the island ATM, then $500 back out for the fee.
+  on(1, { verb: "resetplayer", cash: 12000 }, 15000);
+  // The retake wait counts in-game minutes (about one a minute of real time): the clock is set now and jumped past the wait later.
+  on(1, { verb: "time", hour: 11 }, 10000);
+  wait(2000);
+  for (const side of ["e", "w", "n", "s"]) {
+    on(1, { verb: "stand", entityName: ATM, side });
+    wait(2500);
+    if (String(on(1, { verb: "look" }).detail).includes(ATM_ROW)) break;
   }
+  on(1, { verb: "use", className: `${ATM_ROW}__5` }, 10000); // deposit all
+  wait(1500);
+  const banked = stateOf();
+  expect(banked.cash === 0 && banked.bank >= TRUCK + FEE, `the cash is banked (cash ${banked.cash}, bank ${banked.bank})`);
+  const withdraw = () => { on(1, { verb: "use", className: `${ATM_ROW}__3` }, 10000); wait(1500); }; // withdraw $500
+  for (let i = 0; i < 4; i++) withdraw();
+  const funded = stateOf();
+  expect(funded.cash === 2000, `$2,000 in the pocket for the fees (${funded.cash})`);
 
+  // The driving licence: the lot asks for it as well as the truck licence. The desk row needs an ID card (a quest
+  // scene), so the harness buys it through the desk's own server entry, fee included.
+  const dl = on(1, { verb: "truckcheck", words: ["licence"] }, 10000);
+  wait(1500);
+  expect(dl.status === "ok" && deskLine(serverLog(), uid), "the driving licence is bought through the licence desk's server entry (server log)");
+
+  // 2. No licence: the yard's counter refuses before any cash moves.
+  on(1, { verb: "stand", entityName: LOT });
+  wait(2500);
+  on(1, { verb: "use", className: BUY_ACTION, entityName: LOT }, 10000);
+  wait(1500);
+  clickBuy();
+  wait(2000);
+  shot("truck_check_lot_refused");
+  expect(lotRefusedLine(serverLog(), uid), "the lot refuses a buyer with no truck licence (server log)");
+  on(1, { verb: "click", widget: "LotClose" });
+  wait(500);
+
+  // The examiner's action; true when the server lent a truck for it.
+  const take = (lentBefore) => {
+    on(1, { verb: "stand", entityName: EXAMINER });
+    wait(2500);
+    const r = on(1, { verb: "use", className: TAKE_ACTION, entityName: EXAMINER }, 10000);
+    wait(3000);
+    return r.status === "ok" && lentCount(serverLog(), uid) > lentBefore;
+  };
+  // Stand 7 m east of an entity on the course, facing it (west), so the truck drives toward the camera and stops at the pole (north of the lane is the silo, south the display row).
+  const standBeside = (entity) => { on(1, { verb: "stand", entityName: entity, side: "e7" }); wait(1500); };
+  const gateName = (k) => `Fit_ne_compound_truckyard_check_gate_${k}`;
+  const drive = (gates) => { const r = on(1, { verb: "truckcheck", words: [gates] }, 10000); expect(r.status === "ok", `truckcheck ${gates} starts (${r.status} ${String(r.detail).slice(0, 80)})`); return r; };
+
+  // 3. Failure path.
+  const cashBefore1 = stateOf().cash;
+  const lent1 = take(0);
+  expect(lent1, "the examiner lends a truck (server log)");
+  expect(cashBefore1 - stateOf().cash === FEE, `the $${FEE} fee left the pocket`);
+  standBeside(START);
+  shot("truck_check_lent");
+  standBeside(gateName(1));
+  drive("0,1");
+  wait(3500);
+  expect(gateSaid(serverLog(), uid, 0, "GATE_OK") && gateSaid(serverLog(), uid, 1, "GATE_OK"), "gates 0 and 1 answer GATE_OK in order");
+  standBeside(gateName(0));
+  drive("0");
+  wait(2000);
+  shot("truck_check_wrong_gate");
+  expect(gateSaid(serverLog(), uid, 0, "FAILED_COURSE"), "driving back into gate 0 is a gate out of order (FAILED_COURSE)");
+  expect(failedLine(serverLog(), uid), "the server logs the failed course");
+  wait(2500);
+  expect(deletedCount(serverLog(), uid) >= 1, "the lent truck is removed after the failure");
+  shot("truck_check_failed_truck_gone");
+
+  // 4. The retake: the wait is 10 in-game minutes; the clock jumps two hours and the examiner lends a truck again.
+  on(1, { verb: "time", hour: 13 }, 10000);
+  wait(1500);
+  let lent2 = false;
+  for (let i = 0; i < 3 && !lent2; i++) {
+    if (i) wait(5000);
+    lent2 = take(1);
+  }
+  expect(lent2, "after the retake wait the examiner lends a truck again");
+  for (const gate of [0, 1, 2, 3]) {
+    standBeside(gateName(gate));
+    drive(String(gate));
+    wait(2500);
+    shot(`truck_check_gate_${gate}`);
+    const want = gate === 3 ? "PASSED" : "GATE_OK";
+    expect(gateSaid(serverLog(), uid, gate, want), `gate ${gate} answers ${want}`);
+  }
+  expect(passedLine(serverLog(), uid), "the server logs the pass and the truck licence");
+  wait(2000);
+  expect(deletedCount(serverLog(), uid) >= 2, "the lent truck is removed after the pass");
+
+  // 5. The lot sells now.
+  on(1, { verb: "stand", entityName: LOT });
+  wait(2500);
+  on(1, { verb: "use", className: BUY_ACTION, entityName: LOT }, 10000);
+  wait(1500);
+  shot("truck_check_lot_open");
+  const bankBefore = stateOf().bank;
+  clickBuy();
+  wait(3000);
+  shot("truck_check_bought");
+  expect(lotBoughtLine(serverLog(), uid), "the yard sells a truck to the licence holder (server log)");
+  expect(bankBefore - stateOf().bank === TRUCK, `the truck's $${TRUCK} left the bank`);
+
+  keepPictures(dir);
   console.log(fails.length ? `truck-check-proof: FAIL (${fails.length})` : "truck-check-proof: PASS");
   return fails.length ? 1 : 0;
 }
 
 export default {
   name: "truck-check-proof",
-  usage: "truck-check-proof",
-  run: () => run(),
+  usage: "truck-check-proof [--selftest]",
+  run: (ctx) => ((ctx?.args ?? []).includes("--selftest") ? selftest() : run()),
 };
