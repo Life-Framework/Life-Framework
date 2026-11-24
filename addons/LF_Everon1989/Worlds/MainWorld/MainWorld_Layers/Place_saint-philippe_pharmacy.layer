@@ -49,365 +49,712 @@ GenericEntity Fit_saint_philippe_pharmacy_pharmacy_gauze : "{1564801BABC5C304}Pr
  coords 4432.186 10.28 10837.728
  angleY 76
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b1_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b2_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
  coords 4439.322 10.286 10838.425
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b1_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b2_2 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
  coords 4438.886 10.286 10838.316
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b1_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4439.431 10.286 10837.989
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b2_3 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4439.431 10.311 10837.989
  angleY -14
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b2_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4439.109 10.775 10838.372
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b3_1 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4439.109 10.8 10838.372
  angleY -14
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b2_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b3_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
  coords 4438.958 10.775 10838.025
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b2_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c1_b3_3 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
  coords 4439.484 10.775 10837.775
  angleY -14
-}
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c2_b1_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4437.292 10.286 10844.199
- angleY -104
-}
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c2_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4437.401 10.286 10843.762
- angleY -104
-}
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c2_b1_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4437.729 10.286 10844.307
- angleY -104
+ scale 1.3
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c2_b2_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4437.345 10.775 10843.985
+ coords 4437.292 10.286 10844.199
  angleY -104
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c2_b2_2 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4437.401 10.286 10843.762
+ angleY -104
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c2_b2_3 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4437.729 10.311 10844.307
+ angleY -104
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c2_b3_1 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4437.345 10.8 10843.985
+ angleY -104
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c2_b3_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
  coords 4437.692 10.775 10843.835
  angleY -104
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c2_b2_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_c2_b3_3 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
  coords 4437.942 10.775 10844.361
  angleY -104
+ scale 1.3
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b1_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4429.297 9.792 10838.403
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b1_1 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
+ coords 4429.342 9.792 10838.346
  angleY 76
+ scale 1.3
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b1_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4429.369 9.792 10838.112
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.395 9.792 10838.132
  angleY 76
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b1_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4429.442 9.792 10837.821
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b1_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4429.432 9.8 10837.984
  angleY 76
+ scale 1.4
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b2_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4429.333 10.289 10838.258
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b1_4 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4429.473 9.792 10837.821
  angleY 76
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b2_1 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4429.31 10.291 10838.475
+ angleY 76
+ scale 2
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b2_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4429.406 10.289 10837.967
+ coords 4429.349 10.297 10838.316
+ angleY 76
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b2_3 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4429.406 10.314 10838.089
  angleY 76
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b2_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4429.466 10.289 10837.724
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b2_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.458 10.289 10837.882
  angleY 76
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b3_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4429.297 10.778 10838.403
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b2_5 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.49 10.289 10837.753
  angleY 76
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b3_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.308 10.778 10838.482
+ angleY 76
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b3_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4429.369 10.778 10838.112
+ coords 4429.34 10.778 10838.353
  angleY 76
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b3_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4429.442 10.778 10837.821
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b3_3 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
+ coords 4429.394 10.778 10838.139
  angleY 76
+ scale 1.3
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b1_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4430.093 9.792 10835.457
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b3_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.447 10.778 10837.925
+ angleY 76
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n1_b3_5 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4429.484 10.786 10837.776
+ angleY 76
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b1_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4430.069 9.792 10835.482
  angleY -14
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4430.384 9.792 10835.53
+ coords 4430.212 9.792 10835.518
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b1_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4430.675 9.792 10835.602
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b1_3 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4430.352 9.794 10835.553
  angleY -14
+ scale 2
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b1_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4430.511 9.8 10835.592
+ angleY -14
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b1_5 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4430.679 9.8 10835.634
+ angleY -14
+ scale 1.4
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b2_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4430.239 10.289 10835.494
+ coords 4430.021 10.289 10835.47
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b2_2 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4430.228 10.314 10835.522
  angleY -14
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b2_2 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4430.53 10.289 10835.566
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b2_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4430.436 10.289 10835.574
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b2_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4430.772 10.289 10835.627
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b2_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4430.565 10.289 10835.606
  angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b2_5 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4430.714 10.297 10835.643
+ angleY -14
+ scale 1.4
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b3_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4430.093 10.778 10835.457
+ coords 4430.01 10.778 10835.468
  angleY -14
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b3_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4430.384 10.778 10835.53
+ coords 4430.159 10.786 10835.505
  angleY -14
+ scale 1.4
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b3_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4430.675 10.778 10835.602
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b3_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4430.322 10.778 10835.545
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b1_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4435.378 9.789 10843.822
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b3_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4430.464 10.778 10835.581
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b3_5 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4430.604 10.78 10835.616
+ angleY -14
+ scale 2
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_n2_b3_6 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4430.744 10.778 10835.65
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b1_1 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4435.397 9.814 10843.796
  angleY 166
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b1_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4435.058 9.789 10843.743
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4435.19 9.789 10843.744
  angleY 166
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b1_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4434.738 9.789 10843.663
+ coords 4435.061 9.789 10843.712
  angleY 166
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b1_4 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4434.418 9.789 10843.583
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b1_4 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
+ coords 4434.846 9.789 10843.659
  angleY 166
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b1_5 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4434.633 9.789 10843.606
+ angleY 166
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b1_6 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4434.483 9.797 10843.568
+ angleY 166
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b1_7 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4434.335 9.789 10843.531
+ angleY 166
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b2_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4435.213 10.282 10843.781
+ coords 4435.415 10.29 10843.801
+ angleY 166
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b2_2 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4435.253 10.282 10843.76
+ angleY 166
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b2_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4435.11 10.282 10843.725
+ angleY 166
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b2_4 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4434.97 10.284 10843.69
+ angleY 166
+ scale 2
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b2_5 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4434.811 10.29 10843.65
+ angleY 166
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b2_6 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4434.583 10.307 10843.593
  angleY 166
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b2_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4434.893 10.282 10843.701
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b2_7 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4434.376 10.282 10843.541
+ angleY 166
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b3_1 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4435.391 10.8 10843.795
  angleY 166
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b2_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4434.573 10.282 10843.622
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b3_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4435.184 10.775 10843.743
+ angleY 166
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b3_3 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4434.976 10.8 10843.691
  angleY 166
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b2_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4434.262 10.282 10843.544
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b3_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4434.768 10.775 10843.639
  angleY 166
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b3_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4435.378 10.775 10843.822
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b3_5 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4434.639 10.775 10843.607
  angleY 166
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b3_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4435.058 10.775 10843.743
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b3_6 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
+ coords 4434.426 10.775 10843.554
  angleY 166
+ scale 1.3
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b3_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4434.738 10.775 10843.663
- angleY 166
-}
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w1_b3_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4434.418 10.775 10843.583
- angleY 166
-}
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b1_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4431.087 9.789 10835.716
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b1_1 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
+ coords 4431.109 9.789 10835.753
  angleY -14
+ scale 1.3
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b1_2 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4431.407 9.789 10835.796
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4431.323 9.789 10835.806
  angleY -14
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b1_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4431.727 9.789 10835.876
+ coords 4431.472 9.797 10835.843
+ angleY -14
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b1_4 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4431.635 9.789 10835.884
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b1_5 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4431.777 9.789 10835.92
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b1_6 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4431.917 9.791 10835.954
+ angleY -14
+ scale 2
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b1_7 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4432.076 9.797 10835.994
+ angleY -14
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_1 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4430.996 10.284 10835.725
+ angleY -14
+ scale 2
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4431.155 10.29 10835.764
+ angleY -14
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_3 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4431.382 10.307 10835.821
  angleY -14
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b1_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4432.047 9.789 10835.956
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4431.59 10.282 10835.873
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_5 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4431.798 10.307 10835.925
  angleY -14
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4431.252 10.282 10835.758
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_6 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4432.005 10.282 10835.976
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4431.572 10.282 10835.837
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_7 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4432.134 10.282 10836.009
  angleY -14
-}
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4431.892 10.282 10835.917
- angleY -14
-}
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b2_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4432.203 10.282 10835.995
- angleY -14
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4431.087 10.775 10835.716
+ coords 4430.989 10.775 10835.723
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4431.407 10.775 10835.796
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4431.118 10.775 10835.755
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4431.727 10.775 10835.876
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_3 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
+ coords 4431.333 10.775 10835.809
  angleY -14
+ scale 1.3
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_4 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4432.047 10.775 10835.956
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4431.547 10.775 10835.862
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b1_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4436.789 9.789 10844.175
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_5 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4431.696 10.783 10835.899
+ angleY -14
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_6 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4431.858 10.775 10835.94
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_7 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4432.001 10.775 10835.975
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w2_b3_8 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4432.13 10.775 10836.008
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b1_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4436.831 9.789 10844.155
  angleY 166
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4436.469 9.789 10844.095
+ coords 4436.688 9.789 10844.119
+ angleY 166
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b1_3 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4436.549 9.791 10844.084
+ angleY 166
+ scale 2
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b1_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4436.39 9.797 10844.045
+ angleY 166
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b1_5 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4436.163 9.814 10843.988
  angleY 166
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b1_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4436.148 9.789 10844.015
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b1_6 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4435.955 9.789 10843.936
  angleY 166
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b1_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4435.828 9.789 10843.936
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b1_7 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4435.806 9.797 10843.899
  angleY 166
+ scale 1.4
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b2_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4436.624 10.282 10844.134
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b2_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4436.886 10.282 10844.169
  angleY 166
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b2_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4436.304 10.282 10844.054
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b2_2 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4436.679 10.307 10844.117
  angleY 166
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b2_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4435.984 10.282 10843.974
+ coords 4436.471 10.282 10844.065
  angleY 166
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b2_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4435.673 10.282 10843.897
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b2_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4436.342 10.282 10844.033
  angleY 166
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b2_5 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
+ coords 4436.128 10.282 10843.979
+ angleY 166
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b2_6 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4435.914 10.282 10843.926
+ angleY 166
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b2_7 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4435.765 10.29 10843.889
+ angleY 166
+ scale 1.4
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b3_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4436.789 10.775 10844.175
+ coords 4436.846 10.775 10844.158
  angleY 166
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b3_2 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4436.469 10.775 10844.095
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b3_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4436.696 10.783 10844.121
  angleY 166
+ scale 1.4
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b3_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4436.148 10.775 10844.015
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b3_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4436.534 10.775 10844.081
  angleY 166
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b3_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4435.828 10.775 10843.936
+ coords 4436.392 10.775 10844.045
+ angleY 166
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b3_5 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4436.252 10.777 10844.01
+ angleY 166
+ scale 2
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b3_6 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4436.093 10.783 10843.971
+ angleY 166
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w3_b3_7 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4435.865 10.8 10843.914
  angleY 166
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b1_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4428.993 9.789 10839.821
+ coords 4429.002 9.797 10839.906
+ angleY 76
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b1_2 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4429.059 9.814 10839.679
  angleY 76
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4429.073 9.789 10839.501
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b1_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.111 9.789 10839.471
+ angleY 76
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b1_4 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4429.163 9.814 10839.263
  angleY 76
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b1_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4429.152 9.789 10839.18
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b1_5 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.214 9.789 10839.056
  angleY 76
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b1_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4429.232 9.789 10838.86
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b1_6 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.247 9.789 10838.927
  angleY 76
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b1_7 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4429.282 9.789 10838.784
+ angleY 76
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b2_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4429.034 10.282 10839.656
+ coords 4429.013 10.282 10839.864
  angleY 76
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b2_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4429.114 10.282 10839.336
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b2_2 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
+ coords 4429.066 10.282 10839.649
  angleY 76
+ scale 1.3
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b2_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4429.194 10.282 10839.015
+ coords 4429.12 10.282 10839.436
  angleY 76
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b2_4 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4429.271 10.282 10838.705
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b2_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4429.157 10.29 10839.288
  angleY 76
+ scale 1.4
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b3_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4428.993 10.775 10839.821
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b2_5 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4429.197 10.282 10839.125
  angleY 76
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b3_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4429.073 10.775 10839.501
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b2_6 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.233 10.282 10838.982
  angleY 76
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b2_7 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4429.268 10.284 10838.842
+ angleY 76
+ scale 2
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b3_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4428.998 10.775 10839.922
+ angleY 76
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b3_2 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4429.033 10.777 10839.782
+ angleY 76
+ scale 2
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b3_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4429.152 10.775 10839.18
+ coords 4429.073 10.783 10839.623
+ angleY 76
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b3_4 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4429.13 10.8 10839.396
  angleY 76
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b3_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4429.232 10.775 10838.86
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b3_5 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.181 10.775 10839.189
+ angleY 76
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b3_6 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4429.233 10.8 10838.981
  angleY 76
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b1_1 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4437.403 9.789 10837.295
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w4_b3_7 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4429.285 10.775 10838.773
+ angleY 76
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b1_1 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4437.384 9.814 10837.321
  angleY -14
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b1_2 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4437.723 9.789 10837.375
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b1_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4437.591 9.789 10837.373
  angleY -14
+ scale 1.5
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b1_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4438.043 9.789 10837.455
+ coords 4437.72 9.789 10837.405
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b1_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4438.363 9.789 10837.535
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b1_4 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
+ coords 4437.935 9.789 10837.459
  angleY -14
+ scale 1.3
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b2_1 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4437.567 10.282 10837.336
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b1_5 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4438.149 9.789 10837.512
  angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b1_6 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4438.298 9.797 10837.549
+ angleY -14
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b1_7 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4438.446 9.789 10837.586
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b2_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4437.366 10.29 10837.317
+ angleY -14
+ scale 1.4
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b2_2 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4437.888 10.282 10837.416
+ coords 4437.528 10.282 10837.357
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b2_3 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4437.671 10.282 10837.393
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b2_4 : "{F1170AC82D783CC7}Prefabs/Props/Commercial/LF_PharmDisplay_Dressing.et" {
+ coords 4437.811 10.284 10837.428
+ angleY -14
+ scale 2
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b2_5 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4437.97 10.29 10837.468
+ angleY -14
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b2_6 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4438.198 10.307 10837.524
  angleY -14
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b2_3 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4438.208 10.282 10837.496
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b2_7 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4438.405 10.282 10837.576
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b2_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4438.518 10.282 10837.573
- angleY -14
-}
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b3_1 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4437.403 10.775 10837.295
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b3_1 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4437.389 10.8 10837.323
  angleY -14
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b3_2 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
- coords 4437.723 10.775 10837.375
+ coords 4437.597 10.775 10837.375
+ angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b3_3 : "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et" {
+ coords 4437.805 10.8 10837.426
  angleY -14
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b3_3 : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
- coords 4438.043 10.775 10837.455
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b3_4 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4438.012 10.775 10837.478
  angleY -14
+ scale 1.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b3_4 : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
- coords 4438.363 10.775 10837.535
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b3_5 : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4438.141 10.775 10837.51
  angleY -14
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_host_w5_b3_6 : "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et" {
+ coords 4438.355 10.775 10837.564
+ angleY -14
+ scale 1.3
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
  coords 4432.465 11.95 10838.468
