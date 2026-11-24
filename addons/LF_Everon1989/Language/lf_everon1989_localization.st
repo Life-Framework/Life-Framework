@@ -6259,6 +6259,11 @@ StringTable {
      Target_en_us "The village clothing store: jackets, trousers, caps and boots, and a backpack."
      Comment "Sign card for the clothing store, What section."
     }
+    CustomStringTableItem "{9F4BEADF5074C0BF}" {
+     Id "LF-Sign_CoalBuyer_Title"
+     Target_en_us "Coal buyer"
+     Comment "Title painted on the fascia of the coal buyer's hut at the power plant coal yard (Everon 1989 pack, #4907). Printed on the sign and shown in the prompt as Read: Coal buyer."
+    }
     CustomStringTableItem "{54968BCB66E488A0}" {
      Id "LF-Sign_CoalmansBrowBuyer_Iron"
      Target_en_us "Iron bar"
