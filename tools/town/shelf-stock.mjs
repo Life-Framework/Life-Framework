@@ -42,6 +42,8 @@ export const SHOPS = {
     // Boards, lowest first, that carry goods (0.588, 1.081, 1.574): eye and hand height, no floor board, no top.
     boards: [1, 2, 3],
     perBoard: 8,
+    // Left off every shelf: the cabbage (0.42 x 0.46 m) overlaps its neighbours and floats in the placement audit.
+    skip: ["Prefabs/Items/Food/Cabbage.et"],
     // The sloped gondolas of the hall (`ShelfShop_01`, twelve units: the shelves a player faces from the door).
     // Each takes the next item in the stock's order (wrapping), so the neighbours differ; a unit's points join
     // that item's line. Board 0 (0.102) sits under the baskets, so it stays bare; 1, 2 and 3 carry goods.
@@ -233,7 +235,7 @@ async function build(root, name) {
   const fixture = await measureOne(root, shop.fixture, { minSize: 0.05 });
   const boards = boardsOf(fixture.surfaces);
 
-  const itemRefs = stockItems(readFileSync(join(root, shop.stockConf), "utf8"), shop.stockId);
+  const itemRefs = stockItems(readFileSync(join(root, shop.stockConf), "utf8"), shop.stockId).filter((r) => !(shop.skip ?? []).includes(itemKey(r)));
   if (!itemRefs.length) throw new Error(`${shop.stockConf}: no items under stock '${shop.stockId}'`);
   const items = {};
   for (const ref of itemRefs) {
