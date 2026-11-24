@@ -6,7 +6,10 @@
     "file": "tools/town/kits/sources/iron-mine.layer",
     "group": "*",
     "origin": "0,0,0",
-    "frame": "origin-entity"
+    "frame": "origin-entity",
+    "also": [
+      "tools/town/kits/sources/iron-mine-bench.layer"
+    ]
   },
   "scope": "room",
   "anchoring": {
@@ -434,7 +437,7 @@
       "floor": "f0",
       "id": "mine-bench",
       "name": "Mine_Bench",
-      "prefab": "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et",
+      "prefab": "{090B9013CF776866}Prefabs/Props/Furniture/TableLong_01/TableLong_01_base.et",
       "offset": [
         6.6,
         0,
@@ -445,8 +448,7 @@
     },
     {
       "role": "light",
-      "verb": "on floor",
-      "mount": "terrain",
+      "verb": "on mine-bench",
       "wall": "free",
       "floor": "f0",
       "id": "mine-bench-lamp",
@@ -454,11 +456,40 @@
       "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
       "offset": [
         6.63,
-        0,
+        0.9,
         -3.9
       ],
-      "yaw": 180,
-      "lift": 1.11
+      "yaw": 180
+    },
+    {
+      "role": "dressing",
+      "verb": "on mine-bench",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-bench-toolbox",
+      "name": "Mine_BenchToolBox",
+      "prefab": "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et",
+      "offset": [
+        6.6,
+        0.9,
+        -4.6
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on mine-bench",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-bench-vice",
+      "name": "Mine_BenchVice",
+      "prefab": "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et",
+      "offset": [
+        6.6,
+        1,
+        -5.25
+      ],
+      "yaw": 90
     },
     {
       "role": "dressing",
