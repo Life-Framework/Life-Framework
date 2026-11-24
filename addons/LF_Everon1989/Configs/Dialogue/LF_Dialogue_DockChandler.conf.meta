@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{2373C914E3198E0C}Configs/Dialogue/LF_Dialogue_DockChandler.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

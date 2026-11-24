@@ -1,0 +1,116 @@
+{
+  "slug": "level-up",
+  "name": "LevelUp",
+  "kind": "gadget",
+  "project_dir": "Sounds/Level",
+  "project_prefix": "Level",
+  "output_format": "pcm_48000",
+  "budget": {
+    "generations": 6
+  },
+  "sounds": [
+    {
+      "id": "sting",
+      "event": "SOUND_LEVEL_UP",
+      "project": "Sting",
+      "bus": "sfx",
+      "range": "reload60",
+      "volume_db": -10,
+      "pitch_variance": 0,
+      "prompt": "A short warm two-note reward sting: a soft brass note rising to a higher bell chime that rings out and fades. Gentle, friendly, 1980s feel, dry, no reverb tail, no drums, no voice.",
+      "duration_seconds": 1.8,
+      "prompt_influence": 0.7,
+      "variations": 4,
+      "trim_db": -40,
+      "pick": [
+        1
+      ],
+      "reason": "Read from the review pictures (the takes were not listened to): take 1 shows two separate notes, a soft swell at the start and a second, brighter note at about 0.5 s with strong upper partials (the bell) that rings out to 1.24 s. Take 2 has two notes but is a flat tone cut at 0.96 s with no bell brightness; take 3 is one smeared swell with no second note; take 4 peaks at 124 ms and reads as one hit."
+    }
+  ],
+  "generations": [
+    {
+      "id": "sting",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A short warm two-note reward sting: a soft brass note rising to a higher bell chime that rings out and fades. Gentle, friendly, 1980s feel, dry, no reverb tail, no drums, no voice.",
+      "duration_seconds": 1.8,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 337920,
+      "credits_estimate": 200
+    },
+    {
+      "id": "sting",
+      "take": 2,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A short warm two-note reward sting: a soft brass note rising to a higher bell chime that rings out and fades. Gentle, friendly, 1980s feel, dry, no reverb tail, no drums, no voice.",
+      "duration_seconds": 1.8,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 337920,
+      "credits_estimate": 200
+    },
+    {
+      "id": "sting",
+      "take": 3,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A short warm two-note reward sting: a soft brass note rising to a higher bell chime that rings out and fades. Gentle, friendly, 1980s feel, dry, no reverb tail, no drums, no voice.",
+      "duration_seconds": 1.8,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 337920,
+      "credits_estimate": 200
+    },
+    {
+      "id": "sting",
+      "take": 4,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A short warm two-note reward sting: a soft brass note rising to a higher bell chime that rings out and fades. Gentle, friendly, 1980s feel, dry, no reverb tail, no drums, no voice.",
+      "duration_seconds": 1.8,
+      "prompt_influence": 0.7,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 337920,
+      "credits_estimate": 200
+    }
+  ],
+  "runs": [
+    {
+      "date": "2026-11-23",
+      "generations": 4,
+      "seconds": 7.2,
+      "plan": "starter",
+      "credits_before": 29324,
+      "credits_after": 29324,
+      "credits": 0
+    }
+  ],
+  "wired": {
+    "Sting": {
+      "project": "{6FCDC42A356A69AC}Sounds/Level/Level_Sting.acp",
+      "events": [
+        "SOUND_LEVEL_UP"
+      ],
+      "samples": [
+        "{5785DA474505D21A}Sounds/Level/Samples/Level_LEVEL_UP_01.wav"
+      ]
+    }
+  },
+  "addon": "LF_Everon1989"
+}

@@ -1322,6 +1322,15 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True on a client an agent drives (started with -lfSession by agent-box/session.mjs up). A real
+	//! player's client never carries it, so a feature can keep a first-join sheet off an agent's pictures
+	//! without changing what a player sees (the welcome guide's auto open, #4645).
+	static bool IsSessionClient()
+	{
+		return !OwnSession().IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void FinishCapture()
 	{
 		if (s_iCaptureId <= 0)

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7C3E1A90B54D2F68}Configs/Dialogue/LF_DialogueIndex_OldMan/LF_DialogueIndex_Registrar.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

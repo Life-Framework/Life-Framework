@@ -36,6 +36,7 @@
     },
     "pub": {
       "building": "b03",
+      "kit": "village-bar-1i04",
       "score": 0.728,
       "why": [
         "Bar slot (#4442): b03 has 7 known entrances and a walkable ground floor (234 m2, 2 floors, interior yes); the tool proposed b01, whose Furniture prefab has no known entrance",

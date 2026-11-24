@@ -53,7 +53,7 @@ a placed sign without touching the layer). The component keeps `m_sSignId`, the 
 | `fascia` | Shop front lettering: large condensed capitals with a drop shadow on the fascia colour | bank, stores, garage |
 | `card` | A small printed notice or price card: one title, up to six rows | shop counters, shelves |
 | `plaque` | Engraved door plaque: brass ground, dark letters | houses, offices |
-| `road` | Road and direction sign: white on blue or black on white, arrows | junctions, the town entry |
+| `road` | Road and direction sign: white on highway green, capitals, a compass letter and miles per row (`LF_SignStyles_Road.conf`, #4478) | junctions, the town entry |
 
 ### Sizes (carriers)
 

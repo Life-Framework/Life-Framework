@@ -1,0 +1,75 @@
+{
+  "id": "dock_chandler",
+  "name": "DockChandler",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Resident_dock_chandler_Name",
+  "voice": {
+    "id": "JBFqnCBsd6RMkjVDRZzb",
+    "sex": "male",
+    "name": "George - Warm, Captivating Storyteller",
+    "why": "A warm, unhurried middle-aged voice for the ship chandler, an old hand who knows every boat in the harbor. No other NPC uses it.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.55,
+      "similarity_boost": 0.75,
+      "style": 0.15,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 800,
+  "hear_range_m": 6,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "gear",
+          "next": "gear"
+        },
+        {
+          "text": "dock",
+          "next": "dock"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "gear",
+      "line": "about_gear",
+      "options_from": "greet"
+    },
+    {
+      "id": "dock",
+      "line": "about_dock",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Rope, lamp oil, tackle, paint. If a boat needs it, I have it, or I know who does."
+    },
+    "about_gear": {
+      "text": "Rope by the fathom, oil by the can, hooks and line for the fishermen. None of it is cheap, and none of it lets you down at sea."
+    },
+    "about_dock": {
+      "text": "The wholesale counter next door buys fish, timber and ore. The harbor master hands out day work at the cabin. I only sell the gear."
+    },
+    "bye": {
+      "text": "Fair winds."
+    }
+  },
+  "replies": {
+    "gear": "What do you sell?",
+    "dock": "Who buys what on the dock?",
+    "bye": "Thanks. Goodbye."
+  }
+}

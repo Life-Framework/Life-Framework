@@ -1,0 +1,75 @@
+{
+  "id": "dock_fishmonger",
+  "name": "DockFishmonger",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Resident_dock_fishmonger_Name",
+  "voice": {
+    "id": "iP95p4xoKVk53GoZ742B",
+    "sex": "male",
+    "name": "Chris - Charming, Down-to-Earth",
+    "why": "A brisk, friendly middle-aged American voice for the market fishmonger: a seller who talks to every customer. No other NPC uses it.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.45,
+      "similarity_boost": 0.75,
+      "style": 0.25,
+      "speed": 1.05
+    }
+  },
+  "budget_chars": 900,
+  "hear_range_m": 6,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "catch",
+          "next": "catch"
+        },
+        {
+          "text": "prices",
+          "next": "prices"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "catch",
+      "line": "about_catch",
+      "options_from": "greet"
+    },
+    {
+      "id": "prices",
+      "line": "about_prices",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Fresh off the boats this morning. Mackerel, bass, perch. Look all you like, but touch nothing you will not buy."
+    },
+    "about_catch": {
+      "text": "The boats go out before light and are back by noon. Whatever they land, I put on the ice. If you catch your own, the wholesale counter at the dock buys it."
+    },
+    "about_prices": {
+      "text": "Mackerel is cheap. Bass costs more. Tuna only comes when the boats get lucky. The price is on the board, and I do not haggle."
+    },
+    "bye": {
+      "text": "Mind the wet boards on your way out."
+    }
+  },
+  "replies": {
+    "catch": "Where does your fish come from?",
+    "prices": "What is it going for?",
+    "bye": "Thanks. Goodbye."
+  }
+}

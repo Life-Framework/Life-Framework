@@ -58,6 +58,9 @@ check("missing pack pictogram", run({ skipPack: ["poi_Bank"] }, []).some((l) => 
 check("row names an absent quad", run({}, [conf([{ kind: "Bank", category: "civic", icon: "poi_Nope" }])]).some((l) => l.includes('names icon "poi_Nope"')));
 // a row with a category the set does not have fails
 check("row has an unknown category", run({}, [conf([{ kind: "Bank", category: "casino" }])]).some((l) => l.includes('category "casino"')));
+// the road map's town category has no fallback glyph: fine with its own icon (#4655), a failure without one
+check("town category with its own icon passes", run({}, [conf([{ kind: "Town", category: "town", icon: "poi_TownHall" }])]).length === 0);
+check("town category without an icon fails", run({}, [conf([{ kind: "Town", category: "town" }])]).some((l) => l.includes("no fallback glyph")));
 // a texture whose meta GUID differs from the imageset's fails
 {
   const r = tree(); dirs.push(r);

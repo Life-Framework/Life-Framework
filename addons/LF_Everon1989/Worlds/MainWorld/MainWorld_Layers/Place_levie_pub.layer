@@ -1,0 +1,110 @@
+GenericEntity Fit_levie_pub_Place {
+ components {
+  LF_PlaceComponent "{EC90491A349BC484}" {
+   m_sKind "PubBar"
+   m_sId "levie.pub"
+  }
+  LF_FittedBuildingComponent "{E5787CF873A9DE4A}" {
+  }
+ }
+ coords 7439.4 137.6 4718.5
+}
+GenericEntity Fit_levie_pub_clear {
+ components {
+  LF_BaseWorldClearComponent "{74C4DA1CCC48087F}" {
+   m_sBuilding "{9EC1D8CA0391BF16}Prefabs/Structures/Houses/Village/House_Village_E_1I04/House_Village_E_1I04sf_green.et"
+   m_aPrefabs {
+    "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et"
+    "{108B2B2A04700231}Prefabs/Props/Furniture/ClockFloor_01.et"
+    "{208028C4307E3772}Prefabs/Props/Furniture/ShelfDecorative_01_barewood.et"
+    "{313CC1F195E06A6E}Prefabs/Props/Furniture/TVSet_01.et"
+    "{451120716704276F}Prefabs/Props/Decorations/Paintings/PaintingSmall_01_V2.et"
+    "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et"
+    "{4BE33BD4C315C615}Prefabs/Props/Civilian/Ashtray_01_Full_base.et"
+    "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et"
+    "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et"
+    "{728DD36004461456}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_B.et"
+    "{76E3962626F4B633}Prefabs/Props/Furniture/CoatRack_02.et"
+    "{814ADF7834151561}Prefabs/Props/Furniture/BenchKitchen_01/BenchKitchen_01_Green.et"
+    "{AA25BAA17DCF0A0A}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_D.et"
+    "{CFF3A41D0D674C93}Prefabs/Props/Civilian/VacuumCleaner_01/VacuumCleaner_01_blue.et"
+    "{D8B02CE6A9F8E165}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_base.et"
+    "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et"
+   }
+  }
+ }
+ coords 7439.4 137.6 4718.5
+}
+GenericEntity Fit_levie_pub_bar_counter_1 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 7441.792 137.794 4719.077
+ angleY -66
+}
+GenericEntity Fit_levie_pub_bar_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 7442.402 137.794 4720.447
+ angleY -66
+}
+LF_NpcBaseEntity Fit_levie_pub_bar_barkeeper : "{4439B0A5C0000003}Configs/Npcs/LF_Npc_Townsfolk_Barkeeper.et" {
+ components {
+  LF_CounterOutletComponent "{4439B0A5C4000001}" {
+   m_sBuyerId "bar_levie"
+  }
+ }
+ coords 7442.898 137.794 4719.351
+ angleY -66
+}
+GenericEntity Fit_levie_pub_bar_shelf_1 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 7443.617 137.794 4718.752
+ angleY -66
+}
+GenericEntity Fit_levie_pub_bar_shelf_2 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 7444.412 137.794 4720.538
+ angleY -66
+}
+GenericEntity Fit_levie_pub_bar_bottle_1 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7443.039 138.875 4717.969
+ angleY 24
+}
+GenericEntity Fit_levie_pub_bar_bottle_2 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7443.142 138.875 4718.202
+ angleY 44
+}
+GenericEntity Fit_levie_pub_bar_bottle_3 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7443.305 138.875 4718.568
+ angleY 24
+}
+GenericEntity Fit_levie_pub_bar_bottle_4 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7443.834 138.875 4719.755
+ angleY 24
+}
+GenericEntity Fit_levie_pub_bar_bottle_5 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7443.936 138.875 4719.983
+ angleY 59
+}
+GenericEntity Fit_levie_pub_bar_bottle_6 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7444.098 138.875 4720.349
+ angleY 24
+}
+GenericEntity Fit_levie_pub_bar_counter_bottle_1 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7441.669 138.834 4718.803
+ angleY 24
+}
+GenericEntity Fit_levie_pub_bar_counter_bottle_2 : "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et" {
+ coords 7442.524 138.834 4720.722
+ angleY 84
+}
+GenericEntity Fit_levie_pub_bar_stool_1 : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7440.675 137.783 4719.027
+ angleY 24
+}
+GenericEntity Fit_levie_pub_bar_stool_2 : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7441.041 137.783 4719.849
+ angleY 64
+}
+GenericEntity Fit_levie_pub_bar_stool_3 : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7441.407 137.783 4720.672
+ angleY 24
+}
+GenericEntity Fit_levie_pub_bar_stool_4 : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7441.773 137.783 4721.494
+ angleY 94
+}

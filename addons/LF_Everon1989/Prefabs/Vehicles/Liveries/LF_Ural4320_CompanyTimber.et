@@ -1,0 +1,87 @@
+Vehicle : "{2B402516452EC797}Prefabs/Vehicles/Wheeled/Ural4320/LF_Ural4320_transport_CIV.et" {
+ ID "27EF0DA0670AF78B"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{5E2088C27CE01FFC}" {
+     SourceMaterial "Ural_Body"
+     AssignedMaterial "{3F43E932308724F4}Assets/Liveries/Ural4320/LF_Ural4320_CompanyTimber.emat"
+    }
+   }
+  }
+ }
+ {
+  GenericEntity CompanyLetters_L {
+   ID "F2C926A33C85DB7B"
+   components {
+    Hierarchy "{2BC088FACB6B1923}" {
+    }
+    MeshObject "{306002E30B0D43F1}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{BACC588E4B1F2309}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{A5B7D14054072A47}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{8D2C5BF954B2D4D2}" {
+     m_sSignId "livery_company_timber"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.05 0.2 0.07
+     m_vPaintColor 0.95 0.93 0.86
+     m_vTextColor 0.05 0.2 0.07
+    }
+   }
+   coords -1.12 1.35 1.2
+   angles 0 -90 0
+   scale 0.6
+  }
+  GenericEntity CompanyLetters_R {
+   ID "565E71579D92CD95"
+   components {
+    Hierarchy "{725D1D5B36E49D74}" {
+    }
+    MeshObject "{D268B720672E65F6}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{B00A74F09464E443}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{E37617C377108993}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{E702E257F9BFAADD}" {
+     m_sSignId "livery_company_timber"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.05 0.2 0.07
+     m_vPaintColor 0.95 0.93 0.86
+     m_vTextColor 0.05 0.2 0.07
+    }
+   }
+   coords 1.12 1.35 1.2
+   angles 0 90 0
+   scale 0.6
+  }
+ }
+}
