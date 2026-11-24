@@ -119,7 +119,8 @@ modded class LF_ProcessAction
 			return;
 		}
 
-		string levelRefusal = LevelRefusal(m_Machine, LevelFor(pUserEntity, m_Machine));
+		int level = LevelFor(pUserEntity, m_Machine);
+		string levelRefusal = LevelRefusal(m_Machine, level);
 		if (!levelRefusal.IsEmpty())
 		{
 			LF_Debug.Info("Processing", string.Format("refused feed at %1: %2 level below %3", m_sMachineId, m_Machine.m_sLevelJob, m_Machine.m_iMinLevel));
@@ -137,7 +138,7 @@ modded class LF_ProcessAction
 
 		InventoryStorageManagerComponent vehicleStorage = LF_FeedFromVehicle.StorageOf(vehicle);
 		array<int> held = HeldAmounts(vehicleStorage, m_aProcessingInputs);
-		int batches = BatchesFor(held, m_aProcessingInputs, MaxBatches(m_Machine));
+		int batches = BatchesFor(held, m_aProcessingInputs, MaxBatchesAt(m_Machine, level));
 		if (batches < 1)
 		{
 			ResourceName missing;
@@ -159,7 +160,8 @@ modded class LF_ProcessAction
 
 		if (timed)
 		{
-			if (!LF_ProcessRun.Start(pOwnerEntity, pUserEntity, m_sMachineId, outputs, batches, m_Machine.m_iProcessSeconds, m_vDropOffset, m_vRotation))
+			int seconds = SecondsAt(m_Machine, level);
+			if (!LF_ProcessRun.Start(pOwnerEntity, pUserEntity, m_sMachineId, outputs, batches, seconds, m_vDropOffset, m_vRotation))
 			{
 				RestoreInputs(vehicleStorage, inputs);
 				LF_Debug.Error("Processing", string.Format("rejected feed at %1: the timed run did not start, inputs back in the vehicle", m_sMachineId));
@@ -167,7 +169,7 @@ modded class LF_ProcessAction
 			}
 
 			LF_Debug.Info("Processing", string.Format("fed %1 batch(es) at %2 from the vehicle, timed run started", batches, m_sMachineId));
-			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text("#LF-Process_Started", m_Machine.m_iProcessSeconds.ToString()), "", 4.0);
+			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text("#LF-Process_Started", seconds.ToString()), "", 4.0);
 			return;
 		}
 

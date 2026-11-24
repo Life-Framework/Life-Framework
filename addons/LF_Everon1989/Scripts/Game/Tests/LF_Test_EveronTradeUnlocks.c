@@ -1,4 +1,4 @@
-// red-proof: RedProof() swaps the flagship table for an empty one, so every trade/level pair reports "has no unlock row"; the batched `tools\cli test --no-build --red LF_Test_EveronTradeUnlocks` run records the RED-OK line below.
+// red-proof: #4861 2026-11-24: the SMELTING rows are checked against the smelter steps; RedProof() adds 1000 to each expected number, so every step row fails. Earlier: RedProof() swaps the flagship table for an empty one, so every trade/level pair reports "has no unlock row"; the batched `tools\cli test --no-build --red LF_Test_EveronTradeUnlocks` run records the RED-OK line below.
 // red-proof: observed 2026-11-23: with the header line removed from LF_Everon1989.conf, `tools\cli test --no-build --only LF_Test_EveronTradeUnlocks` failed `- the header lists the trade unlocks table` and `- LF_TradeUnlocks.Get returns every row under the pack header (expected 261, got 0)`; with the line it passes.
 //! #4185: the flagship names one unlock or perk for every level 2 to 30 of every trade, so the
 //! level-up card and F2 can say "Opens: ...", and the pack header lists the table so Get() returns it. Each row carries a localization key whose pack text
@@ -13,6 +13,43 @@ class LF_Test_EveronTradeUnlocks : LF_Test
 	override string GetName()
 	{
 		return "everon/trade-unlocks";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #4861: every SMELTING row that names a number or a place says what the machine rows really do at that level:
+	//! the smelter's steps (bars a run, seconds a run), the cement works at 6 and the copper refinery at 15.
+	protected void CheckSmeltingRows(LF_TestContext ctx, LF_TradeUnlocksConfig config)
+	{
+		LF_ResourceMachineDef smelter = LF_ResourceChainCatalog.FindMachine("smelter-iron");
+		ctx.NotNull(smelter, "the iron smelter row loads");
+		if (!smelter || !smelter.m_aSteps)
+			return;
+
+		ctx.True(smelter.m_aSteps.Count() > 0, "the iron smelter has level steps");
+		foreach (LF_MachineStep step : smelter.m_aSteps)
+		{
+			int number = step.m_iMaxBatches;
+			if (number <= 0)
+				number = step.m_iProcessSeconds;
+
+			// Red proof: a row that promises a number the machine does not give.
+			if (RedProof())
+				number = number + 1000;
+
+			string text = WidgetManager.Translate(config.KeyFor("SMELTING", step.m_iLevel));
+			ctx.True(text.Contains(number.ToString()), string.Format("SMELTING %1 row names the smelter's %2: %3", step.m_iLevel, number, text));
+		}
+
+		LF_ResourceMachineDef cement = LF_ResourceChainCatalog.FindMachine("cement-works");
+		if (cement)
+		{
+			ctx.EqualStr("SMELTING", cement.m_sLevelJob, "the cement works reads SMELTING");
+			ctx.True(WidgetManager.Translate(config.KeyFor("SMELTING", cement.m_iMinLevel)).Contains("cement"), "the row at the cement works' level names it");
+		}
+
+		LF_ResourceMachineDef refinery = LF_ResourceChainCatalog.FindMachine("refinery-copper");
+		if (refinery)
+			ctx.True(WidgetManager.Translate(config.KeyFor("SMELTING", refinery.m_iMinLevel)).Contains("refinery"), "the row at the refinery's level names it");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -49,6 +86,8 @@ class LF_Test_EveronTradeUnlocks : LF_Test
 			ctx.True(config.KeyFor(trade, 1).IsEmpty(), trade + " has no row for level 1");
 			ctx.True(config.KeyFor(trade, LF_TradeUnlocksConfig.LAST_LEVEL + 1).IsEmpty(), trade + " has no row past level 30");
 		}
+
+		CheckSmeltingRows(ctx, config);
 
 		ctx.Equal(trades.Count() * (LF_TradeUnlocksConfig.LAST_LEVEL - LF_TradeUnlocksConfig.FIRST_LEVEL + 1), config.m_aRows.Count(), "the table holds exactly 29 rows per trade");
 
