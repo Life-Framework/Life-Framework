@@ -255,7 +255,7 @@ function cropCommand(rest) {
       ? readdirSync(base).map((d) => join(base, d, name)).filter(existsSync).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)
       : [];
     if (!hits.length) {
-      console.log(`crop: no such shot ${shot} (pass a path, or a name like wide / close-ATM_Debug from the newest tmp/shots/<area>)`);
+      console.log(`crop: no such shot ${shot} (pass a path, or a name like wide / close-Town_ATM_Bank from the newest tmp/shots/<area>)`);
       return 1;
     }
     file = hits[0];

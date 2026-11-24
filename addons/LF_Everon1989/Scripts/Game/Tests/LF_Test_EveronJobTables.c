@@ -1,4 +1,4 @@
-// red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronJobTables`: RED PROOF OK (RedProof() reads no gates, looks for the pickaxe in the stock and for an outlet no pack names). Green with the overlays in the pack leg. 2026-11-22 (pickaxe from level 1): with m_iMinRank 2 back, `--only LF_Test_EveronJobTables` FAILED "a new miner (level 1) can buy the pickaxe"; with 1 it passes.
+// red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronJobTables`: RED PROOF OK (RedProof() reads no gates, looks for the pickaxe in the stock and for an outlet no pack names). Green with the overlays in the pack leg. 2026-11-22 (pickaxe from level 1): with m_iMinRank 2 back, `--only LF_Test_EveronJobTables` FAILED "a new miner (level 1) can buy the pickaxe"; with 1 it passes. 2026-11-24 (#4680, duplicate pickaxe row): with the legacy `tool_pickaxe` offer back, `--only LF_Test_EveronJobTables` FAILED "the miners' till lists one $150 pickaxe row, not a duplicate"; with the offer removed it passes.
 //! everon/job-tables (#2710, slice of #1018): under the Everon 1989 header (the pack leg of `tools\cli test`),
 //! every pack job has a level table with one unlock per level (a track whose thresholds make levels 2..N, and
 //! exactly one licence gate on each of those levels), the hardware store stock has the shovel from a base-game
@@ -11,7 +11,7 @@ class LF_Test_EveronJobTables : LF_Test
 	protected static const string OUTLET = "miners_supply";
 	protected static const string STOCK = "hardware";
 	protected static const ResourceName SHOVEL = "{0619993AE6CDBF85}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et";
-	protected static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
+	protected static const ResourceName PICKAXE = "{D9D9C619E82ECEA7}Prefabs/Tools/Tiers/LF_Tool_Pickaxe_Worn.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -124,12 +124,21 @@ class LF_Test_EveronJobTables : LF_Test
 		LF_ItemCatalogue.Offers(catalogue, outlet, offers);
 
 		LF_OutletOffer pickaxeOffer;
+		int entryRows;
 		foreach (LF_OutletOffer offer : offers)
 		{
 			LF_CatalogueItem item = LF_ItemCatalogue.Item(catalogue, offer.m_sItem);
 			if (item && item.m_Prefab == PICKAXE)
 				pickaxeOffer = offer;
+
+			// One pickaxe row per price: the till once listed the plain Pickaxe and the worn one, both $150 (#4680).
+			if (item && item.m_sId.StartsWith("tool_pickaxe") && item.m_iPrice == 150)
+				entryRows++;
 		}
+		if (RedProof())
+			entryRows = 2;
+		if (outlet == OUTLET)
+			ctx.Equal(1, entryRows, "the miners' till lists one $150 pickaxe row, not a duplicate");
 
 		ctx.NotNull(pickaxeOffer, "the miners' supply outlet sells the pickaxe");
 		if (!pickaxeOffer)

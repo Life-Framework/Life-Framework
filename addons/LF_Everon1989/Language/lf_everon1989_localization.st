@@ -206,12 +206,12 @@ StringTable {
     }
     CustomStringTableItem "{2FC28DBE70BC949C}" {
      Id "LF-Activity_Mining_Ore_Note"
-     Target_en_us "Swing at the rust-veined rocks and pick up 15 pieces of ore, one full furnace load; every piece levels Mining, and level 2 opens the coal license."
+     Target_en_us "Swing at the rust-veined rocks and pick up 15 iron nuggets, one full furnace load; every piece levels Mining, and level 2 opens the coal license."
      Comment "Mining step note, one sentence, with the levelling hint."
     }
     CustomStringTableItem "{BBF0328175038D91}" {
      Id "LF-Activity_Mining_Ore_Title"
-     Target_en_us "Mine 15 iron ore"
+     Target_en_us "Mine 15 iron nuggets"
      Comment "Mining step title."
     }
     CustomStringTableItem "{7AADE23D2DEEDDF3}" {
@@ -226,7 +226,7 @@ StringTable {
     }
     CustomStringTableItem "{59BB5E3FDEEBA658}" {
      Id "LF-Activity_Mining_Pitch"
-     Target_en_us "Swing a pickaxe on Coalman's Brow, smelt the ore at the mine and sell the bars at the dock."
+     Target_en_us "Swing a pickaxe on Coalman's Brow, smelt the nuggets at the mine and sell the bars at the dock."
      Comment "Activity pitch, one line."
     }
     CustomStringTableItem "{2777AEB12A56E04F}" {
@@ -241,7 +241,7 @@ StringTable {
     }
     CustomStringTableItem "{43FB216022439923}" {
      Id "LF-Activity_Mining_Smelt_Note"
-     Target_en_us "Smelt the ore in the mine furnace: 3 ore make a bar, so your 15 make 5 bars in one 4-minute run."
+     Target_en_us "Smelt the nuggets in the mine furnace: 3 nuggets make a bar, so your 15 make 5 bars in one 4-minute run."
      Comment "Mining step note, one sentence."
     }
     CustomStringTableItem "{6F8D145FBA72E000}" {
@@ -4881,7 +4881,7 @@ StringTable {
     }
     CustomStringTableItem "{7955F10958310917}" {
      Id "LF-Process_SmeltIronOre"
-     Target_en_us "Smelt iron ore (3 make a bar)"
+     Target_en_us "Smelt iron nuggets (3 make a bar)"
      Comment "Action on the Coalman's Brow mine furnace (LF_MineFurnace.et, machine furnace-iron-mine, Everon 1989 pack)."
     }
     CustomStringTableItem "{83F5D3CDBFBE942D}" {
@@ -5966,7 +5966,7 @@ StringTable {
     }
     CustomStringTableItem "{1DF3BFB27FDA81CC}" {
      Id "LF-Sign_CoalmansBrowMine_How"
-     Target_en_us "Take the miner job at the desk, buy a pickaxe at the supply counter beside it, swing at the big rust-red rocks (not the grey granite) and pick up the ore. Three pieces make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
+     Target_en_us "Take the miner job at the desk, buy a pickaxe at the supply counter beside it, swing at the big rust-red rocks (not the grey granite) and pick up the iron nuggets. Three nuggets make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
      Comment "Sign card for the Coalman's Brow mine plate, How section."
     }
     CustomStringTableItem "{B30D7B3198E25E1E}" {
@@ -5976,7 +5976,7 @@ StringTable {
     }
     CustomStringTableItem "{938AC44BCAEB5DA8}" {
      Id "LF-Sign_CoalmansBrowMine_What"
-     Target_en_us "Iron ore in the hillside, a furnace to smelt it and the miners' desk. Sell the bars at the iron counter in the dock wholesale warehouse."
+     Target_en_us "Iron in the hillside, a furnace to smelt the nuggets and the miners' desk. Sell the bars at the iron counter in the dock wholesale warehouse."
      Comment "Sign card for the Coalman's Brow mine plate, What section."
     }
     CustomStringTableItem "{155AD337C15BEB65}" {
@@ -9176,7 +9176,7 @@ StringTable {
     }
     CustomStringTableItem "{5C28C1EA8C7DD082}" {
      Id "LF-Unlock_Smelting_02"
-     Target_en_us "Iron bars from iron ore"
+     Target_en_us "Iron bars from iron nuggets"
      Comment "What Smelting level 2 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{A2CD7E9EC5EAAB06}" {

@@ -40,7 +40,7 @@ layer Roadmap_Job_Drop LF_JobDropoffAction
 wait 600
 shot ui arrival_3_paid
 state
-layer ATM_Debug
+layer Town_ATM_Bank
 wait 1000
 click Key2Button
 click Key0Button

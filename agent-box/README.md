@@ -61,7 +61,7 @@ node agent-box/harness.mjs play
 node agent-box/harness.mjs layers
 node agent-box/harness.mjs layer Shop_GeneralStore_Debug
 node agent-box/harness.mjs shot ui debug_menu
-node agent-box/harness.mjs shot world ATM_Debug
+node agent-box/harness.mjs shot world Town_ATM_Bank
 ```
 
 `tools\cli shots area <name | x,z>` is the one-call area rig for the polish pass: golden-hour clean
@@ -539,7 +539,7 @@ its own. Probes live in `agent-box/chains.mjs`.
 
 | Layer | Entity | Action `look` must show |
 | --- | --- | --- |
-| ATM | `ATM_Debug` | `LF_ATMAction` |
+| ATM | `Town_ATM_Bank` | `LF_ATMAction` |
 | Apple | `AppleGatherTree`, `AppleTradeContainer`, `AppleProcessor` | gather, open trader, process |
 | Plum | `PlumGatherTree`, `PlumTradeContainer` | gather (prefab only), open trader |
 | Farming | `CabbageCrop_Debug` | gather |

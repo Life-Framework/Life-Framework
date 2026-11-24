@@ -29,7 +29,7 @@ export const REQUIRED_LAYERS = [
 
 // action: class look must list. "" records look and does not require a class.
 export const PROBES = [
-  { layer: "ATM.layer", name: "ATM_Debug", action: "LF_ATMAction" },
+  { layer: "ATM.layer", name: "Town_ATM_Bank", action: "LF_ATMAction" },
   { layer: "AppleChain.layer", name: "AppleGatherTree", action: "LF_GatherAction" },
   { layer: "AppleChain.layer", name: "AppleTradeContainer", action: "LF_OpenTraderAction" },
   { layer: "AppleChain.layer", name: "AppleProcessor", action: "LF_ProcessAction" },
