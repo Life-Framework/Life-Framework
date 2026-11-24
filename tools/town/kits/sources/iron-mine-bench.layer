@@ -1,0 +1,12 @@
+// Source of the `iron-mine` kit's camp bench (tools/town/kits/iron-mine.json, #4180 polish): the vanilla prefabs the bench rows name,
+// so `town fit` can read their GUIDs. Nothing here is placed; the rows hold every position. A plank work table (TableLong_01,
+// 2.4 x 1.0 x 0.9 m) with a bench vice clamped at one end and a red tool box on it replaces the green workshop cabinet.
+GenericEntity MineBench_Table : "{090B9013CF776866}Prefabs/Props/Furniture/TableLong_01/TableLong_01_base.et" {
+ coords 0 0 0
+}
+GenericEntity MineBench_ToolBox : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
+ coords 0 0 0
+}
+GenericEntity MineBench_Vice : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
+ coords 0 0 0
+}

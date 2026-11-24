@@ -245,7 +245,7 @@
         {
           "component": "LF_SignComponent",
           "set": {
-            "m_sSignId": "\"hospital\"",
+            "m_sSignId": "\"clinic\"",
             "m_vRimColor": "0.1 0.3 0.18",
             "m_vPaintColor": "0.94 0.94 0.9",
             "m_vTextColor": "0.08 0.4 0.2"
