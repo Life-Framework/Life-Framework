@@ -9,6 +9,8 @@
 //                  looked up through LF_WorkAnimPlayer.JobPose. A job with no pose of its own plays the base game's
 //                  plain idle loiter (ELoiteringType.LOITERING). A job gets its pose from an .asi on LF_WorkPick.ast
 //                  and a PoseOf branch.
+// A carry pose holds a box and a sweep pose a broom (LF_ResidentWorkProps: the loiter data carries an item preset,
+// so every machine that shows the pose spawns the prop locally and deletes it when the pose ends, #4644).
 // The base game replicates a loiter to every client (late joiners too, through the command handler's RplSave),
 // so nothing here is sent by hand. A 1 s
 // tick starts the pose again for a worker whose loiter ended by itself (a shove, a fall) and drops a dead or
@@ -95,9 +97,18 @@ class LF_ResidentWorkLoop
 
 	//------------------------------------------------------------------------------------------------
 	//! The loiter data for a job pose: the work graph with the job's clips, entered through its Gestures value.
-	static SCR_LoiterCustomAnimData PoseData(ResourceName pose)
+	//! param[in] item the prop the pose holds (LF_ResidentWorkProps.PresetOf): every machine that shows the pose
+	//! spawns it locally and deletes it when the pose ends.
+	static SCR_LoiterCustomAnimData PoseData(ResourceName pose, SCR_EAnimationItemID item = SCR_EAnimationItemID.NONE)
 	{
-		return SCR_LoiterCustomAnimData.CreateInstance(-1, -1, string.Empty, SCR_CustomAnimData_Properties.BINDING_NAME_NPC, LF_WorkAnimPlayer.PICK_GRAPH, pose, -1, LF_EWorkAnimKind.PICK, LF_WorkAnimPlayer.CONTROL_VARIABLE);
+		return SCR_LoiterCustomAnimData.CreateInstance(-1, -1, string.Empty, SCR_CustomAnimData_Properties.BINDING_NAME_NPC, LF_WorkAnimPlayer.PICK_GRAPH, pose, -1, LF_EWorkAnimKind.PICK, LF_WorkAnimPlayer.CONTROL_VARIABLE, item);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The loiter data a worker's pose starts with: the job's pose and the prop it holds (#4644).
+	static SCR_LoiterCustomAnimData DataOf(notnull LF_ResidentWorkState state)
+	{
+		return PoseData(state.m_sPose, LF_ResidentWorkProps.PresetOf(state.m_sActivity));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -172,7 +183,7 @@ class LF_ResidentWorkLoop
 		if (state.m_sPose.IsEmpty())
 			controller.StartLoitering(null, ELoiteringType.LOITERING, true, true, false, none);
 		else
-			controller.StartLoitering(null, ELoiteringType.CUSTOM, true, true, false, none, true, PoseData(state.m_sPose));
+			controller.StartLoitering(null, ELoiteringType.CUSTOM, true, true, false, none, true, DataOf(state));
 
 		state.m_iStartedMs = System.GetTickCount();
 		state.m_iStarts++;

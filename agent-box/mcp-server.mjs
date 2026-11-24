@@ -38,6 +38,7 @@ const tools = [
       properties: {
         entityName: { type: "string" },
         actionClass: { type: "string" },
+        side: { type: "string", description: "stand side e (default), w, n, s, optional whole metres (w2); unset tries e, w, n, s until the action shows" },
       },
       required: ["entityName"],
     },
@@ -186,7 +187,7 @@ function callTool(name, args) {
     return textResult(formatPads());
   }
   if (name === "layer_play") {
-    const played = playLayer(a.entityName, a.actionClass);
+    const played = playLayer(a.entityName, a.actionClass, a.side);
     return textResult(played.lines.join("\n"));
   }
   if (name === "player_press") {

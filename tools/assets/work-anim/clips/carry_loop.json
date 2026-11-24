@@ -1,6 +1,6 @@
 {
   "name": "carry_loop",
-  "about": "Resident carries a box: both hands under it at belly height, elbows tucked, standing at a shoulder-width stance with a slow weight shift and a small lift. The box is a prop the resident holds in the world.",
+  "about": "Resident carries a box: both hands under it at belly height, elbows tucked, standing at a shoulder-width stance with a slow weight shift and a small lift. The box is a prop the resident holds in the world. The box is held on the right hand prop bone (key prop): its origin, the box floor centre, sits between the hands at belly height, its width across the hands (#4644).",
   "fps": 30,
   "frames": 48,
   "loop": true,
@@ -18,7 +18,8 @@
         "right": { "hand": [0.17, 0.98, 0.28], "elbow": [0.36, 0.95, 0.05], "fingers": [-0.4, 0.2, 1], "palm": [-1, 0.1, 0] },
         "left": { "hand": [-0.17, 0.98, 0.28], "elbow": [-0.36, 0.95, 0.05], "fingers": [0.4, 0.2, 1], "palm": [1, 0.1, 0] }
       },
-      "curl": { "right": 45, "left": 45 }
+      "curl": { "right": 45, "left": 45 },
+      "prop": { "right": { "pos": [0, 0.79, 0.38], "rot": [0, 0, 0] } }
     },
     {
       "frame": 24,
@@ -32,7 +33,8 @@
         "right": { "hand": [0.17, 1.0, 0.29], "elbow": [0.36, 0.97, 0.05], "fingers": [-0.4, 0.2, 1], "palm": [-1, 0.1, 0] },
         "left": { "hand": [-0.17, 1.0, 0.29], "elbow": [-0.36, 0.97, 0.05], "fingers": [0.4, 0.2, 1], "palm": [1, 0.1, 0] }
       },
-      "curl": { "right": 45, "left": 45 }
+      "curl": { "right": 45, "left": 45 },
+      "prop": { "right": { "pos": [0, 0.81, 0.39], "rot": [0, 0, 0] } }
     }
   ]
 }
