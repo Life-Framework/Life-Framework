@@ -136,3 +136,15 @@ GenericEntity Fit_saint_philippe_general_store_general_store_alarm_box : "{CDE40
  coords 4517.171 17.9 10738.762
  angleY 171
 }
+GenericEntity Fit_saint_philippe_general_store_general_store_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4514.987 18.250 10748.075
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4514.625 18.250 10743.968
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4519.407 18.250 10745.738
+ angleY 171
+}
