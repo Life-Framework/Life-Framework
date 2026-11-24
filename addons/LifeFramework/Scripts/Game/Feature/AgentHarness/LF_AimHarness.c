@@ -10,6 +10,8 @@
 //! Reply: `aim selected=<Class>@<entity> context=<name>@<entity> offered=<Class>@<entity>:<1|0>,...`, or `aim none`
 //! when the handler has no context. A proof stands beside the thing (`stand`), reads `aim`, and fails when the action
 //! it expects is not the selected or an offered one (the `:1` marks an action that can be performed now).
+//! The reply ends with ` name=<label>` (the selected row's own label, so a proof can tell two rows of one class apart)
+//! and ` menu=<top menu class|none>`: the engine offers no context at all while any menu or dialog is open (#4791).
 class LF_AimHarness
 {
 	//------------------------------------------------------------------------------------------------
@@ -73,7 +75,7 @@ class LF_AimHarness
 		UserActionContext context = handler.GetCurrentContext();
 		if (!context)
 		{
-			LF_AgentHarness.Answer(id, "ok", "aim none");
+			LF_AgentHarness.Answer(id, "ok", "aim none" + MenuNote() + CharacterNote());
 			return;
 		}
 
@@ -101,7 +103,52 @@ class LF_AimHarness
 		if (actions.Count() > 0)
 			contextOwner = DescribeAction(actions[0]);
 
-		LF_AgentHarness.Answer(id, "ok", "aim selected=" + DescribeAction(handler.GetSelectedAction()) + " context=" + context.GetContextName() + " (" + contextOwner + ") offered=" + offered);
+		string label = "none";
+		BaseUserAction selected = handler.GetSelectedAction();
+		if (selected)
+			label = selected.GetActionName();
+
+		LF_AgentHarness.Answer(id, "ok", "aim selected=" + DescribeAction(selected) + " context=" + context.GetContextName() + " (" + contextOwner + ") offered=" + offered + " name=" + label + MenuNote() + CharacterNote());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ` menu=<class>` for the top open menu or dialog, else ` menu=none`.
+	protected static string MenuNote()
+	{
+		MenuManager menus = GetGame().GetMenuManager();
+		if (!menus || (!menus.IsAnyMenuOpen() && !menus.IsAnyDialogOpen()))
+			return " menu=none";
+
+		MenuBase top = menus.GetTopMenu();
+		if (!top)
+			return " menu=dialog";
+
+		return " menu=" + top.Type().ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ` caninteract=<0|1> using=<0|1> weapon=<prefab|none>`: the character's own interaction gate
+	//! (SCR_CharacterControllerComponent.CanInteract), which also empties the handler.
+	protected static string CharacterNote()
+	{
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(LF_Utils.GetLocalCharacter());
+		if (!character)
+			return " caninteract=nocharacter";
+
+		SCR_CharacterControllerComponent controller = SCR_CharacterControllerComponent.Cast(character.GetCharacterController());
+		if (!controller)
+			return " caninteract=nocontroller";
+
+		string weapon = "none";
+		BaseWeaponManagerComponent weapons = controller.GetWeaponManagerComponent();
+		if (weapons && weapons.GetCurrentWeapon() && weapons.GetCurrentWeapon().GetOwner())
+		{
+			EntityPrefabData prefab = weapons.GetCurrentWeapon().GetOwner().GetPrefabData();
+			if (prefab)
+				weapon = FilePath.StripPath(prefab.GetPrefabName());
+		}
+
+		return string.Format(" caninteract=%1 using=%2 weapon=%3", controller.CanInteract(), controller.IsUsingItem(), weapon);
 	}
 }
 

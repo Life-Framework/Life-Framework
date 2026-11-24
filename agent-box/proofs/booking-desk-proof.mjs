@@ -21,6 +21,10 @@ async function runBookingDeskProof() {
   const dir = sessionDir();
   const flag = (name, dflt) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : dflt; };
   const prefix = flag("--name", "booking_desk");
+  // --order pay-first|cell-first: which booking B meets first (#4791: a second booking in one session).
+  // --cell-crime till|robbery: the cell path's crime, the fuel-till dialogue or a `bookcharge robbery` report.
+  const order = flag("--order", "pay-first");
+  const cellCrime = flag("--cell-crime", "till");
   const on = (n, spec, timeout) => {
     h.setBoxes([clientBox(dir, n)]);
     const r = h.sendCommand(spec, timeout);
@@ -54,24 +58,41 @@ async function runBookingDeskProof() {
   const shot = (n, name) => on(n, { verb: "capture", mode: "ui", name: `${prefix}_${name}` }, 25000);
   // The suspect answers with the interact key, as a player does: the two rows are one action class on one desk, which
   // the server-side `use` cannot tell apart (it cannot see the client's offer), so scroll to the row and confirm.
-  const answer = (n, scrolls) => {
+  // The two rows are one class, so the row is picked by its label (`aim` name=): the handler remembers the row last
+  // used, so "scroll 0" took the time instead of paying on a second booking (#4791).
+  const answer = (n, want) => {
     // A player looks down at a desk; the harness's level ray passes over a 0.75 m desk and finds no context.
     // Sweep the pitch until the interact key selects the desk's answer, then put it back.
+    // After the till robbery the handler sometimes offered no context at all for up to ~90 s (`aim none`, no menu
+    // open) while `look` listed the row and the server held the offer; the same row then answered (#4791). Sweep
+    // again for up to two minutes, as a player looks around, and keep the last `aim` reply for the step's reason.
     let pitch = 0;
     let aim;
-    for (const target of [-30, -20, -40, -10, -50]) {
-      on(n, { verb: "input", action: "CharacterTurnUp", value: target - pitch }, 8000);
-      pitch = target;
-      wait(800);
+    const started = Date.now();
+    const selected = () => /selected=LF_BookingDeskAnswerAction/.test(aim.detail);
+    do {
+      for (const target of [-30, -20, -40, -10, -50]) {
+        on(n, { verb: "input", action: "CharacterTurnUp", value: target - pitch }, 8000);
+        pitch = target;
+        wait(800);
+        aim = on(n, { verb: "aim", words: [] }, 10000);
+        if (selected()) break;
+      }
+      if (!selected()) wait(8000);
+    } while (!selected() && Date.now() - started < 120000);
+    if (Date.now() - started > 15000) console.log(`client ${n}: the desk's answer took ${Math.round((Date.now() - started) / 1000)} s to be offered`);
+    for (let i = 0; i < 3 && !want.test((/ name=(.*?) menu=/.exec(aim.detail) ?? [0, ""])[1]); i++) {
+      on(n, { verb: "interact", step: "next" }, 8000);
+      wait(700);
       aim = on(n, { verb: "aim", words: [] }, 10000);
-      if (/selected=LF_BookingDeskAnswerAction/.test(aim.detail)) break;
     }
-    for (let i = 0; i < scrolls; i++) { on(n, { verb: "interact", step: "next" }, 8000); wait(700); }
     const r = on(n, { verb: "interact", step: "confirm" }, 8000);
     wait(3500);
     on(n, { verb: "input", action: "CharacterTurnUp", value: -pitch }, 8000);
-    return r;
+    return { ...r, aim: String(aim.detail) };
   };
+  const PAY = /\$\d/;
+  const TIME = /min/;
   const lastOffer = () => (serverLog().match(/booking offer: .*/g) ?? ["none"]).slice(-1)[0];
   const toastOf = (detail) => (/toast=(.*?)( dispatches=|$)/.exec(detail ?? "") ?? [0, ""])[1];
   const money = (s) => (Number(s.cash) || 0) + (Number(s.bank) || 0);
@@ -114,7 +135,8 @@ async function runBookingDeskProof() {
   // cannot_show: the account is already on the roster from an earlier run in this profile, so the form is not offered.
   step("0a A signs up at the duty desk (approved on submit)", (open.status === "ok" && /approved, added to the police roster/.test(serverLog())) || (open.status === "error" && /cannot_show/.test(String(open.detail))), `apply=${open.status} ${open.detail}`);
   on(1, { verb: "look" });
-  on(1, { verb: "use", className: "LF_DutyAction", entityName: DESK }, 10000);
+  // A second run in one session finds A on duty already; the clock would take them off.
+  if (state(1).duty !== "1") on(1, { verb: "use", className: "LF_DutyAction", entityName: DESK }, 10000);
   wait(3000);
   const onDuty = state(1);
   step("0b A clocks in", onDuty.duty === "1", `duty=${onDuty.duty}`);
@@ -169,6 +191,8 @@ async function runBookingDeskProof() {
   };
 
   // ---------- Path 1: pay now ----------
+  const payPath = () => {
+  if (order === "cell-first") { on(2, { verb: "licence", name: "FIREARM_PERMIT" }, 10000); wait(2500); }
   const charge = on(2, { verb: "bookcharge", words: ["weapontheft"] }, 10000);
   step("1a B is charged with weapon theft and wanted", charge.status === "ok" && /wanted=[1-9]/.test(charge.detail), `${charge.status} ${charge.detail}`);
   cuffB("1b");
@@ -182,7 +206,7 @@ async function runBookingDeskProof() {
   const lookB = on(2, { verb: "look" }, 10000);
   step("1e B's action list at the desk shows both answers", (lookB.detail.match(/LF_BookingDeskAnswerAction/g) ?? []).length >= 2, lookB.detail);
   shot(2, "1_offer_pay_and_time");
-  const pay = answer(2, 0);
+  const pay = answer(2, PAY);
   const after = state(2);
   step("1f B pays: cash and bank drop by exactly the fine", pay.status === "ok" && money(before) - money(after) === fine, `use=${pay.status}; ${money(before)} -> ${money(after)}, fine $${fine}`);
   step("1g paid: the cuffs come off and the wanted level clears", after.cuffed === "0" && Number(after.wanted) === 0, `cuffed=${after.cuffed} wanted=${after.wanted}`);
@@ -196,9 +220,12 @@ async function runBookingDeskProof() {
   step("1k once paid, the desk offers B no answer rows", !lookPaid.detail.includes("LF_BookingDeskAnswerAction"), lookPaid.detail.slice(0, 300));
   shot(2, "1_paid_toast");
   wait(1500);
+  };
 
   // ---------- Path 2: the cell ----------
+  const cellPath = () => {
   const scene = (arg, value) => on(2, { verb: "dialogue", arg, value }, 10000).detail;
+  if (cellCrime === "till") {
   on(2, { verb: PISTOL_NOTE }, 10000);
   wait(1500);
   on(2, { verb: "hold", item: "weapon" }, 10000);
@@ -214,6 +241,10 @@ async function runBookingDeskProof() {
   wait(34000);
   on(2, { verb: "input", action: "MenuBack" });
   wait(3000);
+  } else {
+    on(2, { verb: "bookcharge", words: ["robbery"] }, 10000);
+    wait(1500);
+  }
   const wanted = Number(state(2).wanted) || 0;
   step("2a B robs the fuel till and is wanted", wanted > 0, `wanted=${wanted}`);
   on(2, { verb: "hold", item: "none" }, 10000);
@@ -224,15 +255,27 @@ async function runBookingDeskProof() {
   const lookB2 = on(2, { verb: "look" }, 10000);
   step("2d the jail-only robbery sheet offers only the cell", (lookB2.detail.match(/LF_BookingDeskAnswerAction/g) ?? []).length === 1 && /payable=0/.test(lastOffer()), lookB2.detail.slice(0, 200));
   shot(2, "2_offer_time_only");
-  const take = answer(2, 0);
+  const take = answer(2, TIME);
   wait(500);
   const j1 = Number(state(2).jail) || 0;
   wait(12000);
   const j2 = Number(state(2).jail) || 0;
-  step("2e B takes the time: in the cell and the sentence counts down", take.status === "ok" && j1 > 0 && j2 < j1, `use=${take.status} ${take.detail}; jail ${j1} -> ${j2}`);
+  step("2e B takes the time: in the cell and the sentence counts down", take.status === "ok" && j1 > 0 && j2 < j1, `use=${take.status} ${take.detail}; jail ${j1} -> ${j2}; last aim: ${take.aim.slice(0, 200)}`);
   const seen2 = on(2, { verb: "seen" }, 10000);
   shot(2, "2_in_cell");
   step("2f B has a toast to read after the booking", toastOf(seen2.detail) !== "" && toastOf(seen2.detail) !== "none", `toast: ${toastOf(seen2.detail)}`);
+  };
+
+  if (order === "cell-first") {
+    cellPath();
+    // B leaves the cell a free civilian (sentence, cuffs and wanted cleared) for the pay-now booking.
+    on(2, { verb: "resetplayer", cash: 400 }, 10000);
+    wait(3000);
+    payPath();
+  } else {
+    payPath();
+    cellPath();
+  }
 
   const kept = serverLog().split(/\r?\n/).filter((l) => /LFDebug:(Law|License|Police|HandsUp|Duty|Jail|Wanted|Rob|AgentHarness)/.test(l));
   mkdirSync(join(ROOT, "tmp"), { recursive: true });
