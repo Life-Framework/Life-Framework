@@ -382,7 +382,7 @@ function renderBlock(b, indent) {
   return out;
 }
 
-function entityText({ cls = "GenericEntity", name, ref, comps = [], coords, yaw, pitch = 0, roll = 0 }) {
+function entityText({ cls = "GenericEntity", name, ref, comps = [], coords, yaw, pitch = 0, roll = 0, scale = 1 }) {
   const lines = [`${cls} ${name}${ref ? ` : "${ref}"` : ""} {`];
   if (comps.length) {
     lines.push(" components {");
@@ -398,6 +398,8 @@ function entityText({ cls = "GenericEntity", name, ref, comps = [], coords, yaw,
   if (pitch) lines.push(` angleX ${pitch}`);
   if (yaw) lines.push(` angleY ${yaw}`);
   if (roll) lines.push(` angleZ ${roll}`);
+  // A kit row's `scale` (a gravel pile at 0.5) is the layer's own `scale` line, which the audit and the game read; fit dropped it before #4778.
+  if (Number.isFinite(scale) && scale > 0 && scale !== 1) lines.push(` scale ${scale}`);
   lines.push("}");
   return lines.join("\n");
 }
@@ -543,7 +545,7 @@ export function planFit(opts, ctx = {}) {
       }
       comps.push({ cls: c.component, guid, set: c.set ?? {}, blocks });
     }
-    return { id: r.id, cls: src.class && /^\w+$/.test(src.class) ? src.class : "GenericEntity", name: `Fit_${ident(place)}_${ident(slotId)}_${ident(r.id)}`, ref: r.prefab, comps, coords: r.coords, yaw: r.yaw, pitch: Number(src.pitch) || 0, roll: Number(src.roll) || 0 };
+    return { id: r.id, cls: src.class && /^\w+$/.test(src.class) ? src.class : "GenericEntity", name: `Fit_${ident(place)}_${ident(slotId)}_${ident(r.id)}`, ref: r.prefab, comps, coords: r.coords, yaw: r.yaw, pitch: Number(src.pitch) || 0, roll: Number(src.roll) || 0, scale: Number(src.scale) > 0 ? Number(src.scale) : 1 };
   });
 
   const layerName = layerNameOf(place, slotId);
