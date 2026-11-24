@@ -49,6 +49,7 @@ export const SHOPS = {
       fixture: "Prefabs/Props/Commercial/ShelfShop_01.et",
       boards: [1, 2, 3],
       perBoard: 7,
+      maxFoot: 0.3,
     },
     // The boundary of the store: the host's own model bounds, leaving it with unpaid goods is shoplifting.
     restockSeconds: 120,
@@ -145,6 +146,8 @@ export function planShelves({ units, items, itemRefs, boards, boardIdx, perBoard
     const fits = (ref, unit) => {
       const item = items[itemKey(ref)];
       if (!item) return [];
+      // Goods bigger than this stay off the gondolas: the cabbage (0.42 x 0.46 m) overlapped its neighbours.
+      if (gondola.maxFoot && Math.max(item.size[0], item.size[2]) > gondola.maxFoot) return [];
       const pts = [];
       for (const b of gondola.boardIdx) {
         if (!gondola.boards[b]) {
@@ -243,7 +246,7 @@ async function build(root, name) {
     const gf = await measureOne(root, shop.gondola.fixture, { minSize: 0.05 });
     const gUnits = instancesOf(furniture, shop.gondola.fixture);
     if (!gUnits.length) throw new Error(`${shop.hostFurniture} places no ${shop.gondola.fixture}`);
-    gondola = { units: gUnits, boards: boardsOf(gf.surfaces), boardIdx: shop.gondola.boards, perBoard: shop.gondola.perBoard };
+    gondola = { units: gUnits, boards: boardsOf(gf.surfaces), boardIdx: shop.gondola.boards, perBoard: shop.gondola.perBoard, maxFoot: shop.gondola.maxFoot };
   }
   const plan = planShelves({ units, items, itemRefs, boards, boardIdx: shop.boards, perBoard: shop.perBoard, gondolaZ: shop.gondolaZ, gondola });
 
