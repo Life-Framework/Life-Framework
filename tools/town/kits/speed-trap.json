@@ -30,7 +30,7 @@
     },
     "front": "-x",
     "counters": [],
-    "adapt": "An open lay-by on a verge, hostless (a free plot beside the road): the kit never turns, so it is written running north-south with the road on its -x side. The patrol car parks parallel to the road with its nose to the end barrier (the grid's four gravel piles are left out here: the fit does not carry their 0.5 scale, so each would stand 8 m across); the limit signs stand on the verge facing the drivers they speak to (30 and 100 northbound, 50 southbound). Rows are rigid: shift, never stretch."
+    "adapt": "An open lay-by on a verge, hostless (a free plot beside the road): the kit never turns, so it is written running north-south with the road on its -x side. The patrol car parks parallel to the road with its nose to the end barrier; one gravel pile at scale 0.5 (about 4 m across; the fit writes a row's scale since #4778, and the audit takes 0.5 to 2) is the small gravel pad beyond the barrier; the limit signs stand on the verge facing the drivers they speak to (30 and 100 northbound, 50 southbound). Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -110,6 +110,24 @@
         6.5
       ],
       "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "speedtrap-gravel-1",
+      "name": "Grid_speedtrap_Gravel_1",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "class": "StaticModelEntity",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0.046,
+        9.3
+      ],
+      "yaw": 90,
+      "scale": 0.5,
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"

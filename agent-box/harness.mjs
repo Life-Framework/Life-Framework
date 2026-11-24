@@ -22,6 +22,7 @@ import { claimPlay, decideClaim, rendererFor } from "./play-claim.mjs";
 import { readSession, sessionForBox } from "./session.mjs";
 import { sessionDirOfBox, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, runTownReport, selectRoadmapSites, siteLook, siteShotOffset, STREET_Z } from "./report.mjs";
+import { expandHandbookTour, selftest as handbookFlowSelftest } from "./handbook-flow.mjs";
 import { checkExpect, flowTable, parseExpect, parseState, parseStep, selftest as flowAssertsSelftest } from "./flow-asserts.mjs";
 import { TOWN, checkTown, formatTownCheck, judgeTownRow, loadSignCatalog, loadStrings, manifestErrors, parseSignConfig, resolveSite, signCard, signIssues } from "./town.mjs";
 
@@ -798,7 +799,10 @@ export function readFlow(name) {
       : [];
     throw new Error(`unknown flow ${name}. Known: ${names.join(", ") || "(none)"}`);
   }
-  return readFileSync(path, "utf8").split(/\r?\n/);
+  // `@handbook-tour <pack> ...` expands to the page-by-page read from the handbook configs (handbook-flow.mjs).
+  return readFileSync(path, "utf8")
+    .split(/\r?\n/)
+    .flatMap((line) => (line.startsWith("@handbook-tour") ? expandHandbookTour(line) : [line]));
 }
 
 // `step` and `expect` lines judge a flow (flow-asserts.mjs): a failed line or assert fails its step, and
@@ -1477,6 +1481,7 @@ function selftest() {
   if (!/no running session/.test(missionProblem({ mission: "grid", stoppedAt: "2026-11-16T00:00:00Z" }, "grid"))) throw new Error("a stopped session was accepted");
   townSelftest();
   console.log(flowAssertsSelftest());
+  console.log(handbookFlowSelftest());
   console.log("selftest ok");
   return 0;
 }

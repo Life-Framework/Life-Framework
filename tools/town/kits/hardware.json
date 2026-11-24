@@ -60,7 +60,7 @@
     {
       "id": "hardware-shop-counter",
       "name": "Hardware_shop_counter",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "prefab": "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et",
       "role": "counter",
       "verb": "against wall",
       "offset": [
@@ -71,12 +71,13 @@
       "yaw": 0,
       "wall": "-x",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": -0.042
     },
     {
       "id": "hardware-miners-counter",
       "name": "Hardware_miners_counter",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "prefab": "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et",
       "role": "counter",
       "verb": "against wall",
       "offset": [
@@ -87,7 +88,8 @@
       "yaw": 180,
       "wall": "-x",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": -0.042
     },
     {
       "id": "hardware-shop-till",
@@ -172,14 +174,15 @@
       "class": "LF_NpcBaseEntity",
       "wall": "-x",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": -0.043
     },
     {
       "id": "hardware-shelf-1",
       "name": "Hardware_shelf_1",
       "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
       "role": "dressing",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         3.285,
         0.454,
@@ -188,7 +191,8 @@
       "yaw": -90,
       "wall": "-z",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": -0.042
     },
     {
       "id": "hardware-tool-rack-1",
@@ -219,7 +223,8 @@
       "yaw": -90,
       "wall": "-z",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": -0.042
     },
     {
       "id": "hardware-lf-sign-fascia",

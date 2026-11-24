@@ -157,6 +157,36 @@
       ],
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "bell-hour",
+      "prefab": "{CA01343AF14EA0BA}Prefabs/Atmosphere/LF_BellHour.et",
+      "free": true,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.652,
+        13.8,
+        11.755
+      ],
+      "yaw": 98,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bell-service",
+      "prefab": "{EB41CD31CE7157B2}Prefabs/Atmosphere/LF_BellService.et",
+      "free": true,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.643,
+        13.3,
+        11.615
+      ],
+      "yaw": 98,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }

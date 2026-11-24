@@ -166,6 +166,36 @@ const resolve_ = (ref) => {
   check(!bare.ok && has(bare.errors, "slot police"), `police [the riding jail slot has no cell either]: expected an error naming slot police (errors: ${bare.errors.join(" | ") || "none"})`);
 }
 
+// ------------------------------------------------------------------ the building budget: street lamps and unshadowed fills (#4763)
+// A placed vanilla street lamp is street lighting: it counts toward the place limits, not the building budget. A CastShadow 0 fill
+// light is not charged to the lights limit (unshadowed lights measured no cost); a shadowed or unset one still is.
+// red-proof: with check.mjs counting every light against the building (the woodlot's three LampStreet_E_01_4m) this printed
+// "FAIL  woodlot yard [street lamps]: expected a pass ... shadow casters 3 > 1", and with the lights limit counting fills, "lights 10 > 6" (2026-11-24).
+{
+  const LIGHT = (id, cast) => "LightEntity {\n ID \"" + id + "\"\n" + (cast === undefined ? "" : " CastShadow " + cast + "\n") + "}\n";
+  const lampBody = (n, cast) => "GenericEntity {\n " + Array.from({ length: n }, (_, i) => LIGHT("L" + i, cast)).join(" ") + "}\n";
+  const prefabs = {
+    "Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et": lampBody(1),
+    "Prefabs/Props/Lights/Yard_Lamp.et": lampBody(1),
+    "Prefabs/Props/Lights/Fill_Lamp.et": lampBody(5, 0),
+    "Prefabs/Props/Lights/Spot_Lamp.et": lampBody(7, 1),
+  };
+  const res = (ref) => ({ text: prefabs[ref.replace(/^\{[0-9A-Fa-f]{16}\}/, "")] ?? "GenericEntity {\n}\n", where: "fixture" });
+  const row = (n, path, i) => "GenericEntity Fit_yard_" + n + i + " : \"{3333333333333333}" + path + "\" {\n coords 981 12.4 " + (2010 + i) + "\n}\n";
+  const rows = (n, path, count) => Array.from({ length: count }, (_, i) => row(n, path, i)).join("");
+  const run = (extra) => checkPlace(place("clothing", "ClothingCounter", extra), { resolve: res });
+  const street = run(rows("lamp", "Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et", 3));
+  check(street.ok, "woodlot yard [street lamps]: expected a pass (errors: " + (street.errors.join(" | ") || "none") + ")");
+  check(street.perf.find((p) => p.slot === "clothing")?.lights === 3 && street.perf.find((p) => p.slot === "clothing")?.street === 3, "woodlot yard [street lamps]: the place limits must still count the three lamps (perf: " + JSON.stringify(street.perf.find((p) => p.slot === "clothing")) + ")");
+  const other = run(rows("lamp", "Prefabs/Props/Lights/Yard_Lamp.et", 3));
+  check(!other.ok && has(other.errors, "shadow casters 3 > 1"), "yard lamps that are not street lamps [medium budget]: expected shadow casters 3 > 1 (errors: " + (other.errors.join(" | ") || "none") + ")");
+  const fills = run(rows("fill", "Prefabs/Props/Lights/Fill_Lamp.et", 2));
+  check(fills.ok, "ten CastShadow 0 fills: expected a pass (errors: " + (fills.errors.join(" | ") || "none") + ")");
+  check(fills.perf.find((p) => p.slot === "clothing")?.fill === 10 && fills.perf.find((p) => p.slot === "clothing")?.lights === 0, "ten CastShadow 0 fills: perf lists them as fill, not lights (perf: " + JSON.stringify(fills.perf.find((p) => p.slot === "clothing")) + ")");
+  const shadowed = run(rows("spot", "Prefabs/Props/Lights/Spot_Lamp.et", 1));
+  check(!shadowed.ok && has(shadowed.errors, "lights 7 > 6"), "seven CastShadow 1 lights: expected lights 7 > 6 (errors: " + (shadowed.errors.join(" | ") || "none") + ")");
+}
+
 // ------------------------------------------------------------------ the committed Saint-Philippe place loads and checks
 {
   let ok = true;

@@ -43,19 +43,20 @@ class LF_GatherTools
 
 	//------------------------------------------------------------------------------------------------
 	//! Speed factor of the held prefab on this node: 1 for the node's base tool or no tool needed,
-	//! the row's factor for a listed tool, 0 when the held prefab does not pass.
+	//! the row's factor for a listed tool, 0 when the held prefab does not pass. A tier of a tool (a prefab
+	//! that inherits it, #4188) is that tool (#4790).
 	static float Speed(LF_ResourceNodeDef row, ResourceName held)
 	{
 		if (!NeedsTool(row))
 			return 1.0;
-		if (!held.IsEmpty() && !row.m_ToolPrefab.IsEmpty() && LF_Utils.SamePrefab(row.m_ToolPrefab, held))
+		if (!held.IsEmpty() && !row.m_ToolPrefab.IsEmpty() && LF_Utils.PrefabInherits(held, row.m_ToolPrefab))
 			return 1.0;
 		if (held.IsEmpty() || !row.m_aTools)
 			return 0.0;
 
 		foreach (LF_GatherToolRow tool : row.m_aTools)
 		{
-			if (tool && LF_Utils.SamePrefab(tool.m_ToolPrefab, held))
+			if (tool && LF_Utils.PrefabInherits(held, tool.m_ToolPrefab))
 				return Math.Max(tool.m_fSpeed, MIN_SPEED);
 		}
 		return 0.0;

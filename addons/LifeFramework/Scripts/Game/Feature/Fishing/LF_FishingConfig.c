@@ -695,6 +695,13 @@ class LF_FishingConfig
 				return def;
 		}
 
+		// A tier of a rod (worn, standard, fine: a prefab that inherits the base rod) fishes as its base (#4790).
+		foreach (LF_FishingRodDef parent : m_aRods)
+		{
+			if (parent && LF_Utils.PrefabInherits(prefab, parent.m_Prefab))
+				return parent;
+		}
+
 		return null;
 	}
 

@@ -62,14 +62,15 @@
       "role": "board",
       "verb": "on floor",
       "offset": [
-        3.1,
+        3.251,
         1.15,
-        -3.66
+        -3.661
       ],
-      "yaw": 0,
+      "yaw": 90,
       "wall": "-z",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "free": true
     },
     {
       "id": "police-kit-duty-desk",
@@ -85,7 +86,8 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.036
     },
     {
       "id": "police-kit-armory",
@@ -143,7 +145,7 @@
       "name": "PoliceKit_ArmoryStore",
       "prefab": "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et",
       "role": "interactable",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         2.45,
         0.036,
@@ -152,14 +154,15 @@
       "yaw": 0,
       "wall": "+x",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.036
     },
     {
       "id": "police-kit-evidence-locker",
       "name": "PoliceKit_EvidenceLocker",
       "prefab": "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et",
       "role": "interactable",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         1.5,
         0.036,
@@ -177,7 +180,8 @@
       ],
       "wall": "-z",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": 0.036
     },
     {
       "id": "police-kit-dispatch-board",
@@ -209,7 +213,8 @@
       "yaw": 90,
       "wall": "+x",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "free": true
     },
     {
       "id": "police-kit-handcuffs",
@@ -328,7 +333,7 @@
       "name": "PoliceKit_Decor_12",
       "prefab": "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et",
       "role": "dressing",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         -1.7,
         3.846,
@@ -337,7 +342,8 @@
       "yaw": 180,
       "wall": "free",
       "floor": "f1",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": 0.036
     },
     {
       "id": "police-kit-decor-13",
@@ -353,7 +359,8 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f1",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": 0.036
     },
     {
       "id": "police-kit-decor-15",
@@ -377,14 +384,15 @@
       "role": "board",
       "verb": "against wall",
       "offset": [
-        5.9,
+        5.831,
         5,
-        1.2
+        0.5
       ],
       "yaw": -90,
       "wall": "+x",
       "floor": "f1",
-      "attach": "wall"
+      "attach": "wall",
+      "free": true
     },
     {
       "id": "police-kit-decor-21",
@@ -393,9 +401,9 @@
       "role": "light",
       "verb": "against wall",
       "offset": [
-        1.45,
+        1.35,
         2.55,
-        6.9
+        6.89
       ],
       "yaw": 0,
       "config": [
@@ -408,7 +416,8 @@
         }
       ],
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "free": true
     },
     {
       "id": "police-kit-decor-22",
@@ -440,7 +449,7 @@
       "name": "PoliceKit_Decor_30",
       "prefab": "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et",
       "role": "dressing",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         0.45,
         0.035,
@@ -449,14 +458,16 @@
       "yaw": 30,
       "wall": "-z",
       "floor": "f0",
-      "attach": "wall"
+      "attach": "wall",
+      "lift": 0.036,
+      "free": true
     },
     {
       "id": "police-kit-decor-31",
       "name": "PoliceKit_Decor_31",
       "prefab": "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et",
       "role": "dressing",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         -1.75,
         0.01,
@@ -482,7 +493,8 @@
       "class": "LF_NpcBaseEntity",
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.041
     },
     {
       "id": "police-kit-sign-front",
@@ -622,9 +634,9 @@
       "role": "dressing",
       "verb": "on police-kit-booking-desk",
       "offset": [
-        -1.222,
+        -1.029,
         0.942,
-        1.643
+        1.599
       ],
       "yaw": 90,
       "floor": "f0",

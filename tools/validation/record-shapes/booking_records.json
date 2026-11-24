@@ -1,0 +1,21 @@
+{
+  "section": "booking_records",
+  "class": "LF_BookingRecordsSavePayload",
+  "version": 1,
+  "roots": "LF_BookingRecordRow",
+  "records": {
+    "LF_BookingRecordRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sPlayerUid",
+        "int m_iDay",
+        "string m_sCodes",
+        "int m_iFine",
+        "int m_iSettled",
+        "int m_iServedSeconds",
+        "string m_sLicences",
+        "string m_sOfficer"
+      ]
+    }
+  }
+}

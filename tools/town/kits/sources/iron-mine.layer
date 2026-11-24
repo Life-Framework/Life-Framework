@@ -131,3 +131,68 @@ GenericEntity Mine_BusStop : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
  coords -10 0 -10
  angleY -90
 }
+// Site dressing (#4180): a site hut with its tool rack and bench, barrels, ore carts, timber and a south fence line.
+GenericEntity Mine_Hut : "{B9F18808252E22C3}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_yellow.et" {
+ coords 2 0 -5.2
+ angleY 0
+}
+GenericEntity Mine_ToolRack : "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et" {
+ coords 4.4 0 -4.2
+ angleY 90
+}
+GenericEntity Mine_Bench : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+ coords 6.6 0.09 -4.2
+ angleY 90
+}
+GenericEntity Mine_BenchLamp : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 6.63 1.11 -3.9
+ angleY 180
+}
+GenericEntity Mine_Barrel_1 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords -0.7 0.06 -6.6
+ angleY 0
+}
+GenericEntity Mine_Barrel_2 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords -0.7 0.08 -7.6
+ angleY 40
+}
+GenericEntity Mine_BarrelLamp : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords -0.7 1.15 -6.6
+ angleY 0
+}
+GenericEntity Mine_Barrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords 7.6 0 -1.4
+ angleY 25
+}
+GenericEntity Mine_Cart_1 : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords -0.8 -0.3 2.4
+ angleY 0
+}
+GenericEntity Mine_Cart_2 : "{852265665B92CD53}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_wheelbase_cargo_rusty.et" {
+ coords -0.8 0 4.2
+ angleY 0
+}
+GenericEntity Mine_TimberL : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 2 0 0.4
+ angleY 90
+}
+GenericEntity Mine_Logs : "{4D1517866E9C2362}Prefabs/Props/Forest/WoodPile/WoodPile_02_A.et" {
+ coords -0.9 0 -4.3
+ angleY 90
+}
+GenericEntity Mine_FenceS1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords -4 0 -9.6
+ angleY 0
+}
+GenericEntity Mine_FenceS2 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 0 0 -9.6
+ angleY 0
+}
+GenericEntity Mine_FenceS3 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 8 0 -9.6
+ angleY 0
+}
+GenericEntity Mine_FenceS4 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 12 0 -9.6
+ angleY 0
+}
