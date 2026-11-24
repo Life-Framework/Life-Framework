@@ -39,6 +39,8 @@
 # writes $profile:LF_TestOnly.txt and defines LF_TEST_ONLY; the suite then
 # reports tier=only, so suite-stamp never mistakes it for a full tier run.
 #
+# -OnlyList <file> is -Only read from a file (a long list passes the 32K command line, #4842).
+#
 # -Red (with -Only) is the batched red proof (tools\cli test --red): it adds the define LF_TEST_RED, so
 # each listed test runs once with its RedProof() hook on and the suite reports tier=red. A test
 # counts as passed there only by FAILING; "failed" in that SUMMARY is the hollow tests (still
@@ -64,6 +66,8 @@ param(
   [int]$GracefulCloseSeconds = 30,
   [string]$ExtraDefine,
   [string]$Only,
+  # A file holding the -Only list: a long list (the core leg of --tier all, 1367+ names) passes the 32K Windows command line (#4842).
+  [string]$OnlyList,
   [switch]$Red,
   [string]$Addons,
   [switch]$CoreOnly
@@ -284,12 +288,17 @@ if ($Tier -eq "fast") {
 $expectedTier = $Tier
 $onlyFile = Join-Path $profile "profile\LF_TestOnly.txt"
 Remove-Item -LiteralPath $onlyFile -Force -ErrorAction SilentlyContinue
+if (-not [string]::IsNullOrEmpty($OnlyList)) {
+  if (-not (Test-Path -LiteralPath $OnlyList)) { Write-Host "ERROR -OnlyList not found: $OnlyList"; exit 2 }
+  $Only = ([System.IO.File]::ReadAllText($OnlyList)).Trim()
+}
 if (-not [string]::IsNullOrEmpty($Only)) {
   New-Item -ItemType Directory -Force -Path (Split-Path -Parent $onlyFile) | Out-Null
   [System.IO.File]::WriteAllText($onlyFile, $Only, (New-Object System.Text.UTF8Encoding $false))
   $args += @("-scrDefine", "LF_TEST_ONLY")
   $expectedTier = "only"
-  Write-Host "test-e2e: only $Only"
+  $onlyCount = ($Only -split ",").Count
+  if ($Only.Length -le 2000) { Write-Host "test-e2e: only $Only" } else { Write-Host "test-e2e: only $onlyCount tests (list in $onlyFile)" }
   if ($Red) {
     $args += @("-scrDefine", "LF_TEST_RED")
     $expectedTier = "red"

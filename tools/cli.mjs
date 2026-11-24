@@ -82,6 +82,7 @@ import * as pool from "./remote/pool.mjs";
 import * as shards from "./lib/test-shards.mjs";
 import * as testCache from "./lib/test-cache.mjs";
 import * as testWorld from "./lib/test-world.mjs";
+import { onlyArgs } from "./lib/test-only-args.mjs";
 import { planE2eLegs } from "./lib/e2e-legs.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
 import * as wbRoute from "./lib/wb-route.mjs";
@@ -3744,7 +3745,7 @@ function runLocalTest(root, tier, only, world, coreOnly, red = false) {
       "-A2sPort", String(ports.a2sPort),
       ...(laneListenAddr() ? ["-ListenAddr", laneListenAddr()] : []),
       ...budgetArgs(),
-      ...(only.length ? ["-Only", only.join(",")] : []),
+      ...onlyArgs(root, only), // a long list travels as a file: argv tops out at 32K on Windows (#4842)
       ...(red ? ["-Red"] : []),
       ...(world ? ["-Mission", world] : []),
       ...(coreOnly ? ["-CoreOnly"] : []),
