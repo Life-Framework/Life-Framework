@@ -1,0 +1,306 @@
+{
+  "schema": 1,
+  "kit": "power-plant-coal",
+  "system": "mining",
+  "source": {
+    "file": "tools/town/kits/sources/power-plant-coal.layer",
+    "group": "*",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -33,
+        -6
+      ],
+      "max": [
+        -5,
+        13
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "A hostless plot beside the power plant: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The coal buyer stands behind a shop counter facing north (his premium buyer, `power_plant`, on its top), three coal heaps and a barrow behind him, a hopper (shaft tippler, metal bin and a rail cart) and a Ural parked along it to the east make the truck bay, two flood lamps light the yard and the pole plate stands west of the counter. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "coal-counter",
+      "name": "Coal_Counter",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        -24,
+        0,
+        4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.04
+    },
+    {
+      "id": "coal-buyer",
+      "name": "Coal_Buyer",
+      "prefab": "{52895A24E4FC994C}Prefabs/Trader/LF_CoalBuyer_Everon1989.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -24,
+        1.04,
+        4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 1.08
+    },
+    {
+      "id": "coal-clerk",
+      "name": "Coal_Clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -24,
+        0,
+        2.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "class": "LF_NpcBaseEntity"
+    },
+    {
+      "id": "coal-heap-l",
+      "name": "Coal_HeapL",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -30,
+        0.082,
+        -2
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "coal-heap-m",
+      "name": "Coal_HeapM",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -24,
+        0.082,
+        -3.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "coal-heap-r",
+      "name": "Coal_HeapR",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -18,
+        0.082,
+        -2
+      ],
+      "yaw": 270,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "coal-barrow",
+      "name": "Coal_Barrow",
+      "prefab": "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -27.5,
+        0,
+        6
+      ],
+      "yaw": 25,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "coal-bucket",
+      "name": "Coal_Bucket",
+      "prefab": "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -28.8,
+        0,
+        7.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "coal-tippler",
+      "name": "Coal_Tippler",
+      "prefab": "{8CBA9D089278A4D7}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_tippler.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10,
+        0,
+        4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "coal-bin",
+      "name": "Coal_Bin",
+      "prefab": "{17ADCDC2721AC2E7}Prefabs/Props/Construction/ContainerMetal_01/ContainerMetal_01_low_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -11.5,
+        0,
+        10
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.044
+    },
+    {
+      "id": "coal-cart",
+      "name": "Coal_Cart",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -9.5,
+        0,
+        7.5
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": -0.316
+    },
+    {
+      "id": "coal-truck",
+      "name": "Coal_Truck",
+      "prefab": "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -17.8,
+        0,
+        10
+      ],
+      "yaw": 270,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_VehicleLockComponent",
+          "guid": "54D6FBC0EA806FE5",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "coal-flood-a",
+      "name": "Coal_FloodA",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -17,
+        0,
+        6.5
+      ],
+      "yaw": 160,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.016
+    },
+    {
+      "id": "coal-flood-b",
+      "name": "Coal_FloodB",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -6,
+        0,
+        3
+      ],
+      "yaw": -160,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "coal-sign",
+      "name": "Coal_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        -29.5,
+        0,
+        10.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "guid": "026619B31213409D",
+          "set": {
+            "m_sSignId": "\"power-plant-coal\"",
+            "m_vRimColor": "0.12 0.1 0.08",
+            "m_vPaintColor": "0.9 0.86 0.74",
+            "m_vTextColor": "0.12 0.1 0.08"
+          },
+          "blocks": []
+        }
+      ]
+    }
+  ]
+}

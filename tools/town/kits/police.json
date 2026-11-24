@@ -626,6 +626,21 @@
       "attach": "counter:police-kit-booking-desk"
     },
     {
+      "id": "police-kit-booking-typewriter",
+      "name": "PoliceKit_BookingTypewriter",
+      "prefab": "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et",
+      "role": "dressing",
+      "verb": "on police-kit-booking-desk",
+      "offset": [
+        -1.222,
+        0.942,
+        1.643
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "counter:police-kit-booking-desk"
+    },
+    {
       "id": "police-kit-law-book-lectern",
       "name": "PoliceKit_LawBookLectern",
       "prefab": "{A4C17E2B9D305F68}Prefabs/Props/Police/LF_LawBookLectern.et",

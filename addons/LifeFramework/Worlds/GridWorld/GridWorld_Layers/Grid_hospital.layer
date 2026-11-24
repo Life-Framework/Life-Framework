@@ -159,11 +159,13 @@ GenericEntity Annex_Hospital_Cabinet {
      UIInfo UIInfo "{91C4E0A7B2D34815}" {
       Name "#EL-Hospital_BreachCabinet"
      }
+     "Sort Priority" 1
     }
     LF_BreachRepairAction "{91C4E0A7B2D34816}" {
      ParentContextList {
       "default"
      }
+     "Sort Priority" 9
     }
    }
   }
