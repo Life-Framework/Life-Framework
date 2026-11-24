@@ -145,6 +145,7 @@
       "wall": "+z",
       "floor": "f1",
       "attach": "wall",
+      "standoff": 0.12,
       "config": [
         {
           "component": "LF_SignComponent",
