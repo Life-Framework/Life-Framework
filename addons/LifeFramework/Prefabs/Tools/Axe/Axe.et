@@ -77,5 +77,8 @@ GenericEntity : "{F3919A62ADD6123A}Prefabs/Tools/Tool_Base.et" {
    RplComponent "{59908095DD42CB50}" {
     "Parent Node From Parent Entity" 0
    }
+  LF_ToolConditionComponent "{645604DF3148C643}" {
+   m_eKind AXE
+  }
   }
  }

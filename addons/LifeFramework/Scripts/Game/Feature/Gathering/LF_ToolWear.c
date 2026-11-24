@@ -1,9 +1,9 @@
 //------------------------------------------------------------------------------------------------
-//! Gather wear (#4300): mining, felling and fishing each lower the player's tool by the tier's rate
-//! (LF_ToolTierConfig). A worn-out tool still works at full pace (the hold is timed on the client,
-//! which cannot read the server's store), so the chosen consequence is the warning: a notice when the
-//! tool drops into a worse band, and again after every use once it is worn out. The conditions live in
-//! the LF_ToolBench store; saving them is #4301.
+//! Gather wear (#4300): mining, felling and fishing each lower the tool that did the work by its own
+//! tier's rate (LF_ToolTierConfig). A worn-out tool still works at full pace (the hold is timed on the
+//! client), so the chosen consequence is the warning: a notice when the tool drops into a worse band,
+//! and again after every use once it is worn out. The condition lives on the tool item
+//! (LF_ToolConditionComponent, #4821), so two pickaxes keep their own and a fine one wears slowest.
 class LF_ToolWear
 {
 	static const string FEATURE = "ToolWear";
@@ -45,15 +45,15 @@ class LF_ToolWear
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One use of `tool`: it loses the tier's amount. Returns the warning key, or "".
+	//! One use of a pure tool state: it loses the tier's amount. Returns the warning key, or "".
 	static string Wear(LF_ToolCondition tool)
 	{
 		return WearScaled(tool, 1.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One use of `tool` that costs `scale` times the tier's amount (a trade perk, #4408: 1 is the full
-	//! rate). The condition never goes below 0. Returns the warning key, or "".
+	//! One use of a pure tool state that costs `scale` times the tier's amount (a trade perk, #4408: 1
+	//! is the full rate). The condition never goes below 0. Returns the warning key, or "".
 	static string WearScaled(LF_ToolCondition tool, float scale)
 	{
 		if (!tool)
@@ -82,27 +82,45 @@ class LF_ToolWear
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the player's tool of this kind takes one use, and the player is told when it matters.
-	//! A user with no player identity (a test body) wears nothing.
-	static void OnUse(IEntity user, string kind)
+	//! Server: the tool of this kind that did the work takes one use, and the player is told when it
+	//! matters. `toolEntity` is the tool when the caller knows it (the mining hit); otherwise the one in
+	//! the hands, else the first one carried. A user with no tool of the kind wears nothing.
+	static void OnUse(IEntity user, string kind, IEntity toolEntity = null)
 	{
 		if (!Replication.IsServer() || !user || kind.IsEmpty())
 			return;
 
-		LF_ToolCondition tool = LF_ToolBench.ToolOf(LF_Utils.GetPlayerUID(user), kind);
+		LF_ToolConditionComponent tool = LF_ToolConditionComponent.Of(toolEntity);
+		if (!tool || tool.GetKind() != kind)
+			tool = LF_ToolConditionComponent.InUse(user, kind);
+
 		if (!tool)
 		{
-			LF_Debug.Log(FEATURE, string.Format("no tool worn for %1: the user has no player identity", kind));
+			LF_Debug.Log(FEATURE, string.Format("no %1 worn: the user holds or carries none with a condition", kind));
 			return;
 		}
 
 		string uid = LF_Utils.GetPlayerUID(user);
-		string warn = WearScaled(tool, LF_PerkEffects.WearScale(uid, TradeOfKind(kind)));
-		LF_Debug.Info(FEATURE, string.Format("%1 used, condition now %2", kind, tool.m_fCondition));
+		string warn = tool.Wear(LF_PerkEffects.WearScale(uid, TradeOfKind(kind)));
+		LF_Debug.Info(FEATURE, string.Format("%1 (tier %2) used, condition now %3", kind, tool.GetTier(), tool.GetCondition()));
 		if (warn.IsEmpty())
 			return;
 
-		LF_Utils.NotifyEntity(user, LF_Terms.Text(warn, LF_Terms.Text(KindKey(kind))), "", 4.0);
+		LF_Utils.NotifyEntity(user, LF_Terms.Text(warn, ToolName(tool, kind)), "", 4.0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The worn item's own name in words ("Fine pickaxe", #4730), or the kind's word when it has none.
+	static string ToolName(LF_ToolConditionComponent tool, string kind)
+	{
+		if (tool)
+		{
+			string name = LF_ShopManagerComponent.ResolveDisplayName(LF_Utils.GetPrefabName(tool.GetOwner()));
+			if (!name.IsEmpty())
+				return LF_Terms.Text(name);
+		}
+
+		return LF_Terms.Text(KindKey(kind));
 	}
 
 	//------------------------------------------------------------------------------------------------

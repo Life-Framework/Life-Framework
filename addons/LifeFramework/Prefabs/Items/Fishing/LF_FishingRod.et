@@ -44,5 +44,8 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    m_eAnimVariable ADRIANOV
    m_sToolId "rod"
   }
+  LF_ToolConditionComponent "{A09684EB4C8F67A6}" {
+   m_eKind ROD
+  }
  }
 }

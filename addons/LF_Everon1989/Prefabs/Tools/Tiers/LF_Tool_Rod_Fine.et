@@ -16,5 +16,8 @@ GenericEntity : "{0327968D17D249FD}Prefabs/Items/Fishing/LF_FishingRod.et" {
     }
    }
   }
+  LF_ToolConditionComponent "{A09684EB4C8F67A6}" {
+   m_iTier 2
+  }
  }
 }
