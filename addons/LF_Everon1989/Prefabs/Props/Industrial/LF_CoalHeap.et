@@ -1,0 +1,61 @@
+GenericEntity {
+ ID "A665CC1E8D03B51A"
+ coords 0 0 0
+ {
+  GenericEntity {
+   ID "3B6DBAC277FEBB82"
+   components {
+    MeshObject "{DC6FC9E84E0175B4}" {
+     Object "{352A1A2A8D933FFE}Assets/Props/Construction/GravelPile_01/GravelPile_01_medium.xob"
+    }
+   }
+   coords -0.094 0.018 -0.048
+   angles 0 0 0
+   scale 0.22
+  }
+  GenericEntity {
+   ID "D175CCA96AC4F722"
+   components {
+    MeshObject "{54F637F129B34249}" {
+     Object "{D895196B83A46FEA}Assets/Clutter/Coal/c_coal_debris_01.xob"
+    }
+   }
+   coords -0.025 0.219 -0.035
+   angles 0 7.242 0
+   scale 1.15
+  }
+  GenericEntity {
+   ID "C8FA98C399DE3048"
+   components {
+    MeshObject "{E645C52855B0A2BC}" {
+     Object "{D895196B83A46FEA}Assets/Clutter/Coal/c_coal_debris_01.xob"
+    }
+   }
+   coords -0.045 0.282 0.029
+   angles 0 65.719 0
+   scale 0.95
+  }
+  GenericEntity {
+   ID "09988C11ED3A9A1B"
+   components {
+    MeshObject "{D23E0B1D864845CB}" {
+     Object "{D895196B83A46FEA}Assets/Clutter/Coal/c_coal_debris_01.xob"
+    }
+   }
+   coords 0.034 0.354 -0.041
+   angles 0 121.087 0
+   scale 0.75
+  }
+  GenericEntity {
+   ID "523AA5993020B6BF"
+   components {
+    MeshObject "{7A072247909ABB2E}" {
+     Object "{D895196B83A46FEA}Assets/Clutter/Coal/c_coal_debris_01.xob"
+    }
+   }
+   coords -0.011 0.423 0.013
+   angles 0 210.413 0
+   scale 0.5
+  }
+ }
+}
