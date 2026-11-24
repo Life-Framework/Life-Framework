@@ -165,6 +165,102 @@
       "from": "Village_Buildings.layer",
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "supermarket-lamp-1",
+      "name": "Supermarket_Lamp_1",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        0,
+        3.4,
+        -7.5
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "supermarket-lamp-2",
+      "name": "Supermarket_Lamp_2",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        6,
+        3.4,
+        -7.5
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "supermarket-lamp-3",
+      "name": "Supermarket_Lamp_3",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -7.5,
+        3.4,
+        -1.5
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "supermarket-lamp-4",
+      "name": "Supermarket_Lamp_4",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        0,
+        3.4,
+        -1.5
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "supermarket-lamp-5",
+      "name": "Supermarket_Lamp_5",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        6,
+        3.4,
+        -1.5
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "supermarket-lamp-6",
+      "name": "Supermarket_Lamp_6",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        9,
+        3.4,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }
