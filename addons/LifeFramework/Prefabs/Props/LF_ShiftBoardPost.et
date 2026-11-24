@@ -1,0 +1,17 @@
+GenericEntity : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
+ ID "7B20D4E81C95A36F"
+ components {
+  LF_SignComponent "{C8DC6C24E38F2C19}" {
+   m_sSignId "shift_board"
+  }
+  ActionsManagerComponent "{E98B19291CF15797}" {
+   additionalActions + {
+    LF_ShiftBoardReadAction "{4892EFAC67CF52F7}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+}
