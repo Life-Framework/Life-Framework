@@ -16,6 +16,7 @@
 //   stamped instead of being refused and the probe step threw ("first2.probes[0]" undefined); restored, OK.
 // red-proof (#3931, 2026-11-21): seatRows with the flatWalls branch off printed "FAIL the sign slid off the lintel ..."; planFit without the
 //   kit config guid fallback printed "FAIL the config guid reaches the stamped layer"; restored, OK.
+// red-proof (#4778, 2026-11-24): with the scale write off in fit.mjs entityText, "a kit row scale 0.5 is a scale line in the stamped layer" failed; restored, OK.
 // red-proof: 2026-11-21, #3924: with the carrier push removed, "each stamped copy carries a Fit_<slot>_clear carrier" failed; restored, OK.
 //   2026-11-21, planStamp with the prefab comparison removed printed "FAIL a stamp onto b3 (another prefab) is refused";
 //   applyStamp with the restore loop removed printed "FAIL a floating finding restores the previous layer"; restored, OK.
@@ -26,6 +27,7 @@ import { scratchDir } from "../lib/scratch.mjs";
 import { authorExtract } from "./author.mjs";
 import { clearBoxCarriers, clearBoxesOf, clearListOf } from "./fit.mjs";
 import { toLocal } from "./kit.mjs";
+import { footprintPoints } from "./seat.mjs";
 import { applyStamp, planStamp, probeAndReplan, stampTargets, stampVerdict } from "./stamp.mjs";
 import { readPins, terrainFromPins } from "./terrain.mjs";
 
@@ -182,6 +184,18 @@ guided.rows.find((r) => r.id === counterId).config = [{ component: "LF_StoreComp
 const withGuid = await planStamp(guided, targets, po);
 ok(withGuid.ok && /LF_StoreComponent "{ABCDEF0123456789}"/.test(withGuid.copies[0].layerText), "the config guid reaches the stamped layer");
 void hostPath;
+
+// ---- a row's scale travels into the layer (#4778): the speed-trap gravel piles are 0.5 and came out 8 m wide without it
+const scaledKit = JSON.parse(JSON.stringify(kit));
+scaledKit.rows.find((r) => r.id === counterId).scale = 0.5;
+const scaledPlan = await planStamp(scaledKit, targets, po);
+const entityOf = (text, id) => new RegExp(`_${id} : "[^"]+" \\{[\\s\\S]*?\\n\\}`).exec(text)?.[0] ?? "";
+ok(scaledPlan.ok && /\n scale 0\.5\n/.test(entityOf(scaledPlan.copies[0].layerText, counterId)), "a kit row's scale 0.5 is a scale line in the stamped layer");
+ok(!/\n scale /.test(entityOf(withGuid.copies[0].layerText, counterId)), "a row at scale 1 writes no scale line");
+// the seat's footprint counts the scale: a 2 m wide bound at 0.5 spans one metre
+const wideInfo = { bounds: { min: [-1, 0, -1], max: [1, 1, 1] }, scale: 1 };
+const spanOf = (pts) => Math.max(...pts.map((p) => p[0])) - Math.min(...pts.map((p) => p[0]));
+ok(near(spanOf(footprintPoints([0, 0, 0], 0, wideInfo, 0.5)), 1) && near(spanOf(footprintPoints([0, 0, 0], 0, wideInfo, null)), 2), "the seat's footprint is scaled by the row's scale");
 
 // ---- yard rows (#3961): open-ground rows are seated on the island ground, not on the flat grid's height
 // The island slopes 5 cm per metre east and 2 cm per metre north from 19 m at the origin of the fixture buildings; the grid is flat at 0.
