@@ -40,11 +40,6 @@ export const PACKS = {
     xob: "{AC449262EE17E21B}Assets/Items/Medicine/Gauze_02/Gauze_02_package.xob",
     w: 0.218, d: 0.068, lift: 0, scale: 1.3,
   },
-  Dressing: {
-    file: "LF_PharmDisplay_Dressing.et",
-    xob: "{4B7F315DD3774443}Assets/Items/Medicine/FieldDressing_01/FieldDressing_US_01/FieldDressing_US_01.xob",
-    w: 0.065, d: 0.082, lift: 0.001, scale: 2,
-  },
 };
 
 // Kit-frame shelf units: the centre of a board (x, z), the yaw the unit faces, the usable board length.
@@ -65,15 +60,16 @@ const CORNERS = [
   { id: "c1", yaw: -90, boards: { 2: [[4.9, 6.943], [4.9, 6.493], [5.35, 6.943]], 3: [[4.9, 6.723], [5.2, 6.493], [5.57, 6.943]] } },
   { id: "c2", yaw: 180, boards: { 2: [[-1.193, 6.37], [-0.743, 6.37], [-1.193, 6.82]], 3: [[-0.973, 6.37], [-0.743, 6.67], [-1.193, 7.04]] } },
 ];
-const CORNER_KINDS = ["MedKit", "Aspirin", "GauzePack", "Aspirin", "Tourniquet", "MedKit"];
+const CORNER_KINDS = ["MedKit", "Aspirin", "GauzePack", "Aspirin", "Aspirin", "MedKit"];
 
-// Board tops above the kit origin (the shelf's measured tops 0.588, 1.081, 1.574 plus the interior floor 0.196 and a 5 mm rest).
-const BOARD_Y = { wide: { 1: 0.789, 2: 1.282, 3: 1.775 }, narrow: { 1: 0.792, 2: 1.289, 3: 1.778 }, corner: { 2: 1.286, 3: 1.775 } };
+// Board tops above the kit origin: the shelf's measured tops 0.588, 1.081, 1.574 plus the interior floor 0.196 and a 5 mm rest, plus 3 cm
+// that `look contact` measured (every pack sat 3.5 cm into the wood at the first heights).
+const BOARD_Y = { wide: { 1: 0.819, 2: 1.312, 3: 1.805 }, narrow: { 1: 0.822, 2: 1.319, 3: 1.808 }, corner: { 2: 1.316, 3: 1.805 } };
 // How far in front of the board's middle a package stands (the board is 0.37 m deep; a case is 0.12).
 const FORWARD = 0.03;
 const GAP = 0.025;
 // The order along a board. A board starts at a different place in the cycle so no two neighbours repeat.
-const CYCLE = ["MedKit", "Aspirin", "Aspirin", "GauzePack", "Aspirin", "Gauze", "Tourniquet", "Aspirin", "Dressing", "Gauze", "MedKit", "Aspirin"];
+const CYCLE = ["MedKit", "Aspirin", "Aspirin", "GauzePack", "Aspirin", "MedKit", "Aspirin", "GauzePack", "Aspirin", "Aspirin"];
 
 // One corner board: the grid, a pack per cell in the corner cycle.
 export function cornerRows(c, board, start) {

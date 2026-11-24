@@ -1,9 +1,0 @@
-GenericEntity {
- ID "0E508BD850B48901"
- components {
-  MeshObject "{7F31CD75ED204DC9}" {
-   Object "{4B7F315DD3774443}Assets/Items/Medicine/FieldDressing_01/FieldDressing_US_01/FieldDressing_US_01.xob"
-  }
- }
- coords 0 0 0
-}
