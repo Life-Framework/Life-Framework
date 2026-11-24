@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! One kind of export order a book can open (#4410): which goods, how many, the wholesale price per
-//! unit the pay is figured from, and how many game minutes the hauler has.
+//! unit the pay is figured from (the market row's own price when the template leaves it at 0, #4844),
+//! the order bonus on top, and how many game minutes the hauler has.
 [BaseContainerProps()]
 class LF_ExportOrderTemplate
 {
@@ -19,8 +20,11 @@ class LF_ExportOrderTemplate
 	[Attribute("20", UIWidgets.Auto, "Export order: how many units make the order", params: "1 1000")]
 	int m_iCount;
 
-	[Attribute("40", UIWidgets.Auto, "Export order: the wholesale price of one unit; the order pays the premium over it", params: "1 100000")]
+	[Attribute("0", UIWidgets.Auto, "Export order: the wholesale price of one unit; the order pays the premium over it. 0 reads the market row of the goods (its base price / lot size)", params: "0 100000")]
 	int m_iWholesale;
+
+	[Attribute("0", UIWidgets.Auto, "Export order: cash paid on top of wholesale plus the premium, once per order handed in", params: "0 100000")]
+	int m_iBonus;
 
 	[Attribute("180", UIWidgets.Auto, "Export order: game minutes from opening to the deadline", params: "10 2880")]
 	int m_iGameMinutes;
@@ -164,10 +168,10 @@ class LF_ExportOrderConfig
 				for (int i = 0; i < list.Count(); i++)
 				{
 					LF_ExportOrderTemplate template = LF_ExportOrderTemplate.Cast(BaseContainerTools.CreateInstanceFromContainer(list.Get(i)));
-					if (template && template.m_Goods && template.m_iCount > 0 && template.m_iWholesale > 0)
+					if (template && template.m_Goods && template.m_iCount > 0 && template.m_iWholesale >= 0 && template.m_iBonus >= 0)
 						m_aTemplates.Insert(template);
 					else
-						LF_Debug.Error("ExportOrder", string.Format("export order kind %1 skipped: it needs goods, a count and a wholesale price", i));
+						LF_Debug.Error("ExportOrder", string.Format("export order kind %1 skipped: it needs goods and a count", i));
 				}
 
 				changed++;
@@ -183,6 +187,37 @@ class LF_ExportOrderConfig
 	{
 		int base = count * wholesale;
 		return (base * (100 + m_iPremiumPct) + 50) / 100;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The wholesale price of one unit of the template's goods: its own `m_iWholesale` when set,
+	//! else the market row's base price per unit (base / lot size, rounded down). 0 when neither prices it.
+	static int WholesaleFor(notnull LF_ExportOrderTemplate template)
+	{
+		if (template.m_iWholesale > 0)
+			return template.m_iWholesale;
+
+		LF_MarketConfig market = LF_MarketConfig.Get();
+		if (!market)
+			return 0;
+
+		LF_MarketGoodDef def = market.FindGood(template.m_Goods);
+		if (!def)
+			return 0;
+
+		return def.m_iBase / def.Lot();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return What one order of the template pays: count x wholesale plus the premium, plus the order
+	//! bonus. 0 when nothing prices the goods (the book then skips the kind).
+	int PayForTemplate(notnull LF_ExportOrderTemplate template)
+	{
+		int wholesale = WholesaleFor(template);
+		if (wholesale <= 0)
+			return 0;
+
+		return PayFor(template.m_iCount, wholesale) + template.m_iBonus;
 	}
 }
 
