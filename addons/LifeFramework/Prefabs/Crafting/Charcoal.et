@@ -30,8 +30,8 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
    Object "{DC39837957E3B51B}Assets/Crafting/Charcoal/Coal.xob"
    Materials {
     MaterialAssignClass "{61CB1B003128D16C}" {
-     SourceMaterial "Material"
-     AssignedMaterial "{7D20B25DF128D43E}Assets/Rocks/Granite/Data/GraniteBeachStone_02.emat"
+     SourceMaterial "Coal_material"
+     AssignedMaterial "{0959066D607110FF}Assets/Crafting/Charcoal/Data/Coal_material.emat"
     }
    }
   }
