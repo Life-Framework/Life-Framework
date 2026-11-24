@@ -61,7 +61,8 @@ export const LAYER_READERS_KEPT_HARD = {
   "validate-no-town-layout-asserts.mjs": "judges new test files, and already only warns when the town moved under an old literal",
   "validate-layer-height-frame.mjs": "island layers only (never a town layer): a row in the wrong height frame stands metres in the air or under the ground",
   "validate-town-hand-tools.mjs": "a live drill or parcel loose in a layer is a free item that steals the interaction from the prop under it (#4156): a gameplay bug, not a position",
-  "validate-rumor-places.mjs": "a rumor that names a place no layer registers marks nothing on the map: a broken reference, not a position (#4569)",
+  "validate-interaction-points.mjs": "a context point under its prop's top lost the booking desk's row when a player looked down at it (#4803): a gameplay bug, not a position; the shipped-world layer overrides it reads are not placements",
+  "validate-rumor-places.mjs":"a rumor that names a place no layer registers marks nothing on the map: a broken reference, not a position (#4569)",
 };
 
 export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;

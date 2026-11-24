@@ -9,7 +9,7 @@ GenericEntity : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
     UserActionContext "{4B1915C241C0727C}" {
      ContextName "LF_LabourCounter"
      Position PointInfo "{2D191AB0D4574B2F}" {
-      Offset 0 0.9 0
+      Offset 0 1.089 0
      }
      Radius 2
     }
