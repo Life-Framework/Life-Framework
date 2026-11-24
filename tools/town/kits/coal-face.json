@@ -1,0 +1,546 @@
+{
+  "schema": 1,
+  "kit": "coal-face",
+  "system": "mining",
+  "source": {
+    "file": "tools/town/kits/sources/coal-face.layer",
+    "group": "*",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -8,
+        -8
+      ],
+      "max": [
+        13,
+        16
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "A hostless plot on the East Rise ridge meadow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The iron face of Highstone with coal in place of iron: nine granite boulders in two tiers close the uphill side and the coal rocks, near black, lie at their foot; a loaded ore cart, a pick pile and a lantern stand on the apron, sawn timber stacks flank the face, two flood lamps light the row, a wooden fence closes both sides and the sign stands on the road side. There is no job desk, furnace or buyer here (the coal goes on to the freighter orders). Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "mine-picks",
+      "name": "Mine_Picks",
+      "prefab": "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -2.8,
+        0,
+        -3.3
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-lantern",
+      "name": "Mine_Lantern",
+      "prefab": "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/MiningLantern_01/MiningLantern_01.et",
+      "role": "light",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -4,
+        0,
+        1.6
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-ore-2",
+      "name": "Mine_Ore_2",
+      "prefab": "{5A986136ADB1EC2C}Prefabs/Resources/Mining/CoalOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        0.3,
+        0,
+        8.6
+      ],
+      "yaw": -130,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "mine-ore-3",
+      "name": "Mine_Ore_3",
+      "prefab": "{5A986136ADB1EC2C}Prefabs/Resources/Mining/CoalOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        3.3,
+        0,
+        7.7
+      ],
+      "yaw": 165,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "mine-ore-5",
+      "name": "Mine_Ore_5",
+      "prefab": "{5A986136ADB1EC2C}Prefabs/Resources/Mining/CoalOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        8.7,
+        0,
+        7.7
+      ],
+      "yaw": 40,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "mine-ore-6",
+      "name": "Mine_Ore_6",
+      "prefab": "{5A986136ADB1EC2C}Prefabs/Resources/Mining/CoalOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        11.4,
+        0,
+        8.6
+      ],
+      "yaw": -70,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "mine-rock-1",
+      "name": "Mine_Rock1",
+      "prefab": "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -2.2,
+        0.6,
+        12.9
+      ],
+      "yaw": 20,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-rock-2",
+      "name": "Mine_Rock2",
+      "prefab": "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        1.2,
+        1.5,
+        13.3
+      ],
+      "yaw": 150,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-rock-3",
+      "name": "Mine_Rock3",
+      "prefab": "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        4.4,
+        0.6,
+        12.8
+      ],
+      "yaw": 80,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-rock-4",
+      "name": "Mine_Rock4",
+      "prefab": "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        7.6,
+        1.5,
+        13.2
+      ],
+      "yaw": 200,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-rock-5",
+      "name": "Mine_Rock5",
+      "prefab": "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10.6,
+        0.6,
+        12.9
+      ],
+      "yaw": 310,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-rock-6",
+      "name": "Mine_Rock6",
+      "prefab": "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -0.8,
+        1.3,
+        15.7
+      ],
+      "yaw": 40,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-rock-7",
+      "name": "Mine_Rock7",
+      "prefab": "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        2.9,
+        0.4,
+        16
+      ],
+      "yaw": 260,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-rock-8",
+      "name": "Mine_Rock8",
+      "prefab": "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        6.4,
+        1.3,
+        15.6
+      ],
+      "yaw": 120,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-rock-9",
+      "name": "Mine_Rock9",
+      "prefab": "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        9.8,
+        0.4,
+        15.9
+      ],
+      "yaw": 10,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-cart",
+      "name": "Mine_Cart",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "offset": [
+        -3.5,
+        0,
+        4.4
+      ],
+      "yaw": 90,
+      "lift": -0.3
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-timber-l",
+      "name": "Mine_TimberL",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "offset": [
+        -5.4,
+        0,
+        9.6
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-timber-r",
+      "name": "Mine_TimberR",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "offset": [
+        16,
+        0,
+        3.2
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "light",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-flood-l",
+      "name": "Mine_FloodL",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "offset": [
+        -1.2,
+        0,
+        5.4
+      ],
+      "yaw": 180
+    },
+    {
+      "role": "light",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-flood-r",
+      "name": "Mine_FloodR",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "offset": [
+        10.4,
+        0,
+        5.4
+      ],
+      "yaw": 180
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-fence-w1",
+      "name": "Mine_FenceW1",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "offset": [
+        -7.2,
+        0,
+        -4
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-fence-w2",
+      "name": "Mine_FenceW2",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "offset": [
+        -7.2,
+        0,
+        0
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-fence-w3",
+      "name": "Mine_FenceW3",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "offset": [
+        -7.2,
+        0,
+        4
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-fence-e1",
+      "name": "Mine_FenceE1",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "offset": [
+        12.6,
+        0,
+        -4
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-fence-e2",
+      "name": "Mine_FenceE2",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "offset": [
+        12.6,
+        0,
+        0
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-fence-e3",
+      "name": "Mine_FenceE3",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "offset": [
+        12.6,
+        0,
+        4
+      ],
+      "yaw": 90
+    },
+    {
+      "role": "sign",
+      "verb": "against wall",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-sign",
+      "name": "Mine_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "offset": [
+        3,
+        0,
+        -6
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"eastrise-seam\"",
+            "m_vRimColor": "0.12 0.1 0.08",
+            "m_vPaintColor": "0.9 0.86 0.74",
+            "m_vTextColor": "0.12 0.1 0.08"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "id": "mine-ore-field",
+      "name": "Mine_OreField",
+      "prefab": null,
+      "free": true,
+      "offset": [
+        4.5,
+        0,
+        8.2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_PlaceComponent",
+          "set": {
+            "m_sKind": "\"Workplace\"",
+            "m_sId": "\"eastrise.mine-ore\""
+          },
+          "blocks": [],
+          "guid": "7D3E2A91C05B48F6"
+        }
+      ]
+    }
+  ]
+}

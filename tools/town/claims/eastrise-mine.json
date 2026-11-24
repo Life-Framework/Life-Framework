@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "place": "eastrise",
+  "slot": "mine",
+  "plot": "p1",
+  "hostless": true,
+  "kit": "coal-face",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_eastrise_mine.layer",
+  "kinds": [
+    "Workplace",
+    "mine"
+  ],
+  "rows": 28,
+  "destruction": {
+    "mode": "none",
+    "reason": "hostless plot: no building stands in the slot"
+  },
+  "date": "2026-11-24"
+}
