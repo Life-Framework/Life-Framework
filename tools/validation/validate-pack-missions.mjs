@@ -117,6 +117,7 @@ export const TOWN_EXCLUDED_OVERLAYS = {
   "LF_SmokehouseCatalogue_Everon1989.conf": "fishing chain",
   "LF_RaceCourses_Everon1989.conf": "checkpoints are island entities",
   "LF_Events_Everon1989.conf": "arrival and square-evening scenes walk island waypoints",
+  "LF_CasualtyCalls_Everon1989.conf": "rows name island place kinds (mine, woodlot, farm compound, dock, roadside fuel stop); the town has none",
   "LF_Residents_Everon1989.conf": "timetables name the island's saint-philippe.residents place",
 };
 
