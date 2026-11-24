@@ -76,13 +76,81 @@ class LF_ActivityFacts
 	{
 		return LF_EQuestStatus.AVAILABLE;
 	}
+
+	//! Every trade (job id) the player can level, CIVILIAN left out: what a "*" trade gate looks at.
+	void Trades(notnull array<string> into)
+	{
+		into.Clear();
+	}
+
+	//! Whether the player owns a vehicle of this capacity class (car, pickup, van, truck) or a bigger one.
+	bool OwnsVehicleClass(string capacityClass)
+	{
+		return false;
+	}
+
+	//! Whether the player has completed a crime (the hidden crime record is not empty).
+	bool HasCriminalRecord()
+	{
+		return false;
+	}
+
+	//! Whether the player belongs to a crew (an organization).
+	bool InCrew()
+	{
+		return false;
+	}
+
+	//! Whether the player has picked a trade perk at the labour office.
+	bool HasPickedPerk()
+	{
+		return false;
+	}
+
+	//! Whether the player's progression holds the flag (the truck licence, once the truck check is passed).
+	bool HasFlag(string flag)
+	{
+		return false;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
 class LF_ActivityRules
 {
+	//! A trade gate of "*" reads the best level over every trade.
+	static const string ANY_TRADE = "*";
+
 	//------------------------------------------------------------------------------------------------
-	//! Why the player may not see the activity yet ("level", "licence", "faction"), or empty.
+	//------------------------------------------------------------------------------------------------
+	//! The player's level in the gate's trade: the trade itself, or for "*" the best of any trade.
+	static int TradeLevelOf(string trade, notnull LF_ActivityFacts facts)
+	{
+		if (trade != ANY_TRADE)
+			return facts.Level(trade);
+
+		int best = 1;
+		array<string> trades = {};
+		facts.Trades(trades);
+		foreach (string each : trades)
+			best = LF_Utils.MaxInt(best, facts.Level(each));
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the trade level or the owned vehicle of the activity's work gate is met. An activity with
+	//! both is opened by either one ("a van or Hauling 5").
+	static bool WorkGateMet(notnull LF_ActivityDef def, notnull LF_ActivityFacts facts)
+	{
+		if (!def.m_sTrade.IsEmpty() && def.m_iMinTradeLevel > 0 && TradeLevelOf(def.m_sTrade, facts) >= def.m_iMinTradeLevel)
+			return true;
+
+		return !def.m_sOwnsClass.IsEmpty() && facts.OwnsVehicleClass(def.m_sOwnsClass);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why the player may not see the activity yet ("papers", "level", "licence", "faction", "trade",
+	//! "record"), or empty.
 	static string Gate(notnull LF_ActivityDef def, notnull LF_ActivityFacts facts)
 	{
 		// The clerk comes first: no run starts before the newcomer has their papers (review B13).
@@ -97,6 +165,12 @@ class LF_ActivityRules
 
 		if (!def.m_sFaction.IsEmpty() && facts.Faction() != def.m_sFaction)
 			return "faction";
+
+		if (def.HasWorkGate() && !WorkGateMet(def, facts))
+			return "trade";
+
+		if (def.m_bNeedsRecord && !facts.HasCriminalRecord())
+			return "record";
 
 		return string.Empty;
 	}
@@ -212,6 +286,15 @@ class LF_ActivityRules
 
 			case LF_EActivityCheck.LICENCE:
 				return facts.HasLicence(step.m_sCheckParam);
+
+			case LF_EActivityCheck.CREW:
+				return facts.InCrew();
+
+			case LF_EActivityCheck.PERK:
+				return facts.HasPickedPerk();
+
+			case LF_EActivityCheck.FLAG:
+				return facts.HasFlag(step.m_sCheckParam);
 		}
 
 		return false;

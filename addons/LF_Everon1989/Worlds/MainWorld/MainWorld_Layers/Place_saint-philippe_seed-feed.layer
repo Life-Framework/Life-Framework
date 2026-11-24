@@ -58,3 +58,15 @@ GenericEntity Fit_saint_philippe_seed_feed_seed_feed_till : "{4E4E1620C6B02E1F}P
  coords 4526.54 17.097 10652.625
  angleY 171
 }
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4527.595 18.800 10652.994
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4523.644 18.800 10652.369
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4518.181 18.800 10651.706
+ angleY 171
+}

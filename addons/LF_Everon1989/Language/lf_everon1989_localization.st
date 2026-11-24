@@ -59,6 +59,26 @@ StringTable {
      Target_en_us "Press apple juice"
      Comment "Apples step title."
     }
+    CustomStringTableItem "{C0AC37FB6F996DDC}" {
+     Id "LF-Activity_Crew_Name"
+     Target_en_us "Found a crew"
+     Comment "Activity name."
+    }
+    CustomStringTableItem "{C495FC0D404AC639}" {
+     Id "LF-Activity_Crew_Pitch"
+     Target_en_us "Register a crew with your friends and raise its flag."
+     Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{5C8B434A1103377F}" {
+     Id "LF-Activity_Crew_Registry_Note"
+     Target_en_us "Walk to the registry cabin in Saint-Philippe: the clerk takes a crew name, and the flag wall shows who holds the island."
+     Comment "Crew step note, one sentence."
+    }
+    CustomStringTableItem "{D242A6F2CFA816E3}" {
+     Id "LF-Activity_Crew_Registry_Title"
+     Target_en_us "Go to the registry cabin"
+     Comment "Crew step title."
+    }
     CustomStringTableItem "{23E7D9090F843068}" {
      Id "LF-Activity_Fishing_Catch_Note"
      Target_en_us "Cast your line and land a fish; the dock buyer pays for every one."
@@ -249,6 +269,26 @@ StringTable {
      Target_en_us "Smelt your bars"
      Comment "Mining step title."
     }
+    CustomStringTableItem "{F9A1EF44566F68E3}" {
+     Id "LF-Activity_PerkPick_Counter_Note"
+     Target_en_us "Walk to the counter in the town hall and pick the perk for your trade."
+     Comment "Perk pick step note, one sentence."
+    }
+    CustomStringTableItem "{A534A37640070E2D}" {
+     Id "LF-Activity_PerkPick_Counter_Title"
+     Target_en_us "Go to the labor office"
+     Comment "Perk pick step title."
+    }
+    CustomStringTableItem "{79F69BC21722A43E}" {
+     Id "LF-Activity_PerkPick_Name"
+     Target_en_us "Pick a perk"
+     Comment "Activity name."
+    }
+    CustomStringTableItem "{B732CD19F6D49BB9}" {
+     Id "LF-Activity_PerkPick_Pitch"
+     Target_en_us "Once a trade reaches level 10, choose its perk at the labor office."
+     Comment "Activity pitch, one line."
+    }
     CustomStringTableItem "{35FC580FEECB6912}" {
      Id "LF-Activity_Police_Clockin_Note"
      Target_en_us "Clock in at the desk; duty pay comes while you are on shift."
@@ -318,6 +358,46 @@ StringTable {
      Id "LF-Activity_Postal_Stand_Title"
      Target_en_us "Go to the post stand"
      Comment "Postal step title."
+    }
+    CustomStringTableItem "{7F9461515D48E518}" {
+     Id "LF-Activity_Rumor_Name"
+     Target_en_us "A rumor of easy money"
+     Comment "Activity name."
+    }
+    CustomStringTableItem "{1F18922FD04895E8}" {
+     Id "LF-Activity_Rumor_Pitch"
+     Target_en_us "Hear the first word on crime from the fence, and know the risk."
+     Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{64A93288B3266ED2}" {
+     Id "LF-Activity_Rumor_Yard_Note"
+     Target_en_us "Walk to the fence's yard in Saint-Philippe and listen; the pay is high and so is the risk."
+     Comment "Rumor step note, one sentence."
+    }
+    CustomStringTableItem "{C6D0CE6934159D78}" {
+     Id "LF-Activity_Rumor_Yard_Title"
+     Target_en_us "Find the fence"
+     Comment "Rumor step title."
+    }
+    CustomStringTableItem "{EC45C29B22F1CF73}" {
+     Id "LF-Activity_TruckCheck_Name"
+     Target_en_us "Truck check"
+     Comment "Activity name."
+    }
+    CustomStringTableItem "{151B350C5D5F65B6}" {
+     Id "LF-Activity_TruckCheck_Pitch"
+     Target_en_us "Pass the truck check at the truck yard and haul freight for good pay."
+     Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{C2448E76A590D387}" {
+     Id "LF-Activity_TruckCheck_Yard_Note"
+     Target_en_us "Drive to the truck yard in the north-east and ask the examiner for the truck check; it costs $300."
+     Comment "Truck check step note, one sentence."
+    }
+    CustomStringTableItem "{E3C55EB5E3312012}" {
+     Id "LF-Activity_TruckCheck_Yard_Title"
+     Target_en_us "Go to the truck yard"
+     Comment "Truck check step title."
     }
     CustomStringTableItem "{D260354EBA36FC1E}" {
      Id "LF-Anniversary_Memorial_Title"
@@ -7423,6 +7503,21 @@ StringTable {
      Id "LF-Sign_PostalVanSide_Title"
      Target_en_us "POSTAL SERVICE"
      Comment "Livery lettering on both side panels of the yellow post van (postal van run)."
+    }
+    CustomStringTableItem "{913493F0D0E2A82D}" {
+     Id "LF-Sign_PowerPlantCoal_How"
+     Target_en_us "Put coal lumps on the buyer's counter. When the yard is full the buyer says so and tells you when to come back; the rest sells at the harbor wholesale at a lower price."
+     Comment "Sign card for the power plant coal yard plate, How section (#4491)."
+    }
+    CustomStringTableItem "{FD7C7A946FB9CE98}" {
+     Id "LF-Sign_PowerPlantCoal_Title"
+     Target_en_us "Power plant coal yard"
+     Comment "Title of the pole plate at the power plant coal yard (Everon 1989 pack, #4491). Printed on the sign and shown in the prompt as Read: Power plant coal yard."
+    }
+    CustomStringTableItem "{7D2517D3B1147690}" {
+     Id "LF-Sign_PowerPlantCoal_What"
+     Target_en_us "The power plant buys coal by the lump: 8 dollars each, up to a truck load, and it takes more as the day goes on. Bring coal from the East Rise seam."
+     Comment "Sign card for the power plant coal yard plate, What section (#4491)."
     }
     CustomStringTableItem "{A1B2C3D4E5F60733}" {
      Id "LF-Sign_QuarryInfo_How"

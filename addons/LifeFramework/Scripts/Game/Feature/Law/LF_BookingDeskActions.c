@@ -46,6 +46,23 @@ class LF_BookingDeskBookAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The replication id of a character: the id its RplComponent holds, which LF_NetworkUtils.FindEntityByRplId
+	//! resolves back. `Replication.FindId(entity)` is not that id (it named no character on the island, so every
+	//! "Book suspect" was refused as "no suspect" with a cuffed suspect beside the officer, #4699).
+	//! \return The id, or RplId.Invalid() for no entity or one without a RplComponent.
+	static RplId SuspectRplId(IEntity suspect)
+	{
+		if (!suspect)
+			return RplId.Invalid();
+
+		RplComponent rpl = RplComponent.Cast(suspect.FindComponent(RplComponent));
+		if (!rpl)
+			return RplId.Invalid();
+
+		return rpl.Id();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static bool CollectSuspect(IEntity entity)
 	{
 		if (!SCR_ChimeraCharacter.Cast(entity) || entity == s_Seeker || !LF_Restraint.IsRestrained(entity))
@@ -67,10 +84,7 @@ class LF_BookingDeskBookAction : ScriptedUserAction
 		if (!Replication.IsServer() || LF_Systems.Refuses("Police", "LF_BookingDeskBookAction"))
 			return;
 
-		IEntity suspect = FindSuspect(pUserEntity);
-		RplId suspectId = RplId.Invalid();
-		if (suspect)
-			suspectId = Replication.FindId(suspect);
+		RplId suspectId = SuspectRplId(FindSuspect(pUserEntity));
 
 		// The officer reads and signs the charge sheet (#4426); the offer is made when it comes back signed.
 		string refusal = LF_ChargeSheetDesk.Open(pUserEntity, pOwnerEntity.GetOrigin(), suspectId);

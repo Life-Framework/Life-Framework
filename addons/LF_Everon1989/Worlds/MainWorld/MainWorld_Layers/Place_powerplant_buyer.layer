@@ -1,0 +1,74 @@
+GenericEntity Fit_powerplant_buyer_Place {
+ components {
+  LF_PlaceComponent "{751D3BA8E005542F}" {
+   m_sKind "WholesaleCounter"
+   m_sId "powerplant.buyer"
+  }
+ }
+ coords 5896 5.8 9797
+}
+GenericEntity Fit_powerplant_buyer_coal_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 5872 4.134 9801
+}
+GenericEntity Fit_powerplant_buyer_coal_buyer : "{52895A24E4FC994C}Prefabs/Trader/LF_CoalBuyer_Everon1989.et" {
+ coords 5872 5.174 9801
+}
+LF_NpcBaseEntity Fit_powerplant_buyer_coal_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 5872 4.094 9799.6
+}
+GenericEntity Fit_powerplant_buyer_coal_heap_l : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 5866 4.5 9795
+ angleY 90
+}
+GenericEntity Fit_powerplant_buyer_coal_heap_m : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 5872 4.102 9793.5
+}
+GenericEntity Fit_powerplant_buyer_coal_heap_r : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords 5878 3.719 9795
+ angleY -90
+}
+GenericEntity Fit_powerplant_buyer_coal_barrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords 5868.5 4.391 9803
+ angleY 25
+}
+GenericEntity Fit_powerplant_buyer_coal_bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 5867.2 4.478 9804.2
+}
+GenericEntity Fit_powerplant_buyer_coal_tippler : "{8CBA9D089278A4D7}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_tippler.et" {
+ coords 5886 0 9801
+}
+GenericEntity Fit_powerplant_buyer_coal_bin : "{17ADCDC2721AC2E7}Prefabs/Props/Construction/ContainerMetal_01/ContainerMetal_01_low_grey.et" {
+ coords 5884.5 4.271 9807
+}
+GenericEntity Fit_powerplant_buyer_coal_cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords 5886.5 3.864 9804.5
+ angleY 90
+}
+GenericEntity Fit_powerplant_buyer_coal_truck : "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 5878.2 4.156 9807
+ angleY -90
+}
+GenericEntity Fit_powerplant_buyer_coal_flood_a : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 5879 3.954 9803.5
+ angleY 160
+}
+GenericEntity Fit_powerplant_buyer_coal_flood_b : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 5890 3.688 9800
+ angleY -160
+}
+GenericEntity Fit_powerplant_buyer_coal_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "power-plant-coal"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 5866.5 4.547 9807.5
+}

@@ -97,6 +97,14 @@
       "why": [
         "street furniture on the frontage of b01 (kiosk), 7.6 m from the centre; the kit sets it against the kerb"
       ]
+    },
+    "speedtrap": {
+      "plot": "p5",
+      "hostless": true,
+      "why": [
+        "Card #4708 (PO-R10): the speed trap on the Meaux road. Free plot p5 (12 x 52 m, ground 11 to 13.9 m) lies 10.9 m east of the N-S road r01, the main road south of the square, 73 m from it: room for a lay-by with the patrol car parked parallel to the road and the US English speed-limit signs on the verge",
+        "No building stands on the verge, so the slot is hostless (#3666): the kit anchors on the plot centre, never turns (it is written running north-south) and every row rests on the probed ground"
+      ]
     }
   }
 }

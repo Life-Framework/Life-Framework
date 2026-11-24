@@ -11,7 +11,7 @@ import { arrive, clientBox, newestLog, sessionDir, sessionPaths } from "../sessi
 // One client at SMELTING 1: swings a pickaxe at a Highstone iron rock (2 pieces = 2 Iron Nuggets) and an East Rise coal
 // rock (1 piece = 1 Coal Lump), reading the `[LFDebug:Mining] ... rock hit ... dropped` lines and picking the drops up
 // with the F-key `pickup`. At the iron smelter of the centre-east compound the smelt is refused in words (SMELTING 1
-// is under the machine's 8); `joblevel SMELTING 8` (dev gate, no daily cap booked) then lets it run: 2 nuggets and the
+// is under the machine's 8); `levelset SMELTING 8` (LF_HARNESS build, no daily cap booked) then lets it run: 2 nuggets and the
 // coal go in, the 60 s run ends, the bar drops, is picked up and `carries` counts it, and the server log shows the
 // SMELTING XP award. A last use with no nuggets left and `coalgive 2` in hand names the missing input. PASS or FAIL per
 // step; every verdict reads the server's `[LFDebug:...]` lines or the client's own state, never a guess.
@@ -136,13 +136,21 @@ async function runIronChainProof() {
   on({ verb: "time", hour: 11.0 }, 15000);
 
   // 0. A fresh account is SMELTING 1 (the set puts a re-run back there too).
-  on({ verb: "joblevel", words: ["SMELTING", "1"] }, 10000);
-  wait(1000);
+  // `levelset` (#4773, a LF_HARNESS build) sets the trade to exactly that level, skipping the daily cap; the server logs
+  // `harness set SMELTING xp A -> B for <uid> (level X -> Y, daily cap skipped)`.
+  const levelSet = (level) => {
+    const mark = serverLog().length;
+    on({ verb: "levelset", words: ["SMELTING", String(level)] }, 10000);
+    for (let i = 0; i < 10; i++) {
+      wait(1000);
+      const m = /harness set SMELTING xp (\d+) -> (\d+) for (\S+) \(level (\d+) -> (\d+)/.exec(serverLog().slice(mark));
+      if (m) return { from: Number(m[1]), xp: Number(m[2]), uid: m[3], level: Number(m[5]) };
+    }
+    return null;
+  };
+  const level1 = levelSet(1);
   const base = { nuggets: carried("IronNugget"), coal: carried("CoalLump"), bars: carried("IronBar") };
-  on({ verb: "jobshow", words: ["SMELTING"] }, 10000);
-  wait(1200);
-  const level1 = /harness job (\S+) SMELTING xp=(\d+) level=(\d+)/.exec(serverLog().split("\n").filter((l) => /harness job \S+ SMELTING/.test(l)).pop() ?? "");
-  step("0 a new character is SMELTING 1", !!level1 && level1[3] === "1", level1 ? `xp=${level1[2]} level=${level1[3]}` : "no `harness job` line in the server log");
+  step("0 the character starts at SMELTING 1", !!level1 && level1.level === 1 && level1.xp === 0, level1 ? `xp=${level1.xp} level=${level1.level}` : "no `harness set` line in the server log");
 
   // 1. A pickaxe in hand (the island sells it at the mine desk; the dev verb stands in for the purchase, #1xx mine-till-proof covers that).
   const give = on({ verb: "itemgive", prefab: PICKAXE }, 10000);
@@ -204,15 +212,9 @@ async function runIronChainProof() {
   step("8 a refusal takes nothing: the pack still holds the nuggets and the coal", carried("IronNugget") === base.nuggets + 2 && carried("CoalLump") === base.coal + 1, `nuggets=${carried("IronNugget")} coal=${carried("CoalLump")}`);
 
   // 5. SMELTING 8 (dev verb), then the real smelt.
-  on({ verb: "joblevel", words: ["SMELTING", "8"] }, 10000);
-  wait(1200);
-  on({ verb: "jobshow", words: ["SMELTING"] }, 10000);
-  wait(1200);
-  const jobLines = serverLog().split("\n").filter((l) => /harness job \S+ SMELTING/.test(l));
-  const lvl8 = /harness job (\S+) SMELTING xp=(\d+) level=(\d+)/.exec(jobLines[jobLines.length - 1] ?? "");
-  step("9 the character is SMELTING 8", !!lvl8 && lvl8[3] === "8", lvl8 ? `xp=${lvl8[2]} level=${lvl8[3]}` : "no `harness job` line");
-  const xpBefore = lvl8 ? Number(lvl8[2]) : 0;
-  const uid = lvl8 ? lvl8[1] : "";
+  const lvl8 = levelSet(8);
+  step("9 the character is SMELTING 8 (3000 XP, over the 2000 daily cap)", !!lvl8 && lvl8.level === 8 && lvl8.xp === 3000, lvl8 ? `xp=${lvl8.xp} level=${lvl8.level}` : "no `harness set` line in the server log");
+  const xpBefore = lvl8 ? lvl8.xp : 0;
   const runMark = serverLog().length;
   const smelt = on({ verb: "use", className: PROCESS, entityName: SMELTER.entity }, 10000);
   wait(1500);
@@ -228,12 +230,9 @@ async function runIronChainProof() {
   }
   const xpLine = /\+(\d+) SMELTING xp for (\S+) from ([^\n(]+)/.exec(done);
   step("11 the run ends and SMELTING XP is awarded", !!xpLine, xpLine ? `+${xpLine[1]} xp (${xpLine[3].trim()})` : `no \`SMELTING xp\` line in ${Math.round((Date.now() - t0) / 1000)} s`);
-  on({ verb: "jobshow", words: ["SMELTING"] }, 10000);
-  wait(1200);
-  const after = serverLog().split("\n").filter((l) => /harness job \S+ SMELTING/.test(l)).pop() ?? "";
-  const xpAfter = /xp=(\d+)/.exec(after);
-  step("12 the SMELTING total moved up by the award", !!xpAfter && !!xpLine && Number(xpAfter[1]) === xpBefore + Number(xpLine[1]), `${xpBefore} -> ${xpAfter ? xpAfter[1] : "?"}`);
-  void uid;
+  // The award line carries the new total: `+28 SMELTING xp for <uid> from smelt_batch (total 3028, level 8)`.
+  const total = /\+\d+ SMELTING xp for \S+ from [^(]+\(total (\d+), level (\d+)\)/.exec(done);
+  step("12 the SMELTING total moved up by the award and the level held", !!total && !!xpLine && Number(total[1]) === xpBefore + Number(xpLine[1]) && total[2] === "8", total ? `${xpBefore} -> ${total[1]} (level ${total[2]})` : "no total in the award line");
 
   // 6. The bar: on the ground at the machine, then in the pack.
   on({ verb: "stand", entityName: SMELTER.entity });

@@ -1,0 +1,45 @@
+GenericEntity Fit_saint_philippe_road_signs_entry_south : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "road_entry_saint-philippe"
+   m_bShowFace 1
+   m_sStyle "road"
+   m_sSize "quad16x9"
+   m_vFaceOffset 0 1.75 0.1
+   m_vFaceAngles -90 0 0
+   m_fFaceScale 1.2
+  }
+ }
+ coords 4506.74 17.95 10560.8
+ angleY 171.6
+}
+GenericEntity Fit_saint_philippe_road_signs_entry_east : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "road_entry_saint-philippe"
+   m_bShowFace 1
+   m_sStyle "road"
+   m_sSize "quad16x9"
+   m_vFaceOffset 0 1.75 0.1
+   m_vFaceAngles -90 0 0
+   m_fFaceScale 1.2
+  }
+ }
+ coords 4609.5 18.1 10604.4
+ angleY 170.5
+}
+GenericEntity Fit_saint_philippe_road_signs_jct_stillbarn : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "road_jct_stillbarn"
+   m_bShowFace 1
+   m_sStyle "road"
+   m_sSize "quad16x9"
+   m_vFaceOffset 0 1.75 0.1
+   m_vFaceAngles -90 0 0
+   m_fFaceScale 1.2
+  }
+ }
+ coords 5333.7 21.2 9943.1
+ angleY 285
+}

@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "powerplant",
+  "slot": "buyer",
+  "plot": "p1",
+  "hostless": true,
+  "kit": "power-plant-coal",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_powerplant_buyer.layer",
+  "kinds": [
+    "WholesaleCounter"
+  ],
+  "rows": 15,
+  "destruction": {
+    "mode": "none",
+    "reason": "hostless plot: no building stands in the slot"
+  },
+  "date": "2026-11-24"
+}

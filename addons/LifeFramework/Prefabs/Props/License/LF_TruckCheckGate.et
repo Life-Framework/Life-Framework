@@ -4,5 +4,8 @@ GenericEntity : "{1A8791C2BC2B8B75}Prefabs/Structures/Military/Flags/FlagPole_01
   LF_TruckCheckGateComponent "{B7ECFB790AA2CB09}" {
    m_fRadius 6
   }
+  SCR_DestructionMultiPhaseComponent "{51BACBF3C4A56479}" {
+   Enabled 0
+  }
  }
 }
