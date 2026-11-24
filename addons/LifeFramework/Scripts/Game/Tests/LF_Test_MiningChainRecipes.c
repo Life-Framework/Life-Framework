@@ -1,4 +1,4 @@
-// red-proof: #4856 2026-11-24, the smelter opened at SMELTING 1: `--red LF_Test_MiningChainRecipes` RED PROOF OK (batched run), green with `--only`. Earlier: #4341 2026-11-23, gates moved to SMELTING 8 and 15: `--only LF_Test_MiningChainRecipes` on the old MINER 4 and 3 rows FAILED (gate job, gate level), green after. Earlier: before the rows existed (2026-11-19) the first run failed "smelter-iron is in the chain config",
+// red-proof: #4861 2026-11-24, the cement works gated at SMELTING 6: the batched --red run flips the gate. Earlier: #4856 2026-11-24, the smelter opened at SMELTING 1: `--red LF_Test_MiningChainRecipes` RED PROOF OK (batched run), green with `--only`. Earlier: #4341 2026-11-23, gates moved to SMELTING 8 and 15: `--only LF_Test_MiningChainRecipes` on the old MINER 4 and 3 rows FAILED (gate job, gate level), green after. Earlier: before the rows existed (2026-11-19) the first run failed "smelter-iron is in the chain config",
 // "refinery-copper is in the chain config", "cement-works is in the chain config" and the three node rows.
 // `tools\cli test --no-build --red LF_Test_MiningChainRecipes` flips the expected gate to a number no row has.
 
@@ -53,7 +53,7 @@ class LF_Test_MiningChainRecipes : LF_Test
 	{
 		CheckMachine(ctx, "smelter-iron", "SMELTING", 1, 5, 1);
 		CheckMachine(ctx, "refinery-copper", "SMELTING", 15, 3, 1);
-		CheckMachine(ctx, "cement-works", "", 0, 10, 2);
+		CheckMachine(ctx, "cement-works", "SMELTING", 6, 10, 2);
 
 		CheckNode(ctx, "coal", "MINING", 6, true);
 		CheckNode(ctx, "limestone", "DIGGING", 20, true);

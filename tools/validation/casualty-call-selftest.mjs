@@ -7,7 +7,7 @@
 // red-proof: 2026-11-24, with the "on the medic board closed" needle dropped from judgeCasualty this printed
 // "FAIL a treat with no board close is judged: ..." and exited 1; restored, it passes.
 import { buildLine } from "../../agent-box/harness.mjs";
-import { findLine, judgeCasualty, parseCasualty, parseRollReply } from "../../agent-box/proofs/casualty-call.mjs";
+import { findLine, judgeBed, judgeCasualty, judgeDressed, parseCasualty, parseRollReply } from "../../agent-box/proofs/casualty-call.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -57,6 +57,26 @@ for (const [needle, what] of [
 }
 ok(judgeCasualty(without("treated by medic"), { treat: false }).every((f) => !f.startsWith("treat")), "--skip-treat does not expect a treat");
 ok(judgeCasualty([]).length === 1, "no casualty at all is one failure");
+
+// #4863: dressed casualties on clear ground.
+const dressedLine = "[LFDebug:CasualtyCall] casualty dressed in 4 piece(s) of {F2C48A895452DDCF}Configs/NpcOutfits/LF_Outfit_DockDocker1.conf";
+ok(judgeDressed([dressedLine, dressedLine], 2).length === 0, "two dressed casualties pass");
+ok(judgeDressed([dressedLine], 2).length === 1, "a casualty with no dressed line is judged");
+ok(judgeDressed([dressedLine.replace("in 4", "in 1")], 1).length === 1, "a casualty with one garment is judged");
+ok(judgeDressed([dressedLine, "[LFDebug:CasualtyCall] no clear ground near the Dock place at <1,2,3> (under a roof)"], 1).length === 1, "a roll with no clear ground is judged");
+
+// #4849: a bed delivery closes the call, the board line and the map mark.
+const bedLines = [
+  "[LFDebug:Medic] player npc put in a hospital bed by medic abc",
+  "[LFDebug:ServiceBoard] call #2 on the medic board closed (casualty:2)",
+  "[LFDebug:ServiceCalls] medic call 'grid 044-110' closed: map mark dispatch:2 removed",
+  "[LFDebug:CasualtyTreat] casualty casualty:2 put in a bed; call closed",
+];
+ok(judgeBed(bedLines, "casualty:2").length === 0, `a bed delivery that closes everything passes: ${judgeBed(bedLines, "casualty:2").join("; ")}`);
+ok(judgeBed(bedLines.filter((l) => !l.includes("put in a bed; call closed")), "casualty:2").length === 1, "a delivery that never closed the call is judged");
+ok(judgeBed(bedLines.slice(1), "casualty:2").length === 1, "no bed delivery at all is judged");
+ok(judgeBed(bedLines.filter((l) => !l.includes("on the medic board closed")), "casualty:2").length === 1, "a delivery that left the board line is judged");
+ok(judgeBed(bedLines.filter((l) => !l.includes("closed: map mark")), "casualty:2").length === 1, "a delivery that left the map mark is judged");
 
 console.log(failed ? `SUMMARY casualty-call-selftest fail ${failed}` : "SUMMARY casualty-call-selftest ok");
 process.exit(failed ? 1 : 0);
