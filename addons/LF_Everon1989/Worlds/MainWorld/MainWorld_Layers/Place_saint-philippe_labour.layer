@@ -10,6 +10,18 @@ GenericEntity Fit_saint_philippe_labour_Place {
  coords 4418.9 12.7 10647.5
 }
 GenericEntity Fit_saint_philippe_labour_labour_counter : "{5E7A1C93D24B86F1}Prefabs/Props/LF_LabourCounter.et" {
- coords 4420.099 12.73 10646.154
+ coords 4419.206 12.73 10646.402
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_labour_labour_sign : "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et" {
+ components {
+  LF_SignComponent "{A19037297E81C6EC}" {
+   m_sSignId "labour_office"
+   m_vRimColor 0.05 0.2 0.35
+   m_vPaintColor 0.93 0.93 0.9
+   m_vTextColor 0.05 0.2 0.35
+  }
+ }
+ coords 4419.122 13.28 10646.996
  angleY -8
 }

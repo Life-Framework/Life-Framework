@@ -1,4 +1,4 @@
-GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+GenericEntity : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  ID "93BC83E1CDDE0CD4"
  components {
   RplComponent "{840ECA10BB0DF003}" {
