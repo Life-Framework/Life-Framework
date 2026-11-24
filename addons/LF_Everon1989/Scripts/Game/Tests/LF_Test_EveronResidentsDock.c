@@ -237,5 +237,22 @@ class LF_Test_EveronResidentsDock : LF_Test
 		}
 
 		ctx.Equal(ids.Count(), distinctPrefabs.Count(), "five dock people are five bodies");
+
+		// Marcel is the quest giver of the shipment and the crates contract (#4646): the placed body that carried the giver is gone,
+		// so the resident body must carry it.
+		IEntity marcel;
+		if (!RedProof())
+			marcel = LF_Utils.SpawnEntityPrefab(prefabs[0], "0 -50 0");
+
+		LF_QuestGiverComponent giver;
+		if (marcel)
+			giver = LF_Component<LF_QuestGiverComponent>.Find(marcel);
+
+		ctx.NotNull(giver, "the resident harbour master is a quest giver");
+		if (giver)
+			ctx.EqualStr("harbour_master", giver.m_sGiverId, "the resident harbour master gives as 'harbour_master'");
+
+		if (marcel)
+			SCR_EntityHelper.DeleteEntityAndChildren(marcel);
 	}
 }
