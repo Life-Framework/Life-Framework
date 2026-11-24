@@ -366,6 +366,12 @@
       "kind": "size",
       "layer": "Place_powerplant_buyer.layer",
       "why": "The three coal heaps of the power plant coal yard are the vanilla GravelPile_01_base (8.28 m across), the same prop the Coalman's Brow mine and the coal-pile kit use; a coal yard heap is meant to be that large (#4491)."
+    },
+    {
+      "match": "^Fit_meaux_speedtrap_speedtrap_gravel_1 ",
+      "kind": "odd-scale",
+      "layer": "Place_meaux_speedtrap.layer",
+      "why": "The Meaux speed-trap lay-by pad is the vanilla GravelPile_01_base at scale 0.5 (4.5 x 2.7 m instead of the 8.3 m heap), turned 90 degrees to clear the verge wall; it is the smallest gravel mesh vanilla has, and 0.5 is the audit's own lower limit (#4778)."
     }
   ]
 }
