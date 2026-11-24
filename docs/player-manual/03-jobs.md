@@ -182,6 +182,7 @@ The drops are on the east side (a house near the district road) and four along t
      "try the wholesale warehouse at the dock". The dock pays a lower, falling price for planks, boards, posts and firewood.
 * **Pay:** about **$400 an hour** carrying softwood by hand. A truck and hardwood boards pay a little more.
 * **Needs:** an axe. Job levels unlock sawing and faster felling (a refusal says what is missing).
+* **Shift board:** at the **island sawmill** a cork **shift board** stands under the roof at the front of the hall, a few steps from the lumberjack desk. **Read the shift board** lists the week's top five workers at the sawmill by the trade XP they earned there, with their trade level. The list empties every Monday at 06:00 UTC.
 
 <!-- map:inset:sawmill -->
 ![Everon sawmill](../../website/public/docs-images/player-manual/sawmill.png)

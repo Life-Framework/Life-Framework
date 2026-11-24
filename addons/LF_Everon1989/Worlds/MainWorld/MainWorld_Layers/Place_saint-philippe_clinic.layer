@@ -134,3 +134,11 @@ GenericEntity Fit_saint_philippe_clinic_medic_fleet_board : "{7626F19FBE72C466}P
  coords 4428.226 11.73 10775.087
  angleY 152
 }
+GenericEntity Fit_saint_philippe_clinic_clinic_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4434.302 13.7 10782.992
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_clinic_clinic_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4423.148 13.7 10778.194
+ angleY 152
+}
