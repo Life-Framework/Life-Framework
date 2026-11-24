@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "FE7A106CE5AEC313"
+ components {
+  MeshObject "{554837B9E1BCB2AE}" {
+   Object "{AC449262EE17E21B}Assets/Items/Medicine/Gauze_02/Gauze_02_package.xob"
+  }
+ }
+ coords 0 0 0
+}

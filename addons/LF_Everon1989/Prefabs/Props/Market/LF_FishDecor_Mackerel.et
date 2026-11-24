@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "9C1EDE33B1503EC9"
+ components {
+  MeshObject "{B97FF5F459269DB2}" {
+   Object "{65E57DC2E990CC91}Assets/Items/Fishing/FishMackerel/FishMackerel.xob"
+  }
+ }
+ coords 0 0 0
+}

@@ -45,12 +45,28 @@ GenericEntity Fit_saint_philippe_market_fish_stall : "{D8B83A318AE3611E}Prefabs/
  coords 4481.671 13.706 10716.415
  angleY -8
 }
-GenericEntity Fit_saint_philippe_market_fish_crate : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+GenericEntity Fit_saint_philippe_market_fish_crate : "{A9C5A2042D3CB200}Prefabs/Props/Market/LF_FishCrate_Mackerel.et" {
  coords 4480.879 14.736 10716.303
  angleY -8
 }
-GenericEntity Fit_saint_philippe_market_fish_crate_2 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+GenericEntity Fit_saint_philippe_market_fish_crate_2 : "{B53ED78726EE7B92}Prefabs/Props/Market/LF_FishCrate_Trout.et" {
  coords 4482.463 14.736 10716.526
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_fish_scale : "{2A0C495C5BB7E833}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_Base.et" {
+ coords 4481.671 14.736 10716.415
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_fish_bass : "{BD66C45C63DFAC81}Prefabs/Props/Market/LF_FishDecor_Bass.et" {
+ coords 4481.324 14.813 10716.366
+ angleY 172
+}
+GenericEntity Fit_saint_philippe_market_fish_tuna : "{8A1CDDD1EB92D7E7}Prefabs/Props/Market/LF_FishDecor_TunaSmall.et" {
+ coords 4481.998 14.807 10716.461
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_fish_crate_3 : "{205372D08C3BE977}Prefabs/Props/Market/LF_FishCrate_Perch.et" {
+ coords 4481.671 13.991 10716.415
  angleY -8
 }
 GenericEntity Fit_saint_philippe_market_fish_bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {

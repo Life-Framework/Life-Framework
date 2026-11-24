@@ -108,7 +108,7 @@ GenericEntity Fit_saint_philippe_clinic_electricity_box_small_01 : "{CDE4035B661
 GenericEntity Fit_saint_philippe_clinic_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  components {
   LF_SignComponent "{6E3FF3980D87CACE}" {
-   m_sSignId "hospital"
+   m_sSignId "clinic"
    m_vRimColor 0.1 0.3 0.18
    m_vPaintColor 0.94 0.94 0.9
    m_vTextColor 0.08 0.4 0.2
@@ -125,20 +125,20 @@ LF_NpcBaseEntity Fit_saint_philippe_clinic_clinic_doctor : "{C001B9088678C653}Pr
  coords 4424.183 10.941 10777.952
  angleY 152
 }
-GenericEntity Fit_saint_philippe_clinic_medic_fleet_board : "{7626F19FBE72C466}Prefabs/Props/Medic/LF_MedicCarPoolBoard.et" {
- components {
-  LF_MedicCarPoolComponent "{9E78B20106799A72}" {
-   m_vBayOffset 9 -1 5
-  }
- }
- coords 4428.226 11.73 10775.087
- angleY 152
-}
 GenericEntity Fit_saint_philippe_clinic_clinic_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
  coords 4434.302 13.7 10782.992
  angleY 152
 }
 GenericEntity Fit_saint_philippe_clinic_clinic_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
  coords 4423.148 13.7 10778.194
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_clinic_medic_fleet_board : "{7626F19FBE72C466}Prefabs/Props/Medic/LF_MedicCarPoolBoard.et" {
+ components {
+  LF_MedicCarPoolComponent "{9E78B20106799A72}" {
+   m_vBayOffset 9 -1 5
+  }
+ }
+ coords 4428.225 11.73 10775.087
  angleY 152
 }
