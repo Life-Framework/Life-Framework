@@ -8,7 +8,7 @@
   "kinds": [
     "StoreCounter"
   ],
-  "rows": 8,
+  "rows": 9,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

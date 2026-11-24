@@ -206,6 +206,22 @@
       "attach": "shelf:hardware-shelf-1"
     },
     {
+      "id": "hardware-tool-bench",
+      "name": "Hardware_tool_bench",
+      "prefab": "{B6CCB3CFBFD054C7}Prefabs/Props/LF_ToolBench.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        -0.9,
+        0.454,
+        -2
+      ],
+      "yaw": -90,
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
       "id": "hardware-lf-sign-fascia",
       "name": "Hardware_lf_sign_fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
@@ -261,6 +277,11 @@
       {
         "from": "entrance",
         "to": "hardware-shelf-1",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "hardware-tool-bench",
         "width": 1.2
       }
     ],

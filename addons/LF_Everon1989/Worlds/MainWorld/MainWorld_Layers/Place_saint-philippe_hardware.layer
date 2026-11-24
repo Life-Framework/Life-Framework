@@ -107,3 +107,7 @@ GenericEntity Fit_saint_philippe_hardware_hardware_tool_rack_1 : "{20C6CD91EBCF3
  coords 4536.836 18.4 10633.32
  angleY 171
 }
+GenericEntity Fit_saint_philippe_hardware_hardware_tool_bench : "{B6CCB3CFBFD054C7}Prefabs/Props/LF_ToolBench.et" {
+ coords 4537.516 16.5 10629.024
+ angleY 171
+}
