@@ -199,13 +199,14 @@ function Show-Choice {
   if ($ClickTest) {
     $pick = $solo
     if ($ClickTest -eq "join") { $pick = $join }
-    # Invisible, and a failing click prints instead of raising the WinForms error dialog.
-    $form.Opacity = 0
-    $form.ShowInTaskbar = $false
-    $form.Add_Shown({
-      try { $pick.PerformClick() } catch { Write-Output ("click failed: " + $_.Exception.Message) }
-      if ($this.Visible) { $this.Close() }
-    }.GetNewClosure())
+    # No window: the Shown event and PerformClick both need a live desktop and a painted form, which
+    # a loaded CI runner delays past any fixed timeout (#4793). Control.OnClick raises the same Click
+    # handler synchronously, so the real code under test (the closure and FindForm) still runs.
+    try {
+      $onClick = [System.Windows.Forms.Control].GetMethod("OnClick", [System.Reflection.BindingFlags]"Instance,NonPublic")
+      [void]$onClick.Invoke($pick, @([System.EventArgs]::Empty))
+    } catch { Write-Output ("click failed: " + $_.Exception.Message) }
+    return [string]$form.Tag
   }
   [void]$form.ShowDialog()
   return [string]$form.Tag
