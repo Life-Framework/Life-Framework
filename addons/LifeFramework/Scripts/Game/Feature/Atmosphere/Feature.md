@@ -31,7 +31,8 @@ Rung 1. A radio has one action, "Switch off" / "Switch on"
   `PulseOn(entity, seconds)` for a feature whose machine was just used.
 
 - `LF_NightLightComponent` (#3390): enables its child `LightEntity` between `m_fHourOn` and `m_fHourOff` from
-  the local world hour, every 30 s. Client only: no replication, nothing on a dedicated server. Prefabs
+  the local world hour, every 30 s. A prefab-declared child light is absent at run time on a client (#4831), so after
+  6 looks 0.5 s apart the component builds the light from its attributes. Client only: no replication, nothing on a dedicated server. Prefabs
   `Props/Lights/LF_WindowGlow.et` and `LF_LampHeadNight.et`; the rule is `LF_NightLight.IsOn`.
 
 - `LF_FlockActivation` (#4403): the server wakes a layer-placed (named) vanilla `SCR_Bird` flock with `ManualActivation()` when a player's character is within 40 m, re-arms it past 80 m (45 s minimum between wakes). A flock sleeps with its birds hidden until woken, flies one loop, lands and is hidden again; there is no perched-and-visible state. The bird manager's own unnamed flocks are left alone. `LF_FlockHarness` is the client harness verb `flocks [radius]`.
