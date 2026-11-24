@@ -124,3 +124,15 @@ GenericEntity Fit_saint_philippe_furniture_furniture_wardrobe : "{FD47FF9699A52E
  coords 4495.047 16.401 10644.996
  angleY 82
 }
+GenericEntity Fit_saint_philippe_furniture_furniture_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4496.804 19.400 10648.878
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4501.486 19.400 10649.334
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4505.150 19.400 10649.849
+ angleY -8
+}

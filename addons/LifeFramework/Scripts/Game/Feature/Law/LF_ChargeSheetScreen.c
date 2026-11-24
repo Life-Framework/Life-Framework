@@ -80,6 +80,15 @@ class LF_ChargeSheetModel : Managed
 				{
 					counted.Insert(winner.m_sCrimeId);
 				}
+
+				// A jail-only code is left out of the fine count but serves its time: it is not "stacked".
+				array<LF_CrimeEntry> bySentence = {};
+				LF_LawCodeRules.Counted(ticked, false, bySentence);
+				foreach (LF_CrimeEntry served : bySentence)
+				{
+					if (served.m_bJailOnly && !counted.Contains(served.m_sCrimeId))
+						counted.Insert(served.m_sCrimeId);
+				}
 			}
 		}
 

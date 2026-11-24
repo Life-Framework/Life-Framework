@@ -239,6 +239,38 @@
       "wall": "+x",
       "floor": "f0",
       "attach": "floor"
+    },
+    {
+      "id": "bakery-lamp-1",
+      "name": "Bakery_Lamp_1",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -1,
+        2.95,
+        -1
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-lamp-2",
+      "name": "Bakery_Lamp_2",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -4,
+        2.95,
+        0
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
     }
   ],
   "stamp": {
