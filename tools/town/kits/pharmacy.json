@@ -324,6 +324,38 @@
       "yaw": 0,
       "floor": "f0",
       "attach": "shelf:pharmacy-shelf-2"
+    },
+    {
+      "id": "pharmacy-lamp-1",
+      "name": "Pharmacy_Lamp_1",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        2.95,
+        0.3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pharmacy-lamp-2",
+      "name": "Pharmacy_Lamp_2",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        2.95,
+        2.6
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
     }
   ],
   "stamp": {

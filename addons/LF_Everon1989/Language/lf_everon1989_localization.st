@@ -4544,6 +4544,11 @@ StringTable {
      Target_en_us "Post office (van run)"
      Comment "Map badge label: a post office stand where the postal van run starts and ends."
     }
+    CustomStringTableItem "{6D2B9F40C8E15A73}" {
+     Id "LF-MapPoi_PubBar"
+     Target_en_us "Bar"
+     Comment "Map POI name (#4701): the Chotain and Levie village bars; public places."
+    }
     CustomStringTableItem "{D1EC93AD7C6358F0}" {
      Id "LF-MapPoi_Range"
      Target_en_us "Shooting range"

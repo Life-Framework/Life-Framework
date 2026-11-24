@@ -1,0 +1,29 @@
+GenericEntity : "{9235921E3FFE47C7}Prefabs/Props/Furniture/LightCeiling_01_on.et" {
+ ID "3BA509DF3F3C31F4"
+ {
+  LightEntity {
+   ID "652CE2B8F41E2995"
+   LV 1.2
+   Radius 8
+   CastShadow 0
+  }
+  LightEntity {
+   ID "652CE2B930151014"
+   CastShadow 0
+  }
+  LightEntity {
+   ID "A27AAE59522A6353"
+   coords 0 -0.6 0
+   angles -90 0 0
+   Color 1 0.9 0.74 1
+   LV 4
+   ClipEV -10
+   Type Spot
+   Radius 7
+   NearPlane 0.3
+   SpotAngle 140
+   LensFlareType Disabled
+   CastShadow 0
+  }
+ }
+}

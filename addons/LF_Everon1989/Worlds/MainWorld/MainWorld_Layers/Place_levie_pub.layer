@@ -43,12 +43,7 @@ GenericEntity Fit_levie_pub_bar_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Com
  coords 7442.402 137.794 4720.447
  angleY -66
 }
-LF_NpcBaseEntity Fit_levie_pub_bar_barkeeper : "{4439B0A5C0000003}Configs/Npcs/LF_Npc_Townsfolk_Barkeeper.et" {
- components {
-  LF_CounterOutletComponent "{4439B0A5C4000001}" {
-   m_sBuyerId "bar_levie"
-  }
- }
+LF_NpcBaseEntity Fit_levie_pub_bar_barkeeper : "{4439B0A5C0000005}Configs/Npcs/LF_Npc_Townsfolk_Barkeeper_Levie.et" {
  coords 7442.898 137.794 4719.351
  angleY -66
 }

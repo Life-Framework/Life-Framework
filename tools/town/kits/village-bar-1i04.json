@@ -91,7 +91,7 @@
     },
     {
       "id": "bar-barkeeper",
-      "prefab": "{4439B0A5C0000003}Configs/Npcs/LF_Npc_Townsfolk_Barkeeper.et",
+      "prefab": "{4439B0A5C0000005}Configs/Npcs/LF_Npc_Townsfolk_Barkeeper_Levie.et",
       "role": "npc",
       "verb": "on floor",
       "offset": [
