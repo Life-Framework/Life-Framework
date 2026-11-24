@@ -212,3 +212,15 @@ GenericEntity Fit_saint_philippe_districts_garage_bay_toolbox : "{2B26287DC5B7F9
  coords 4691.676 21.963 10750.952
  angleY 103
 }
+GenericEntity Fit_saint_philippe_districts_garage_respray_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "respray"
+   m_vRimColor 1 1 1
+   m_vPaintColor 0.55 0.12 0.1
+   m_vTextColor 1 1 1
+  }
+ }
+ coords 4690.956 20.813 10754.404
+ angleY -90
+}

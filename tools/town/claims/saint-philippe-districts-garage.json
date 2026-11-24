@@ -8,7 +8,7 @@
   "kinds": [
     "Garage"
   ],
-  "rows": 35,
+  "rows": 36,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

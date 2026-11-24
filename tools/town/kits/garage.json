@@ -593,6 +593,34 @@
       ],
       "yaw": 10,
       "floor": "f0"
+    },
+    {
+      "id": "respray-sign",
+      "name": "Sign_Respray",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        0.99,
+        0,
+        -5.6
+      ],
+      "yaw": 177,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"respray\"",
+            "m_vRimColor": "1 1 1",
+            "m_vPaintColor": "0.55 0.12 0.1",
+            "m_vTextColor": "1 1 1"
+          },
+          "blocks": []
+        }
+      ]
     }
   ],
   "clear": [
