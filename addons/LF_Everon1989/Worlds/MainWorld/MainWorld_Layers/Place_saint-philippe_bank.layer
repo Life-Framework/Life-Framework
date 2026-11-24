@@ -123,3 +123,23 @@ GenericEntity Fit_saint_philippe_bank_bank_heist_site : "{A82E4D7B1F6C3590}Prefa
  coords 4369.044 13.053 10653.915
  angleY 173
 }
+GenericEntity Fit_saint_philippe_bank_bank_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4368.800 15.800 10655.900
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_bank_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4369.166 15.800 10652.922
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_bank_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4366.371 15.800 10651.068
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_bank_lamp_4 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4363.968 15.800 10658.329
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_bank_lamp_5 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4373.084 15.800 10657.937
+ angleY 173
+}

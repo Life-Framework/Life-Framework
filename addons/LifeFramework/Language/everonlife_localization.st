@@ -13677,6 +13677,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "No license has been seized."
      Comment "Personal file My file tab: nothing was taken from you."
     }
+    CustomStringTableItem "{D5ABF2EC95BB65EE}" {
+     Id "LF-PlayerMenuFile_RecordBookedBy"
+     Target_en_us "Booked by %1"
+     Comment "Personal file My file tab: the officer who booked you. %1 = the officer's character name."
+    }
+    CustomStringTableItem "{2A06F14E3034979E}" {
+     Id "LF-PlayerMenuFile_RecordLabel"
+     Target_en_us "%1: %2"
+     Comment "Personal file My file tab: one past booking. %1 = when (Today, Yesterday, N days ago), %2 = the charges, comma separated."
+    }
+    CustomStringTableItem "{80D3060B42A68C40}" {
+     Id "LF-PlayerMenuFile_RecordNoCharge"
+     Target_en_us "No charge listed"
+     Comment "Personal file My file tab: a past booking whose sheet named no charge."
+    }
+    CustomStringTableItem "{00258895E7B9005A}" {
+     Id "LF-PlayerMenuFile_RecordPaid"
+     Target_en_us "%1 paid"
+     Comment "Personal file My file tab: the booking was settled by paying the fine at the desk. %1 = the amount, e.g. $400."
+    }
+    CustomStringTableItem "{245FFCAB2E8E8F7E}" {
+     Id "LF-PlayerMenuFile_RecordSeized"
+     Target_en_us "%1 seized"
+     Comment "Personal file My file tab: a license the booking took. %1 = the license name, e.g. Driver license."
+    }
+    CustomStringTableItem "{EAAC6BFC80D08683}" {
+     Id "LF-PlayerMenuFile_RecordServed"
+     Target_en_us "%1 min served"
+     Comment "Personal file My file tab: the booking was settled in the cell. %1 = minutes."
+    }
     CustomStringTableItem "{573CBFF3D455E78C}" {
      Id "LF-PlayerMenuFile_TicketLabel"
      Target_en_us "Ticket %1: %2"

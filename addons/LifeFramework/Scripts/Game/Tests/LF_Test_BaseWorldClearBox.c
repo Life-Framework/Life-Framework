@@ -1,4 +1,5 @@
 // red-proof: 2026-11-21 `--red LF_Test_BaseWorldClearBox` with the hide skipped, "the pallet in the box is hidden" fails.
+// red-proof: 2026-11-24 `--red LF_Test_BaseWorldClearBox` RED-OK with both hides skipped; "the same box reaching 5 m down hides the pallet" (expected 1, got 0) is the #4724 case.
 //! placement/base-world-clear-box (#3924): the outdoor clear hides the listed prefab inside its own box and leaves the
 //! same prefab outside the box, and a prop of another prefab inside it, in place.
 [LF_TestInfo(LF_TestTier.WORLD)]
@@ -44,6 +45,20 @@ class LF_Test_BaseWorldClearBox : LF_Test
 		ctx.False(LF_FelledTreesReplication.IsHidden(otherKind), "a prop of another prefab in the box stays");
 		ctx.False(LF_FelledTreesReplication.IsHidden(outside), "the same prefab outside the box stays");
 		ctx.Equal(0, LF_BaseWorldClear.HideInBox(world, Vector(-3, -1, -3), Vector(3, 4, 3), mat, clear, "test"), "a second apply hides nothing more");
+
+		// A slope drops away from the carrier's own height (#4724): a pallet 3 m under the box origin is out of a box that reaches 1 m down, in one that reaches 5 m.
+		IEntity lower = LF_Utils.SpawnEntityPrefab(PALLET, Vector(430, y, 100));
+		vector high[4];
+		Math3D.AnglesToMatrix(Vector(0, 0, 0), high);
+		high[3] = Vector(430, y + 3, 100);
+		ctx.Equal(0, LF_BaseWorldClear.HideInBox(world, Vector(-3, -1, -3), Vector(3, 4, 3), high, clear, "test-high"), "a pallet 3 m under a box that reaches 1 m down stays");
+		int deep = 0;
+		if (!RedProof())
+			deep = LF_BaseWorldClear.HideInBox(world, Vector(-3, -5, -3), Vector(3, 4, 3), high, clear, "test-deep");
+
+		ctx.Equal(1, deep, "the same box reaching 5 m down hides the pallet");
+		ctx.True(lower && LF_FelledTreesReplication.IsHidden(lower), "the lower pallet is not drawn");
+		SCR_EntityHelper.DeleteEntityAndChildren(lower);
 
 		SCR_EntityHelper.DeleteEntityAndChildren(inside);
 		SCR_EntityHelper.DeleteEntityAndChildren(otherKind);
