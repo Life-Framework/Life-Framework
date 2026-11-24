@@ -3085,6 +3085,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This vehicle has no cargo bed."
      Comment "Toast: a car cannot carry a load (#3265)."
     }
+    CustomStringTableItem "{07D0C122499A5FB9}" {
+     Id "LF-Cargo_NoItemPrefab"
+     Target_en_us "That load can't come off the truck yet."
+     Comment "Toast: the top load of the bed has no item to put on the shoulder (#4886)."
+    }
     CustomStringTableItem "{BF7D47302660AF18}" {
      Id "LF-Cargo_NoLoad"
      Target_en_us "You are not carrying anything."
@@ -3099,6 +3104,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Cargo_Title"
      Target_en_us "Cargo"
      Comment "Toast title for the truck bed (#3265)."
+    }
+    CustomStringTableItem "{41666EAF598EC0C9}" {
+     Id "LF-Cargo_TooFar"
+     Target_en_us "Move closer to the tailgate."
+     Comment "Toast and reason: the carrier stands too far from the bed to load or unload (#4886)."
     }
     CustomStringTableItem "{B742E763B9E68070}" {
      Id "LF-Cargo_Unload"
@@ -16854,6 +16864,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_Rules"
      Target_en_us "Rules"
      Comment "Sign card section heading: cooldowns, wanted level, other rules."
+    }
+    CustomStringTableItem "{3EFD6AD0426C7BB2}" {
+     Id "LF-Sign_ShiftBoard_Title"
+     Target_en_us "Shift board"
+     Comment "Title painted on the posted shift board at a work site (polish of #4713) and shown in the prompt as Read: Shift board."
+    }
+    CustomStringTableItem "{BF1EE8DF0BD254A0}" {
+     Id "LF-Sign_ShiftBoard_What"
+     Target_en_us "The week's top five workers at this site by the trade XP they earned here. Read the board to see where you stand."
+     Comment "Sign card for the posted shift board, What section (polish of #4713)."
     }
     CustomStringTableItem "{B71E5C09A4D23F68}" {
      Id "LF-Sign_TaxiStand_Next"

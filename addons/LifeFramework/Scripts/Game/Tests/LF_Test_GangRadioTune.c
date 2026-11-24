@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-23 `tools/cli test --no-build --red LF_Test_GangRadioTune`: RED-OK, 24 assertions; with the member-left watch skipped, "a member leaving redraws the band key" and "the leaver's radio is not on the new band" fail; `--only` then passed.
+// red-proof: 2026-11-24 r7-small-items: with the first Watch skipped the second one subscribes and returns true, so "a second Watch is a no-op" fails (see the --red run below). Earlier: observed 2026-11-23 `tools/cli test --no-build --red LF_Test_GangRadioTune`: RED-OK, 24 assertions; with the member-left watch skipped, "a member leaving redraws the band key" and "the leaver's radio is not on the new band" fail; `--only` then passed.
 //------------------------------------------------------------------------------------------------
 //! comms/gang-radio-tune (GA-C8, #4221): a member's radio tuned to the gang band sits on its
 //! frequency and key; an outsider who dials the frequency by hand is not on the band (no key); a
@@ -37,8 +37,13 @@ class LF_Test_GangRadioTune : LF_Test
 	{
 		LF_GangRadio.ResetStatics();
 		LF_GangRadioTune.ResetStatics();
+		bool firstWatch = false;
 		if (!RedProof())
-			LF_GangRadioTune.Watch();
+			firstWatch = LF_GangRadioTune.Watch();
+
+		// Every tune calls Watch(); a second call must not subscribe again (it logged a bus warning each time).
+		ctx.True(firstWatch, "the first Watch subscribes the member-left listener");
+		ctx.False(LF_GangRadioTune.Watch(), "a second Watch is a no-op: the listener is already on the bus");
 
 		string orgName = "Tune Crew " + Math.RandomInt(1000, 9999).ToString();
 		LF_Organization org = LF_OrganizationManager.Create(FOUNDER, orgName);

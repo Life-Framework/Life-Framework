@@ -18,6 +18,9 @@ const LOT = `${FIT}carlot_vehicle_lot`;
 const DESK = `${FIT}police_police_kit_duty_desk`;
 const POLICE_CAR = `${FIT}police_cars_car_b32_3`;
 const ACTION = "LF_RunPlateAction";
+// The marker `car_b32_3` spawns LF_UAZ469_Police.et (LF_PoliceCarMarker.et m_sServiceCar); the harness `engine` verb
+// seats at the wheel of the nearest vehicle whose prefab path contains the text after `veh_`.
+export const POLICE_CAR_SEAT = "veh_LF_UAZ469_Police";
 
 async function runRunPlateIslandProof() {
   const h = await import("../harness.mjs");
@@ -129,7 +132,8 @@ async function runRunPlateIslandProof() {
   on(2, { verb: "look" });
   on(2, { verb: "use", className: "LF_VehicleLockAction" }, 10000);
   wait(2000);
-  const seatB = on(2, { verb: "engine", entityName: "seat" }, 10000);
+  // The police car by its prefab (`veh_<text>`): "nearest car" put B in the starter car that stood beside it (round 7 P3).
+  const seatB = on(2, { verb: "engine", entityName: POLICE_CAR_SEAT }, 10000);
   wait(4000);
   const clientSees = String(on(2, { verb: "seen", radius: 20 }).detail);
   step("5b B sits in the police car and the stolen car stands ahead of it on B's client", seatB.status === "ok" && /veh=[^ ]*EL_S105_beige:d=([5-9]|1[0-2])[.:]/.test(clientSees), `seat=${seatB.status} ${seatB.detail}; B sees ${clientSees.slice(0, 200)}`);
@@ -163,8 +167,22 @@ async function runRunPlateIslandProof() {
   return failed.length ? 1 : 0;
 }
 
+// The seat token must be a legal harness token and name the prefab the police car marker really spawns, else the
+// proof would seat nobody (or, were it a plain "seat", the nearest car).
+function selftest() {
+  const fails = [];
+  if (!/^veh_[A-Za-z0-9_]+$/.test(POLICE_CAR_SEAT)) fails.push(`${POLICE_CAR_SEAT} is not a harness token of the form veh_<text>`);
+  const marker = readFileSync(join(ROOT, "addons", "LifeFramework", "Prefabs", "Systems", "Vehicles", "LF_PoliceCarMarker.et"), "utf8");
+  const car = /m_sServiceCar\s+"\{[0-9A-Fa-f]+\}([^"]+)"/.exec(marker)?.[1] ?? "";
+  if (!car.includes(POLICE_CAR_SEAT.slice(4))) fails.push(`the marker spawns '${car}', which does not contain '${POLICE_CAR_SEAT.slice(4)}'`);
+  if (car.includes("S105")) fails.push("the police car prefab matches the stolen S105");
+  for (const f of fails) console.log(`FAIL  ${f}`);
+  console.log(fails.length ? "run-plate-island-proof selftest: FAIL" : "run-plate-island-proof selftest: PASS");
+  return fails.length ? 1 : 0;
+}
+
 export default {
   name: "run-plate-island-proof",
-  usage: "run-plate-island-proof [--name <shot prefix>]",
-  run: (ctx) => runRunPlateIslandProof(),
+  usage: "run-plate-island-proof [--name <shot prefix>] [--selftest]",
+  run: (ctx) => ((ctx?.args ?? []).includes("--selftest") ? selftest() : runRunPlateIslandProof()),
 };
