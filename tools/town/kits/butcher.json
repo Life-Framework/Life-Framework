@@ -442,6 +442,51 @@
       "attach": "table:butcher-freezer"
     },
     {
+      "id": "butcher-rack-1-top-0",
+      "name": "Butcher_rack_1_top_0",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        2.273,
+        0.04
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-top-1",
+      "name": "Butcher_rack_1_top_1",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        2.273,
+        0.42
+      ],
+      "yaw": 82,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-top-2",
+      "name": "Butcher_rack_1_top_2",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        2.273,
+        0.8
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
       "id": "butcher-fascia",
       "name": "Butcher_fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
