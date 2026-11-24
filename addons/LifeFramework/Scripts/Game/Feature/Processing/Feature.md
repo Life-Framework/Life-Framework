@@ -69,3 +69,4 @@ visibly holding/expelling the product.
 - **Owner and side:** `LF_ProcessXp.PayBatches` on the server, called by `LF_ProcessAction` (instant run) and `LF_ProcessRun.Deliver` (timed run, when the bars drop).
 - **Data:** `m_sXpAction` on a machine row (`ResourceChains.conf`) names the `jobs.xpAwards` action; empty pays nothing. `smelt_batch` pays SMELTING through `LF_JobLevelSources.AwardSmelting`.
 - **Proof:** `jobs/smelting-xp` (WORLD).
+- **Level steps (#4861):** a machine row can carry `m_aSteps` (`LF_MachineStep`: level, bigger batch cap, shorter run). `LF_ProcessAction.MaxBatchesAt` and `SecondsAt` read the worker's level in the row's `m_sLevelJob`; a step never lowers the cap or lengthens a run. `smelter-iron` carries the Smelting ladder (6 bars at 2, 7 at 5, 45 s at 7, 8 bars at 8, 35 s at 9, 10 bars at 16); the trade unlock rows name those numbers (test `everon/trade-unlocks`). Proof: `processing/machine-steps` (LOGIC).
