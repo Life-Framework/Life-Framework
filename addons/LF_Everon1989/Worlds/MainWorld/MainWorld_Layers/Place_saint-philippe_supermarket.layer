@@ -26,7 +26,7 @@ GenericEntity Fit_saint_philippe_supermarket_lf_sign_fascia : "{4697D9464B596C24
    m_vTextColor 0.96 0.93 0.82
   }
  }
- coords 4380.919 16 10673.454
+ coords 4381.03 15.5 10672.662
  angleY 82
 }
 GenericEntity Fit_saint_philippe_supermarket_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
@@ -36,7 +36,7 @@ GenericEntity Fit_saint_philippe_supermarket_electricity_box_small_01 : "{CDE403
    m_fReach 10
   }
  }
- coords 4380.769 15.3 10674.342
+ coords 4380.769 14.7 10674.342
  angleY 82
 }
 GenericEntity Fit_saint_philippe_supermarket_supermarket_box_safe : "{FDF16EF9B78A92F7}Prefabs/Props/Safes/LF_StoreBox.et" {
@@ -54,26 +54,26 @@ LF_NpcBaseEntity Fit_saint_philippe_supermarket_village_supermarket_shopkeeper :
  angleY 172
 }
 GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4366.073 16.100 10680.456
+ coords 4366.073 16.1 10680.456
  angleY 82
 }
 GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4366.908 16.100 10674.515
+ coords 4366.908 16.1 10674.515
  angleY 82
 }
 GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4370.971 16.100 10688.718
+ coords 4370.971 16.1 10688.718
  angleY 82
 }
 GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_4 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4372.015 16.100 10681.291
+ coords 4372.015 16.1 10681.291
  angleY 82
 }
 GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_5 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4372.850 16.100 10675.350
+ coords 4372.85 16.1 10675.35
  angleY 82
 }
 GenericEntity Fit_saint_philippe_supermarket_supermarket_lamp_6 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4377.723 16.100 10673.005
+ coords 4377.723 16.1 10673.005
  angleY 82
 }
