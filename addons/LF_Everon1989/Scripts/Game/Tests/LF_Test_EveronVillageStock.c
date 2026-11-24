@@ -4,6 +4,7 @@
 // red-proof (cafe and general store loop check): 2026-11-18 with the cafe and general store apple rows at $2, `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed 4 lines (cafe and general_store: `Apple.et sells for 2 and buys back for 4` and `sells for 2 and the market pays up to 5`); at $6 it passes.
 // red-proof: observed 2026-11-21 (#3893): with the five new newsagent items in the stock and no `LF_ShopPrices_Newsagent.conf`, `--only LF_Test_EveronVillageStock` failed `newsagent: ...LF_Newspaper.et sells for 1 and buys back for 25: no profit loop` (and the same for the magazine, postcard, notebook and pen); the price rules (sell 0 to 2) make it pass.
 // red-proof: observed 2026-11-21 (#3893 pharmacy): with the new LF_ShopStock_Pharmacy.conf overlay unlisted from the mission header, `--only LF_Test_EveronVillageStock` fails `the pharmacy has a stock under the pack header`; its buy-back is capped by LF_ShopPrices_Drugstore.conf (sell under buy).
+// red-proof: observed 2026-11-24 (#4180 juice loop): with the cafe juice at $6 and the supermarket's at $7, `--only LF_Test_EveronVillageStock` failed `cafe: ...AppleJuice.et sells for 6 and the island trader pays 18` and the same for the supermarket at 7; at $20 it passes.
 // red-proof: observed 2026-11-18 (#3218): on main (no supermarket, hardware, seed_feed, newsagent or mechanic stock) `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed on every `has a stock under the pack header` line.
 //! #3218: the new Saint-Philippe village shops each have a stock in the pack's shop stock overlay.
 //! Checked against the merged pack config (pack leg): each stock id loads with the items the card names,
@@ -194,6 +195,20 @@ class LF_Test_EveronVillageStock : LF_Test
 		LF_MarketGoodDef curve = LF_MarketBook.Curved(prefab);
 		if (curve)
 			ctx.True(row.m_iPrice >= curve.m_iCeiling, string.Format("%1: %2 sells for %3 and the market pays up to %4", id, prefab, row.m_iPrice, curve.m_iCeiling));
+
+		//! #4180: the island trader pays its own flat row for a good off the curve (apple juice $18, no cap);
+		//! the shop never sells it for less. The cafe sold juice at $6: buy, walk to the market, sell, repeat.
+		if (curve)
+			return;
+
+		BaseContainerList traderRows = LF_Test_EveronMarket.TraderRows(LF_Test_EveronMarket.TRADER);
+		ctx.NotNull(traderRows, "the island trader prefab lists its prices");
+		if (!traderRows)
+			return;
+
+		int traderPays = LF_Test_EveronMarket.TraderPrice(traderRows, prefab);
+		if (traderPays > 0)
+			ctx.True(row.m_iPrice >= traderPays, string.Format("%1: %2 sells for %3 and the island trader pays %4", id, prefab, row.m_iPrice, traderPays));
 	}
 
 }

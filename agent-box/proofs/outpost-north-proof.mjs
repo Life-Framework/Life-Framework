@@ -84,6 +84,7 @@ async function main(args) {
   };
   const atmo = () => logLines("Atmosphere", "client");
   const outpostServer = () => logLines("Outposts", "server");
+  // The camera stands at the target (p.y + 1) plus the offset, so oy 0.7 is a standing player's eye over the ground.
   const free = (name, p, ox, oy, oz, hour) => on({ verb: "capture", mode: "world", name, x: p.x, y: p.y + 1, z: p.z, ox, oy, oz, hour, free: true }, 25000);
   // The free camera of a world shot stays until `clean`; a ui shot after it would show the free view, so end it first.
   const ui = (name) => { on({ verb: "clean" }, 10000); wait(2000); return on({ verb: "capture", mode: "ui", name }, 25000); };
@@ -104,10 +105,10 @@ async function main(args) {
   // 1. The walk up: 25 m out on the approach side of the gate, then at the gate line, then the guard.
   on({ verb: "stand", entityName: SPOT.gateSandbagS, side: "s25" }, 25000);
   wait(4000);
-  free("1_approach", gate, 0, 3, -22, 12);
+  free("1_approach", gate, 0, 0.7, -22, 12);
   on({ verb: "stand", entityName: SPOT.gateSandbagS, side: "s4" }, 25000);
   wait(3000);
-  free("2_gate", gate, 0, 2, -9, 12);
+  free("2_gate", gate, 0, 0.7, -9, 12);
   // The guard streams in with the camp: stand beside him and look until the F key offers his Talk (up to four tries).
   let look = { detail: "" };
   for (let i = 0; i < 4 && !String(look.detail).includes(TALK); i++) {
@@ -136,15 +137,15 @@ async function main(args) {
   leaveScene("the gate guard");
 
   // 2. The chalk board at standing 0.
-  on({ verb: "stand", entityName: SPOT.board, side: "n2" }, 20000);
+  on({ verb: "stand", entityName: SPOT.board, side: "s2" }, 20000); // the board faces the approach (south)
   wait(2500);
   const mark = outpostServer().length;
   expect(on({ verb: "use", className: READ, entityName: SPOT.board }, 10000).status === "ok", "the board's Read row is used");
   wait(3500);
   const boardLines = outpostServer().slice(mark);
   expect(boardLines.some((l) => /outpost board read by player \d+: rows=3 hint=1/.test(l)), `the server answers the board with three rows and the hint (${boardLines.slice(-2).join(" | ")})`);
-  free("4_board_from_north", board, 0, 0.4, 2.6, 12);
-  free("5_board_from_south", board, 0, 0.4, -2.6, 12);
+  free("4_board_from_south", board, 0, 0.6, -2.6, 12);
+  free("5_board_from_north", board, 0, 0.6, 2.6, 12);
 
   // 3. The quartermaster: talk, the refusal in words, then standing and the buys.
   on({ verb: "stand", entityName: SPOT.table, side: "e2" }, 20000);

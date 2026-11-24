@@ -1074,6 +1074,9 @@
   "Assets/Vehicles/Wheeled/UAZ452/UAZ452_base.xob": {
    "surfaces": []
   },
+  "Assets/Vehicles/Wheeled/Ural4320/Ural_4320_base.xob": {
+   "surfaces": []
+  },
   "Common/Models/Default.xob": {
    "surfaces": [
     [0.5, -0.5, 0.5, -0.5, 0.5]

@@ -215,7 +215,7 @@
         0,
         18.5
       ],
-      "yaw": 0,
+      "yaw": 180,
       "config": [
         {
           "component": "LF_SignComponent",

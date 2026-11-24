@@ -7,34 +7,41 @@ data is the `outpost` block of [dossier.json](dossier.json); the scout's own pag
 
 ## Why here
 
-- **4.01 km from Saint-Philippe** (centre 7728, 8368; Saint-Philippe 4480, 10715), east-north-east, past the minimum of 4 km (the compound's nearest corner, 7698, 8398, is 3.97 km).
+- **On the plateau, plot p1** (#4675 follow-up, 2026-11-24). The camp first stood on plot p3, the meadow that falls 8 m toward
+  the sea: its rows stood between 5.8 and 9.4 m, and the maintainer found it "on a hillside". p1 is the flat plateau just west
+  of that meadow (50 x 56 m, ground 15.1 to 16.9 m). The 33 rows of the camp now stand between 15.60 and 16.26 m, a 0.65 m
+  fall across the whole 20 x 20 m camp (`tools/town/terrain/outpost-north-camp.json`).
+- **3.94 km from Saint-Philippe** (the camp's middle, 7661, 8395; Saint-Philippe 4480, 10715), east-north-east; the nearest
+  row is 3.92 km out. The first site card asked for at least 4 km. That was our own rule, not a game rule, and p1 missed it
+  by 50 m, so flat ground won: the minimum is now about 3.9 km.
 - **Off the roads.** The survey has no road inside 120 m. The nearest mapped road is the training area's yard road r02 about
-  240 m south; the main road r01 is about 285 m south-west. A car reaches the gate over the pine floor along the free strip
-  p2 (x 7688, z 8237 to 8355).
-- **A clearing the camp can fill.** The meadow is about 70 m by 70 m between pines (west, south) and a pebble beach (east),
-  ground 3.6 to 17 m with the plots at 14 to 17 m on the plateau. The overall fall is 6.7 degrees toward the sea.
-  The cove gives the smugglers' landing a reason to exist, and the pines hide the camp from the road.
+  270 m south; the main road r01 is further south-west. A car comes up the free strip p2 (x 7688, z 8237 to 8355) and crosses the
+  south half of p1 to the gate.
+- **Hidden.** Pines ring the plateau on every side; from the air and from the strip the camp shows only between the trunks.
+  The kit's boxed `clear` entries hide the 30 trees and bushes that stood in the camp and on the gate approach, and the granite
+  stone that stood in the gate opening (`town vegetation outpost-north camp --write`, then `--verify`: 0 still drawn).
 - **Not the scope file's spot.** The gangs scope names "about 7000 to 8000, 11000" east of the airbase. That ground is sea
-  (Maiden's Bay); the north-east bulge near the old training area is the only land of the north half at least 4 km out.
+  (Maiden's Bay); the north-east bulge near the old training area is the only land of the north half that far out.
 
-## Layout (first values; the dressing card seats them)
+## Layout (as fitted)
 
 | Part | x, z | Note |
 |---|---|---|
-| Camp bounds | 7698 to 7758, 8338 to 8398 | the meadow floor |
-| Safe zone | centre 7728, 8368, radius 60 m | the `LF_Outposts.conf` default; the east third is beach and sea |
-| Gate | 7700, 8340, facing S | guard posts at 7694, 8336 and 7706, 8336; the approach is the p2 strip |
-| Quartermaster ("Sarge") | 7738, 8372, faces W | table and crate under canvas, 40 m in from the gate |
-| Chalk board | 7704, 8346 | beside the gate, read before the quartermaster |
-| Contraband buyer | 7742, 8352 | |
-| Mechanic canopy | 7716, 8392 | |
-| Campfire | 7724, 8364 | |
-| Radio mast | 7712, 8394 | |
-| Flag pole | 7752, 8380 | |
+| Camp | 7651 to 7671, 8388 to 8405 | the kit's footprint on the plot centre (7667, 8385), yaw 0 |
+| Safe zone | centre 7661, 8395, radius 60 m | the `outpost-site` row (`LF_OutpostComponent`, the `LF_Outposts.conf` default radius); all on the plateau |
+| Gate | sandbag line at z 8388.7, opening x 7657 to 7664, facing S | guards at 7654.8, 8390.7 and 7665, 8390.7, facing the approach |
+| Chalk board | 7656.8, 8392.6, facing S | just inside the gate, read before the quartermaster |
+| Quartermaster ("Sarge") | 7657.9, 8399.2 | before the FIA tent, by the table and the pallets under the camo net |
+| Contraband buyer | 7665.4, 8397.7 | under the canvas cover |
+| Mechanic canopy | 7666, 8402.7 | two workbenches |
+| Campfire | 7661.5, 8395.6 | three stools and a crate bench |
+| Radio mast | 7670.5, 8404.7 | |
+| Flag pole | 7651.3, 8404.7 | the green cloth |
 
-The centre, the plots, the terrain, the water and the picture are measured by the scout. The part spots are read off the
-overhead picture and the free plots; nothing here is a placement. Cards O9 and the town pass seat them with `town fit
---terrain` and `audit placement`.
+Every value is read back from `Place_outpost-north_camp.layer`; nothing here is typed into a layer. `town fit outpost-north camp
+--refit --terrain` seats the kit on the plot and `audit placement` (`--strict`, `--world MainWorld --baseline`) passes.
+
+The first site (plot p3, centre 7728, 8368, 4.01 km out) is in the history of this file.
 
 ## Dressing kit (#4458, #4555)
 

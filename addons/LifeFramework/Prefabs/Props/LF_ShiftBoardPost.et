@@ -1,0 +1,41 @@
+GenericEntity : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
+ ID "7B20D4E81C95A36F"
+ components {
+  LF_SignComponent "{C8DC6C24E38F2C19}" {
+   m_sSignId "shift_board"
+  }
+  ActionsManagerComponent "{E98B19291CF15797}" {
+   additionalActions + {
+    LF_ShiftBoardReadAction "{4892EFAC67CF52F7}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+ {
+  GenericEntity Back : "{7863BDC6872929FF}Prefabs/Props/Signs/LF_Sign_Posts.et" {
+   ID "2D95A41E6C70B3F8"
+   coords 0 0 -0.2
+   angleY 180
+   components {
+    LF_SignComponent "{C8DC6C24E38F2C19}" {
+     m_sSignId "shift_board"
+     m_vRimColor 0.12 0.1 0.08
+     m_vPaintColor 0.9 0.86 0.74
+     m_vTextColor 0.12 0.1 0.08
+    }
+    ActionsManagerComponent "{E98B19291CF15797}" {
+     additionalActions + {
+      LF_ShiftBoardReadAction "{FF9EA42DB49046CA}" {
+       ParentContextList {
+        "LF_Sign"
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
