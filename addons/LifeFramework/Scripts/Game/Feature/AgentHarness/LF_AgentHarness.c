@@ -1968,51 +1968,98 @@ class LF_AgentHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when a ring spot at spotY is a floor a player could stand on beside a target. A prop's ring skips any spot
+	//! higher than the lowest floor of the ring (a counter top). A character target stands on the floor, so its own
+	//! height is the reference: a teller inside a bank on a raised floor must not lose every inside spot to the lower
+	//! street outside (the island bank lobby, 1.1 m above the pavement: every side landed on the outer wall, #4180).
+	static bool StandSpotOnFloor(float spotY, float lowest, float targetY, bool targetStands)
+	{
+		if (targetStands)
+			return Math.AbsFloat(spotY - targetY) <= STAND_MAX_STEP;
+
+		return spotY <= lowest + STAND_MAX_STEP;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a spot is on the side a character at origin faces (its yaw in degrees, 0 faces +Z).
+	static bool StandSpotInFront(vector origin, float yawDeg, vector spot)
+	{
+		float yaw = yawDeg * Math.DEG2RAD;
+		float forward = (spot[0] - origin[0]) * Math.Sin(yaw) + (spot[2] - origin[2]) * Math.Cos(yaw);
+		return forward > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The spot stand uses: the requested side first, then the other seven directions around the
 	//! target, then wider rings. Each spot is snapped down to the floor; a spot on a counter top
 	//! (higher than the lowest floor of its ring) is passed over. Falls back to the plain side offset.
 	protected static vector ClearStandSpot(IEntity character, IEntity target, string side)
 	{
+		// A resident marker (LF_NpcBaseEntity: the teller, a clerk) stands on the floor like the character it stands for.
+		bool targetStands = ChimeraCharacter.Cast(target) != null || LF_NpcBaseEntity.Cast(target) != null;
 		vector origin = target.GetOrigin();
 		vector plain = origin + StandOffset(side);
 		s_fStandYaw = StandYaw(side);
 
 		float startRad = Math.Atan2(plain[2] - origin[2], plain[0] - origin[0]);
-		for (int ring = 0; ring < 3; ring++)
+		float targetYaw = target.GetYawPitchRoll()[0];
+		// A character target (a teller, a clerk) is talked to from the side it faces: the first pass takes the requested
+		// spot when it is clear, else only a spot in front of it; the second pass is every spot, as for a prop.
+		for (int pass = 0; pass < 2; pass++)
 		{
-			float radius = StandDistance(side) + ring * 0.6;
-			array<vector> spots = {};
-			array<float> yaws = {};
-			float lowest = 1000;
-			for (int a = 0; a < 8; a++)
+			if (pass == 0 && !targetStands)
+				continue;
+
+			// The front pass also tries nearer rings (a 2 m spot is often a plant or a counter end, 1.4 m is clear).
+			array<int> rings = {0, 1, 2};
+			if (pass == 0)
+				rings = {0, -1, 1, 2, -2};
+
+			foreach (int ring : rings)
 			{
-				float rad = startRad + a * Math.PI / 4;
-				float x = origin[0] + Math.Cos(rad) * radius;
-				float z = origin[2] + Math.Sin(rad) * radius;
-				float groundY;
-				if (!StandGround(character, x, z, origin[1] + 0.3, groundY))
+				float radius = StandDistance(side) + ring * 0.6;
+				if (radius < 1.0)
 					continue;
 
-				spots.Insert(Vector(x, groundY, z));
-				yaws.Insert(Math.Atan2(origin[0] - x, origin[2] - z) * Math.RAD2DEG);
-				if (groundY < lowest)
-					lowest = groundY;
-			}
+				array<vector> spots = {};
+				array<float> yaws = {};
+				array<int> steps = {};
+				float lowest = 1000;
+				for (int a = 0; a < 8; a++)
+				{
+					float rad = startRad + a * Math.PI / 4;
+					float x = origin[0] + Math.Cos(rad) * radius;
+					float z = origin[2] + Math.Sin(rad) * radius;
+					float groundY;
+					if (!StandGround(character, x, z, origin[1] + 0.3, groundY))
+						continue;
 
-			for (int i = 0; i < spots.Count(); i++)
-			{
-				if (spots[i][1] > lowest + STAND_MAX_STEP)
-					continue;
+					spots.Insert(Vector(x, groundY, z));
+					yaws.Insert(Math.Atan2(origin[0] - x, origin[2] - z) * Math.RAD2DEG);
+					steps.Insert(a);
+					if (groundY < lowest)
+						lowest = groundY;
+				}
 
-				if (!StandSpotClear(character, spots[i]))
-					continue;
+				for (int i = 0; i < spots.Count(); i++)
+				{
+					if (!StandSpotOnFloor(spots[i][1], lowest, origin[1], targetStands))
+						continue;
 
-				s_fStandYaw = yaws[i];
-				if (i != 0 || ring != 0)
-					LF_Debug.Log(FEATURE, string.Format("stand spot beside %1 was taken or blocked; using ring %2 step %3 at %4", origin, ring, i, spots[i]));
+					bool requested = steps[i] == 0 && ring == 0;
+					if (pass == 0 && !requested && !StandSpotInFront(origin, targetYaw, spots[i]))
+						continue;
 
-				RememberStand(character, spots[i]);
-				return spots[i];
+					if (!StandSpotClear(character, spots[i]))
+						continue;
+
+					s_fStandYaw = yaws[i];
+					if (!requested)
+						LF_Debug.Log(FEATURE, string.Format("stand spot beside %1 was taken or blocked; using ring %2 step %3 at %4", origin, ring, steps[i], spots[i]));
+
+					RememberStand(character, spots[i]);
+					return spots[i];
+				}
 			}
 		}
 
