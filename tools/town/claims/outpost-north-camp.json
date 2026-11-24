@@ -2,7 +2,7 @@
   "schema": 1,
   "place": "outpost-north",
   "slot": "camp",
-  "plot": "p3",
+  "plot": "p1",
   "hostless": true,
   "kit": "outpost-north",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_outpost-north_camp.layer",

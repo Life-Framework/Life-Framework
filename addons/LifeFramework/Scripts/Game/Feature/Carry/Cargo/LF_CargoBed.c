@@ -104,7 +104,8 @@ class LF_CargoBed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The toast key for a refusal, or "" when the bed says nothing.
+	//! The toast key for a refusal. Every refusal has one (#4886: a too-far refusal reached the player as silence);
+	//! only NONE answers "".
 	static string RefusalKey(LF_ECargoRefusal refusal)
 	{
 		switch (refusal)
@@ -114,7 +115,9 @@ class LF_CargoBed
 			case LF_ECargoRefusal.NOT_ACCEPTED: return "#LF-Cargo_NotAccepted";
 			case LF_ECargoRefusal.FULL: return "#LF-Cargo_Full";
 			case LF_ECargoRefusal.EMPTY: return "#LF-Cargo_Empty";
+			case LF_ECargoRefusal.TOO_FAR: return "#LF-Cargo_TooFar";
 			case LF_ECargoRefusal.NO_HANDS: return "#LF-Cargo_HandsFull";
+			case LF_ECargoRefusal.NO_ITEM_PREFAB: return "#LF-Cargo_NoItemPrefab";
 			case LF_ECargoRefusal.LOCKED: return "#EL-VehicleLock_Reason";
 		}
 

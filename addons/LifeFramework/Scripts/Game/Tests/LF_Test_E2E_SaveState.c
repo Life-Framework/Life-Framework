@@ -1166,18 +1166,24 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(0, LF_Stores.ReattachUnpaid(CARRIED_CHARACTER_ID, restored), "e2e a version 23 save has no unpaid tags: the juice comes back untagged");
 #else
 		ctx.True(LF_Stores.ParkedCount() >= 1, "e2e the unpaid tag waits for its carrier after the save load");
+		//! The tag keeps the price the item had when it was pocketed (#479), so the bill is the saved row's
+		//! price, not today's shelf price: the pre-move gate's reference build saved the juice at $6 and this
+		//! tree sells it at $20 (#4889). A save written by this tree has both equal.
+		int savedPrice;
+		foreach (LF_StoreUnpaidRow savedRow : LF_Stores.CopyParked())
+		{
+			if (savedRow.m_sCarrierKey == CARRIED_CHARACTER_ID && savedRow.m_sPrefab == LF_Test_E2E_SaveStateWrite.JUICE_PREFAB)
+				savedPrice = savedRow.m_iPrice;
+		}
+
+		ctx.True(savedPrice > 0, "e2e the saved unpaid juice row carries a price");
 		ctx.Equal(1, LF_Stores.ReattachUnpaid(CARRIED_CHARACTER_ID, restored), "e2e the unpaid tag goes back on the carried juice after the restart");
 		array<IEntity> juices = LF_InventoryUtils.FindItemsByPrefab(LF_InventoryUtils.GetResponsibleStorageManager(restored), LF_Test_E2E_SaveStateWrite.JUICE_PREFAB);
 		ctx.Equal(1, juices.Count(), "e2e the juice is carried after the restart");
 		if (!juices.IsEmpty())
 			ctx.True(LF_Stores.HoldsApart(juices[0]), "e2e the carried juice is still flagged unpaid after the restart");
 
-		LF_ShopComponent shop = LF_Component<LF_ShopComponent>.Find(store.GetOwner());
-		int price;
-		if (shop)
-			price = shop.GetBuyPrice(LF_Test_E2E_SaveStateWrite.JUICE_PREFAB);
-
-		ctx.True(price > 0, "e2e a juice has a price");
+		int price = savedPrice;
 		ctx.Equal(price, LF_Stores.OwedBy(store.GetStoreKey(), restored), "e2e the carrier still owes for the juice after the restart");
 		ctx.False(store.Contains(restored.GetOrigin()), "e2e the restored body spawned outside the store");
 		ctx.Equal(0, LF_Stores.SweepExits(), "e2e spawning away from the store after the restart is not shoplifting");

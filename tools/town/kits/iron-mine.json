@@ -371,6 +371,33 @@
       "floor": "f0"
     },
     {
+      "id": "mine-board",
+      "name": "Mine_ShiftBoard",
+      "prefab": "{B747EFA4D94F3C2F}Prefabs/Props/LF_ShiftBoardPost.et",
+      "role": "sign",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -3.2,
+        0,
+        -1
+      ],
+      "yaw": 240,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_vRimColor": "0.12 0.1 0.08",
+            "m_vPaintColor": "0.9 0.86 0.74",
+            "m_vTextColor": "0.12 0.1 0.08"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
       "role": "dressing",
       "verb": "on floor",
       "mount": "terrain",

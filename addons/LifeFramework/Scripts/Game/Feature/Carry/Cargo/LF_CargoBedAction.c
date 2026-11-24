@@ -15,6 +15,7 @@ class LF_CargoBedAction : ScriptedUserAction
 	protected LF_ECargoMode m_eMode;
 
 	protected LF_CargoBedComponent m_Bed;
+	protected LF_ECargoRefusal m_eLastRefusal;
 
 	//------------------------------------------------------------------------------------------------
 	override void Init(IEntity pOwnerEntity, GenericComponent pManagerComponent)
@@ -46,29 +47,45 @@ class LF_CargoBedAction : ScriptedUserAction
 			IEntity item = LF_ShoulderCarry.Carried(user);
 			LF_ShoulderCarryComponent profile = LF_Component<LF_ShoulderCarryComponent>.Find(item);
 			if (!profile)
-				return false;
+				return ClientRefuse(LF_ECargoRefusal.NO_LOAD, user);
 
 			LF_ECargoRefusal refusal = m_Bed.DecideFor(user, LF_CargoBed.KindIndex(profile.GetKind()));
 			if (refusal == LF_ECargoRefusal.NONE)
+			{
+				m_eLastRefusal = LF_ECargoRefusal.NONE;
 				return true;
+			}
 
-			SetCannotPerformReason(LF_CargoBed.RefusalKey(refusal));
-			return false;
+			return ClientRefuse(refusal, user);
 		}
 
 		if (m_Bed.IsLockedFor(user))
-		{
-			SetCannotPerformReason(LF_CargoBed.RefusalKey(LF_ECargoRefusal.LOCKED));
-			return false;
-		}
+			return ClientRefuse(LF_ECargoRefusal.LOCKED, user);
 
 		if (LF_ShoulderCarry.Carried(user))
+			return ClientRefuse(LF_ECargoRefusal.NO_HANDS, user);
+
+		m_eLastRefusal = LF_ECargoRefusal.NONE;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The client side of a refusal (#4886): the reason a player reads is always set, and the log names
+	//! which check refused, once per change (the offer is evaluated every frame).
+	protected bool ClientRefuse(LF_ECargoRefusal refusal, IEntity user)
+	{
+		SetCannotPerformReason(LF_CargoBed.RefusalKey(refusal));
+		if (refusal != m_eLastRefusal)
 		{
-			SetCannotPerformReason("#LF-Cargo_HandsFull");
-			return false;
+			m_eLastRefusal = refusal;
+			float away = -1;
+			if (user && m_Bed)
+				away = vector.Distance(user.GetOrigin(), m_Bed.GetTailgateWorld());
+
+			LF_Debug.Info(LF_CargoBed.FEATURE, string.Format("%1 offer refused on the client: %2 (%3 m from the tailgate)", typename.EnumToString(LF_ECargoMode, m_eMode), LF_CargoBed.RefusalText(refusal), away));
 		}
 
-		return true;
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

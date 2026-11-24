@@ -3,5 +3,91 @@ Vehicle : "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transpor
  components {
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
   }
+  LF_VehicleStorageAccessControl "{A4320BE1A0000004}" {
+  }
+  LF_CargoBedComponent "{A4320BE1AC010000}" {
+   m_iCapacity 12
+   m_vTailgate 0 1.0 -4.0
+   m_vBedCentre 0 1.4 -1.7
+   m_fBedWidth 2.0
+   m_iPerLayer 6
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   ActionContexts + {
+    UserActionContext "{A4320BE1AC020000}" {
+     ContextName "lf_cargo"
+     Position PointInfo "{A4320BE1AC030000}" {
+      Offset 0 1.0 -4.0
+     }
+     Radius 2.2
+    }
+   }
+   additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RepairKitAction "{3332A1C0E5D70011}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_VehicleLockAction "{A4320BE1A0000006}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{A4320BE1A0000007}" {
+      Name "#EL-VehicleLock_Action"
+     }
+     "Sort Priority" 5
+    }
+    LF_VehicleStoreHereAction "{A4320BE1A0000101}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{A4320BE1A0000102}" {
+      Name "#LF-Garage_StoreHere"
+     }
+     "Sort Priority" 6
+    }
+    LF_VehicleSearchAction "{A4320BE1A0000201}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{A4320BE1A0000202}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
+    LF_VehicleSearchFullAction "{A4320BE1A0000301}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{A4320BE1A0000302}" {
+      Name "#LF-Search_Full_Action"
+     }
+    }
+    LF_CargoBedAction "{A4320BE1AC040000}" {
+     ParentContextList {
+      "lf_cargo"
+     }
+     UIInfo UIInfo "{A4320BE1AC050000}" {
+      Name "#LF-Cargo_Load"
+     }
+     "Sort Priority" 1
+    }
+    LF_CargoBedAction "{A4320BE1AC060000}" {
+     m_eMode UNLOAD
+     ParentContextList {
+      "lf_cargo"
+     }
+     UIInfo UIInfo "{A4320BE1AC070000}" {
+      Name "#LF-Cargo_Unload"
+     }
+     "Sort Priority" 2
+    }
+   }
+  }
  }
 }

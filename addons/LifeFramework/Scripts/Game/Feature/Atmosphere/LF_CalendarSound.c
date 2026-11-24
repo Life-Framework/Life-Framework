@@ -138,8 +138,9 @@ class LF_CalendarSound
 	static const string OP_SERVICE = "calendar_service";
 	static const string OP_SIREN = "calendar_siren";
 	static const string OP_HORN = "calendar_horn";
-	//! Carriers farther than this from the listener are not started: past the project's range anyway.
-	static const float HEAR_M = 200;	// lf-fixed: the sound projects fade out by 120 m
+	//! Carriers farther than this from the listener are not started: the pack's sound projects end at outerRange 120, and
+	//! AudioSystem.PlayEvent returns an invalid handle past it (the 2026-11-24 round 7 warning at 122 m with a 200 m limit).
+	static const float HEAR_M = 120;	// lf-fixed: the Calendar_*.acp outerRange
 	static const int STOP_PAD_MS = 500;	// lf-fixed: a little after the sample, so its tail is not cut
 
 	protected static ref set<string> s_aWarned;
