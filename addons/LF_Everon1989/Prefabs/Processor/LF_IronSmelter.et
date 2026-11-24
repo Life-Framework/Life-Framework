@@ -2,7 +2,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
  ID "228B69B127DCFF6B"
  components {
   MeshObject "{598F21A867C4015C}" {
-   Object "{08080CFD71F775CC}Assets/Props/Roleplay/SmelterFurnace/SmelterFurnace.xob"
+   Object "{855272895A58AD4D}Assets/Structures/BuildingsParts/Heating/BoilerLarge_02/BoilerLarge_02.xob"
   }
   ActionsManagerComponent "{598F21A8710B89C1}" {
    ActionContexts {
@@ -31,6 +31,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
    }
   }
   LF_ProcessRunFxComponent "{AEF721F2A1AB6EFC}" {
+   m_vSmokeOffset 0 1.95 -0.1
   }
   LF_AmbientEmitterComponent "{F804031051EBA4F5}" {
    m_sSoundSlot "atmo_furnace"
