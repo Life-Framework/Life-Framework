@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{BB62F1F6B7EE00D7}Sounds/Dialogue/coal_yard_clerk/Dialogue_coal_yard_clerk.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

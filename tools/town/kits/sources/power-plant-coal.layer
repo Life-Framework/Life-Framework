@@ -2,6 +2,30 @@
 // coal ends. Hostless plot beside the plant; every row rests on probed ground (`town fit --terrain`). The buyer is the pack LF_CoalBuyer_Everon1989.et
 // (buyer id `power_plant`, the row in Configs/Market/LF_BuyerDemand_Everon1989.conf); the sign def `power-plant-coal` is in
 // Configs/Signs/LF_Signs_Everon1989/LF_Signs_PowerPlantCoal.conf. The hopper and truck bay are dressing, as at the smelter.
+DecalEntity Coal_PadA : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
+ coords -22 0 3
+ angleX -90
+ angleY 0
+ scale 8
+}
+DecalEntity Coal_PadB : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords -12 0 6
+ angleX -90
+ angleY 90
+ scale 8
+}
+DecalEntity Coal_PadC : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords -27 0 7
+ angleX -90
+ angleY 200
+ scale 6
+}
+DecalEntity Coal_PadD : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
+ coords -18 0 -1
+ angleX -90
+ angleY 300
+ scale 6
+}
 GenericEntity Coal_Counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
  coords -24 0 4
  angleY 0
@@ -10,7 +34,7 @@ GenericEntity Coal_Buyer : "{52895A24E4FC994C}Prefabs/Trader/LF_CoalBuyer_Everon
  coords -24 1.04 4
  angleY 0
 }
-GenericEntity Coal_Clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+GenericEntity Coal_Clerk : "{DFBF063F590C7160}Configs/Npcs/LF_Npc_Townsfolk_CoalYardClerk.et" {
  coords -24 0 2.6
  angleY 0
 }

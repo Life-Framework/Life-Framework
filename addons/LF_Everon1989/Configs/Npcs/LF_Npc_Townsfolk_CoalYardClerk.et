@@ -1,0 +1,59 @@
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ ID "066B2ECF344239CF"
+ components {
+  SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
+   Identity Identity "{5584CBC6363C648B}" {
+    Name "Gaston"
+    Surname "Roux"
+   }
+  }
+  LF_NpcRoleComponent "{4DEFD2A0315A61C4}" {
+   m_sRole "townsfolk"
+  }
+  LF_DialogueComponent "{A6D779192CDA9098}" {
+   m_sDialogueId "coal_yard_clerk"
+  }
+  LF_PlaceComponent "{818CB930D9B1E145}" {
+   m_sKind "Townsfolk"
+   m_sId "coal_yard_clerk"
+  }
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{23A15812C40D34C2}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_strippedShirt_dirty.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{537FD11C135757AC}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey_Dirty.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+    LoadoutSlotInfo Hat {
+     Enabled 1
+     Prefab "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{2477F1B29F459CD8}" {
+     ContextName "Talk"
+     Position PointInfo "{6A3D045740763E7E}" {
+      PivotID "Spine5"
+     }
+     Radius 2.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{44C2C4937FA7AB3C}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{8CAEB1783A89D89B}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,12 @@
+GenericEntity Town_Jail_LaundryTub : "{73912A59FDEEF731}Prefabs/Props/Jail/LF_JailLaundryTub.et" {
+ coords 229.52 0.052 219.342
+ angleY 90
+}
+GenericEntity Town_Jail_KitchenSink : "{AD8A93936711F255}Prefabs/Props/Jail/LF_JailKitchenSink.et" {
+ coords 233.9 0.001 219.801
+ angleY -90
+}
+GenericEntity Town_Jail_YardBroom : "{4DFF61251337EEF8}Prefabs/Props/Jail/LF_JailYardBroom.et" {
+ coords 232.199 0.001 218.901
+ angleY 180
+}

@@ -1,0 +1,50 @@
+{
+  "id": "coal_yard_clerk",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "28d8bd7f5ee93037",
+      "date": "2026-11-24",
+      "voice_id": "ePn9OncKq8KyJvrTRqTi",
+      "voice_name": "James - Relaxed American Voice",
+      "model": "eleven_multilingual_v2",
+      "text": "Coal yard. Put your lumps on the counter and I pay cash for every one. The plant burns what it burns.",
+      "chars": 101,
+      "chars_total": 40,
+      "request_id": "7iCgbRXPWxtx4AMI6OEJ",
+      "seconds": 5.97,
+      "mouth": "389999965443331111111112635968864589722788755567612862357644251379685344321111111167236999425998645542254433342111111000"
+    },
+    "how": {
+      "hash": "092c04606fe1815f",
+      "date": "2026-11-24",
+      "voice_id": "ePn9OncKq8KyJvrTRqTi",
+      "voice_name": "James - Relaxed American Voice",
+      "model": "eleven_multilingual_v2",
+      "text": "My purse only goes so deep. When it runs dry I will say so, and you come back in an hour. It fills again.",
+      "chars": 105,
+      "chars_total": 42,
+      "request_id": "pqvm0ob7vu1okqXqK0c2",
+      "seconds": 5.74,
+      "mouth": "1699539944876547765675486421113996379866389888524786755489754554421159973598598536666665542111317997555544421111100"
+    },
+    "bye": {
+      "hash": "8c33c9ed8ab9d425",
+      "date": "2026-11-24",
+      "voice_id": "ePn9OncKq8KyJvrTRqTi",
+      "voice_name": "James - Relaxed American Voice",
+      "model": "eleven_multilingual_v2",
+      "text": "Mind the Ural on your way out.",
+      "chars": 30,
+      "chars_total": 12,
+      "request_id": "D5Xe9kIObuqMCQ5eD5mo",
+      "seconds": 1.69,
+      "mouth": "6886557799997766545544322110000000"
+    }
+  },
+  "voice": {
+    "id": "ePn9OncKq8KyJvrTRqTi",
+    "name": "James - Relaxed American Voice",
+    "source": "premade"
+  }
+}
