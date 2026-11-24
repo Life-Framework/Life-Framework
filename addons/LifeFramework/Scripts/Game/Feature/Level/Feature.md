@@ -46,3 +46,7 @@ player where they stand. No screen.
 
 - `Jobs` (XP source, config), `License` (level gates), `Gathering`/`Quests`
   (XP sources), `Chains` and `Crime` (level gates), `Persistence`.
+
+## Harness verbs
+
+`joblevel <JOB> <level>` and `jobshow <JOB>` (`LF_JobLevelHarnessVerbs.c`, dev gate): set a character's XP in a job to exactly what a level costs, and log it. The set books no daily cap and fires no award, only the level change. For session proofs of a level-gated machine.
