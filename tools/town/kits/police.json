@@ -597,22 +597,8 @@
       "yaw": 90,
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
-    },
-    {
-      "id": "police-kit-booking-typewriter",
-      "name": "PoliceKit_BookingTypewriter",
-      "prefab": "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et",
-      "role": "dressing",
-      "verb": "on police-kit-booking-desk",
-      "offset": [
-        -1.4,
-        0.94,
-        0.050000000000000044
-      ],
-      "yaw": 90,
-      "floor": "f0",
-      "attach": "counter:police-kit-booking-desk"
+      "attach": "floor",
+      "lift": 0.036
     },
     {
       "id": "police-kit-booking-inkwell",
@@ -636,14 +622,15 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        -1,
+        5.2,
         0.036,
-        2.3
+        4.8
       ],
       "yaw": 90,
       "wall": "free",
       "floor": "f0",
-      "attach": "floor"
+      "attach": "floor",
+      "lift": 0.036
     },
     {
       "id": "police-kit-rank-board",

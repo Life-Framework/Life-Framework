@@ -11,7 +11,7 @@
     "PoliceDesk",
     "Armoury"
   ],
-  "rows": 32,
+  "rows": 31,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
