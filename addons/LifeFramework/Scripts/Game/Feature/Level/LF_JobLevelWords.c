@@ -1,16 +1,20 @@
 //------------------------------------------------------------------------------------------------
-//! What a player reads when a job-level gate refuses them (#2700). Levels are never shown
-//! (outline decision 7): the gate says "do more runs first", not "level 3 needed". Pure, so a LOGIC
-//! test can drive it. Core text stays neutral; the pack's 1989 phrasing overrides the rows by Id.
+//! What a player reads when a job-level gate refuses them (#2700). The job families (farmer, miner,
+//! lumberjack, medic, police, delivery) say "do more runs first" in their own words and show no number
+//! (outline decision 7). Every other trade (Smelting, Salvage, Civilian) names itself and the level in
+//! words, "Needs Smelting 8" (#4856): a gate with no row of its own never leaves a player guessing.
+//! Pure, so a LOGIC test can drive it. Core text stays neutral; the pack's 1989 phrasing overrides the
+//! family rows by Id.
 class LF_JobLevelWords
 {
 	//------------------------------------------------------------------------------------------------
 	//! \param job The job the gate reads.
 	//! \param have The player's level in that job.
 	//! \param need The level the gate wants.
-	//! \return A `#` localization key saying why the player is refused: the Near row for one level
-	//! short, the Far row for further, in the job's own words (a generic row for any other job).
-	//! Empty when the player meets the gate. The key never carries a number.
+	//! \return Why the player is refused. A job family gets a `#` localization key (the Near row for one
+	//! level short, the Far row for further, in the job's own words, no number); any other job gets the
+	//! finished line "Needs <Trade> <level>" (`Needs`). Empty when the player meets the gate. Show it
+	//! with `LF_Terms.Shown`, which takes a key or finished text.
 	static string Refusal(string job, int have, int need)
 	{
 		if (have >= need)
@@ -60,8 +64,18 @@ class LF_JobLevelWords
 			return "#LF-Level_Far_Delivery";
 		}
 
-		if (near)
-			return "#LF-Level_Near_Any";
-		return "#LF-Level_Far_Any";
+		return Needs(job, need);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return "Needs Smelting 8": the trade's printed name and the level the gate wants, or
+	//! "Needs level 8" for a gate that names no trade.
+	static string Needs(string job, int need)
+	{
+		string trade = LF_PlayerMenuSheet.SkillName(job);
+		if (trade.IsEmpty())
+			return LF_Terms.Text("#LF-Level_NeedsAny", need.ToString());
+
+		return LF_Terms.Text("#LF-Level_Needs", trade, need.ToString());
 	}
 }
