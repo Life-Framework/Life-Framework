@@ -66,8 +66,8 @@ GenericEntity Fit_saint_philippe_market_fish_tuna : "{8A1CDDD1EB92D7E7}Prefabs/P
  angleY -8
 }
 GenericEntity Fit_saint_philippe_market_fish_crate_3 : "{205372D08C3BE977}Prefabs/Props/Market/LF_FishCrate_Perch.et" {
- coords 4480.535 13.676 10717.669
- angleY 2
+ coords 4481.671 13.991 10716.415
+ angleY -8
 }
 GenericEntity Fit_saint_philippe_market_fish_bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
  coords 4479.623 13.436 10717.339

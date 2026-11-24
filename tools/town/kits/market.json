@@ -41,7 +41,7 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "Street kit: the stall stands on the pavement along the street side of the building (b01 is the house the square's north side runs past, its street at building-local -x). The stall faces the street (yaw -90), the trader's prefab on its counter, the chalk price board 3 m along the pavement at the stall's end. Offsets are building-local, no world coordinates. Rows are rigid: shift, never stretch. Dressing (A20): the vendor stands behind the counter with a spare crate of cabbages at his side, a market umbrella shades the street end of the stall, crates of apples and plums sit on the counter ends, and the price board stands at the other end turned toward the customer. Fish stall (#4646): a second stand 6.4 m along the pavement, vanilla MarketStand_01, two green crates of whole fish (mackerel, trout) on the counter with a shop scale and two big fish laid out between them, a third crate of perch on the pavement, a bucket and a price board at its far end. No body stands in it: the fishmonger (Baptiste Pichon, resident dock_fishmonger) takes the `counter` anchor behind it, bound to the market place with m_sPlaceId so no other `counter` within 30 m claims it. Every fish on the stall is a mesh-only decor prefab (no pickup, nothing sells at the wholesale); there is no ice mesh in the game, so the crates are heaped to the rim instead."
+    "adapt": "Street kit: the stall stands on the pavement along the street side of the building (b01 is the house the square's north side runs past, its street at building-local -x). The stall faces the street (yaw -90), the trader's prefab on its counter, the chalk price board 3 m along the pavement at the stall's end. Offsets are building-local, no world coordinates. Rows are rigid: shift, never stretch. Dressing (A20): the vendor stands behind the counter with a spare crate of cabbages at his side, a market umbrella shades the street end of the stall, crates of apples and plums sit on the counter ends, and the price board stands at the other end turned toward the customer. Fish stall (#4646): a second stand 6.4 m along the pavement, vanilla MarketStand_01, two green crates of whole fish (mackerel, trout) on the counter with a shop scale and two big fish laid out between them, a third crate of perch on the stall's lower shelf, a bucket and a price board at its far end. No body stands in it: the fishmonger (Baptiste Pichon, resident dock_fishmonger) takes the `counter` anchor behind it, bound to the market place with m_sPlaceId so no other `counter` within 30 m claims it. Every fish on the stall is a mesh-only decor prefab (no pickup, nothing sells at the wholesale); there is no ice mesh in the game, so the crates are heaped to the rim instead."
   },
   "rows": [
     {
@@ -263,16 +263,15 @@
       "name": "Fish_Crate_3",
       "prefab": "{205372D08C3BE977}Prefabs/Props/Market/LF_FishCrate_Perch.et",
       "role": "dressing",
-      "verb": "on floor",
+      "verb": "on fish-stall",
       "offset": [
-        -16.3,
-        0,
-        -5.55
+        -14.9,
+        0.285,
+        -4.6
       ],
-      "yaw": -80,
+      "yaw": -90,
       "wall": "free",
-      "floor": "f0",
-      "mount": "terrain"
+      "floor": "f0"
     },
     {
       "id": "fish-bucket",
