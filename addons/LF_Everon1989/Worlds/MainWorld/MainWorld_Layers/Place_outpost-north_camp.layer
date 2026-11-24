@@ -1,0 +1,129 @@
+GenericEntity Fit_outpost_north_camp_outpost_board : "{6C4AFD9C193BC4EC}Prefabs/Outposts/LF_OutpostBoard.et" {
+ coords 7735.8 8.619 8333.6
+ angleY 180
+}
+GenericEntity Fit_outpost_north_camp_outpost_site {
+ components {
+  LF_OutpostComponent "{5E8C31A47D92B6F0}" {
+   m_sOutpostId "north"
+  }
+ }
+ coords 7739 7.891 8337
+}
+SCR_ChimeraCharacter Fit_outpost_north_camp_outpost_npc_quartermaster : "{D9C9D205CD9D4A61}Prefabs/Characters/Outposts/LF_Outpost_Quartermaster.et" {
+ coords 7735.9 7.931 8341.2
+ angleY 180
+}
+SCR_ChimeraCharacter Fit_outpost_north_camp_outpost_npc_buyer : "{ABD45E880BD19544}Prefabs/Characters/Outposts/LF_Outpost_Buyer.et" {
+ coords 7743.4 7.028 8339.7
+ angleY 180
+}
+SCR_ChimeraCharacter Fit_outpost_north_camp_outpost_npc_guard_s : "{C974EBD0B66A34F4}Prefabs/Characters/Outposts/LF_Outpost_GuardGate1.et" {
+ coords 7743 7.664 8332.7
+ angleY 180
+}
+SCR_ChimeraCharacter Fit_outpost_north_camp_outpost_npc_guard_n : "{6B2180250B983E0F}Prefabs/Characters/Outposts/LF_Outpost_GuardGate2.et" {
+ coords 7732.8 9.083 8332.7
+ angleY 180
+}
+SCR_ChimeraCharacter Fit_outpost_north_camp_outpost_npc_mechanic : "{D9E78AC61656C5CA}Prefabs/Characters/Outposts/LF_Outpost_Mechanic.et" {
+ coords 7741.4 6.856 8344.8
+ angleY 90
+}
+GenericEntity Fit_outpost_north_camp_outpost_gate_sandbag_s1 : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
+ coords 7742.177 7.909 8330.691
+}
+GenericEntity Fit_outpost_north_camp_outpost_gate_sandbag_s2 : "{B547CF929FCC6BB7}Prefabs/Props/Military/Sandbags/Sandbag_01_end_high_burlap.et" {
+ coords 7745.197 7.436 8330.702
+}
+GenericEntity Fit_outpost_north_camp_outpost_gate_sandbag_n1 : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
+ coords 7734.577 8.978 8330.691
+}
+GenericEntity Fit_outpost_north_camp_outpost_gate_sandbag_n2 : "{B547CF929FCC6BB7}Prefabs/Props/Military/Sandbags/Sandbag_01_end_high_burlap.et" {
+ coords 7731.597 9.388 8330.702
+}
+GameEntity Fit_outpost_north_camp_outpost_fire : "{0FB935C50541B694}Prefabs/Crafting/Fireplace.et" {
+ coords 7739.48 8.06 8337.645
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_generator : "{FCBEDECB2A39B6BC}Prefabs/Props/Military/Generators/GeneratorPortable_USSR_01.et" {
+ coords 7729.437 9.384 8335.705
+ angleY 90
+}
+GenericEntity Fit_outpost_north_camp_outpost_mast : "{5B8922E61D8DF345}Prefabs/Props/Military/Antennas/Antenna_R161_01.et" {
+ coords 7748.495 5.812 8346.7
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_flag_pole : "{1A8791C2BC2B8B75}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et" {
+ coords 7729.327 8.184 8346.701
+ angleY -90
+}
+SCR_DestructibleBuildingEntity Fit_outpost_north_camp_outpost_tent_quartermaster : "{4A1E3B17DB672E35}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01.et" {
+ coords 7736.389 0 8343.309
+}
+GenericEntity Fit_outpost_north_camp_outpost_table : "{1A1020205E2B1710}Prefabs/Props/Military/Furniture/TableMilitary_USSR_01.et" {
+ coords 7733.9 8.448 8339.2
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 7728.912 9.131 8339.708
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_pallet_box_1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 7728.896 8.897 8342.299
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_barrel_1 : "{4BE795374BE3D67E}Prefabs/Props/Industrial/BarrelFuel_01_closed.et" {
+ coords 7747.411 6.993 8333.178
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_canvas_cover_crates : "{BFC48B664ED362EE}Prefabs/Structures/Military/Camps/Canvas_Covers/CanvasCover_Medium_Base.et" {
+ coords 7745.9 6.898 8336.7
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_camo_net_pallets : "{79AA43911CC6C3E8}Prefabs/Structures/Military/CamoNets/Soviet/CamoNet_Small_Soviet.et" {
+ coords 7728.9 8.906 8341
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_stool_w : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7739.5 7.945 8336.001
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_stool_n : "{D023942ECEA592ED}Prefabs/Props/Furniture/Stool_02.et" {
+ coords 7737.91 7.998 8337.894
+ angleY -60
+}
+GenericEntity Fit_outpost_north_camp_outpost_stool_s : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7741.2 7.596 8337.301
+ angleY -110
+}
+GenericEntity Fit_outpost_north_camp_outpost_bench_box : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 7739.996 7.662 8339.4
+ angleY -75
+}
+GenericEntity Fit_outpost_north_camp_outpost_workbench_1 : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+ coords 7742.4 6.988 8343.302
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_workbench_2 : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+ coords 7743.02 6.624 8346.301
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_canopy_mechanic : "{C2789448B0BD05F8}Prefabs/Structures/Military/Camps/Canvas_Covers/CanvasCover_Medium_A_Base.et" {
+ coords 7744 6.528 8344.7
+ angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_flag_cloth : "{AE09DA7896F9DB37}Prefabs/Props/Fabric/Flags/Flag_1_2.et" {
+ components {
+  MeshObject "{52AE82368499B365}" {
+   Materials {
+    MaterialAssignClass "{599EE14E7161DB9A}" {
+     SourceMaterial "Flag_1_2"
+     AssignedMaterial "{B7A02313829700F9}Assets/Props/Fabric/Flags/Data/Flag_1_2_Green.emat"
+    }
+   }
+  }
+ }
+ coords 7729.427 13 8346.701
+ angleY -90
+}
