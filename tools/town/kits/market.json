@@ -13,7 +13,9 @@
       "addons/LifeFramework/Prefabs/Props/Market/LF_PriceBoard.et",
       "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers/Village_Dressing.layer",
       "addons/LifeFramework/Prefabs/Characters/Npcs/Outfits/LF_Npc_Trader_1.et",
-      "addons/LF_Everon1989/Prefabs/Props/Market/LF_ProduceCrate_Apple.et"
+      "addons/LF_Everon1989/Prefabs/Props/Market/LF_ProduceCrate_Apple.et",
+      "tools/town/kits/sources/orchard.layer",
+      "tools/town/kits/sources/cafe.layer"
     ]
   },
   "scope": "room",
@@ -29,7 +31,7 @@
       "source": "rows",
       "min": [
         -17.1,
-        -2.8
+        -10.2
       ],
       "max": [
         -13.5,
@@ -38,7 +40,7 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "Street kit: the stall stands on the pavement along the street side of the building (b01 is the house the square's north side runs past, its street at building-local -x). The stall faces the street (yaw -90), the trader's prefab on its counter, the chalk price board 3 m along the pavement at the stall's end. Offsets are building-local, no world coordinates. Rows are rigid: shift, never stretch. Dressing (A20): the vendor stands behind the counter with a spare crate of cabbages at his side, a market umbrella shades the street end of the stall, crates of apples and plums sit on the counter ends, and the price board stands at the other end turned toward the customer."
+    "adapt": "Street kit: the stall stands on the pavement along the street side of the building (b01 is the house the square's north side runs past, its street at building-local -x). The stall faces the street (yaw -90), the trader's prefab on its counter, the chalk price board 3 m along the pavement at the stall's end. Offsets are building-local, no world coordinates. Rows are rigid: shift, never stretch. Dressing (A20): the vendor stands behind the counter with a spare crate of cabbages at his side, a market umbrella shades the street end of the stall, crates of apples and plums sit on the counter ends, and the price board stands at the other end turned toward the customer. Fish stall (#4646): a second stand 6.4 m along the pavement, vanilla MarketStand_01, two green crates of ice on the counter, a bucket and a price board at its far end. No body stands in it: the fishmonger (Baptiste Pichon, resident dock_fishmonger) takes the `counter` anchor behind it, bound to the market place with m_sPlaceId so no other `counter` within 30 m claims it. No fish item lies on the counter (a free fish sells at the wholesale)."
   },
   "rows": [
     {
@@ -160,6 +162,111 @@
         1.15
       ],
       "yaw": -95,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fish-stall",
+      "name": "Fish_Stall",
+      "prefab": "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        -14.9,
+        0,
+        -4.6
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.062
+    },
+    {
+      "id": "fish-crate",
+      "name": "Fish_Crate",
+      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
+      "role": "dressing",
+      "verb": "on fish-stall",
+      "offset": [
+        -14.9,
+        1.03,
+        -5.3999999999999995
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fish-crate-2",
+      "name": "Fish_Crate_2",
+      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
+      "role": "dressing",
+      "verb": "on fish-stall",
+      "offset": [
+        -14.9,
+        1.03,
+        -3.8
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fish-bucket",
+      "name": "Fish_Bucket",
+      "prefab": "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -16.1,
+        0,
+        -6.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": -0.011
+    },
+    {
+      "id": "fish-price-board",
+      "name": "Fish_PriceBoard",
+      "prefab": "{B47D2C9E5A1F8036}Prefabs/Props/Market/LF_PriceBoard.et",
+      "role": "board",
+      "verb": "on floor",
+      "offset": [
+        -15.4,
+        0,
+        -7.8
+      ],
+      "yaw": -60,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "anchor-fish-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -13.9,
+        0,
+        -4.6499999999999995
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\"",
+            "m_sPlaceId": "\"saint-philippe.market\""
+          },
+          "blocks": []
+        }
+      ],
       "wall": "free",
       "floor": "f0"
     }

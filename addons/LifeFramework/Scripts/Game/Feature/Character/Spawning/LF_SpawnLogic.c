@@ -26,7 +26,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! A pack's LF_CharacterConfig.m_iStartingBank (Everon: $2,000) wins over m_iStartingBank when it sets one.
 	int GetStartingBank()
 	{
-		return LF_DebugMoneyTopUp.StartingBank(IsDebugMoneyTopUp(), Math.Max(0, LF_CharacterConfig.StartingBank(m_iStartingBank)), m_iTopUpBankTarget);
+		return LF_DebugMoneyTopUp.StartingBank(IsMoneyTopUpOn(), Math.Max(0, LF_CharacterConfig.StartingBank(m_iStartingBank)), m_iTopUpBankTarget);
 	}
 
 	//! Playtest only: nobody runs out of money. On spawn and every 60 s a bank under the low mark is
@@ -72,6 +72,14 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether the bank and cash top-up runs: the helper flag, less a header that closes only the
+	//! top-up (m_bLF_MoneyTopUpOff, the playtest town). The bank rob kit still reads IsDebugMoneyTopUp.
+	bool IsMoneyTopUpOn()
+	{
+		return LF_MissionHeader.MoneyTopUp(IsDebugMoneyTopUp());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool IsPlaytestHub()
 	{
 		return LF_MissionHeader.PlaytestHelper(m_bPlaytestHub);
@@ -81,7 +89,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! Tops up one player now and arms the 60 s server timer (once).
 	protected void TopUpPlayer(int playerId, IEntity character)
 	{
-		if (!IsDebugMoneyTopUp())
+		if (!IsMoneyTopUpOn())
 			return;
 
 		LF_DebugMoneyTopUp.Apply(LF_Utils.GetPlayerUID(playerId), character, m_iTopUpBankLow, m_iTopUpBankTarget, m_iTopUpCashLow, m_iTopUpCashTarget);

@@ -275,3 +275,25 @@ GenericEntity Fit_saint_philippe_dock_wholesale_barrel_6 : "{7D52C517720EF2F5}Pr
  coords 4463.294 5.865 11205.455
  angleY -93
 }
+GenericEntity Fit_saint_philippe_dock_wholesale_chandler_counter : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+ coords 4468.125 5.849 11185.881
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_chandler_rope : "{33D5102FA67E1B46}Prefabs/Props/Naval/FishingRope_01.et" {
+ coords 4468.161 6.81 11185.182
+ angleY -73
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_chandler_gear : "{19968B13AD8B3115}Prefabs/Props/Naval/FishingGear_01.et" {
+ coords 4469.213 5.83 11188.041
+ angleY -113
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_anchor_chandler_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+   m_sPlaceId "saint-philippe-dock.wholesale"
+  }
+ }
+ coords 4469.423 5.8 11185.949
+ angleY -93
+}

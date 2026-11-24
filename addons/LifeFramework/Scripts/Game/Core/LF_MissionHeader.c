@@ -26,6 +26,12 @@ class LF_MissionHeader : SCR_MissionHeader
 	[Attribute("0", desc: "Close the playtest helpers the world's game mode switches on (test cars, bank and cash top-up, the jail-me board, the spawn hub travel globe, test dispatch calls, the near convoy drop), even when the game mode opts in. On for a mission a real server runs; off for the playtest mission and DebugWorld.")]
 	bool m_bLF_PlaytestHelpersOff;
 
+	[Attribute("0", desc: "Close only the money top-up (the bank and carried-cash fill, and the top-up's opening bank) while the other playtest helpers stay on. The playtest town sets it so a fresh character opens with the island's money (#4678). A mission that closes every helper (m_bLF_PlaytestHelpersOff) needs no flag.")]
+	bool m_bLF_MoneyTopUpOff;
+
+	[Attribute("", UIWidgets.Auto, desc: "Text aliases for this mission, each row 'FROM=TO' of two string keys with no # (LF-A=LF-B): LF_Terms.Text shows TO wherever a screen, toast or guide asks for FROM. A mission whose world lacks a place the shared text names points that one key at its own (the playtest town's first hint, #4676). A key with no alias reads as before.")]
+	ref array<string> m_aLF_TextAliases;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, desc: "Config overlays (.conf) this mission layers over the shipped defaults, lowest precedence first: a later file wins over an earlier one, the server owner's config.json wins over all. Each overlay is a .conf of the same class as the core file it changes and sets only the fields it names. Read by LF_MissionConfigPackSource (D4 option b, #278).", params: "conf")]
 	ref array<ResourceName> m_aLF_ConfigOverlays;
 
@@ -82,6 +88,30 @@ class LF_MissionHeader : SCR_MissionHeader
 			return gameModeFlag;
 
 		return ResolvePlaytestHelper(gameModeFlag, GetGame().GetMissionHeader());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: whether the money top-up is on, given the game mode's flag (already resolved against
+	//! m_bLF_PlaytestHelpersOff) and the mission header. m_bLF_MoneyTopUpOff closes the top-up alone.
+	//! \param helperOn The top-up's resolved playtest-helper flag.
+	//! \param header The mission header; null when the server was started on a bare world.
+	static bool ResolveMoneyTopUp(bool helperOn, MissionHeader header)
+	{
+		LF_MissionHeader lfHeader = LF_MissionHeader.Cast(header);
+		if (lfHeader && lfHeader.m_bLF_MoneyTopUpOff)
+			return false;
+
+		return helperOn;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return the top-up flag resolved against the running mission's header.
+	static bool MoneyTopUp(bool helperOn)
+	{
+		if (!helperOn || !GetGame())
+			return helperOn;
+
+		return ResolveMoneyTopUp(helperOn, GetGame().GetMissionHeader());
 	}
 }
 

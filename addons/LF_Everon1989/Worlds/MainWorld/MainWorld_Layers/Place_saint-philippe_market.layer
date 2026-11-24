@@ -41,3 +41,33 @@ GenericEntity Fit_saint_philippe_market_market_crate_cabbages : "{37B197739B5B18
  coords 4487.497 13.9 10716.274
  angleY -13
 }
+GenericEntity Fit_saint_philippe_market_fish_stall : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
+ coords 4481.671 13.706 10716.415
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_fish_crate : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 4480.879 14.736 10716.303
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_fish_crate_2 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 4482.463 14.736 10716.526
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_fish_bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 4479.623 13.436 10717.339
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_market_fish_price_board : "{B47D2C9E5A1F8036}Prefabs/Props/Market/LF_PriceBoard.et" {
+ coords 4478.433 13.449 10716.465
+ angleY 22
+}
+GenericEntity Fit_saint_philippe_market_anchor_fish_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+   m_sPlaceId "saint-philippe.market"
+  }
+ }
+ coords 4481.761 13.9 10715.418
+ angleY -8
+}
