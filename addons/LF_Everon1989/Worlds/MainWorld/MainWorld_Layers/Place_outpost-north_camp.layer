@@ -1,6 +1,5 @@
 GenericEntity Fit_outpost_north_camp_outpost_board : "{6C4AFD9C193BC4EC}Prefabs/Outposts/LF_OutpostBoard.et" {
- coords 7735.8 8.619 8333.6
- angleY 180
+ coords 7734.8 8.666 8334.6
 }
 GenericEntity Fit_outpost_north_camp_outpost_site {
  components {
@@ -126,4 +125,56 @@ GenericEntity Fit_outpost_north_camp_outpost_flag_cloth : "{AE09DA7896F9DB37}Pre
  }
  coords 7729.427 13 8346.701
  angleY -90
+}
+GenericEntity Fit_outpost_north_camp_outpost_bed_generator : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundProject "{D4A74CE484CF999A}Sounds/Ambience/Outposts/Atmosphere_OutpostGenerator.acp"
+   m_fRadius 30
+   m_fHourFrom 5
+   m_fHourTo 23
+   m_sGroup "outpost_north_generator"
+   m_iPriority 1
+  }
+ }
+ coords 7730.4 9.186 8335.7
+}
+GenericEntity Fit_outpost_north_camp_outpost_bed_fire : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundProject "{8EBDC9701649F251}Sounds/Ambience/Outposts/Atmosphere_OutpostFire.acp"
+   m_fRadius 24
+   m_fHourFrom 17
+   m_fHourTo 5
+   m_sGroup "outpost_north_fire"
+   m_iPriority 1
+  }
+ }
+ coords 7739.48 7.815 8337.2
+}
+GenericEntity Fit_outpost_north_camp_outpost_bed_radio : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundProject "{A483FD5B3992DD8A}Sounds/Ambience/Outposts/Atmosphere_OutpostRadio.acp"
+   m_fRadius 20
+   m_fHourFrom 8
+   m_fHourTo 23
+   m_sGroup "outpost_north_radio"
+   m_iPriority 1
+  }
+ }
+ coords 7735.4 7.634 8344.6
+}
+GenericEntity Fit_outpost_north_camp_outpost_bed_wind : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundProject "{93CF38268BAAEC25}Sounds/Ambience/Outposts/Atmosphere_OutpostWind.acp"
+   m_fRadius 45
+   m_fHourFrom 21
+   m_fHourTo 5
+   m_sGroup "outpost_north_wind"
+   m_iPriority 1
+  }
+ }
+ coords 7739 7.719 8339
 }
