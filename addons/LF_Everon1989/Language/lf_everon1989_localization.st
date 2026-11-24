@@ -7079,6 +7079,16 @@ StringTable {
      Target_en_us "The village hostel: a bed for anyone with nowhere to sleep."
      Comment "What line of the hostel sign."
     }
+    CustomStringTableItem "{494F8AAE164272B0}" {
+     Id "LF-Sign_HoursPlate_Title"
+     Target_en_us "Opening Hours"
+     Comment "Title of the enamel plate beside a shop door (Everon 1989 pack, #4834). Printed on the plate in capitals and shown in the prompt as Read: Opening Hours. The row under it, OPEN and the span, is written from the keeper's timetable."
+    }
+    CustomStringTableItem "{5CA9B1E1C3CA3394}" {
+     Id "LF-Sign_HoursPlate_What"
+     Target_en_us "The hours the shopkeeper is at the counter. The plate is written from the keeper's timetable, so it always agrees with the shop."
+     Comment "Sign card for the opening-hours plate, What section."
+    }
     CustomStringTableItem "{BFF98FD4BBA45C34}" {
      Id "LF-Sign_Housewares_Title"
      Target_en_us "Housewares"

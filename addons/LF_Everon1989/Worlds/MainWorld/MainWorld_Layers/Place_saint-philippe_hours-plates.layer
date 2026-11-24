@@ -1,0 +1,30 @@
+GenericEntity Fit_saint_philippe_hours_plates_drop_b06 : "{379F4E8692F36269}Prefabs/Props/Signs/LF_Sign_HoursPlate.et" {
+ coords 4472.935 14 10748.1
+ angleY -100
+ scale 0.8
+}
+GenericEntity Fit_saint_philippe_hours_plates_drop_b13 : "{379F4E8692F36269}Prefabs/Props/Signs/LF_Sign_HoursPlate.et" {
+ coords 4435.855 12.75 10692.431
+ angleY -95
+ scale 0.8
+}
+GenericEntity Fit_saint_philippe_hours_plates_drop_b20 : "{379F4E8692F36269}Prefabs/Props/Signs/LF_Sign_HoursPlate.et" {
+ coords 4467.135 13.3 10777.902
+ angleY -100
+ scale 0.8
+}
+GenericEntity Fit_saint_philippe_hours_plates_drop_b21 : "{379F4E8692F36269}Prefabs/Props/Signs/LF_Sign_HoursPlate.et" {
+ coords 4426.193 11.25 10754.538
+ angleY 10
+ scale 0.8
+}
+GenericEntity Fit_saint_philippe_hours_plates_drop_b43 : "{379F4E8692F36269}Prefabs/Props/Signs/LF_Sign_HoursPlate.et" {
+ coords 4414.817 11.5 10768.094
+ angleY 152
+ scale 0.8
+}
+GenericEntity Fit_saint_philippe_hours_plates_drop_b88 : "{379F4E8692F36269}Prefabs/Props/Signs/LF_Sign_HoursPlate.et" {
+ coords 4438.611 10.5 10844.338
+ angleY 76
+ scale 0.8
+}

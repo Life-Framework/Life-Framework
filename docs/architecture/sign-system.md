@@ -110,7 +110,7 @@ rows a pack writes are literal values; live rows (the market book, a shop's pric
 | `LF_Sign_Chalkboard`, `LF_PriceBoard` | `chalk` | `quad16x9` | S1 (this PR), S2 |
 | `LF_Sign_Pub` (A-frame) | `chalk` | `quad16x9` at the lean now (merged, #3305); kit `4:3` later | S5 |
 | `LF_Sign_Fascia` | `fascia` | `fascia` (vanilla body) | S3 |
-| `LF_Sign_Plate`, `_PlateSmall`, `_PolePlate` | `enamel` | vanilla bodies | S4 |
+| `LF_Sign_Plate`, `_PlateSmall`, `_PolePlate` | `enamel` | vanilla bodies | S4 (`LF_Sign_HoursPlate` is the first: style `enamel`, size `plate` 1024 x 512, `LF_SignStyles_Plate.conf`, #4834; the three legacy plates still print the paint face) |
 | `LF_Sign_Board`, `LF_Sign_Notice` | `poster` | kit `1:2` / vanilla A4 | S6 |
 | `LF_Sign_Posts`, `LF_PlotSign` | `wood` / `road` | `quad16x9`, kit | S10 |
 
