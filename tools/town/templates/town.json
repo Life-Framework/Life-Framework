@@ -319,6 +319,11 @@
       "places": []
     },
     {
+      "id": "road-signs", "required": false, "kit": "road-signs", "host": "outposts", "poi": "none", "margin": 40,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
       "id": "org", "required": false, "kit": "org", "host": "building", "poi": "none",
       "needs": { "interior": "required", "minArea": 15, "prefer": "near", "maxDistance": 120, "types": ["industrial", "kiosk", "shop", "townhouse"] },
       "places": ["OrgDesk"]
