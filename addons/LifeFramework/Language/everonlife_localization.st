@@ -3085,6 +3085,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This vehicle has no cargo bed."
      Comment "Toast: a car cannot carry a load (#3265)."
     }
+    CustomStringTableItem "{07D0C122499A5FB9}" {
+     Id "LF-Cargo_NoItemPrefab"
+     Target_en_us "That load can't come off the truck yet."
+     Comment "Toast: the top load of the bed has no item to put on the shoulder (#4886)."
+    }
     CustomStringTableItem "{BF7D47302660AF18}" {
      Id "LF-Cargo_NoLoad"
      Target_en_us "You are not carrying anything."
@@ -3099,6 +3104,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Cargo_Title"
      Target_en_us "Cargo"
      Comment "Toast title for the truck bed (#3265)."
+    }
+    CustomStringTableItem "{41666EAF598EC0C9}" {
+     Id "LF-Cargo_TooFar"
+     Target_en_us "Move closer to the tailgate."
+     Comment "Toast and reason: the carrier stands too far from the bed to load or unload (#4886)."
     }
     CustomStringTableItem "{B742E763B9E68070}" {
      Id "LF-Cargo_Unload"
