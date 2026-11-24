@@ -8,143 +8,143 @@ GenericEntity : "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et"
   }
   ActionsManagerComponent "{3147BCBA482017D3}" {
    ActionContexts {
+    UserActionContext "{1FA16A902EC664E4}" {
+     ContextName "flag_03"
+     Position PointInfo "{0B1817A5C80F7151}" {
+      Offset -0.475 1 -1.5
+     }
+     Radius 0.5
+    }
     UserActionContext "{3CCC9AA8A996D317}" {
      ContextName "flag_01"
      Position PointInfo "{A08267E6D642C375}" {
-      Offset -2.4 1 -1
+      Offset -4.275 1 -1.5
      }
      Radius 0.5
     }
     UserActionContext "{77E620411C5C37C3}" {
      ContextName "flag_02"
      Position PointInfo "{41663D63D90170F0}" {
-      Offset -1.2 1 -1
-     }
-     Radius 0.5
-    }
-    UserActionContext "{1FA16A902EC664E4}" {
-     ContextName "flag_03"
-     Position PointInfo "{0B1817A5C80F7151}" {
-      Offset 0 1 -1
+      Offset -2.375 1 -1.5
      }
      Radius 0.5
     }
     UserActionContext "{9C44744413392171}" {
      ContextName "flag_04"
      Position PointInfo "{6D2749BB6FA452DE}" {
-      Offset 1.2 1 -1
+      Offset 1.425 1 -1.5
      }
      Radius 0.5
     }
     UserActionContext "{7B1D7B52E19B2E80}" {
      ContextName "flag_05"
      Position PointInfo "{494A9168AC8737ED}" {
-      Offset 2.4 1 -1
+      Offset 3.325 1 -1.5
      }
      Radius 0.5
     }
     UserActionContext "{176D658D41B37AF6}" {
      ContextName "flag_06"
      Position PointInfo "{E7B4CBDC4467CB3F}" {
-      Offset -2.4 1 -2.2
+      Offset -3.325 1 -3.7
      }
      Radius 0.5
     }
     UserActionContext "{F42AAD8EA25E94A7}" {
      ContextName "flag_07"
      Position PointInfo "{AC2A7E17748AE0CB}" {
-      Offset -1.2 1 -2.2
+      Offset -1.425 1 -3.7
      }
      Radius 0.5
     }
     UserActionContext "{059D4387C2CB8CA5}" {
      ContextName "flag_08"
      Position PointInfo "{61294EFC97D1F38F}" {
-      Offset 0 1 -2.2
+      Offset 0.475 1 -3.7
      }
      Radius 0.5
     }
     UserActionContext "{FE15C4398EA1106E}" {
      ContextName "flag_09"
      Position PointInfo "{04E42A16C3E640EB}" {
-      Offset 1.2 1 -2.2
+      Offset 2.375 1 -3.7
      }
      Radius 0.5
     }
     UserActionContext "{1338D7E3F27103CE}" {
      ContextName "flag_10"
      Position PointInfo "{A301C9075863AA55}" {
-      Offset 2.4 1 -2.2
+      Offset 4.275 1 -3.7
      }
      Radius 0.5
     }
     UserActionContext "{08927F97023A7479}" {
      ContextName "flag_11"
      Position PointInfo "{57FAD4813DBF76CD}" {
-      Offset -2.4 1 -3.4
+      Offset -4.275 1 -5.9
      }
      Radius 0.5
     }
     UserActionContext "{FC550176CA11D66B}" {
      ContextName "flag_12"
      Position PointInfo "{B3E15719A4DE02CD}" {
-      Offset -1.2 1 -3.4
+      Offset -2.375 1 -5.9
      }
      Radius 0.5
     }
     UserActionContext "{0E872DA9E67D9618}" {
      ContextName "flag_13"
      Position PointInfo "{79C12019A54D9ECB}" {
-      Offset 0 1 -3.4
+      Offset -0.475 1 -5.9
      }
      Radius 0.5
     }
     UserActionContext "{2E76D1F3B6594046}" {
      ContextName "flag_14"
      Position PointInfo "{9C75D86FCF2FA1E0}" {
-      Offset 1.2 1 -3.4
+      Offset 1.425 1 -5.9
      }
      Radius 0.5
     }
     UserActionContext "{ECB07F343AD91494}" {
      ContextName "flag_15"
      Position PointInfo "{D8D0D425D1EC8CFB}" {
-      Offset 2.4 1 -3.4
+      Offset 3.325 1 -5.9
      }
      Radius 0.5
     }
     UserActionContext "{5D2F5C9CE5B88D2C}" {
      ContextName "flag_16"
      Position PointInfo "{FD00E719A26F8DB5}" {
-      Offset -2.4 1 -4.6
+      Offset -3.325 1 -8.1
      }
      Radius 0.5
     }
     UserActionContext "{218EC7379F2B74CC}" {
      ContextName "flag_17"
      Position PointInfo "{981E5E61AAE02C1C}" {
-      Offset -1.2 1 -4.6
+      Offset -1.425 1 -8.1
      }
      Radius 0.5
     }
     UserActionContext "{2992044C2EFF3824}" {
      ContextName "flag_18"
      Position PointInfo "{15BB3DF09D3929D6}" {
-      Offset 0 1 -4.6
+      Offset 0.475 1 -8.1
      }
      Radius 0.5
     }
     UserActionContext "{FE74CA4C4B5DF381}" {
      ContextName "flag_19"
      Position PointInfo "{8DE8DA95D4AE5238}" {
-      Offset 1.2 1 -4.6
+      Offset 2.375 1 -8.1
      }
      Radius 0.5
     }
     UserActionContext "{B5E90A7395F90994}" {
      ContextName "flag_20"
      Position PointInfo "{4D0FE8DD6DD75437}" {
-      Offset 2.4 1 -4.6
+      Offset 4.275 1 -8.1
      }
      Radius 0.5
     }

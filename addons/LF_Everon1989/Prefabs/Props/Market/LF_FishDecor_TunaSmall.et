@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "AFAE0D1C50847175"
+ components {
+  MeshObject "{9A195BFDCD141F9C}" {
+   Object "{8286F367851FF333}Assets/Items/Fishing/FishTunaSmall/FishTunaSmall.xob"
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,6 @@
+// Source of the `market` kit's fish stall dressing (tools/town/kits/market.json, #4646 polish): the vanilla prefabs the rows name,
+// so `town fit` can read their GUIDs. Nothing here is placed; the rows hold every position. The shop scale is the vanilla
+// ScaleShop_01 (a dial scale on a column, 0.32 x 0.57 x 0.85 m).
+GenericEntity MarketFish_Scale : "{2A0C495C5BB7E833}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_Base.et" {
+ coords 0 0 0
+}

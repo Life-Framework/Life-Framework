@@ -370,13 +370,13 @@
     {
       "id": "pharmacy-host-w1-b1-1",
       "name": "Pharmacy_host_w1_b1_1",
-      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        0.789,
-        4.422
+        -1.261,
+        0.844,
+        4.428
       ],
       "yaw": 90,
       "free": true,
@@ -386,18 +386,19 @@
     {
       "id": "pharmacy-host-w1-b1-2",
       "name": "Pharmacy_host_w1_b1_2",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        0.789,
-        4.092
+        -1.261,
+        0.819,
+        4.214
       ],
       "yaw": 90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w1-b1-3",
@@ -406,25 +407,60 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        0.789,
-        3.762
+        -1.261,
+        0.819,
+        4.081
       ],
       "yaw": 90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w1-b1-4",
       "name": "Pharmacy_host_w1_b1_4",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        0.789,
-        3.432
+        -1.261,
+        0.819,
+        3.861
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-w1-b1-5",
+      "name": "Pharmacy_host_w1_b1_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        0.819,
+        3.64
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w1-b1-6",
+      "name": "Pharmacy_host_w1_b1_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        0.844,
+        3.426
       ],
       "yaw": 90,
       "free": true,
@@ -434,13 +470,13 @@
     {
       "id": "pharmacy-host-w1-b2-1",
       "name": "Pharmacy_host_w1_b2_1",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        1.282,
-        4.252
+        -1.261,
+        1.337,
+        4.428
       ],
       "yaw": 90,
       "free": true,
@@ -454,30 +490,32 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        1.282,
-        3.922
+        -1.261,
+        1.312,
+        4.214
       ],
       "yaw": 90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w1-b2-3",
       "name": "Pharmacy_host_w1_b2_3",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        1.282,
-        3.592
+        -1.261,
+        1.312,
+        3.994
       ],
       "yaw": 90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "pharmacy-host-w1-b2-4",
@@ -486,9 +524,43 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        1.282,
-        3.272
+        -1.261,
+        1.312,
+        3.773
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w1-b2-5",
+      "name": "Pharmacy_host_w1_b2_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.312,
+        3.64
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w1-b2-6",
+      "name": "Pharmacy_host_w1_b2_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.337,
+        3.426
       ],
       "yaw": 90,
       "free": true,
@@ -498,13 +570,13 @@
     {
       "id": "pharmacy-host-w1-b3-1",
       "name": "Pharmacy_host_w1_b3_1",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        1.775,
-        4.422
+        -1.261,
+        1.83,
+        4.428
       ],
       "yaw": 90,
       "free": true,
@@ -514,18 +586,19 @@
     {
       "id": "pharmacy-host-w1-b3-2",
       "name": "Pharmacy_host_w1_b3_2",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        1.775,
-        4.092
+        -1.261,
+        1.805,
+        4.214
       ],
       "yaw": 90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w1-b3-3",
@@ -534,25 +607,60 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        1.775,
-        3.762
+        -1.261,
+        1.805,
+        4.081
       ],
       "yaw": 90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w1-b3-4",
       "name": "Pharmacy_host_w1_b3_4",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.291,
-        1.775,
-        3.432
+        -1.261,
+        1.805,
+        3.861
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-w1-b3-5",
+      "name": "Pharmacy_host_w1_b3_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.805,
+        3.64
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w1-b3-6",
+      "name": "Pharmacy_host_w1_b3_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.83,
+        3.426
       ],
       "yaw": 90,
       "free": true,
@@ -562,13 +670,13 @@
     {
       "id": "pharmacy-host-w2-b1-1",
       "name": "Pharmacy_host_w2_b1_1",
-      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        0.789,
-        -1.703
+        5.506,
+        0.844,
+        -1.709
       ],
       "yaw": -90,
       "free": true,
@@ -578,34 +686,36 @@
     {
       "id": "pharmacy-host-w2-b1-2",
       "name": "Pharmacy_host_w2_b1_2",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        0.789,
-        -1.373
+        5.506,
+        0.819,
+        -1.495
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w2-b1-3",
       "name": "Pharmacy_host_w2_b1_3",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        0.789,
-        -1.043
+        5.506,
+        0.819,
+        -1.274
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "pharmacy-host-w2-b1-4",
@@ -614,9 +724,43 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        0.789,
-        -0.713
+        5.506,
+        0.819,
+        -1.054
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w2-b1-5",
+      "name": "Pharmacy_host_w2_b1_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        0.819,
+        -0.921
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w2-b1-6",
+      "name": "Pharmacy_host_w2_b1_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        0.844,
+        -0.707
       ],
       "yaw": -90,
       "free": true,
@@ -626,13 +770,13 @@
     {
       "id": "pharmacy-host-w2-b2-1",
       "name": "Pharmacy_host_w2_b2_1",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        1.282,
-        -1.533
+        5.506,
+        1.337,
+        -1.709
       ],
       "yaw": -90,
       "free": true,
@@ -646,41 +790,77 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        1.282,
-        -1.203
+        5.506,
+        1.312,
+        -1.495
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w2-b2-3",
       "name": "Pharmacy_host_w2_b2_3",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        1.282,
-        -0.873
+        5.506,
+        1.312,
+        -1.362
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w2-b2-4",
       "name": "Pharmacy_host_w2_b2_4",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        1.282,
-        -0.553
+        5.506,
+        1.312,
+        -1.142
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-w2-b2-5",
+      "name": "Pharmacy_host_w2_b2_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.312,
+        -0.921
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w2-b2-6",
+      "name": "Pharmacy_host_w2_b2_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.337,
+        -0.707
       ],
       "yaw": -90,
       "free": true,
@@ -690,13 +870,13 @@
     {
       "id": "pharmacy-host-w2-b3-1",
       "name": "Pharmacy_host_w2_b3_1",
-      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        1.775,
-        -1.703
+        5.506,
+        1.83,
+        -1.709
       ],
       "yaw": -90,
       "free": true,
@@ -706,45 +886,81 @@
     {
       "id": "pharmacy-host-w2-b3-2",
       "name": "Pharmacy_host_w2_b3_2",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.536,
-        1.775,
-        -1.373
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-w2-b3-3",
-      "name": "Pharmacy_host_w2_b3_3",
       "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        1.775,
-        -1.043
+        5.506,
+        1.805,
+        -1.495
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w2-b3-3",
+      "name": "Pharmacy_host_w2_b3_3",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.805,
+        -1.274
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "pharmacy-host-w2-b3-4",
       "name": "Pharmacy_host_w2_b3_4",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.536,
-        1.775,
-        -0.713
+        5.506,
+        1.805,
+        -1.054
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w2-b3-5",
+      "name": "Pharmacy_host_w2_b3_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.805,
+        -0.921
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w2-b3-6",
+      "name": "Pharmacy_host_w2_b3_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.83,
+        -0.707
       ],
       "yaw": -90,
       "free": true,
@@ -754,13 +970,13 @@
     {
       "id": "pharmacy-host-w3-b1-1",
       "name": "Pharmacy_host_w3_b1_1",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.292,
-        0.789,
-        5.876
+        -1.262,
+        0.844,
+        5.882
       ],
       "yaw": 90,
       "free": true,
@@ -774,41 +990,77 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.292,
-        0.789,
-        5.546
+        -1.262,
+        0.819,
+        5.668
       ],
       "yaw": 90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w3-b1-3",
       "name": "Pharmacy_host_w3_b1_3",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.292,
-        0.789,
-        5.216
-      ],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-w3-b1-4",
-      "name": "Pharmacy_host_w3_b1_4",
       "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.292,
-        0.789,
-        4.886
+        -1.262,
+        0.819,
+        5.535
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w3-b1-4",
+      "name": "Pharmacy_host_w3_b1_4",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        0.819,
+        5.315
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-w3-b1-5",
+      "name": "Pharmacy_host_w3_b1_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        0.819,
+        5.094
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w3-b1-6",
+      "name": "Pharmacy_host_w3_b1_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        0.844,
+        4.88
       ],
       "yaw": 90,
       "free": true,
@@ -818,13 +1070,13 @@
     {
       "id": "pharmacy-host-w3-b2-1",
       "name": "Pharmacy_host_w3_b2_1",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.292,
-        1.282,
-        5.706
+        -1.262,
+        1.337,
+        5.882
       ],
       "yaw": 90,
       "free": true,
@@ -834,45 +1086,81 @@
     {
       "id": "pharmacy-host-w3-b2-2",
       "name": "Pharmacy_host_w3_b2_2",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.292,
-        1.282,
-        5.376
-      ],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-w3-b2-3",
-      "name": "Pharmacy_host_w3_b2_3",
       "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.292,
-        1.282,
-        5.046
+        -1.262,
+        1.312,
+        5.668
       ],
       "yaw": 90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w3-b2-3",
+      "name": "Pharmacy_host_w3_b2_3",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.312,
+        5.448
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "pharmacy-host-w3-b2-4",
       "name": "Pharmacy_host_w3_b2_4",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.292,
-        1.282,
-        4.726
+        -1.262,
+        1.312,
+        5.227
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w3-b2-5",
+      "name": "Pharmacy_host_w3_b2_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.312,
+        5.094
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w3-b2-6",
+      "name": "Pharmacy_host_w3_b2_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.337,
+        4.88
       ],
       "yaw": 90,
       "free": true,
@@ -882,13 +1170,13 @@
     {
       "id": "pharmacy-host-w3-b3-1",
       "name": "Pharmacy_host_w3_b3_1",
-      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.292,
-        1.775,
-        5.876
+        -1.262,
+        1.83,
+        5.882
       ],
       "yaw": 90,
       "free": true,
@@ -898,45 +1186,81 @@
     {
       "id": "pharmacy-host-w3-b3-2",
       "name": "Pharmacy_host_w3_b3_2",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.292,
-        1.775,
-        5.546
-      ],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-w3-b3-3",
-      "name": "Pharmacy_host_w3_b3_3",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.292,
-        1.775,
-        5.216
-      ],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-w3-b3-4",
-      "name": "Pharmacy_host_w3_b3_4",
       "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.292,
-        1.775,
-        4.886
+        -1.262,
+        1.805,
+        5.668
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w3-b3-3",
+      "name": "Pharmacy_host_w3_b3_3",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.805,
+        5.535
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w3-b3-4",
+      "name": "Pharmacy_host_w3_b3_4",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.805,
+        5.315
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-w3-b3-5",
+      "name": "Pharmacy_host_w3_b3_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.805,
+        5.094
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w3-b3-6",
+      "name": "Pharmacy_host_w3_b3_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.83,
+        4.88
       ],
       "yaw": 90,
       "free": true,
@@ -946,13 +1270,13 @@
     {
       "id": "pharmacy-host-w4-b1-1",
       "name": "Pharmacy_host_w4_b1_1",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.047,
-        0.789,
-        -2.742
+        1.041,
+        0.844,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
@@ -966,41 +1290,77 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.377,
-        0.789,
-        -2.742
+        1.255,
+        0.819,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w4-b1-3",
       "name": "Pharmacy_host_w4_b1_3",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.707,
-        0.789,
-        -2.742
+        1.476,
+        0.819,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "pharmacy-host-w4-b1-4",
       "name": "Pharmacy_host_w4_b1_4",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.037,
-        0.789,
-        -2.742
+        1.696,
+        0.819,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w4-b1-5",
+      "name": "Pharmacy_host_w4_b1_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.829,
+        0.819,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w4-b1-6",
+      "name": "Pharmacy_host_w4_b1_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.043,
+        0.844,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
@@ -1010,13 +1370,13 @@
     {
       "id": "pharmacy-host-w4-b2-1",
       "name": "Pharmacy_host_w4_b2_1",
-      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.217,
-        1.282,
-        -2.742
+        1.041,
+        1.337,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
@@ -1026,18 +1386,19 @@
     {
       "id": "pharmacy-host-w4-b2-2",
       "name": "Pharmacy_host_w4_b2_2",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.547,
-        1.282,
-        -2.742
+        1.255,
+        1.312,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w4-b2-3",
@@ -1046,25 +1407,60 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.877,
-        1.282,
-        -2.742
+        1.388,
+        1.312,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w4-b2-4",
       "name": "Pharmacy_host_w4_b2_4",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.197,
-        1.282,
-        -2.742
+        1.608,
+        1.312,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-w4-b2-5",
+      "name": "Pharmacy_host_w4_b2_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.829,
+        1.312,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w4-b2-6",
+      "name": "Pharmacy_host_w4_b2_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.043,
+        1.337,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
@@ -1074,13 +1470,13 @@
     {
       "id": "pharmacy-host-w4-b3-1",
       "name": "Pharmacy_host_w4_b3_1",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.047,
-        1.775,
-        -2.742
+        1.041,
+        1.83,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
@@ -1094,30 +1490,32 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.377,
-        1.775,
-        -2.742
+        1.255,
+        1.805,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w4-b3-3",
       "name": "Pharmacy_host_w4_b3_3",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.707,
-        1.775,
-        -2.742
+        1.476,
+        1.805,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "pharmacy-host-w4-b3-4",
@@ -1126,9 +1524,43 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.037,
-        1.775,
-        -2.742
+        1.696,
+        1.805,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w4-b3-5",
+      "name": "Pharmacy_host_w4_b3_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.829,
+        1.805,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w4-b3-6",
+      "name": "Pharmacy_host_w4_b3_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.043,
+        1.83,
+        -2.712
       ],
       "yaw": 0,
       "free": true,
@@ -1138,13 +1570,13 @@
     {
       "id": "pharmacy-host-w5-b1-1",
       "name": "Pharmacy_host_w5_b1_1",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        0.789,
-        4.807
+        5.502,
+        0.844,
+        4.801
       ],
       "yaw": -90,
       "free": true,
@@ -1154,18 +1586,19 @@
     {
       "id": "pharmacy-host-w5-b1-2",
       "name": "Pharmacy_host_w5_b1_2",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        0.789,
-        5.137
+        5.502,
+        0.819,
+        5.015
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w5-b1-3",
@@ -1174,25 +1607,60 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        0.789,
-        5.467
+        5.502,
+        0.819,
+        5.148
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w5-b1-4",
       "name": "Pharmacy_host_w5_b1_4",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        0.789,
-        5.797
+        5.502,
+        0.819,
+        5.368
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-w5-b1-5",
+      "name": "Pharmacy_host_w5_b1_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        0.819,
+        5.589
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w5-b1-6",
+      "name": "Pharmacy_host_w5_b1_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        0.844,
+        5.803
       ],
       "yaw": -90,
       "free": true,
@@ -1202,13 +1670,13 @@
     {
       "id": "pharmacy-host-w5-b2-1",
       "name": "Pharmacy_host_w5_b2_1",
-      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        1.282,
-        4.977
+        5.502,
+        1.337,
+        4.801
       ],
       "yaw": -90,
       "free": true,
@@ -1218,34 +1686,36 @@
     {
       "id": "pharmacy-host-w5-b2-2",
       "name": "Pharmacy_host_w5_b2_2",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        1.282,
-        5.307
+        5.502,
+        1.312,
+        5.015
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w5-b2-3",
       "name": "Pharmacy_host_w5_b2_3",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        1.282,
-        5.637
+        5.502,
+        1.312,
+        5.235
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "pharmacy-host-w5-b2-4",
@@ -1254,9 +1724,43 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        1.282,
-        5.957
+        5.502,
+        1.312,
+        5.456
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w5-b2-5",
+      "name": "Pharmacy_host_w5_b2_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.312,
+        5.589
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w5-b2-6",
+      "name": "Pharmacy_host_w5_b2_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.337,
+        5.803
       ],
       "yaw": -90,
       "free": true,
@@ -1266,13 +1770,13 @@
     {
       "id": "pharmacy-host-w5-b3-1",
       "name": "Pharmacy_host_w5_b3_1",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        1.775,
-        4.807
+        5.502,
+        1.83,
+        4.801
       ],
       "yaw": -90,
       "free": true,
@@ -1286,41 +1790,77 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        1.775,
-        5.137
+        5.502,
+        1.805,
+        5.015
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w5-b3-3",
       "name": "Pharmacy_host_w5_b3_3",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        1.775,
-        5.467
+        5.502,
+        1.805,
+        5.148
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-w5-b3-4",
       "name": "Pharmacy_host_w5_b3_4",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.532,
-        1.775,
-        5.797
+        5.502,
+        1.805,
+        5.368
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-w5-b3-5",
+      "name": "Pharmacy_host_w5_b3_5",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.805,
+        5.589
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-w5-b3-6",
+      "name": "Pharmacy_host_w5_b3_6",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.83,
+        5.803
       ],
       "yaw": -90,
       "free": true,
@@ -1330,13 +1870,13 @@
     {
       "id": "pharmacy-host-n1-b1-1",
       "name": "Pharmacy_host_n1_b1_1",
-      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.496,
-        0.792,
-        -2.79
+        2.509,
+        0.847,
+        -2.76
       ],
       "yaw": 0,
       "free": true,
@@ -1346,45 +1886,64 @@
     {
       "id": "pharmacy-host-n1-b1-2",
       "name": "Pharmacy_host_n1_b1_2",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        2.796,
-        0.792,
-        -2.79
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-n1-b1-3",
-      "name": "Pharmacy_host_n1_b1_3",
       "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        3.096,
-        0.792,
-        -2.79
+        2.723,
+        0.822,
+        -2.76
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-n1-b1-3",
+      "name": "Pharmacy_host_n1_b1_3",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.944,
+        0.822,
+        -2.76
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-n1-b1-4",
+      "name": "Pharmacy_host_n1_b1_4",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.164,
+        0.822,
+        -2.76
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-n1-b2-1",
       "name": "Pharmacy_host_n1_b2_1",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.646,
-        1.289,
-        -2.79
+        2.509,
+        1.344,
+        -2.76
       ],
       "yaw": 0,
       "free": true,
@@ -1394,18 +1953,19 @@
     {
       "id": "pharmacy-host-n1-b2-2",
       "name": "Pharmacy_host_n1_b2_2",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.946,
-        1.289,
-        -2.79
+        2.723,
+        1.319,
+        -2.76
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-n1-b2-3",
@@ -1414,25 +1974,43 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        3.196,
-        1.289,
-        -2.79
+        2.856,
+        1.319,
+        -2.76
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-n1-b2-4",
+      "name": "Pharmacy_host_n1_b2_4",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.077,
+        1.319,
+        -2.76
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "pharmacy-host-n1-b3-1",
       "name": "Pharmacy_host_n1_b3_1",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.496,
-        1.778,
-        -2.79
+        2.509,
+        1.833,
+        -2.76
       ],
       "yaw": 0,
       "free": true,
@@ -1446,41 +2024,60 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.796,
-        1.778,
-        -2.79
+        2.723,
+        1.808,
+        -2.76
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-n1-b3-3",
       "name": "Pharmacy_host_n1_b3_3",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        3.096,
-        1.778,
-        -2.79
+        2.944,
+        1.808,
+        -2.76
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-n1-b3-4",
+      "name": "Pharmacy_host_n1_b3_4",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.164,
+        1.808,
+        -2.76
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-n2-b1-1",
       "name": "Pharmacy_host_n2_b1_1",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.547,
-        0.792,
-        -2.73
+        5.517,
+        0.847,
+        -2.717
       ],
       "yaw": -90,
       "free": true,
@@ -1494,41 +2091,60 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.547,
-        0.792,
-        -2.43
+        5.517,
+        0.822,
+        -2.503
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-n2-b1-3",
       "name": "Pharmacy_host_n2_b1_3",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.547,
-        0.792,
-        -2.13
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-n2-b2-1",
-      "name": "Pharmacy_host_n2_b2_1",
       "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.547,
-        1.289,
-        -2.58
+        5.517,
+        0.822,
+        -2.37
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-n2-b1-4",
+      "name": "Pharmacy_host_n2_b1_4",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.517,
+        0.822,
+        -2.149
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-n2-b2-1",
+      "name": "Pharmacy_host_n2_b2_1",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.517,
+        1.344,
+        -2.717
       ],
       "yaw": -90,
       "free": true,
@@ -1538,45 +2154,64 @@
     {
       "id": "pharmacy-host-n2-b2-2",
       "name": "Pharmacy_host_n2_b2_2",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.547,
-        1.289,
-        -2.28
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-n2-b2-3",
-      "name": "Pharmacy_host_n2_b2_3",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.547,
-        1.289,
-        -2.03
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-n2-b3-1",
-      "name": "Pharmacy_host_n2_b3_1",
       "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.547,
-        1.778,
-        -2.73
+        5.517,
+        1.319,
+        -2.503
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-n2-b2-3",
+      "name": "Pharmacy_host_n2_b2_3",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.517,
+        1.319,
+        -2.282
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "pharmacy-host-n2-b2-4",
+      "name": "Pharmacy_host_n2_b2_4",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.517,
+        1.319,
+        -2.062
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-n2-b3-1",
+      "name": "Pharmacy_host_n2_b3_1",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.517,
+        1.833,
+        -2.717
       ],
       "yaw": -90,
       "free": true,
@@ -1586,18 +2221,19 @@
     {
       "id": "pharmacy-host-n2-b3-2",
       "name": "Pharmacy_host_n2_b3_2",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.547,
-        1.778,
-        -2.43
+        5.517,
+        1.808,
+        -2.503
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-n2-b3-3",
@@ -1606,78 +2242,49 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.547,
-        1.778,
-        -2.13
+        5.517,
+        1.808,
+        -2.37
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
-      "id": "pharmacy-host-c1-b1-1",
-      "name": "Pharmacy_host_c1_b1_1",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "id": "pharmacy-host-n2-b3-4",
+      "name": "Pharmacy_host_n2_b3_4",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        4.9,
-        1.286,
-        6.943
+        5.517,
+        1.808,
+        -2.149
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-c1-b1-2",
-      "name": "Pharmacy_host_c1_b1_2",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        4.9,
-        1.286,
-        6.493
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "pharmacy-host-c1-b1-3",
-      "name": "Pharmacy_host_c1_b1_3",
-      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.35,
-        1.286,
-        6.943
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "pharmacy-host-c1-b2-1",
       "name": "Pharmacy_host_c1_b2_1",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         4.9,
-        1.775,
-        6.723
+        1.316,
+        6.943
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-c1-b2-2",
@@ -1686,24 +2293,25 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.2,
-        1.775,
+        4.9,
+        1.316,
         6.493
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
       "id": "pharmacy-host-c1-b2-3",
       "name": "Pharmacy_host_c1_b2_3",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.57,
-        1.775,
+        5.35,
+        1.341,
         6.943
       ],
       "yaw": -90,
@@ -1712,52 +2320,54 @@
       "floor": "f0"
     },
     {
-      "id": "pharmacy-host-c2-b1-1",
-      "name": "Pharmacy_host_c2_b1_1",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "id": "pharmacy-host-c1-b3-1",
+      "name": "Pharmacy_host_c1_b3_1",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.193,
-        1.286,
-        6.37
+        4.9,
+        1.83,
+        6.723
       ],
-      "yaw": 180,
+      "yaw": -90,
       "free": true,
       "wall": "free",
       "floor": "f0"
     },
     {
-      "id": "pharmacy-host-c2-b1-2",
-      "name": "Pharmacy_host_c2_b1_2",
+      "id": "pharmacy-host-c1-b3-2",
+      "name": "Pharmacy_host_c1_b3_2",
       "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -0.743,
-        1.286,
-        6.37
+        5.2,
+        1.805,
+        6.493
       ],
-      "yaw": 180,
+      "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
-      "id": "pharmacy-host-c2-b1-3",
-      "name": "Pharmacy_host_c2_b1_3",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "id": "pharmacy-host-c1-b3-3",
+      "name": "Pharmacy_host_c1_b3_3",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.193,
-        1.286,
-        6.82
+        5.57,
+        1.805,
+        6.943
       ],
-      "yaw": 180,
+      "yaw": -90,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "pharmacy-host-c2-b2-1",
@@ -1766,8 +2376,58 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
+        -1.193,
+        1.316,
+        6.37
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-c2-b2-2",
+      "name": "Pharmacy_host_c2_b2_2",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -0.743,
+        1.316,
+        6.37
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "pharmacy-host-c2-b2-3",
+      "name": "Pharmacy_host_c2_b2_3",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.193,
+        1.341,
+        6.82
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pharmacy-host-c2-b3-1",
+      "name": "Pharmacy_host_c2_b3_1",
+      "prefab": "{C7234D5F2615C3F4}Prefabs/Props/Commercial/LF_PharmDisplay_MedKit.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
         -0.973,
-        1.775,
+        1.83,
         6.37
       ],
       "yaw": 180,
@@ -1776,36 +2436,38 @@
       "floor": "f0"
     },
     {
-      "id": "pharmacy-host-c2-b2-2",
-      "name": "Pharmacy_host_c2_b2_2",
-      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "id": "pharmacy-host-c2-b3-2",
+      "name": "Pharmacy_host_c2_b3_2",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         -0.743,
-        1.775,
+        1.805,
         6.67
       ],
       "yaw": 180,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.5
     },
     {
-      "id": "pharmacy-host-c2-b2-3",
-      "name": "Pharmacy_host_c2_b2_3",
-      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "id": "pharmacy-host-c2-b3-3",
+      "name": "Pharmacy_host_c2_b3_3",
+      "prefab": "{7E3297C6C4ABF85A}Prefabs/Props/Commercial/LF_PharmDisplay_GauzePack.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         -1.193,
-        1.775,
+        1.805,
         7.04
       ],
       "yaw": 180,
       "free": true,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "scale": 1.3
     }
   ],
   "stamp": {
