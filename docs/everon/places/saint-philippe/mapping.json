@@ -322,6 +322,20 @@
         "the machine stands flush to an outer wall (the slot's 3 m margin), so it never stands inside the bank or fuel claims; an outposts slot may list this place's own buildings since #3346 (`tools/town/outposts.mjs`)"
       ]
     },
+    "hours-plates": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b06", "along": -1.32 },
+        { "place": "saint-philippe", "building": "b13", "turn": 3, "dy": 0.6 },
+        { "place": "saint-philippe", "building": "b20", "along": -1.32 },
+        { "place": "saint-philippe", "building": "b21", "turn": 3, "dy": 0.6 },
+        { "place": "saint-philippe", "building": "b43", "along": -0.35 },
+        { "place": "saint-philippe", "building": "b88", "along": -1.08 }
+      ],
+      "why": [
+        "Card #4834 (H10, parent #4170): an enamel opening-hours plate beside the customer door of each shop whose keeper has a resident timetable: the bakery (b06), the newsagent booth (b13), the butcher (b20), the post office (b21), the barber (b43) and the pharmacy (b88). Each plate stands on its building's entrance wall, 1.5 m up, out of the door swings (the same drop planner and door test as the home sale signs); LF_HoursPlate finds the keeper whose work place stands within 15 m",
+        "street furniture on buildings other slots hold (the chess-on-the-pub pattern, #3078): the shop slots keep the interiors, this slot keeps the wall plates"
+      ]
+    },
     "payphones": {
       "drops": [
         { "place": "saint-philippe", "building": "b06" },

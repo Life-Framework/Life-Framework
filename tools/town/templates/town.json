@@ -244,6 +244,11 @@
       "places": []
     },
     {
+      "id": "hours-plates", "required": false, "kit": "hours-plates", "host": "outposts", "poi": "none", "margin": 4,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
       "id": "bus-stops", "required": false, "kit": "bus-stops", "host": "outposts", "poi": "none", "margin": 6,
       "needs": { "interior": "optional" },
       "places": []
