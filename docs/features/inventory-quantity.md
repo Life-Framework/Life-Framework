@@ -30,6 +30,11 @@
 - ✅ Quantity-aware `GetAmount`/`AddAmount`/`RemoveAmount` returning *actual*
   amounts; AddAmount fills stacks then spawns; RemoveAmount drains smallest
   stacks first (ascending sort).
+- ✅ `GetAmount` counts with `FindItemsByPrefab` plus `CarriedAmount` only, every item its quantity (1 without a
+  quantity component). It never calls the engine's `GetDepositItemCountByResource`: as the old fallback when no stack
+  was found it answered -1 on a client whose last stack had just been deleted, and the engine then held that client's game
+  thread for 15-30 s (paying a fine at the booking desk #4824, depositing all cash #4870). `validate-no-deposit-count`
+  fails any call. Proof: `booking-desk-proof` step 1f0 and `atm-quick` read the client's longest frame gap (`framegap`).
 - ✅ `AddAmount(..., dropOverflow=true)` leaves what did not fit at the owner's feet, logs
   `[LFDebug:Quantity] inventory refused ...` and tells a player "No room on you: X x1 is on the
   ground at your feet." (`#LF-Inventory_DroppedAtFeet`). A pocketable item sets its own

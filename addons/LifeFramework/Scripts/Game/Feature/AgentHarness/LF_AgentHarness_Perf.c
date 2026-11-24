@@ -19,6 +19,44 @@ class LF_HarnessPerf
 	protected static ref array<float> s_aFrames;
 	protected static string s_sResult;
 	protected static int s_iResultId;
+	//! A stalled client (#4824): the poll runs every 400 ms of game time, so a longer wall-clock gap between
+	//! two polls is a frame that hung. Logged as `client frame gap <ms> ms`; `framegap` reads the longest.
+	static const int GAP_LOG_MS = 1000; // lf-fixed: harness probe threshold, not gameplay
+	protected static int s_iLastPollTick;
+	protected static int s_iMaxGapMs;
+
+	//------------------------------------------------------------------------------------------------
+	//! From the harness poll: note the wall time since the last poll, and log it when the client stalled.
+	static void NotePoll()
+	{
+		int now = System.GetTickCount();
+		int gap = now - s_iLastPollTick;
+		if (s_iLastPollTick > 0)
+		{
+			s_iMaxGapMs = LF_Utils.MaxInt(s_iMaxGapMs, gap);
+			if (gap >= GAP_LOG_MS)
+				LF_Debug.Warn("Perf", string.Format("client frame gap %1 ms", gap));
+		}
+
+		s_iLastPollTick = now;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A new poll (a new play session): the first poll measures from itself, not from the last session's.
+	static void ResetPollGap()
+	{
+		s_iLastPollTick = 0;
+		s_iMaxGapMs = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The longest gap between two polls since the last call, then starts over.
+	static int TakeMaxGap()
+	{
+		int gap = s_iMaxGapMs;
+		s_iMaxGapMs = 0;
+		return gap;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Start a window of `seconds`; false when one is running or nothing renders here.
@@ -136,5 +174,21 @@ class LF_HarnessPerf
 		s_iResultId = 0;
 		s_sResult = string.Empty;
 		return id;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! `framegap`: the longest wall time between two harness polls since the last `framegap` (#4824), then
+//! starts over. A proof reads it before and after a step: `ok max=<ms>`. Under 1000 ms, no frame hung.
+modded class LF_AgentHarnessVerbs
+{
+	override bool Handle(LF_AgentCommand cmd)
+	{
+		if (cmd.Verb != "framegap")
+			return super.Handle(cmd);
+
+		int gap = LF_HarnessPerf.TakeMaxGap();
+		LF_AgentHarness.Answer(cmd.Id, "ok", "max=" + gap.ToString());
+		return true;
 	}
 }

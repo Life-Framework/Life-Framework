@@ -7,12 +7,11 @@ modded class LF_InventoryUtils
 		if (!target) return -1;
 		if (prefab.IsEmpty()) return 0; // an empty prefab slot (LF_PrefabSlots) counts nothing
 
-		// No quantity used, so default engine count function
-		if (!SCR_BaseContainerTools.FindComponentSource(Resource.Load(prefab), LF_QuantityComponent))
-		{
-			return target.GetDepositItemCountByResource(target.GetOwner(), prefab) + CarriedAmount(target, prefab, null);
-		}
-
+		// Every item counts its quantity, or 1 without a quantity component. One FindItemsByPrefab walks the
+		// storages; what it misses (the hands, the gadget slot, the weapon storage) is CarriedAmount's.
+		// Never the engine's GetDepositItemCountByResource: called on a client whose last stack had just gone
+		// (paying a fine, depositing all cash) it answered -1 and the engine then held the game thread for
+		// 15-30 s (#4824, #4870). validate-no-deposit-count keeps it out.
 		array<IEntity> foundItems = FindItemsByPrefab(target, prefab);
 		int totalAmount;
 		foreach (IEntity item : foundItems)
@@ -22,10 +21,6 @@ modded class LF_InventoryUtils
 			if (quantity) amount = quantity.GetQuantity();
 			totalAmount += amount;
 		}
-
-		// FindItems misses a carried stack. The deposit count still sees it.
-		if (totalAmount == 0 && target.GetOwner())
-			totalAmount = target.GetDepositItemCountByResource(target.GetOwner(), prefab);
 
 		return totalAmount + CarriedAmount(target, prefab, foundItems);
 	}

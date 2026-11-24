@@ -140,6 +140,10 @@ export function buildLine(id, spec) {
   if (spec.verb === "state") {
     return `${id} state`;
   }
+  if (spec.verb === "framegap") {
+    // The longest wall time between two harness polls since the last framegap: a hung frame (#4824).
+    return `${id} framegap`;
+  }
   if (spec.verb === "die") {
     return `${id} die`;
   }
@@ -1140,6 +1144,7 @@ function selftest() {
   if (state !== "11 state") throw new Error(state);
   if (buildLine(12, { verb: "perf", seconds: 8, label: "boards_4" }) !== "12 perf 8 boards_4") throw new Error("perf line");
   if (buildLine(12, { verb: "perf" }) !== "12 perf 10") throw new Error("perf default line");
+  if (buildLine(13, { verb: "framegap" }) !== "13 framegap") throw new Error("framegap line");
   setBoxes(["X"]);
   const boxes = profileBoxes();
   setBoxes(null);
