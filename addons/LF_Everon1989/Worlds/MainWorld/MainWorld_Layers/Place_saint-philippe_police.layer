@@ -36,6 +36,14 @@ GenericEntity Fit_saint_philippe_police_Place_Armoury {
  }
  coords 4552.6 18.2 10748.3
 }
+GenericEntity Fit_saint_philippe_police_police_kit_wanted_board : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
+ coords 4548.966 19.35 10751.43
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_police_police_kit_duty_desk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+ coords 4548.784 18.2 10748.101
+ angleY 171
+}
 GenericEntity Fit_saint_philippe_police_police_kit_armory {
  components {
   MeshObject "{A7C31A9B04D25011}" {
@@ -83,80 +91,29 @@ GenericEntity Fit_saint_philippe_police_police_kit_armory {
  angleY 171
 }
 GenericEntity Fit_saint_philippe_police_police_kit_armory_store : "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et" {
- coords 4549.664 18.236 10751.176
+ coords 4549.644 18.2 10751.299
  angleY 171
 }
-GenericEntity Fit_saint_philippe_police_police_kit_case_board : "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et" {
- coords 4546.679 19.7 10747.97
- angleY -99
-}
-GenericEntity Fit_saint_philippe_police_police_kit_decor_1 : "{25B473F35DCBDA7A}Prefabs/Props/Civilian/ClockUniversal_01.et" {
- coords 4547.247 20.4 10745.023
- angleY 81
-}
-GenericEntity Fit_saint_philippe_police_police_kit_decor_12 : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
- coords 4554.263 22.046 10748.665
- angleY -9
-}
-GenericEntity Fit_saint_philippe_police_police_kit_decor_13 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
- coords 4553.982 22.046 10750.443
- angleY 171
-}
-GenericEntity Fit_saint_philippe_police_police_kit_decor_15 : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
- coords 4554.289 22.935 10749.782
- angleY -129
-}
-GenericEntity Fit_saint_philippe_police_police_kit_decor_19 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
- coords 4546.919 23.2 10746.894
- angleY 81
-}
-GenericEntity Fit_saint_philippe_police_police_kit_decor_21 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+GenericEntity Fit_saint_philippe_police_police_kit_evidence_locker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
  components {
-  MeshObject "{5111E74D5E891458}" {
-   Materials {
-    MaterialAssignClass "{D0C0000000000015}" {
-     SourceMaterial "Glass"
-     AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
-    }
-   }
+  LF_BreachTargetComponent "{3A7C5E91B4D20F79}" {
+   m_sTargetId "PoliceKit_Police_EvidenceLocker"
   }
  }
- coords 4552.344 20.75 10741.283
- angleY 171
-}
-GenericEntity Fit_saint_philippe_police_police_kit_decor_22 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
- components {
-  MeshObject "{5111E74D5E891458}" {
-   Materials {
-    MaterialAssignClass "{D0C0000000000016}" {
-     SourceMaterial "Glass"
-     AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
-    }
-   }
-  }
- }
- coords 4552.941 20.65 10744.547
- angleY 171
-}
-GenericEntity Fit_saint_philippe_police_police_kit_decor_30 : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
- coords 4551.639 18.235 10751.489
- angleY -159
-}
-GenericEntity Fit_saint_philippe_police_police_kit_decor_31 : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
- coords 4553.797 18.21 10751.932
- angleY 171
-}
-GenericEntity Fit_saint_philippe_police_police_kit_decor_6 : "{9BDAE42023AB3357}Prefabs/Comms/LF_DispatchPhone.et" {
- coords 4549.062 19.144 10747.942
- angleY -29
-}
-LF_NpcBaseEntity Fit_saint_philippe_police_police_kit_desk_officer : "{61CE39AA52347555}Prefabs/Characters/Npcs/Outfits/LF_Npc_Police_1.et" {
- coords 4548.643 18.236 10748.99
+ coords 4550.584 18.2 10751.445
  angleY 171
 }
 GenericEntity Fit_saint_philippe_police_police_kit_dispatch_board : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
  coords 4547.879 19.45 10751.258
  angleY 171
+}
+GenericEntity Fit_saint_philippe_police_police_kit_case_board : "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et" {
+ coords 4546.724 19.7 10747.977
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_police_police_kit_handcuffs : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {
+ coords 4549.621 19.124 10747.929
+ angleY -169
 }
 GenericEntity Fit_saint_philippe_police_police_kit_duty_clock_hall : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {
  components {
@@ -232,30 +189,69 @@ GenericEntity Fit_saint_philippe_police_police_kit_duty_clock_room : "{E7EA9EA10
  coords 4551.811 18.708 10750.807
  angleY -99
 }
-GenericEntity Fit_saint_philippe_police_police_kit_duty_desk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
- coords 4548.784 18.236 10748.101
+GenericEntity Fit_saint_philippe_police_police_kit_decor_1 : "{25B473F35DCBDA7A}Prefabs/Props/Civilian/ClockUniversal_01.et" {
+ coords 4547.247 20.4 10745.023
+ angleY 81
+}
+GenericEntity Fit_saint_philippe_police_police_kit_decor_6 : "{9BDAE42023AB3357}Prefabs/Comms/LF_DispatchPhone.et" {
+ coords 4549.062 19.108 10747.942
+ angleY -29
+}
+GenericEntity Fit_saint_philippe_police_police_kit_decor_12 : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
+ coords 4554.259 22.01 10748.688
+ angleY -9
+}
+GenericEntity Fit_saint_philippe_police_police_kit_decor_13 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 4553.982 22.01 10750.443
  angleY 171
 }
-GenericEntity Fit_saint_philippe_police_police_kit_evidence_locker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
+GenericEntity Fit_saint_philippe_police_police_kit_decor_15 : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
+ coords 4554.285 22.899 10749.805
+ angleY -129
+}
+GenericEntity Fit_saint_philippe_police_police_kit_decor_19 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
+ coords 4547.031 23.2 10746.203
+ angleY 81
+}
+GenericEntity Fit_saint_philippe_police_police_kit_decor_21 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
  components {
-  LF_BreachTargetComponent "{3A7C5E91B4D20F79}" {
-   m_sTargetId "PoliceKit_Police_EvidenceLocker"
+  MeshObject "{5111E74D5E891458}" {
+   Materials {
+    MaterialAssignClass "{D0C0000000000015}" {
+     SourceMaterial "Glass"
+     AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
+    }
+   }
   }
  }
- coords 4550.587 18.236 10751.423
+ coords 4552.246 20.75 10741.267
  angleY 171
 }
-GenericEntity Fit_saint_philippe_police_police_kit_flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 4557.017 17.526 10741.507
+GenericEntity Fit_saint_philippe_police_police_kit_decor_22 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+ components {
+  MeshObject "{5111E74D5E891458}" {
+   Materials {
+    MaterialAssignClass "{D0C0000000000016}" {
+     SourceMaterial "Glass"
+     AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
+    }
+   }
+  }
+ }
+ coords 4552.941 20.65 10744.547
  angleY 171
 }
-GenericEntity Fit_saint_philippe_police_police_kit_flowerpot_2 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 4553.264 17.324 10740.913
+GenericEntity Fit_saint_philippe_police_police_kit_decor_30 : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
+ coords 4551.701 18.199 10751.514
+ angleY -159
+}
+GenericEntity Fit_saint_philippe_police_police_kit_decor_31 : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
+ coords 4553.786 18.21 10752.001
  angleY 171
 }
-GenericEntity Fit_saint_philippe_police_police_kit_handcuffs : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {
- coords 4549.621 19.16 10747.929
- angleY -169
+LF_NpcBaseEntity Fit_saint_philippe_police_police_kit_desk_officer : "{61CE39AA52347555}Prefabs/Characters/Npcs/Outfits/LF_Npc_Police_1.et" {
+ coords 4548.643 18.195 10748.99
+ angleY 171
 }
 GenericEntity Fit_saint_philippe_police_police_kit_sign_front : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  components {
@@ -277,7 +273,35 @@ GenericEntity Fit_saint_philippe_police_police_kit_street_bin : "{32CDE9FE3FB35D
  coords 4552.325 17.102 10740.764
  angleY 171
 }
-GenericEntity Fit_saint_philippe_police_police_kit_wanted_board : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
- coords 4548.817 19.35 10751.407
+GenericEntity Fit_saint_philippe_police_police_kit_flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 4557.017 17.526 10741.507
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_police_police_kit_flowerpot_2 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 4553.264 17.324 10740.913
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_police_police_kit_booking_desk : "{8C7B017B6B96B4DA}Prefabs/Props/Police/LF_BookingDesk.et" {
+ coords 4554.045 18.2 10748.124
  angleY -99
+}
+GenericEntity Fit_saint_philippe_police_police_kit_booking_typewriter : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
+ coords 4553.991 19.104 10748.47
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_police_police_kit_booking_inkwell : "{E73C26C2B63B5A06}Prefabs/Props/Civilian/InkwellDecorative_01/InkwellDecorative_01_base.et" {
+ coords 4554.1 19.104 10747.778
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_police_police_kit_law_book_lectern : "{A4C17E2B9D305F68}Prefabs/Props/Police/LF_LawBookLectern.et" {
+ coords 4553.947 18.2 10746.185
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_police_police_kit_rank_board : "{6F2A9C41B7D305E8}Prefabs/Props/Police/LF_RankBoard.et" {
+ coords 4546.882 19.7 10746.989
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_police_police_kit_commendation_plaque : "{B1E4D7A290C86F35}Prefabs/Props/Police/LF_CommendationPlaque.et" {
+ coords 4551.018 19.7 10750.897
+ angleY 81
 }

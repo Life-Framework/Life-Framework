@@ -6,7 +6,10 @@
     "file": "tools/town/kits/sources/police.layer",
     "group": "PoliceKit_*",
     "origin": "building",
-    "frame": "building-local"
+    "frame": "building-local",
+    "also": [
+      "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_booking.layer"
+    ]
   },
   "scope": "room",
   "building": {
@@ -59,12 +62,12 @@
       "role": "board",
       "verb": "on floor",
       "offset": [
-        3.25,
+        3.1,
         1.15,
         -3.66
       ],
-      "yaw": 90,
-      "wall": "free",
+      "yaw": 0,
+      "wall": "-z",
       "floor": "f0",
       "attach": "wall"
     },
@@ -579,6 +582,100 @@
       "attach": "floor",
       "mount": "terrain",
       "lift": 0.114
+    },
+    {
+      "id": "police-kit-booking-desk",
+      "name": "PoliceKit_BookingDesk",
+      "prefab": "{8C7B017B6B96B4DA}Prefabs/Props/Police/LF_BookingDesk.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -1.4,
+        0.036,
+        0.4
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "police-kit-booking-typewriter",
+      "name": "PoliceKit_BookingTypewriter",
+      "prefab": "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et",
+      "role": "dressing",
+      "verb": "on police-kit-booking-desk",
+      "offset": [
+        -1.4,
+        0.94,
+        0.050000000000000044
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "counter:police-kit-booking-desk"
+    },
+    {
+      "id": "police-kit-booking-inkwell",
+      "name": "PoliceKit_BookingInkwell",
+      "prefab": "{E73C26C2B63B5A06}Prefabs/Props/Civilian/InkwellDecorative_01/InkwellDecorative_01_base.et",
+      "role": "dressing",
+      "verb": "on police-kit-booking-desk",
+      "offset": [
+        -1.4,
+        0.94,
+        0.75
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "counter:police-kit-booking-desk"
+    },
+    {
+      "id": "police-kit-law-book-lectern",
+      "name": "PoliceKit_LawBookLectern",
+      "prefab": "{A4C17E2B9D305F68}Prefabs/Props/Police/LF_LawBookLectern.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -1,
+        0.036,
+        2.3
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "police-kit-rank-board",
+      "name": "PoliceKit_RankBoard",
+      "prefab": "{6F2A9C41B7D305E8}Prefabs/Props/Police/LF_RankBoard.et",
+      "role": "board",
+      "verb": "against wall",
+      "offset": [
+        5.9,
+        1.5,
+        0.4
+      ],
+      "yaw": 90,
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-commendation-plaque",
+      "name": "PoliceKit_CommendationPlaque",
+      "prefab": "{B1E4D7A290C86F35}Prefabs/Props/Police/LF_CommendationPlaque.et",
+      "role": "board",
+      "verb": "against wall",
+      "offset": [
+        1.2,
+        1.5,
+        -3
+      ],
+      "yaw": -90,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
     }
   ],
   "stamp": {
