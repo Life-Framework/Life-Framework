@@ -4509,11 +4509,6 @@ StringTable {
      Target_en_us "Orchard"
      Comment "Map POI name (rc-map-places): the orchard to pick fruit."
     }
-    CustomStringTableItem "{A17C0E5B93D2F486}" {
-     Id "LF-MapPoi_OrgDesk"
-     Target_en_us "Gang registry"
-     Comment "Map POI name (#4701): the gang registry desk in the Saint-Philippe registry cabin; a public place, the under-the-counter trade stays off the map."
-    }
     CustomStringTableItem "{5A7C1E04B93D6F12}" {
      Id "LF-MapPoi_ParcelDepot"
      Target_en_us "Parcel depot"
