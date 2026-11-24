@@ -12,8 +12,23 @@
 //! it expects is not the selected or an offered one (the `:1` marks an action that can be performed now).
 //! The reply ends with ` name=<label>` (the selected row's own label, so a proof can tell two rows of one class apart)
 //! and ` menu=<top menu class|none>`: the engine offers no context at all while any menu or dialog is open (#4791).
+//! `aim none` also ends with ` camera=<class> pitch=<deg> hit=<entity>@<m>`: where the view points and what it meets
+//! first. On #4803 that showed the suspect staring at the floor (pitch -80) after a lost relative turn.
 class LF_AimHarness
 {
+	//! Steepest pitch `PitchTo` sets, in degrees; the character's own view stops near here.
+	static const float PITCH_LIMIT_DEG = 85; // lf-fixed: harness view limit, not a gameplay value
+
+	//------------------------------------------------------------------------------------------------
+	//! Aiming angles (radians: yaw, pitch, roll) with the pitch set to `degrees`, clamped to the limit.
+	//! Absolute, so sending it twice, late, or after a lost relative turn lands on the same view (#4803).
+	static vector PitchTo(vector aim, float degrees)
+	{
+		vector result = aim;
+		result[1] = Math.Clamp(degrees, -PITCH_LIMIT_DEG, PITCH_LIMIT_DEG) * Math.DEG2RAD; // lf-float: a view angle
+		return result;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	protected static string Describe(string kind, IEntity entity)
 	{
@@ -75,7 +90,7 @@ class LF_AimHarness
 		UserActionContext context = handler.GetCurrentContext();
 		if (!context)
 		{
-			LF_AgentHarness.Answer(id, "ok", "aim none" + MenuNote() + CharacterNote());
+			LF_AgentHarness.Answer(id, "ok", "aim none" + MenuNote() + CharacterNote() + TraceNote());
 			return;
 		}
 
@@ -109,6 +124,44 @@ class LF_AimHarness
 			label = selected.GetActionName();
 
 		LF_AgentHarness.Answer(id, "ok", "aim selected=" + DescribeAction(selected) + " context=" + context.GetContextName() + " (" + contextOwner + ") offered=" + offered + " name=" + label + MenuNote() + CharacterNote());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ` camera=<class> pitch=<deg> hit=<entity>@<m> hitparent=<entity>`: what the view ray from the current
+	//! camera meets first within 3 m, the character excluded. The handler's sphere cast starts the same way,
+	//! so a blank handler with every gate open names its blocker here.
+	protected static string TraceNote()
+	{
+		CameraManager cameras = GetGame().GetCameraManager();
+		CameraBase camera;
+		if (cameras)
+			camera = cameras.CurrentCamera();
+
+		if (!camera)
+			return " camera=none";
+
+		vector mat[4];
+		camera.GetWorldTransform(mat);
+		vector dir = mat[2];
+		float pitch = Math.Asin(dir[1]) * Math.RAD2DEG; // lf-float: a view angle in degrees
+		string note = string.Format(" camera=%1 pitch=%2", camera.Type().ToString(), Math.Round(pitch));
+
+		TraceParam trace = new TraceParam();
+		trace.Start = mat[3];
+		trace.End = mat[3] + dir * 3;
+		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		trace.Exclude = LF_Utils.GetLocalCharacter();
+		trace.LayerMask = -1;
+		float fraction = camera.GetWorld().TraceMove(trace, null);
+		if (fraction >= 1 || !trace.TraceEnt)
+			return note + " hit=none";
+
+		note = note + string.Format(" hit=%1@%2", Describe("e", trace.TraceEnt), (fraction * 3).ToString(4, 2));
+		IEntity parent = trace.TraceEnt.GetParent();
+		if (parent)
+			note = note + " hitparent=" + Describe("e", parent);
+
+		return note;
 	}
 
 	//------------------------------------------------------------------------------------------------
