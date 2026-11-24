@@ -502,6 +502,17 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (LF_TruckCheckHarness.IsVerb(tool))
+		{
+			// The lent check truck driven through the gates in short steps, for a proof that cannot drive (#4697).
+			string truckResult = LF_TruckCheckHarness.Run(this, tool);
+			if (truckResult.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", truckResult.Substring(3, truckResult.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", truckResult.Substring(6, truckResult.Length() - 6));
+			return;
+		}
+
 		if (LF_QuizHarness.IsVerb(tool))
 		{
 			// Forget this account's rules-quiz pass (#1567); the verb refuses outside a LF_HARNESS build.

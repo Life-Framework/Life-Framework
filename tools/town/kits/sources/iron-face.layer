@@ -1,0 +1,144 @@
+// Source of the `iron-face` kit (tools/town/kits/iron-face.json): the second iron site, Highstone hill (#3242). It is the Coalman's Brow
+// source (iron-mine.layer) without the portal, furnace, desk, supply counter, resident anchors and bus stop, plus a loaded mine cart,
+// sawn-timber stacks, flood lamps and wooden fences. `town fit` reads each row's prefab and component GUIDs from here. Coordinates are
+// offsets from the centre of the hostless plot the slot anchors on (the plot, unturned, x east, z north).
+GenericEntity Mine_HeapL : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords -6 0 6
+ angleY 180
+}
+GenericEntity Mine_HeapR : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords -6 0 -6
+ angleY 180
+}
+GenericEntity Mine_Cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords -2.5 0 2.5
+ angleY 90
+}
+GenericEntity Mine_Picks : "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et" {
+ coords -2.8 0 -2.6
+ angleY 90
+}
+GenericEntity Mine_Lantern : "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/MiningLantern_01/MiningLantern_01.et" {
+ coords -4 0 1.6
+ angleY 90
+}
+GenericEntity Mine_Ore_1 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords -1.8 0 7.7
+ angleY 110
+}
+GenericEntity Mine_Ore_2 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 0.4 0 8.6
+ angleY 230
+}
+GenericEntity Mine_Ore_3 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 2.6 0 7.7
+ angleY 165
+}
+GenericEntity Mine_Ore_4 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 4.8 0 8.6
+ angleY 340
+}
+GenericEntity Mine_Ore_5 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 7 0 7.7
+ angleY 40
+}
+GenericEntity Mine_Ore_6 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 9.2 0 8.6
+ angleY 290
+}
+GenericEntity Mine_Flood : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 9 0 -8
+ angleY 290
+}
+GenericEntity Mine_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "coalmans-brow-mine"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 13 0 9
+ angleY 270
+}
+GenericEntity Mine_Rock1 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords -2.2 0.6 11.4
+ angleY 20
+}
+GenericEntity Mine_Rock2 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords 1.2 1.5 11.8
+ angleY 150
+}
+GenericEntity Mine_Rock3 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 4.4 0.6 11.3
+ angleY 80
+}
+GenericEntity Mine_Rock4 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords 7.6 1.5 11.7
+ angleY 200
+}
+GenericEntity Mine_Rock5 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 10.6 0.6 11.4
+ angleY 310
+}
+GenericEntity Mine_Rock6 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords -0.8 1.3 12.6
+ angleY 40
+}
+GenericEntity Mine_Rock7 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 2.9 0.4 14.5
+ angleY 260
+}
+GenericEntity Mine_Rock8 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords 6.4 1.3 14.1
+ angleY 120
+}
+GenericEntity Mine_Rock9 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 9.8 0.4 14.4
+ angleY 10
+}
+GenericEntity Mine_Cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords -3.5 0 3.8
+ angleY 90
+}
+GenericEntity Mine_TimberL : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords -5.4 0 9.6
+ angleY 90
+}
+GenericEntity Mine_TimberR : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 12.6 0 9.6
+ angleY 90
+}
+GenericEntity Mine_FloodL : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords -1.2 0 5.4
+ angleY 180
+}
+GenericEntity Mine_FloodR : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 9.8 0 5.4
+ angleY 180
+}
+GenericEntity Mine_FenceW1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords -7.2 0 -4
+ angleY 90
+}
+GenericEntity Mine_FenceW2 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords -7.2 0 0
+ angleY 90
+}
+GenericEntity Mine_FenceW3 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords -7.2 0 4
+ angleY 90
+}
+GenericEntity Mine_FenceE1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 12.6 0 -4
+ angleY 90
+}
+GenericEntity Mine_FenceE2 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 12.6 0 0
+ angleY 90
+}
+GenericEntity Mine_FenceE3 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 12.6 0 4
+ angleY 90
+}

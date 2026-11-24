@@ -79,3 +79,46 @@ GenericEntity Fit_everon_sawmill_yard_source_sawmill_fence_4 : "{57873EAF69D5450
  coords 3060.385 0 5255.11
  angleY 49
 }
+GenericEntity Mapper_everon_sawmill_yard_M1 : "{A4E81D6C2F9B3057}Prefabs/Props/LF_ShiftBoard.et" {
+ coords 3090.49 118.469 5258.009
+ angleY 180
+}
+GenericEntity Fit_everon_sawmill_yard_whistle_morning : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundProject "{8B272C3A6A0053BF}Sounds/Work/Work_ShiftWhistle.acp"
+   m_fRadius 105
+   m_fHourFrom 6
+   m_fHourTo 6.02
+   m_sGroup "everon_sawmill_whistle"
+   m_iPriority 3
+  }
+ }
+ coords 3091.5 119.9 5253
+}
+GenericEntity Fit_everon_sawmill_yard_whistle_evening : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundProject "{8B272C3A6A0053BF}Sounds/Work/Work_ShiftWhistle.acp"
+   m_fRadius 105
+   m_fHourFrom 18
+   m_fHourTo 18.02
+   m_sGroup "everon_sawmill_whistle"
+   m_iPriority 3
+  }
+ }
+ coords 3091.5 119.9 5254.2
+}
+GenericEntity Fit_everon_sawmill_yard_bed_shift : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundProject "{A21BF724F4B2550B}Sounds/Work/Work_SawmillBed.acp"
+   m_fRadius 38
+   m_fHourFrom 6
+   m_fHourTo 18
+   m_sGroup "everon_sawmill_bed"
+   m_iPriority 1
+  }
+ }
+ coords 3091 119.3 5235.4
+}

@@ -1,0 +1,64 @@
+// Source of the `iron-smelter` kit (tools/town/kits/iron-smelter.json): the centre-east iron smelter (#3244), the plant the
+// iron chain ends at. The host is the works workshop (Workshop_02_grey) of the compound; every row stands on the open apron in
+// front of its door (kit frame: the building's own, +z is the door side, rows rest on probed ground, `town fit --terrain`).
+// The furnace is the pack LF_IronSmelter.et (machine `smelter-iron`: 2 iron nuggets and 1 coal make a bar, SMELTING level 8), the
+// sign def `iron-smelter` is in the pack's Configs/Signs/LF_Signs_Everon1989/LF_Signs_IronSmelter.conf. The coal pile, hopper
+// and truck bay are dressing from the `mine-coal-pile`, `mine-hopper` and `mine-truck-bay` kits (props only until the feed-from-truck
+// station, #4191, exists).
+GenericEntity Smelter_Furnace : "{CBFF9864374D9542}Prefabs/Processor/LF_IronSmelter.et" {
+ coords -3.5 0 11.5
+ angleY 0
+}
+GenericEntity Smelter_CoalHeap : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et" {
+ coords -11 0.082 12
+ angleY 90
+}
+GenericEntity Smelter_Barrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords -7.5 0 14
+ angleY 25
+}
+GenericEntity Smelter_Bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords -8.8 0 15.2
+ angleY 0
+}
+GenericEntity Smelter_Tippler : "{8CBA9D089278A4D7}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_tippler.et" {
+ coords 6 0 12
+ angleY 0
+}
+GenericEntity Smelter_Bin : "{17ADCDC2721AC2E7}Prefabs/Props/Construction/ContainerMetal_01/ContainerMetal_01_low_grey.et" {
+ coords 6 0 19
+ angleY 0
+}
+GenericEntity Smelter_Cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords 6.5 -0.329 15.5
+ angleY 90
+}
+GenericEntity Smelter_Truck : "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords -0.3 0 19
+ angleY 270
+}
+GenericEntity Smelter_FloodA : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords -1 0 14.5
+ angleY 160
+}
+GenericEntity Smelter_FloodB : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 10 0 11
+ angleY 200
+}
+GenericEntity Smelter_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "iron-smelter"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords -1 0 18
+ angleY 0
+}

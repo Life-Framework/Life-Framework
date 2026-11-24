@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "kind": "coal-seam",
+  "about": "A coal seam on a ridge meadow: coal rocks a miner breaks with a pickaxe, fencing, timber, work lights and a sign, but no job desk, furnace or buyer (the coal goes on to the freighter orders). No building stands there, so the slot is hostless: its kit rests on the probed ground of one free plot. Same shape as ore-face.json. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "mine",
+      "required": true,
+      "kit": "coal-face",
+      "host": "plot",
+      "poi": "mine",
+      "needs": {
+        "interior": "optional",
+        "prefer": "near"
+      },
+      "plot": {
+        "minWidth": 16,
+        "minDepth": 16,
+        "prefabs": []
+      },
+      "places": [
+        "Workplace",
+        "mine"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "template": "smelter",
+  "place": "eastcompound",
+  "status": "approved",
+  "note": "Hand-written for the centre-east iron smelter (#3244, 0.3.0 iron chain: Highstone nuggets plus East Rise coal end here as bars). The compound at 6459, 6482 (5.1 km east of Saint-Philippe) is a fenced works yard: the workshop b01 (Workshop_02_grey) on a tarmac apron with two silos, beside the E-W road r02. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-24",
+    "buildings": 11,
+    "freePlots": 8
+  },
+  "slots": {
+    "smelter": {
+      "building": "b01",
+      "why": [
+        "Workshop_02_grey (138 m2, one floor) is the one working building of the fenced compound; its door end opens onto the wide tarmac apron, which has room for the furnace, a hopper and a truck backing in",
+        "the two silos (b02, b03) stand on the east lot and stay as dressing; the E-W road r02 reaches the apron 25 m north-east, so a pickup brings nuggets and coal without leaving the road"
+      ]
+    }
+  }
+}
