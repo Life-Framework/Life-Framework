@@ -34,6 +34,101 @@
   },
   "rows": [
     {
+      "id": "mine-pad-a",
+      "name": "Mine_PadA",
+      "prefab": "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10,
+        0,
+        4.6
+      ],
+      "yaw": 0,
+      "pitch": -90,
+      "scale": 8,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-pad-b",
+      "name": "Mine_PadB",
+      "prefab": "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        9,
+        0,
+        -5
+      ],
+      "yaw": 90,
+      "pitch": -90,
+      "scale": 8,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-pad-c",
+      "name": "Mine_PadC",
+      "prefab": "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4,
+        0,
+        -3.2
+      ],
+      "yaw": 200,
+      "pitch": -90,
+      "scale": 8,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-pad-d",
+      "name": "Mine_PadD",
+      "prefab": "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -0.5,
+        0,
+        2.5
+      ],
+      "yaw": 300,
+      "pitch": -90,
+      "scale": 7,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-pad-e",
+      "name": "Mine_PadE",
+      "prefab": "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.5,
+        0,
+        0.5
+      ],
+      "yaw": 140,
+      "pitch": -90,
+      "scale": 6,
+      "class": "DecalEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
       "id": "mine-heap-l",
       "name": "Mine_HeapL",
       "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",

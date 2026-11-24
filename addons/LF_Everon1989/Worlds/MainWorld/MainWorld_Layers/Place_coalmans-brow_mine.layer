@@ -16,6 +16,35 @@ GenericEntity Fit_coalmans_brow_mine_Place_Processor {
  }
  coords 4330 35 10404
 }
+DecalEntity Fit_coalmans_brow_mine_mine_pad_a : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
+ coords 4340 0 10408.6
+ angleX -90
+ scale 8
+}
+DecalEntity Fit_coalmans_brow_mine_mine_pad_b : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords 4339 0 10399
+ angleX -90
+ angleY 90
+ scale 8
+}
+DecalEntity Fit_coalmans_brow_mine_mine_pad_c : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
+ coords 4334 0 10400.8
+ angleX -90
+ angleY -160
+ scale 8
+}
+DecalEntity Fit_coalmans_brow_mine_mine_pad_d : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_03.et" {
+ coords 4329.5 0 10406.5
+ angleX -90
+ angleY -60
+ scale 7
+}
+DecalEntity Fit_coalmans_brow_mine_mine_pad_e : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
+ coords 4336.5 0 10404.5
+ angleX -90
+ angleY 140
+ scale 6
+}
 GenericEntity Fit_coalmans_brow_mine_mine_heap_l : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 4324 35.094 10410
  angleY 180
