@@ -10,10 +10,10 @@ import { arrive, clientBox, newestLog, sessionDir, sessionPaths } from "../sessi
 //   node agent-box/session.mjs down
 // One client at SMELTING 1: swings a pickaxe at a Highstone iron rock (2 pieces = 2 Iron Nuggets) and an East Rise coal
 // rock (1 piece = 1 Coal Lump), reading the `[LFDebug:Mining] ... rock hit ... dropped` lines and picking the drops up
-// with the F-key `pickup`. At the iron smelter of the centre-east compound the smelt is refused in words (SMELTING 1
-// is under the machine's 8); `levelset SMELTING 8` (LF_HARNESS build, no daily cap booked) then lets it run: 2 nuggets and the
-// coal go in, the 60 s run ends, the bar drops, is picked up and `carries` counts it, and the server log shows the
-// SMELTING XP award. A last use with no nuggets left and `coalgive 2` in hand names the missing input. PASS or FAIL per
+// with the F-key `pickup`. At the iron smelter of the centre-east compound the smelt runs at SMELTING 1 (the machine has
+// no level gate, #4856): 2 nuggets and the coal go in, the 60 s run ends, the bar drops, is picked up and `carries`
+// counts it, and the server log shows the first SMELTING XP award. A last use with no nuggets left and `coalgive 2` in
+// hand names the missing input. PASS or FAIL per
 // step; every verdict reads the server's `[LFDebug:...]` lines or the client's own state, never a guess.
 const PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
 const IRON_ROCK = { entity: "Fit_highstone_mine_mine_ore_2", x: 4956.3, y: 115.795, z: 8474.6 };
@@ -188,44 +188,13 @@ async function runIronChainProof() {
   const look = on({ verb: "look" }, 10000);
   step("6 the smelter's process action is in reach", look.detail.includes(`${PROCESS}@${SMELTER.entity}`), look.detail.slice(0, 160));
   on({ verb: "capture", mode: "ui", name: `${prefix}_5_smelter` }, 25000);
-  const logMark = serverLog().length;
-  const refused = on({ verb: "use", className: PROCESS, entityName: SMELTER.entity }, 10000);
-  // The server decides in the action's own check: the reason a player reads on the greyed row is a #key, shown in the job's words.
-  const refusal = /use LF_ProcessAction on \S+: cannot_perform reason=(\S+)/.exec(serverLog().slice(logMark));
-  const words = refusal ? stringText(refusal[1]) : "";
-  step("7 SMELTING 1 is refused at the smelter, in words", refused.status === "error" && /cannot_perform/.test(refused.detail) && !!refusal && words.length > 20 && !/\d/.test(words), refusal ? `${refusal[1]} = "${words}"` : "no `cannot_perform reason=` line in the server log");
-  // The real key press: the client offers the row (levels live on the server), the server refuses and the toast reads the words.
-  const pressMark = serverLog().length;
-  let pressed = false;
-  for (let press = 0; press < 3 && !pressed; press++) {
-    // A loaded client can drop the key: stand at the furnace again (facing it) and press again, up to three times.
-    if (press > 0) { on({ verb: "stand", entityName: SMELTER.entity }); wait(2000); }
-    on({ verb: "interact", step: "confirm" }, 10000);
-    wait(500);
-    if (press === 0) on({ verb: "capture", mode: "ui", name: `${prefix}_6_refused` }, 25000);
-    for (let i = 0; i < 8 && !pressed; i++) {
-      pressed = /refused process at smelter-iron: SMELTING level below 8/.test(serverLog().slice(pressMark));
-      if (!pressed) wait(1000);
-    }
-  }
-  // The client's own log says what it put on screen: the words, not the key.
-  let toasted = false;
-  for (let i = 0; i < 8 && !toasted; i++) {
-    toasted = !!words && clientLog().includes(`toast received: ${words}`);
-    if (!toasted) wait(1000);
-  }
-  step("7b the F key at SMELTING 1: the server refuses the smelt and the client shows the words as a toast (picture 6)", pressed && toasted, `server refusal=${pressed} client toast=${toasted}`);
-  step("8 a refusal takes nothing: the pack still holds the nuggets and the coal", carried("IronNugget") === base.nuggets + 2 && carried("CoalLump") === base.coal + 1, `nuggets=${carried("IronNugget")} coal=${carried("CoalLump")}`);
-
-  // 5. SMELTING 8 (dev verb), then the real smelt.
-  const lvl8 = levelSet(8);
-  step("9 the character is SMELTING 8 (3000 XP, over the 2000 daily cap)", !!lvl8 && lvl8.level === 8 && lvl8.xp === 3000, lvl8 ? `xp=${lvl8.xp} level=${lvl8.level}` : "no `harness set` line in the server log");
-  const xpBefore = lvl8 ? lvl8.xp : 0;
+  // 5. The real smelt at SMELTING 1: the iron smelter has no level gate (#4856), the trade is earned by smelting.
+  const xpBefore = level1 ? level1.xp : 0;
   const runMark = serverLog().length;
   const smelt = on({ verb: "use", className: PROCESS, entityName: SMELTER.entity }, 10000);
   wait(1500);
   const started = serverLog().slice(runMark);
-  step("10 the smelt starts and takes 2 nuggets and 1 coal", smelt.status === "ok" && carried("IronNugget") === base.nuggets && carried("CoalLump") === base.coal, `nuggets=${carried("IronNugget")} coal=${carried("CoalLump")} toast="${toast()}"`);
+  step("7 the smelt starts and takes 2 nuggets and 1 coal", smelt.status === "ok" && carried("IronNugget") === base.nuggets && carried("CoalLump") === base.coal, `nuggets=${carried("IronNugget")} coal=${carried("CoalLump")} toast="${toast()}"`);
   on({ verb: "capture", mode: "ui", name: `${prefix}_7_smelting` }, 25000);
   const t0 = Date.now();
   let done = "";
@@ -235,17 +204,17 @@ async function runIronChainProof() {
     wait(4000);
   }
   const xpLine = /\+(\d+) SMELTING xp for (\S+) from ([^\n(]+)/.exec(done);
-  step("11 the run ends and SMELTING XP is awarded", !!xpLine, xpLine ? `+${xpLine[1]} xp (${xpLine[3].trim()})` : `no \`SMELTING xp\` line in ${Math.round((Date.now() - t0) / 1000)} s`);
+  step("8 the run ends and SMELTING XP is awarded", !!xpLine, xpLine ? `+${xpLine[1]} xp (${xpLine[3].trim()})` : `no \`SMELTING xp\` line in ${Math.round((Date.now() - t0) / 1000)} s`);
   // The award line carries the new total: `+28 SMELTING xp for <uid> from smelt_batch (total 3028, level 8)`.
   const total = /\+\d+ SMELTING xp for \S+ from [^(]+\(total (\d+), level (\d+)\)/.exec(done);
-  step("12 the SMELTING total moved up by the award and the level held", !!total && !!xpLine && Number(total[1]) === xpBefore + Number(xpLine[1]) && total[2] === "8", total ? `${xpBefore} -> ${total[1]} (level ${total[2]})` : "no total in the award line");
+  step("9 the SMELTING total moved from 0 by the award (the first XP the character has)", !!total && !!xpLine && Number(total[1]) === xpBefore + Number(xpLine[1]) && total[2] === "1", total ? `${xpBefore} -> ${total[1]} (level ${total[2]})` : "no total in the award line");
 
   // 6. The bar: on the ground at the machine, then in the pack.
   on({ verb: "stand", entityName: SMELTER.entity });
   wait(1500);
   on({ verb: "capture", mode: "ui", name: `${prefix}_8_bar_on_the_ground` }, 25000);
   const bars = collect(SMELTER, "IronBar", base.bars + 1);
-  step("13 an Iron Bar is in the inventory", bars >= base.bars + 1, `carried IronBar=${bars}`);
+  step("10 an Iron Bar is in the inventory", bars >= base.bars + 1, `carried IronBar=${bars}`);
   on({ verb: "capture", mode: "ui", name: `${prefix}_9_bar_carried` }, 25000);
 
   // 7. The dev coal verb, and the machine names what is still missing.
@@ -256,11 +225,11 @@ async function runIronChainProof() {
     wait(1000);
     coalGrant = /harness coal \S+ added=(\d+) held=(\d+)/.exec(serverLog().split("\n").filter((l) => /harness coal/.test(l)).pop() ?? "");
   }
-  step("14 `coalgive 2` puts two lumps in the pack", !!coalGrant && coalGrant[1] === "2" && carried("CoalLump") === base.coal + 2, coalGrant ? `added=${coalGrant[1]} held=${coalGrant[2]}` : "no `harness coal` line");
+  step("11 `coalgive 2` puts two lumps in the pack", !!coalGrant && coalGrant[1] === "2" && carried("CoalLump") === base.coal + 2, coalGrant ? `added=${coalGrant[1]} held=${coalGrant[2]}` : "no `harness coal` line");
   const lowMark = serverLog().length;
   const lowUse = on({ verb: "use", className: PROCESS, entityName: SMELTER.entity }, 10000);
   const lowReason = /cannot_perform reason=(.+)/.exec(serverLog().slice(lowMark));
-  step("15 with coal but no nuggets the smelter will not run and names what is missing", lowUse.status === "error" && !!lowReason && /Iron Nugget/.test(lowReason[1]) && carried("CoalLump") === base.coal + 2, `use=${lowUse.status} reason="${lowReason ? lowReason[1].trim() : "none"}" coal=${carried("CoalLump")}`);
+  step("12 with coal but no nuggets the smelter will not run and names what is missing", lowUse.status === "error" && !!lowReason && /Iron Nugget/.test(lowReason[1]) && carried("CoalLump") === base.coal + 2, `use=${lowUse.status} reason="${lowReason ? lowReason[1].trim() : "none"}" coal=${carried("CoalLump")}`);
 
   // Keep the pictures before `session down` (the session folder is swept): every capture of this run as a PNG in tmp/iron-chain-pics.
   try {

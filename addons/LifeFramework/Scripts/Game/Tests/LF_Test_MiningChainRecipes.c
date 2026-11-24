@@ -1,4 +1,4 @@
-// red-proof: #4341 2026-11-23, gates moved to SMELTING 8 and 15: `--only LF_Test_MiningChainRecipes` on the old MINER 4 and 3 rows FAILED (gate job, gate level), green after. Earlier: before the rows existed (2026-11-19) the first run failed "smelter-iron is in the chain config",
+// red-proof: #4856 2026-11-24, the smelter opened at SMELTING 1: `--red LF_Test_MiningChainRecipes` RED PROOF OK (batched run), green with `--only`. Earlier: #4341 2026-11-23, gates moved to SMELTING 8 and 15: `--only LF_Test_MiningChainRecipes` on the old MINER 4 and 3 rows FAILED (gate job, gate level), green after. Earlier: before the rows existed (2026-11-19) the first run failed "smelter-iron is in the chain config",
 // "refinery-copper is in the chain config", "cement-works is in the chain config" and the three node rows.
 // `tools\cli test --no-build --red LF_Test_MiningChainRecipes` flips the expected gate to a number no row has.
 
@@ -51,7 +51,7 @@ class LF_Test_MiningChainRecipes : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
-		CheckMachine(ctx, "smelter-iron", "SMELTING", 8, 5, 1);
+		CheckMachine(ctx, "smelter-iron", "SMELTING", 1, 5, 1);
 		CheckMachine(ctx, "refinery-copper", "SMELTING", 15, 3, 1);
 		CheckMachine(ctx, "cement-works", "", 0, 10, 2);
 

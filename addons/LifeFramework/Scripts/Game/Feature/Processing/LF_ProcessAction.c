@@ -81,7 +81,7 @@ class LF_ProcessAction : ScriptedUserAction
 		if (!levelRefusal.IsEmpty())
 		{
 			LF_Debug.Info("Processing", string.Format("refused process at %1: %2 level below %3", m_sMachineId, m_Machine.m_sLevelJob, m_Machine.m_iMinLevel));
-			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text(levelRefusal), "", 4.0);
+			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Shown(levelRefusal), "", 4.0);
 			return;
 		}
 

@@ -9656,11 +9656,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Sin bonos activos"
      Comment "Character standing summary when there are no bonuses"
     }
-    CustomStringTableItem "{502AD651193AD12E}" {
-     Id "LF-Level_Far_Any"
-     Target_en_us "You are not experienced enough for this yet."
-     Comment "Job-level gate refusal in words, never a number (#2700)."
-    }
     CustomStringTableItem "{3AF129B888C991B7}" {
      Id "LF-Level_Far_Delivery"
      Target_en_us "Do more runs first."
@@ -9689,11 +9684,6 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{41FE6820DDF1221C}" {
      Id "LF-Level_Far_Police"
      Target_en_us "You are not experienced enough in the force for this yet."
-     Comment "Job-level gate refusal in words, never a number (#2700)."
-    }
-    CustomStringTableItem "{21C91A1344B91226}" {
-     Id "LF-Level_Near_Any"
-     Target_en_us "You are almost experienced enough for this. A little more practice first."
      Comment "Job-level gate refusal in words, never a number (#2700)."
     }
     CustomStringTableItem "{83D47B50E56450B1}" {
@@ -9725,6 +9715,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Level_Near_Police"
      Target_en_us "Nearly there. A little more time on duty first."
      Comment "Job-level gate refusal in words, never a number (#2700)."
+    }
+    CustomStringTableItem "{50B4954BCAFEE2D0}" {
+     Id "LF-Level_Needs"
+     Target_en_us "Needs %1 %2"
+     Comment "Level gate refusal for a trade with no words of its own (#4856). %1 = the trade, e.g. Smelting; %2 = the level, e.g. 8."
+    }
+    CustomStringTableItem "{D73232FD8F9ACA91}" {
+     Id "LF-Level_NeedsAny"
+     Target_en_us "Needs level %1"
+     Comment "Level gate refusal when the gate names no trade (#4856). %1 = the level."
     }
     CustomStringTableItem "{2024E806595907BF}" {
      Id "LF-Level_Promoted"
