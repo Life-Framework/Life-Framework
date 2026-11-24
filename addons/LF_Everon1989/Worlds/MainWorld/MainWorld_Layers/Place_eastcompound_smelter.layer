@@ -19,8 +19,14 @@ GenericEntity Fit_eastcompound_smelter_Place_plant {
  coords 6449.87 162.9 6480.29
 }
 GenericEntity Fit_eastcompound_smelter_smelter_furnace : "{CBFF9864374D9542}Prefabs/Processor/LF_IronSmelter.et" {
- coords 6442.481 162.193 6489.772
+ coords 6442.481 162.2 6489.772
  angleY -21
+ scale 1.7
+}
+GenericEntity Fit_eastcompound_smelter_smelter_flue : "{4B2072D6C07CC8C1}Prefabs/Structures/Ruins/HouseRuins/HouseRuin_01/HouseRuin_01_Chimney.et" {
+ coords 6442.858 1.2 6488.792
+ angleY -21
+ scale 0.8
 }
 GenericEntity Fit_eastcompound_smelter_smelter_coal_heap : "{1FCEFB5ED3E34996}Prefabs/Props/Industrial/LF_CoalHeap.et" {
  coords 6439.767 162.188 6489.587
