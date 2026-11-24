@@ -5049,6 +5049,11 @@ StringTable {
      Target_en_us "Sack loaded (%1). When all are in, drive to the Meaux post office, marked on your map."
      Comment "Toast after a sack is loaded: names the destination office (pack override of the core row)."
     }
+    CustomStringTableItem "{349723BC9C46DF3D}" {
+     Id "LF-Process_SmeltIronBar"
+     Target_en_us "Smelt iron (2 nuggets and 1 coal make a bar)"
+     Comment "Action on the centre-east iron smelter (LF_IronSmelter.et, machine smelter-iron, Everon 1989 pack, #3244)."
+    }
     CustomStringTableItem "{7955F10958310917}" {
      Id "LF-Process_SmeltIronOre"
      Target_en_us "Smelt iron nuggets (3 make a bar)"
@@ -6978,6 +6983,21 @@ StringTable {
      Id "LF-Sign_Impound_What"
      Target_en_us "Cars left on the street at a server restart are towed here."
      Comment "Sign card for the impound desk, What section."
+    }
+    CustomStringTableItem "{3EAD5354C4AD368C}" {
+     Id "LF-Sign_IronSmelter_How"
+     Target_en_us "Carry two iron nuggets and a lump of coal for every bar. Stand at the furnace and press the smelt action; the bars come out of the door after a minute. Nuggets come from the Highstone mine, coal from East Rise; sell bars at the iron counter in the dock wholesale warehouse."
+     Comment "Sign card for the iron smelter plate, How section (#3244)."
+    }
+    CustomStringTableItem "{4105C72A62F3CEBF}" {
+     Id "LF-Sign_IronSmelter_Title"
+     Target_en_us "Iron smelter"
+     Comment "Title of the pole plate at the centre-east iron smelter (Everon 1989 pack, #3244). Printed on the sign and shown in the prompt as Read: Iron smelter."
+    }
+    CustomStringTableItem "{607FBEBDB66EA4BD}" {
+     Id "LF-Sign_IronSmelter_What"
+     Target_en_us "A brick furnace in the old works yard: a coal heap, a hopper and a truck bay. Smelting is a trade of its own: a bar here needs Smelting level 8."
+     Comment "Sign card for the iron smelter plate, What section (#3244)."
     }
     CustomStringTableItem "{8D07E91EFB59E777}" {
      Id "LF-Sign_Jail_How"

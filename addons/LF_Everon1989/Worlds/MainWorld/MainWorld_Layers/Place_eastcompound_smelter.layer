@@ -1,0 +1,77 @@
+GenericEntity Fit_eastcompound_smelter_Place {
+ components {
+  LF_PlaceComponent "{7822C3808FCE162D}" {
+   m_sKind "Workplace"
+   m_sId "eastcompound.smelter"
+  }
+  LF_FittedBuildingComponent "{C5EB3726ECA45CEE}" {
+  }
+ }
+ coords 6449.87 162.9 6480.29
+}
+GenericEntity Fit_eastcompound_smelter_Place_plant {
+ components {
+  LF_PlaceComponent "{DDE077C1C9BF37F9}" {
+   m_sKind "plant"
+   m_sId "eastcompound.smelter"
+  }
+ }
+ coords 6449.87 162.9 6480.29
+}
+GenericEntity Fit_eastcompound_smelter_smelter_furnace : "{CBFF9864374D9542}Prefabs/Processor/LF_IronSmelter.et" {
+ coords 6442.481 162.195 6489.772
+ angleY -21
+}
+GenericEntity Fit_eastcompound_smelter_smelter_coal_heap : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et" {
+ coords 6435.3 162.149 6487.551
+ angleY 69
+}
+GenericEntity Fit_eastcompound_smelter_smelter_barrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords 6437.851 162.211 6490.672
+ angleY 4
+}
+GenericEntity Fit_eastcompound_smelter_smelter_bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 6436.207 162.189 6491.327
+ angleY -21
+}
+GenericEntity Fit_eastcompound_smelter_smelter_tippler : "{8CBA9D089278A4D7}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_tippler.et" {
+ coords 6451.171 0 6493.643
+ angleY -21
+}
+GenericEntity Fit_eastcompound_smelter_smelter_bin : "{17ADCDC2721AC2E7}Prefabs/Props/Construction/ContainerMetal_01/ContainerMetal_01_low_grey.et" {
+ coords 6448.662 162.512 6500.178
+ angleY -21
+}
+GenericEntity Fit_eastcompound_smelter_smelter_cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords 6450.384 162.037 6497.09
+ angleY 69
+}
+GenericEntity Fit_eastcompound_smelter_smelter_truck : "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 6442.781 162.015 6497.921
+ angleY -111
+}
+GenericEntity Fit_eastcompound_smelter_smelter_flood_a : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 6443.74 162.271 6493.469
+ angleY 139
+}
+GenericEntity Fit_eastcompound_smelter_smelter_flood_b : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 6455.264 162.241 6494.143
+ angleY 179
+}
+GenericEntity Fit_eastcompound_smelter_smelter_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "iron-smelter"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 6437.639 162.235 6495.411
+ angleY -21
+}
