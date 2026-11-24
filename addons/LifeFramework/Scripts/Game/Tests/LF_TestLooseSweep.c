@@ -7,6 +7,8 @@ class LF_TestLooseSweep
 	protected ref array<IEntity> m_aFound = {};
 	protected ResourceName m_Prefab;
 	protected bool m_bUnnamed;
+	//! The units the last Delete removed: a stack counts its quantity.
+	int m_iUnits;
 
 	//------------------------------------------------------------------------------------------------
 	//! \return How many entities were deleted.
@@ -16,8 +18,17 @@ class LF_TestLooseSweep
 		m_Prefab = prefab;
 		GetGame().GetWorld().QueryEntitiesBySphere(at, radius, Visit);
 		int count = m_aFound.Count();
+		m_iUnits = 0;
 		foreach (IEntity entity : m_aFound)
+		{
+			LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(entity);
+			if (quantity)
+				m_iUnits += quantity.GetQuantity();
+			else
+				m_iUnits++;
+
 			SCR_EntityHelper.DeleteEntityAndChildren(entity);
+		}
 
 		m_aFound.Clear();
 		return count;

@@ -157,6 +157,11 @@ are the planned input of the furniture bench (a follow-up, not in this plan).
 
 ## Money ladder (checked with `tools\cli economy`)
 
+Since #4875 the tool walks the island's real trips: the nearest pine is 200 m from the Saint-Philippe yard, a
+log rides the shoulder at 0.7 of the 3.4 m/s jog, planks go in bundles of 4 (one trip a log) to the timber buyer
+and the wholesale crate beside the saw. That puts hand-haul planks at $446/h and the mix at $473/h; the table
+below is the original design note.
+
 Assumptions: walk with a log at about 1.1 m/s, run back at 3.4 m/s, woodlot to yard 150 m. A truck
 cycle is load, a 2 km drive, unload and process.
 
