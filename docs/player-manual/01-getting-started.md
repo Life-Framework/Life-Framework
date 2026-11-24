@@ -21,6 +21,11 @@ the F2 "What to do next" page, the map, police and medic duty, and where to read
 * Press **F3** (gamepad: **right bumper + Y**) to open it again at any time. You can change the key in
   **Settings, Controls, Life Framework**.
 
+* **The handbook** is under **Handbook** in the pause menu. It has eleven short pages: your first wages, work in town,
+  **Trades and tools** (levels, tool finishes, perks, the truck check), the police, **Law and order** (the charge sheet,
+  fines, the cell), the hospital, if you turn to crime, **The underworld** (standing, the fence, the bars, the north
+  outpost), **Crews** (the registry, flags, recruiting, the radio) and the law and the permit.
+
 ## Your personal file
 
 Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It has three tabs, and a fourth when you are in a gang:

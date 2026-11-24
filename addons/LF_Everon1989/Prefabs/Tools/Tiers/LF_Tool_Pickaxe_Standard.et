@@ -1,6 +1,18 @@
 GenericEntity : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
  ID "A1E3A11E03AEFC5C"
  components {
+  SCR_WeaponAttachmentsStorageComponent "{5ACCA164BC7A99A2}" {
+   Attributes SCR_ItemAttributeCollection "{51F080D5C64F12C5}" {
+    ItemDisplayName UIInfo "{5520071988FE4A8E}" {
+     Name "#LF-Item_ToolPickaxeStandard_Name"
+    }
+   }
+  }
+  WeaponComponent "{5990809682E12ADF}" {
+   UIInfo WeaponUIInfo "{CE48E0162943424B}" {
+    Name "#LF-Item_ToolPickaxeStandard_Name"
+   }
+  }
   MeshObject "{59908096775F151D}" {
    Materials {
     MaterialAssignClass "{3C9C4F45A87A241B}" {

@@ -58,6 +58,51 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
      }
      m_iIndex 2
     }
+    LF_OutpostStockBuyAction "{CD244C2819D8C02C}" {
+     ParentContextList {
+      "Crate"
+     }
+     UIInfo UIInfo "{1A5E433A72D0200C}" {
+      Name "#LF-OutpostStock_Buy"
+     }
+     m_iIndex 3
+    }
+    LF_OutpostStockBuyAction "{AAB3BB0CB5B89C48}" {
+     ParentContextList {
+      "Crate"
+     }
+     UIInfo UIInfo "{3149D0432FBC6D1A}" {
+      Name "#LF-OutpostStock_Buy"
+     }
+     m_iIndex 4
+    }
+    LF_OutpostStockBuyAction "{7EFA7A63C8837D8A}" {
+     ParentContextList {
+      "Crate"
+     }
+     UIInfo UIInfo "{02AA0FD34997A9C8}" {
+      Name "#LF-OutpostStock_Buy"
+     }
+     m_iIndex 5
+    }
+    LF_OutpostStockBuyAction "{A15B633825BA7FAE}" {
+     ParentContextList {
+      "Crate"
+     }
+     UIInfo UIInfo "{460C6FD886D1A2F7}" {
+      Name "#LF-OutpostStock_Buy"
+     }
+     m_iIndex 6
+    }
+    LF_OutpostStockBuyAction "{92E5A957829EDF5D}" {
+     ParentContextList {
+      "Crate"
+     }
+     UIInfo UIInfo "{4C6AE01A60B819C2}" {
+      Name "#LF-OutpostStock_Buy"
+     }
+     m_iIndex 7
+    }
    }
   }
   BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {

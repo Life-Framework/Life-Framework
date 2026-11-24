@@ -80,6 +80,8 @@ class LF_Test_EveronOutpostStock : LF_Test
 
 		ctx.True(HasRow(north, "gang_radio") && HasRow(north, "pistol") && HasRow(north, "rifle"), "the north crate sells the gang radio, a pistol and a rifle");
 		CheckRows(ctx, "north", north);
+		// The quartermaster prefab carries a Buy row per table row (#4675): the full north table sells, none is left without an action.
+		ctx.True(north.Count() <= LF_Test_EveronOutpostNpcs.BUY_ROWS, "the quartermaster has a Buy row for every north row");
 		CheckRows(ctx, "south", south);
 
 		// The south stock is its own: not the north's rows.

@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "kind": "outpost",
+  "about": "A rebel outpost on open ground away from any town (gangs scope O7/O13): one camp with a gate, a quartermaster's table, a chalk board, a contraband buyer, two gate guards and a mechanic's canopy. No building stands there, so the slot is hostless: its kit rests on the probed ground of one free plot. The safe zone and the outpost place come from the kit's own `LF_OutpostComponent` row, so the slot lists no marker kind. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "camp", "required": true, "kit": "outpost-north", "host": "plot", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "far" },
+      "plot": { "minWidth": 20, "minDepth": 22, "prefabs": [] },
+      "places": []
+    }
+  ]
+}
