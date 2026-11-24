@@ -10,7 +10,7 @@ The client polls `$profile:agent-box/command.txt`. `press F` calls
 for text buttons, `OnClick` for shop and ATM buttons. Named `use` still runs `CanBeShownScript` and
 `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
 (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
-`LF_OpenDebugMenu`). Movement actions are refused.
+`LF_OpenDebugMenu`, and the digit keys `LF_Keypad0` to `LF_Keypad9`). An input is held 300 ms and at least three frames, so a slow client frame cannot swallow it (#4720). Movement actions are refused.
 
 `stand` is the one exception: the server moves the local character beside a
 named DebugWorld entity so a 3m action radius can succeed. It does not inject

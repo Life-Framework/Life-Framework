@@ -1,4 +1,4 @@
-GenericEntity : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+GenericEntity : "{1A8791C2BC2B8B75}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et" {
  ID "D8A696A8D6ABF28A"
  components {
   LF_TruckCheckGateComponent "{B7ECFB790AA2CB09}" {

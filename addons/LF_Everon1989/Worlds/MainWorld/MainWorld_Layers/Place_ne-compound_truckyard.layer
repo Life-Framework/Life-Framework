@@ -128,3 +128,57 @@ GenericEntity Fit_ne_compound_truckyard_sign_gate : "{B7B489CA36A0E9F8}Prefabs/P
  coords 5024.116 28.072 10848.3
  angleY -90
 }
+LF_NpcBaseEntity Fit_ne_compound_truckyard_examiner : "{194B8115D8E97886}Prefabs/Characters/Npcs/Outfits/LF_Npc_TruckExaminer_1.et" {
+ coords 5084.199 27.274 10841.139
+ angleY -95
+}
+GenericEntity Fit_ne_compound_truckyard_check_start {
+ components {
+  LF_PlaceComponent "{A7C4000000000051}" {
+   m_sKind "TruckCheckStart"
+   m_sId "truck_check_start"
+  }
+ }
+ coords 5015.492 28.062 10851.992
+ angleY 85
+}
+GenericEntity Fit_ne_compound_truckyard_check_gate_0 : "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et" {
+ components {
+  LF_TruckCheckGateComponent "{B7ECFB790AA2CB09}" {
+   m_iOrder 0
+   m_fRadius 4
+  }
+ }
+ coords 5025.454 28.219 10852.864
+ angleY 85
+}
+GenericEntity Fit_ne_compound_truckyard_check_gate_1 : "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et" {
+ components {
+  LF_TruckCheckGateComponent "{B7ECFB790AA2CB09}" {
+   m_iOrder 1
+   m_fRadius 4
+  }
+ }
+ coords 5035.416 28.073 10853.736
+ angleY 85
+}
+GenericEntity Fit_ne_compound_truckyard_check_gate_2 : "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et" {
+ components {
+  LF_TruckCheckGateComponent "{B7ECFB790AA2CB09}" {
+   m_iOrder 2
+   m_fRadius 4
+  }
+ }
+ coords 5045.378 27.791 10854.607
+ angleY 85
+}
+GenericEntity Fit_ne_compound_truckyard_check_gate_3 : "{339E4BD26D1C5A04}Prefabs/Props/License/LF_TruckCheckGate.et" {
+ components {
+  LF_TruckCheckGateComponent "{B7ECFB790AA2CB09}" {
+   m_iOrder 3
+   m_fRadius 4
+  }
+ }
+ coords 5055.34 27.773 10855.479
+ angleY 85
+}
