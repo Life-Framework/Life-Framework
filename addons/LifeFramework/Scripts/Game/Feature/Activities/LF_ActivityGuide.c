@@ -229,6 +229,82 @@ class LF_ActivityLiveFacts : LF_ActivityFacts
 
 		return m_Tracker.GetStatus(questId);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Trades(notnull array<string> into)
+	{
+		into.Clear();
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config || !config.m_aTracks)
+			return;
+
+		foreach (LF_JobTrackDef track : config.m_aTracks)
+		{
+			if (track && track.m_sJob != LF_JobLevels.JOB_CIVILIAN)
+				into.Insert(track.m_sJob);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A vehicle the player owns (in the world, stored or impounded) whose price row names this capacity
+	//! class or a bigger one on the ladder.
+	override bool OwnsVehicleClass(string capacityClass)
+	{
+		LF_CapacityConfig capacity = LF_CapacityConfig.Get();
+		LF_VehiclePricesConfig prices = LF_VehiclePricesConfig.Get();
+		if (m_sUid.IsEmpty() || !capacity || !prices)
+			return false;
+
+		int needed = LF_CapacityRules.RungOf(capacity.m_aRows, capacityClass);
+		if (needed < 0)
+		{
+			LF_Debug.Error(LF_ActivityTable.FEATURE, "activity gates on vehicle class '" + capacityClass + "', which the capacity ladder does not list");
+			return false;
+		}
+
+		foreach (LF_VehicleRecord record : LF_VehicleOwnership.ExportAll())
+		{
+			if (!record || record.m_sOwnerUid != m_sUid)
+				continue;
+
+			string ownedClass = prices.CapacityClassOf(record.m_sPrefab);
+			if (ownedClass.IsEmpty())
+				continue;
+
+			if (LF_CapacityRules.RungOf(capacity.m_aRows, ownedClass) >= needed)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool HasCriminalRecord()
+	{
+		return !m_sUid.IsEmpty() && LF_CrimeRecord.Total(m_sUid) > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool InCrew()
+	{
+		return LF_OrganizationManager.GetByCharacter(LF_Hideout.CharacterIdOf(m_Body)) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool HasPickedPerk()
+	{
+		if (m_sUid.IsEmpty())
+			return false;
+
+		array<ref LF_TradePerkRow> rows = LF_TradePerks.RowsOf(m_sUid);
+		return rows && !rows.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool HasFlag(string flag)
+	{
+		return !m_sUid.IsEmpty() && LF_Progression.HasFlag(m_sUid, flag);
+	}
 }
 
 //------------------------------------------------------------------------------------------------

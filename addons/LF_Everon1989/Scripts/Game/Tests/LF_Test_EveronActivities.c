@@ -3,7 +3,7 @@
 //! seven activities (and the four island starters, #4709) load in order, every one stands (LF_ActivityConfig.Problem), every step names a target, every
 //! item a check or an objective names loads, and the mining starter is the maintainer's route: miner job, pickaxe,
 //! car, the mine, ore, smelt, sell. Its quests are registered with the quest manager, and a new civilian is offered
-//! the five civilian activities but not police or medic duty.
+//! the five civilian activities and the crew starter but not police or medic duty or the gated starters (#4771).
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronActivities : LF_Test
 {
@@ -76,6 +76,6 @@ class LF_Test_EveronActivities : LF_Test
 
 		array<LF_ActivityDef> listed = {};
 		LF_ActivityRules.Listed(config.m_aActivities, new LF_ActivityFacts(), listed);
-		ctx.Equal(9, listed.Count(), "a new civilian is offered the five civilian activities and the four island starters, not police or medic duty");
+		ctx.Equal(6, listed.Count(), "a new civilian is offered the five civilian activities and the crew starter, not police or medic duty, and not the gated starters (#4771)");
 	}
 }

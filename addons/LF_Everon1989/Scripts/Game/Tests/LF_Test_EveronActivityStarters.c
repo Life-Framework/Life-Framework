@@ -76,5 +76,49 @@ class LF_Test_EveronActivityStarters : LF_Test
 		}
 
 		ctx.EqualStr("mining,postal,lumber,fishing,apples,police,medic,crew,truckcheck,perkpick,rumor", ids, "the four starters follow the seven earning activities");
+
+		CheckGates(ctx, config);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #4771: the pack rows carry their gates and finish on the real event. A new civilian sees only the crew
+	//! row; Hauling 5 or a van opens the truck check; any trade at level 10 opens the perk pick; a criminal
+	//! record opens the rumor.
+	protected void CheckGates(LF_TestContext ctx, LF_ActivityConfig config)
+	{
+		LF_ActivityDef crew = config.Find("crew");
+		LF_ActivityDef truck = config.Find("truckcheck");
+		LF_ActivityDef perk = config.Find("perkpick");
+		LF_ActivityDef rumor = config.Find("rumor");
+		if (!crew || !truck || !perk || !rumor)
+			return;
+
+		LF_TestGateFacts fresh = new LF_TestGateFacts();
+		ctx.EqualStr(string.Empty, LF_ActivityRules.Gate(crew, fresh), "a new civilian sees the crew row");
+		ctx.EqualStr("trade", LF_ActivityRules.Gate(truck, fresh), "a new civilian does not see the truck check");
+		ctx.EqualStr("trade", LF_ActivityRules.Gate(perk, fresh), "a new civilian does not see the perk pick");
+		ctx.EqualStr("record", LF_ActivityRules.Gate(rumor, fresh), "a new civilian does not see the rumor");
+
+		LF_TestGateFacts miner = new LF_TestGateFacts();
+		miner.m_mLevels.Set("MINER", 10);
+		ctx.EqualStr(string.Empty, LF_ActivityRules.Gate(perk, miner), "a level-10 miner sees the perk pick");
+		ctx.EqualStr("trade", LF_ActivityRules.Gate(truck, miner), "a level-10 miner has no Hauling 5 or van for the truck check");
+
+		LF_TestGateFacts hauler = new LF_TestGateFacts();
+		hauler.m_mLevels.Set("DELIVERY", 5);
+		ctx.EqualStr(string.Empty, LF_ActivityRules.Gate(truck, hauler), "Hauling 5 sees the truck check");
+		LF_TestGateFacts owner = new LF_TestGateFacts();
+		owner.m_sOwnedClass = "van";
+		ctx.EqualStr(string.Empty, LF_ActivityRules.Gate(truck, owner), "a van owner sees the truck check");
+
+		LF_TestGateFacts crook = new LF_TestGateFacts();
+		crook.m_bRecord = true;
+		ctx.EqualStr(string.Empty, LF_ActivityRules.Gate(rumor, crook), "a criminal record sees the rumor");
+
+		ctx.Equal(LF_EActivityCheck.CREW, crew.m_aSteps[0].m_eCheck, "the crew row finishes when a crew is founded");
+		ctx.Equal(LF_EActivityCheck.FLAG, truck.m_aSteps[0].m_eCheck, "the truck check row finishes when the check is passed");
+		ctx.EqualStr(LF_DrivingCheck.LICENCE_FLAG, truck.m_aSteps[0].m_sCheckParam, "on the truck licence flag");
+		ctx.Equal(LF_EActivityCheck.PERK, perk.m_aSteps[0].m_eCheck, "the perk row finishes when a perk is picked");
+		ctx.Equal(LF_EActivityCheck.ARRIVE, rumor.m_aSteps[0].m_eCheck, "the rumor row still finishes on arrival (no fence event yet)");
 	}
 }
