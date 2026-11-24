@@ -50,8 +50,12 @@ class LF_MedicCarPool
 	static const int SLOTS = 3;
 	//! Seconds between two draws by the same medic, so a held key cannot churn cars.
 	static const int COOLDOWN_SECONDS = 10; // lf-fixed: an anti-spam guard on one medic's draws, not a server tunable
-	//! A vehicle within this many metres of the bay blocks it.
+	//! A vehicle whose origin is within this many metres of the bay centre blocks it. The origin, not the bounds (#4878):
+	//! a query on bounds reached a car 5 m away (the taxi cab 7.9 m off sat at the edge of it), so a cab that settled a
+	//! little closer refused the first draw of a session with nothing in the bay; the next draw worked.
 	static const float BAY_CLEAR_METRES = 4.0;
+	//! The candidate query reaches this much further than the clear radius so a car's bounds are not missed; the origin test decides.
+	protected static const float BAY_QUERY_REACH = 4.0; // lf-fixed: a geometry bound (half a long car), not a tunable
 	//! The medic must stand this close to the board.
 	static const float REACH_METRES = 5; // lf-fixed: the board's interaction reach plus slack, a geometry bound
 	protected static const float SETTLE_LIFT = 1.2;
@@ -63,6 +67,9 @@ class LF_MedicCarPool
 	protected static ref map<string, float> s_mLastDraw = new map<string, float>();
 	protected static int s_iBayHits;
 	protected static EntityID s_IgnoreId;
+	//! What the last bay check hit first, for the refusal's log line (#4878): prefab, position, distance.
+	protected static string s_sBayBlocker;
+	protected static vector s_vBayAt;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -71,6 +78,7 @@ class LF_MedicCarPool
 		s_mLastDraw = new map<string, float>();
 		s_iBayHits = 0;
 		s_IgnoreId = EntityID.INVALID;
+		s_sBayBlocker = string.Empty;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -183,7 +191,7 @@ class LF_MedicCarPool
 			previousId = previous.GetID();
 
 		if (BayBlocked(transform[3], previousId))
-			return Refuse(REFUSED_BAY_BLOCKED, string.Format("draw refused: a vehicle stands in the bay at %1", transform[3]), refusalKey);
+			return Refuse(REFUSED_BAY_BLOCKED, string.Format("draw refused: a vehicle stands in the bay at %1: %2", transform[3], s_sBayBlocker), refusalKey);
 
 		if (previous)
 		{
@@ -264,16 +272,28 @@ class LF_MedicCarPool
 	{
 		s_iBayHits = 0;
 		s_IgnoreId = ignore;
-		GetGame().GetWorld().QueryEntitiesBySphere(at, BAY_CLEAR_METRES, CollectVehicle, null, EQueryEntitiesFlags.DYNAMIC);
+		s_sBayBlocker = string.Empty;
+		s_vBayAt = at;
+		GetGame().GetWorld().QueryEntitiesBySphere(at, BAY_CLEAR_METRES + BAY_QUERY_REACH, CollectVehicle, null, EQueryEntitiesFlags.DYNAMIC);
 		return s_iBayHits > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected static bool CollectVehicle(IEntity entity)
 	{
-		if (Vehicle.Cast(entity) && entity.GetID() != s_IgnoreId)
+		if (Vehicle.Cast(entity) && entity.GetID() != s_IgnoreId && vector.Distance(entity.GetOrigin(), s_vBayAt) <= BAY_CLEAR_METRES)
 		{
 			s_iBayHits++;
+			if (s_sBayBlocker.IsEmpty())
+			{
+				string prefabName = "no prefab";
+				EntityPrefabData prefabData = entity.GetPrefabData();
+				if (prefabData)
+					prefabName = prefabData.GetPrefabName();
+
+				s_sBayBlocker = string.Format("%1 (id %2) at %3, %4 m from the bay centre", prefabName, entity.GetID(), entity.GetOrigin(), vector.Distance(entity.GetOrigin(), s_vBayAt));
+			}
+
 			return false;
 		}
 
