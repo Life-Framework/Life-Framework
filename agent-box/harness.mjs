@@ -48,6 +48,8 @@ const MENU_ACTIONS = new Set([
   "MenuRight",
   "MenuSelect",
   "LF_OpenDebugMenu",
+  // The digit keys of the menus: a dialogue reply number (0 is Goodbye), an ATM keypad digit.
+  ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => `LF_Keypad${d}`),
 ]);
 
 // --client <n> (or setBoxes) points every command at one session client's
@@ -492,6 +494,41 @@ export function waitForText(want, timeoutMs = 8000, send = sendCommand, sleep = 
   return { ...last, raw: "", found: false, status: "error", detail: `text_not_found ${want}` };
 }
 
+// What `dialogue` says when the scene is in this phase (and on this node): "closed ..." or
+// "open node=<id> phase=<line|choosing|waiting> ...".
+export function dialogueMatches(detail, phase, node) {
+  if (phase === "closed") return /^closed/.test(detail);
+  if (!/^open /.test(detail)) return false;
+  const got = /phase=(\w+)/.exec(detail);
+  if (!got || got[1] !== phase) return false;
+  if (!node) return true;
+  const at = /node=([\w-]+)/.exec(detail);
+  return !!at && at[1] === node;
+}
+
+// The scene ignores a fresh press for 350 ms after each change (LF_DialogueScene.INPUT_GUARD_MS), so the key
+// that opened a line picks nothing. A key sent right after the wait would land inside that window.
+export const DIALOGUE_SETTLE_MS = 500;
+
+// Polls `dialogue` until the scene is in the phase (on the node), then waits out the input guard so the
+// next `input` is read. A node's line runs 5 to 15 s and a starved client answers slowly, so the budget is
+// long; times out with dialogue_not_<phase>.
+export function waitForDialogue(phase, node, timeoutMs = 45000, send = sendCommand, sleep = pause) {
+  if (!["line", "choosing", "waiting", "closed"].includes(phase)) throw new Error(`dialogue-wait <line|choosing|waiting|closed> [node]: got ${phase}`);
+  const deadline = Date.now() + timeoutMs;
+  let last = null;
+  do {
+    last = send({ verb: "dialogue" }, 5000);
+    if (last.status === "ok" && dialogueMatches(last.detail, phase, node)) {
+      if (phase !== "closed") sleep(DIALOGUE_SETTLE_MS);
+      return { ...last, found: true };
+    }
+    if (last.status !== "ok" && last.detail === "no_session") return { ...last, found: false };
+    sleep(300);
+  } while (Date.now() < deadline);
+  return { ...last, raw: "", found: false, status: "error", detail: `dialogue_not_${phase}${node ? ` ${node}` : ""} (last: ${last?.detail})` };
+}
+
 export function toolchainPaths() {
   const programFiles = process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)";
   const steam = join(programFiles, "Steam", "steamapps", "common");
@@ -817,6 +854,10 @@ export function runFlow(lines, name = "flow") {
     else if (verb === "ui" && rest[0] === "text") result = sendCommand({ verb: "ui", mode: "text" });
     else if (verb === "ui") result = sendCommand({ verb: "ui" });
     else if (verb === "wait-text") result = waitForText(rest.join(" "));
+    // dialogue-wait <line|choosing|waiting|closed> [node]: poll `dialogue` until the scene is in that phase
+    // (on that node): the player's "read, then answer". dialogue <verb> [value]: a scene verb, e.g. `dialogue pick 0`.
+    else if (verb === "dialogue-wait") result = waitForDialogue(rest[0], rest[1]);
+    else if (verb === "dialogue") result = sendCommand({ verb: "dialogue", arg: rest[0], value: rest[1] }, 10000);
     else if (verb === "ui-shot") result = sendCommand({ verb: "capture", mode: "ui", name: rest[0] }, 25000);
     else if (verb === "click") result = sendCommand({ verb: "click", widget: rest[0], index: rest[1] });
     else if (verb === "type") result = sendCommand({ verb: "type", widget: rest[0], text: rest[1] });
@@ -1130,6 +1171,27 @@ function selftest() {
   if (!counter || !counter.actions.includes("LF_TraderSellAction")) throw new Error("TraderChainCounter missing");
   const saw = findPad(list, "Sawmill_Debug");
   if (!saw || !saw.actions.includes("LF_ProcessAction")) throw new Error("Sawmill_Debug process missing");
+  if (buildLine(1, { verb: "input", action: "LF_Keypad1" }) !== "1 input LF_Keypad1") throw new Error("the dialogue digit key is allowed");
+  for (const bad of ["LF_Keypad", "LF_Keypad10", "LF_KeypadBack"]) {
+    let refused = false;
+    try {
+      buildLine(1, { verb: "input", action: bad });
+    } catch {
+      refused = true;
+    }
+    if (!refused) throw new Error(`${bad} was accepted`);
+  }
+  const phases = [
+    ["open node=greet phase=choosing replies=1 camera=1 shown=1", "choosing", "greet", true],
+    ["open node=greet phase=line replies=0 camera=1", "choosing", undefined, false],
+    ["open node=menu phase=choosing replies=3", "choosing", "greet", false],
+    ["closed lines=0 mouthframes=0", "closed", undefined, true],
+    ["closed lines=0", "choosing", undefined, false],
+  ];
+  for (const [detail, phase, node, want] of phases) if (dialogueMatches(detail, phase, node) !== want) throw new Error(`dialogueMatches ${detail} ${phase} ${node}`);
+  const seen = [];
+  const polled = waitForDialogue("choosing", "greet", 5000, () => { seen.push(1); return { status: "ok", detail: seen.length < 3 ? "open node=greet phase=line replies=0" : "open node=greet phase=choosing replies=1" }; }, () => {});
+  if (!polled.found || seen.length !== 3) throw new Error(`waitForDialogue polled ${seen.length} times`);
   let rejected = false;
   try {
     buildLine(1, { verb: "input", action: "MoveForward" });

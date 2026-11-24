@@ -32,6 +32,9 @@ class LF_DialogueScene
 	protected static int s_iFocus;
 	//! MenuUp or MenuDown was down last tick: a held key (the harness holds one 300 ms) steps once.
 	protected static bool s_bStepHeld;
+	//! MenuSelect and the digit key (-1 none) that were down last tick: only a new press acts.
+	protected static bool s_bSelectHeld;
+	protected static int s_iDigitHeld = -1;
 	protected static bool s_bBackListening;
 	protected static bool s_bChoosing;
 	protected static bool s_bWaiting;
@@ -56,6 +59,8 @@ class LF_DialogueScene
 		s_bChoosing = false;
 		s_bWaiting = false;
 		s_bStepHeld = false;
+		s_bSelectHeld = false;
+		s_iDigitHeld = -1;
 		s_iShown = 0;
 		s_sAfterHook = string.Empty;
 		s_sAfterParam = string.Empty;
@@ -566,6 +571,21 @@ class LF_DialogueScene
 		// for keyboard and pad; they only answer while activated every frame.
 		input.ActivateContext("MenuContext");
 		input.ActivateContext("MenuWithEditorContext");
+		// A key counts when it goes down, not while it stays down (PressEdge, DigitEdge): the harness
+		// holds an input for several frames so one slow frame cannot swallow it, and that hold, like a
+		// held real key, must act once. Read before the guard so a key held through it is not a new press.
+		bool selectDown = input.GetActionTriggered("MenuSelect");
+		bool selectPressed = PressEdge(selectDown, s_bSelectHeld);
+		s_bSelectHeld = selectDown;
+		int digit = -1;
+		for (int key = 0; key <= LF_DialogueFlow.MAX_OPTIONS; key++)
+		{
+			if (input.GetActionTriggered("LF_Keypad" + key))
+				digit = key;
+		}
+
+		int digitPressed = DigitEdge(digit, s_iDigitHeld);
+		s_iDigitHeld = digit;
 		if (now < s_iGuardUntilMs)
 			return;
 
@@ -576,7 +596,7 @@ class LF_DialogueScene
 		}
 
 		// 0 leaves at any moment, like Back.
-		if (input.GetActionTriggered("LF_Keypad" + LF_DialogueKeys.GOODBYE_DIGIT))
+		if (digitPressed == LF_DialogueKeys.GOODBYE_DIGIT)
 		{
 			Goodbye();
 			return;
@@ -584,20 +604,17 @@ class LF_DialogueScene
 
 		if (!s_bChoosing)
 		{
-			if (!s_bWaiting && input.GetActionTriggered("MenuSelect"))
+			if (!s_bWaiting && selectPressed)
 				SkipLine();
 
 			return;
 		}
 
 		int replies = s_aRows.Count();
-		for (int digit = 1; digit <= replies; digit++)
+		if (digitPressed >= 1 && digitPressed <= replies)
 		{
-			if (input.GetActionTriggered("LF_Keypad" + digit))
-			{
-				PickRow(LF_DialogueKeys.RowOfDigit(digit, replies));
-				return;
-			}
+			PickRow(LF_DialogueKeys.RowOfDigit(digitPressed, replies));
+			return;
 		}
 
 		bool down = input.GetActionTriggered("MenuDown");
@@ -612,13 +629,31 @@ class LF_DialogueScene
 			return;
 		}
 
-		if (!input.GetActionTriggered("MenuSelect"))
+		if (!selectPressed)
 			return;
 
 		if (LF_DialogueKeys.IsGoodbye(s_iFocus, replies))
 			Goodbye();
 		else
 			PickRow(s_iFocus);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True on the tick a key goes down: down now and not down on the tick before.
+	static bool PressEdge(bool down, bool wasDown)
+	{
+		return down && !wasDown;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The digit key that went down this tick, or -1: `digit` is the key down now (-1 none), `wasDigit`
+	//! the one down on the tick before. A key still held from the last tick is not pressed again.
+	static int DigitEdge(int digit, int wasDigit)
+	{
+		if (digit == wasDigit)
+			return -1;
+
+		return digit;
 	}
 
 	//------------------------------------------------------------------------------------------------
