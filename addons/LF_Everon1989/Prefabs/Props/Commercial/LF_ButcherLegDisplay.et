@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "7B1E4D2A9C305F68"
+ components {
+  MeshObject "{3D8A6C1F5E9B2047}" {
+   Object "{4C5DB4BC63F4D4F0}Assets/Items/Food/MeatLeg_01.xob"
+  }
+ }
+ coords 0 0 0
+}

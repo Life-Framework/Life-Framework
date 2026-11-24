@@ -201,6 +201,247 @@
       "attach": "table:butcher-freezer"
     },
     {
+      "id": "butcher-rack-1",
+      "name": "Butcher_rack_1",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5.54,
+        0.202,
+        -0.3
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "butcher-rack-1-dry-00",
+      "name": "Butcher_rack_1_dry_00",
+      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        0.794,
+        -0.1
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-dry-01",
+      "name": "Butcher_rack_1_dry_01",
+      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        0.794,
+        0.2
+      ],
+      "yaw": 104,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-dry-02",
+      "name": "Butcher_rack_1_dry_02",
+      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        0.794,
+        0.5
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-dry-03",
+      "name": "Butcher_rack_1_dry_03",
+      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        0.794,
+        0.8
+      ],
+      "yaw": 104,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-dry-10",
+      "name": "Butcher_rack_1_dry_10",
+      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        1.78,
+        -0.1
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-dry-11",
+      "name": "Butcher_rack_1_dry_11",
+      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        1.78,
+        0.2
+      ],
+      "yaw": 104,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-dry-12",
+      "name": "Butcher_rack_1_dry_12",
+      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        1.78,
+        0.5
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-dry-13",
+      "name": "Butcher_rack_1_dry_13",
+      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        1.78,
+        0.8
+      ],
+      "yaw": 104,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-0",
+      "name": "Butcher_rack_1_leg_0",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        1.287,
+        -0.05
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-1",
+      "name": "Butcher_rack_1_leg_1",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        1.287,
+        0.4
+      ],
+      "yaw": 98,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-rack-1-leg-2",
+      "name": "Butcher_rack_1_leg_2",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-rack-1",
+      "offset": [
+        -5.33,
+        1.287,
+        0.85
+      ],
+      "yaw": 106,
+      "floor": "f0",
+      "attach": "shelf:butcher-rack-1"
+    },
+    {
+      "id": "butcher-meat-4",
+      "name": "Butcher_meat_4",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-counter-1",
+      "offset": [
+        -5.05,
+        1.292,
+        3.1
+      ],
+      "yaw": 12,
+      "floor": "f0",
+      "attach": "counter:butcher-counter-1"
+    },
+    {
+      "id": "butcher-meat-5",
+      "name": "Butcher_meat_5",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-counter-1",
+      "offset": [
+        -3.95,
+        1.292,
+        3.1
+      ],
+      "yaw": -10,
+      "floor": "f0",
+      "attach": "counter:butcher-counter-1"
+    },
+    {
+      "id": "butcher-meat-6",
+      "name": "Butcher_meat_6",
+      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-counter-1",
+      "offset": [
+        -4.45,
+        1.292,
+        3.1
+      ],
+      "yaw": 40,
+      "floor": "f0",
+      "attach": "counter:butcher-counter-1"
+    },
+    {
+      "id": "butcher-freezer-meat-2",
+      "name": "Butcher_freezer_meat_2",
+      "prefab": "{0D111763BAACCF48}Prefabs/Props/Commercial/LF_ButcherLegDisplay.et",
+      "role": "dressing",
+      "verb": "on butcher-freezer",
+      "offset": [
+        -5.2,
+        1.104,
+        1.75
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "table:butcher-freezer"
+    },
+    {
       "id": "butcher-fascia",
       "name": "Butcher_fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
