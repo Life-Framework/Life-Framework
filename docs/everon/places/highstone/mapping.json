@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "template": "ore-face",
+  "place": "highstone",
+  "status": "approved",
+  "note": "Hand-written for the Highstone hill iron mine (#3242, the 0.3.0 gap audit's biggest hole in the worker's arc: the second iron site past Coalman's Brow). Highstone is the wooded hill at 5014, 8475, about 2.3 km from Saint-Philippe. No building stands there (the only one in 150 m is a recreation cottage 142 m away), so its one slot is a hostless plot like Coalman's Brow (#3666): the kit anchors on the plot centre and every row rests on the probed ground. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": {
+      "at": "2026-11-24",
+      "tool": "tools\\cli scout",
+      "command": "tools\\cli scout 5014,8475 --radius 150",
+      "view": 60,
+      "gameBuild": "Arma Reforger build 26266485 (installed 2026-11-08)",
+      "world": "Worlds/CoreOnEveron/CoreOnEveron.ent"
+    },
+    "buildings": 1,
+    "freePlots": 8
+  },
+  "slots": {
+    "mine": {
+      "plot": "p6",
+      "kit": "iron-face",
+      "hostless": true,
+      "why": [
+        "free plot p6 (24 x 42 m, ground 111.9 to 115.9 m) on the hill's west flank: the flattest open ground within 60 m of the Highstone label, 44 m from the NE-SW road r05, so a truck backs up from the track",
+        "the ground falls gently across the plot; the ore face and the rock wall stand on the uphill (east) side and the loading apron opens to the road on the west side"
+      ]
+    }
+  }
+}
