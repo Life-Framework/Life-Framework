@@ -37,7 +37,7 @@
     },
     "front": "+z",
     "counters": [],
-    "adapt": "The registry office of a small site cabin or kiosk with a door: a clerk's desk and chair at the back, the war notice board on the back wall, a plate beside the door. The rows sit at the footprint centre; `town fit --check` shows the seat corrections. Rows are rigid: shift, never stretch."
+    "adapt": "The registry office of a small site cabin or kiosk with a door: a clerk's desk and chair at the back, the war notice board on the back wall, a plate beside the door. The rows sit at the footprint centre; `town fit --check` shows the seat corrections. Rows are rigid: shift, never stretch. The registrar (Gaspard Perrin) stands behind the chair, facing the desk. The flag wall stands on the open ground against the long side wall, its front (-z of the prefab) toward the street side; its twenty samples fill 5 x 4 m in front of it."
   },
   "rows": [
     {
@@ -123,6 +123,38 @@
       ],
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "registrar",
+      "name": "Org_Registrar",
+      "prefab": "{A93B5D07E21C4F86}Configs/Npcs/LF_Npc_Townsfolk_Registrar.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        0.55,
+        0.451,
+        0.5
+      ],
+      "yaw": -90,
+      "class": "LF_NpcBaseEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "flag-wall",
+      "name": "Org_FlagWall",
+      "prefab": "{E0EE8DD048907D65}Prefabs/Organizations/LF_OrgFlagWall.et",
+      "role": "board",
+      "verb": "on floor",
+      "offset": [
+        2.4,
+        0,
+        -1.2
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
     }
   ]
 }

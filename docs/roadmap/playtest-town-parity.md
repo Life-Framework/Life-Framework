@@ -111,3 +111,30 @@ TP-8 (the parity check) walks hours 0 to 2: rows 1 to 22. Rows 23 to 26 are file
 **TP-6b result (#4246, 2026-11-23).** The runtime answer to "what does a run or POI do with no place": a POI with no place draws nothing, and a run stop with no place is skipped; a guide step with no place has no arrow. So the town header now carries three town-only overlays (`LF_MapPois_PlaytestTown.conf`, `LF_MapRuns_PlaytestTown.conf`, `LF_Activities_PlaytestTown.conf`) that remove every row whose place the town does not yet stand, and `LF_Test_PlaytestTownParityData` checks what is left resolves. At card time the town placed only the `ParcelDepot`, `PostalPoint`, `Orchard` and `MarketTrader` places and the miner workplace, so what stayed is the `apples` and `postal` runs. **Rows each card restores (delete the row from the overlay when its place stands):** TP-1: POI `TaxiRank`, `TownBoard`, `Bank`; TP-2: POI `Clerk`, `HostelBed`, `StoreCounter`, `Garage`, `VehicleLot`, guide `apples` (`OrchardTrees`); TP-3: runs `mining`, POI `WholesaleCounter`, guide `mining` (`StoreCounter coalmans-brow.mine-supply`, `Processor`, `WholesaleCounter`); TP-4 follow-up: guide `postal` (`LicenceDesk`); TP-5: POI `ClothingCounter`, `GunCounter`; TP-10: POI `FuelTill`, `BarberChair`, `CafeTable`, `FishingSpot`, `RoadFuel`, `FarmCompound`, `RoadFarm`, `WheatField`, `ChopYard`, `TimberCounter`, `ScrapRecycler`, runs `lumber`, `fishing`, guides `lumber`, `fishing`; TP-11: POI `PoliceStation`, `PoliceArmoury`, `HarbourMaster`, `Church`, `RangeLane`, `PlotForSale`, guides `police`, `medic`. Island-only POI kinds (`Fence`, `contested-site`, `Smokehouse`, `mine`, `plant`, `FuelDepot`) stay out of the town.
 
 **TP-6b follow-up result (#4388, 2026-11-23).** Rows deleted from the town overlays because their place now stands, each as a `LF_PlaceComponent` marker in `Village_Onboarding.layer` or the new `Village_Places.layer` at an entity the town already had, with the island's kind and id: POI `TownBoard` (`saint-philippe.board`, the `Sign_TownMap` board), `Bank` (`saint-philippe.bank`, the teller), `PoliceStation` (`saint-philippe.police`, the duty desk), `ClothingCounter` (`saint-philippe.clothing`), `FuelTill` (`saint-philippe.fuel`), `GunCounter` (`saint-philippe.gun-counter`); guide `apples` (`OrchardTrees saint-philippe.orchard`), `police` (`PoliceDesk saint-philippe.police`), `medic` (`MedicDesk saint-philippe.clinic`). Still removed (28 POI kinds, 3 runs, 4 guides): everything whose place the layers do not hold. The mining run and guide also stay out: the miner desk registers `Workplace coalmans_brow_mine` (the `LF_Test_EveronMining*` tests and `LF_BuyerDemand` key on that id), the runs name `coalmans-brow.mine`, and the pickaxe counter, furnace and dock buyer are not placed. `playtest-town/parity-data` is now in `tools/test/town-tests.json` with its own `world` (the town header), so `test --town` and the main guard run it on the header.
+
+**TP-8 result (#4480, 2026-11-24).** Round report: [2026-11-25-playtest-town.md](../playtest/rounds/2026-11-25-playtest-town.md). Rows 1 to 22, each done or with its card:
+
+| Row | System | Result |
+|---|---|---|
+| 1 | ATM kiosks | done; `ATM_Debug` still stands, #4680 |
+| 2 | Bus stops | done |
+| 3 | Boards | done (square board); per-stop boards not walked, #4679 |
+| 4 | Taxi rank | not placed, #4680 |
+| 5 | Arrival and clerk | welcome pack not seen, #4677 |
+| 6 | Hostel | not placed, hostel text points to it, #4676 |
+| 7 | Starter car and lot | lot done; starter car handout not walked, #4679 |
+| 8 | Orchard and press | stands and offers actions; apple yield not seen, #4679 |
+| 9 | Market | done |
+| 10 | Mine desk and rocks | desk done; ore rocks not driven, #4679; duplicate Pickaxe row, #4680 |
+| 11 | Furnace | done; wording, #4680 |
+| 12 | Pickaxe counter | done |
+| 13 | Iron buyer | done |
+| 14 | Postal run | done |
+| 15 | Clothing | mannequins done; counter sheet not seen, #4679 |
+| 16 | Shop counters | not walked, #4679 |
+| 17 | Shops with no building | TP-10 (plan) |
+| 18 | Map POIs | not walked, #4679 |
+| 19 | Run chains | not walked, #4679 |
+| 20 | Guide and HUD rows | quiz and F3 done; F2 not walked, #4679; starting money differs from the island, #4678 |
+| 21 | Jail doors | not walked, #4679 |
+| 22 | Bail phone | done |

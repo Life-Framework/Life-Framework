@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A483FD5B3992DD8A}Sounds/Ambience/Outposts/Atmosphere_OutpostRadio.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
