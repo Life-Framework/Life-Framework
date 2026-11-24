@@ -811,7 +811,7 @@ export function runFlow(lines, name = "flow") {
       out.push(`wait ${ms}`);
       continue;
     }
-    if (verb === "stand") result = sendCommand({ verb: "stand", entityName: rest[0] });
+    if (verb === "stand") result = sendCommand({ verb: "stand", entityName: rest[0], side: rest[1] });
     else if (verb === "look") result = sendCommand({ verb: "look" });
     else if (verb === "state") result = sendCommand({ verb: "state" }, 10000);
     else if (verb === "ui" && rest[0] === "text") result = sendCommand({ verb: "ui", mode: "text" });
@@ -833,7 +833,7 @@ export function runFlow(lines, name = "flow") {
     // send <verb> [words]: a feature verb (a modded LF_AgentHarnessVerbs), its words passed as they are.
     else if (verb === "send" && /^[a-z][a-z0-9]*$/.test(rest[0] ?? "")) result = sendCommand({ verb: rest[0], words: rest.slice(1) }, 10000);
     else if (verb === "layer") {
-      const played = playLayer(rest[0], rest[1]);
+      const played = playLayer(rest[0], rest[1], rest[2]);
       out.push(...played.lines);
       if (played.code !== 0) {
         code = played.code;
@@ -976,7 +976,17 @@ function waitForAction(className, entityName, timeoutMs = 5000) {
   return last;
 }
 
-export function playLayer(name, actionName) {
+// Sides `layer` tries when the action is not offered where it first stood (#4677). `stand` defaults to
+// the east side, which is the back of a counter clerk who faces west (the playtest town registry
+// clerk): her customer-side-only prompt is never shown there. A named side is tried alone.
+export const LAYER_SIDE_FALLBACK = ["", "w", "n", "s"];
+
+export function layerSideOrder(side) {
+  if (side) return [side];
+  return LAYER_SIDE_FALLBACK;
+}
+
+export function playLayer(name, actionName, side) {
   const pad = findPad(pads(), name);
   if (!pad) {
     console.error(`unknown layer entity ${name}`);
@@ -985,13 +995,21 @@ export function playLayer(name, actionName) {
   }
   const action = actionName || pad.actions[0];
   const lines = [];
-  const stood = sendCommand({ verb: "stand", entityName: pad.name });
-  lines.push(stood.raw || `${stood.id} ${stood.status} ${stood.detail}`);
-  if (stood.status !== "ok") return { code: 1, lines, pad };
-  if (action) {
-    const seen = waitForAction(action, pad.name);
+  const sides = layerSideOrder(side);
+  for (let i = 0; i < sides.length; i++) {
+    const spec = { verb: "stand", entityName: pad.name };
+    if (sides[i]) spec.side = sides[i];
+    const stood = sendCommand(spec);
+    lines.push(stood.raw || `${stood.id} ${stood.status} ${stood.detail}`);
+    if (stood.status !== "ok") return { code: 1, lines, pad };
+    if (!action) break;
+    const seen = waitForAction(action, pad.name, sides.length > 1 ? 2500 : 5000);
+    if (seen.status === "ok" && seen.detail.includes(action)) break;
     lines.push(seen.raw || `${seen.id} ${seen.status} ${seen.detail}`);
-    if (seen.status !== "ok" || !seen.detail.includes(action)) return { code: 1, lines, pad };
+    if (i === sides.length - 1) return { code: 1, lines, pad };
+    lines.push(`layer: ${action} not offered on the ${sides[i] || "default (east)"} side of ${pad.name}; trying ${sides[i + 1]}`);
+  }
+  if (action) {
     const used = sendCommand({ verb: "use", className: action, entityName: pad.name });
     lines.push(used.raw || `${used.id} ${used.status} ${used.detail}`);
     if (used.status !== "ok") return { code: 1, lines, pad };
@@ -1014,6 +1032,8 @@ function printResult(result) {
 
 function selftest() {
   const yes = () => true;
+  // #4677: layer tries every side when none is named (the registry clerk shows her prompt on the west only); a named side is tried alone.
+  if (layerSideOrder("").join(",") !== ",w,n,s" || layerSideOrder("w2").join(",") !== "w2") throw new Error("layer side order");
   if (decideClaim(null, "C:/a", yes).claim !== true) throw new Error("free channel is claimed");
   if (decideClaim({ pid: 7, root: "C:/a" }, "C:\\a", yes).ok !== true) throw new Error("own claim drives");
   if (decideClaim({ pid: 7, root: "C:/b" }, "C:/a", yes).ok !== false) throw new Error("other checkout refuses");
@@ -1556,8 +1576,8 @@ function usage() {
   node agent-box/harness.mjs launch
   node agent-box/harness.mjs play
   node agent-box/harness.mjs layers
-  node agent-box/harness.mjs layer <EntityName> [ActionClass]
-  node agent-box/harness.mjs stand <EntityName>
+  node agent-box/harness.mjs layer <EntityName> [ActionClass] [side]
+  node agent-box/harness.mjs stand <EntityName> [side]
   node agent-box/harness.mjs look
   node agent-box/harness.mjs ui [text]
   node agent-box/harness.mjs wait-text <text> [--timeout ms]
@@ -1647,7 +1667,7 @@ function main(argv) {
       return 0;
     }
     if (cmd === "layer") {
-      const played = playLayer(rest[0], rest[1]);
+      const played = playLayer(rest[0], rest[1], rest[2]);
       for (const line of played.lines) console.log(line);
       return played.code;
     }

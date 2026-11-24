@@ -14,7 +14,7 @@ state
 shot world Quest_Clerk
 # Talking to the clerk is a conversation scene: the greeting plays, the first reply
 # ("I am new in town.") runs the talk, the clerk answers, Back leaves.
-layer Quest_Clerk LF_QuestAction
+layer Quest_Clerk LF_QuestAction w
 wait 5000
 shot ui arrival_1_replies
 input MenuSelect
@@ -50,7 +50,7 @@ shot ui arrival_4_deposited
 input MenuBack
 wait 1500
 shot ui arrival_5_errand
-layer Quest_Clerk LF_QuestAction
+layer Quest_Clerk LF_QuestAction w
 wait 5000
 input MenuSelect
 wait 2000
@@ -58,7 +58,7 @@ shot ui arrival_5_welcome
 input MenuBack
 wait 1500
 state
-layer Quest_Clerk LF_QuestAction
+layer Quest_Clerk LF_QuestAction w
 wait 5000
 input MenuSelect
 wait 2000
