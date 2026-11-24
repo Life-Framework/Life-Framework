@@ -200,4 +200,45 @@ GenericEntity Fit_coalmans_brow_mine_mine_rock_9 : "{735E970ACBB1B473}Prefabs/Ro
 GenericEntity Mapper_coalmans_brow_mine_M1 : "{A4E81D6C2F9B3057}Prefabs/Props/LF_ShiftBoard.et" {
  coords 4336.51 34.313 10406.491
  angleY 0
+GenericEntity Fit_coalmans_brow_mine_whistle_morning : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundSlot "atmo_shift_whistle"
+   m_fRadius 105
+   m_fHourFrom 6
+   m_fHourTo 6.02
+   m_sGroup "coalmans_brow_whistle"
+   m_iPriority 3
+  }
+ }
+ coords 4339.5 36.4 10402
+}
+GenericEntity Fit_coalmans_brow_mine_whistle_evening : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundSlot "atmo_shift_whistle"
+   m_fRadius 105
+   m_fHourFrom 18
+   m_fHourTo 18.02
+   m_sGroup "coalmans_brow_whistle"
+   m_iPriority 3
+  }
+ }
+ coords 4339.5 36.4 10400.8
+}
+GenericEntity Fit_coalmans_brow_mine_bed_shift : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundSlot "atmo_mine_bed"
+   m_fRadius 36
+   m_fHourFrom 6
+   m_fHourTo 18
+   m_sGroup "coalmans_brow_bed"
+   m_iPriority 1
+  }
+ }
+ coords 4334.5 35.6 10408
+}
+GenericEntity Fit_coalmans_brow_mine_siren : "{7CEDFBCC105CECFF}Prefabs/Atmosphere/LF_SirenShift.et" {
+ coords 4339.5 36.4 10403
 }
