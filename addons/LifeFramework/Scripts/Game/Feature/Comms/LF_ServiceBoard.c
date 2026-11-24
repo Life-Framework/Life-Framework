@@ -104,7 +104,7 @@ class LF_ServiceBoard
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: take the call a caller placed to a service off its board, because its job is done or its
-	//! subject is gone (a treated or cleared casualty, #4852). eturn How many board lines left.
+	//! subject is gone (a treated or cleared casualty, #4852). \return How many board lines left.
 	static int Close(string service, string callerUid)
 	{
 		if (!s_aCalls || callerUid.IsEmpty())

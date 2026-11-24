@@ -4450,6 +4450,16 @@ class LF_AgentHarness
 			return null;
 		}
 
+		// A casualty the medic generator spawned (#4853): Casualty or casualty:<n>, the server's open list.
+		IEntity casualty = LF_CasualtyHarness.Named(entityName);
+		if (casualty)
+		{
+			if (FindOnEntity(casualty, className))
+				return casualty;
+
+			return null;
+		}
+
 		// A spawned resident by id (#3650): the server's live table; null on a client or when not live.
 		if (LF_ResidentHarness.IdOf(entityName) != "")
 		{

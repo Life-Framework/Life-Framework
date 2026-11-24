@@ -156,8 +156,10 @@ async function runCasualtyCall(args) {
   on(1, { verb: "capture", mode: "world", name: "casualty_site", x, y: y + 0.4, z, ox: 3, oy: 0.5, oz: -3 }, 25000);
   mark("at the casualty");
   if (treat) {
+    on(1, { verb: "stand", entityName: "Casualty" }, 30000); // the shot camera moved the view
+    wait(2500);
     on(1, { verb: "look" });
-    const rev = on(1, { verb: "use", className: "LF_ReviveAction" }, 15000);
+    const rev = on(1, { verb: "use", className: "LF_ReviveAction", entityName: "Casualty" }, 15000);
     if (rev.status !== "ok") fails.push(`treat: the revive returned ${rev.status} ${rev.detail}`);
     wait(11000); // "Treat the patient" holds about 8 s
     mark("treated");
@@ -182,16 +184,18 @@ async function runCasualtyCall(args) {
       fails.push(`carry: the second casualty roll returned ${second.status} ${second.detail}`);
     } else {
       mark("second casualty rolled");
-      on(1, { verb: "parkat", words: [PLACE_ENTITY.Dock, "3"] }, 10000);
+      const park1 = on(1, { verb: "casualty", words: ["ambulance", "Casualty", "4"] }, 15000);
+      if (park1.status !== "ok") fails.push(`carry: the ambulance did not park by the casualty: ${park1.status} ${park1.detail}`);
       const st2 = on(1, { verb: "stand", entityName: "Casualty" }, 30000);
       if (st2.status !== "ok") fails.push(`carry: stand Casualty returned ${st2.status} ${st2.detail}`);
       wait(2500);
       on(1, { verb: "look" });
-      const load = on(1, { verb: "use", className: "LF_LoadPatientAction" }, 15000);
+      const load = on(1, { verb: "use", className: "LF_LoadPatientAction", entityName: "Casualty" }, 15000);
       if (load.status !== "ok") fails.push(`carry: load returned ${load.status} ${load.detail}`);
       wait(6000);
       mark("second casualty loaded");
-      on(1, { verb: "parkat", words: [BED, "3"] }, 10000);
+      const park2 = on(1, { verb: "casualty", words: ["ambulance", BED, "4"] }, 15000);
+      if (park2.status !== "ok") fails.push(`carry: the ambulance did not park by the bed: ${park2.status} ${park2.detail}`);
       on(1, { verb: "stand", entityName: BED });
       wait(2500);
       on(1, { verb: "look" });
