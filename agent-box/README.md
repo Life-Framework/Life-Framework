@@ -90,7 +90,7 @@ Vanilla actions such as `SCR_DoorUserAction` stay invisible to that catalog;
 `stand` still finds those entities by name. `layer <EntityName>` stands beside
 that entity, waits until `look` shows that action (the same list the F key
 would offer), performs it, and screenshots the UI. `shot world <EntityName>`
-uses the entity coordinates when you omit x y z. `shot ui debug_menu` opens the
+uses the entity coordinates when you omit x y z. `layer <EntityName> [ActionClass] [side]` and a flow's `stand <EntityName> [side]` take the `stand` side (`e` default, `w`, `n`, `s`, whole metres like `w2`); with no side `layer` tries `e`, `w`, `n`, `s` until the action shows. A counter clerk's prompt is customer side only, so the east default is the clerk's back when the clerk faces west (the playtest town registry clerk, #4677). `shot ui debug_menu` opens the
 debug menu first.
 
 `node agent-box/harness.mjs kit` enters play (or reuses a session that is
