@@ -259,10 +259,10 @@ class LF_GatherAction : ScriptedUserAction
 		if (characterController)
 		{
 			IEntity rightHandItem = characterController.GetRightHandItem();
-			if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(rightHandItem), tool)) return true;
+			if (LF_Utils.EntityInherits(rightHandItem, tool)) return true;
 
 			IEntity leftHandItem = characterController.GetAttachedGadgetAtLeftHandSlot();
-			if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(leftHandItem), tool)) return true;
+			if (LF_Utils.EntityInherits(leftHandItem, tool)) return true;
 		}
 
 		if (checkInventory)

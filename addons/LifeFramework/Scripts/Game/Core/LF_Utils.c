@@ -8,6 +8,8 @@ enum LF_EIdentityFallback
 
 class LF_Utils : Managed
 {
+	static const int MAX_PREFAB_ANCESTRY = 12; // lf-fixed: a loop guard on the ancestor walk, not a tunable
+
 	//! Integer min, max and clamp for anything that can be large: unix seconds, millisecond stamps, money,
 	//! XP, running counters. Enforce `Math.Max`, `Math.Min` and `Math.Clamp` work in floats, so above
 	//! 2^24 (16,777,216) an int loses its low bits (unix 1800000480 comes back as 1800000512, #2787).
@@ -757,6 +759,56 @@ class LF_Utils : Managed
 			return PrefabGuid(a) == PrefabGuid(b);
 
 		return PrefabPathKey(a) == PrefabPathKey(b);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the prefab `name` is `ancestor` or a prefab that inherits it. A tier of a tool (worn,
+	//! standard and fine pickaxe, #4188) is its base tool for every rule that asks "which tool is this",
+	//! so a node, a gather and a rod row name the base and every tier counts (#4790). An empty name
+	//! or ancestor is never the same as anything; a prefab that does not load inherits nothing.
+	static bool PrefabInherits(string name, string ancestor)
+	{
+		if (name.IsEmpty() || ancestor.IsEmpty())
+			return false;
+
+		if (SamePrefab(name, ancestor))
+			return true;
+
+		Resource resource = Resource.Load(name);
+		if (!resource || !resource.IsValid())
+			return false;
+
+		return ContainerInherits(resource.GetResource().ToBaseContainer(), ancestor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \ref PrefabInherits(string, string), for a live entity: its own prefab and every ancestor of it.
+	static bool EntityInherits(IEntity entity, string ancestor)
+	{
+		if (!entity || ancestor.IsEmpty())
+			return false;
+
+		EntityPrefabData data = entity.GetPrefabData();
+		if (!data)
+			return false;
+
+		return ContainerInherits(data.GetPrefab(), ancestor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool ContainerInherits(BaseContainer prefab, string ancestor)
+	{
+		int depth = 0;
+		while (prefab && depth < MAX_PREFAB_ANCESTRY)
+		{
+			if (SamePrefab(prefab.GetResourceName(), ancestor))
+				return true;
+
+			prefab = prefab.GetAncestor();
+			depth++;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
