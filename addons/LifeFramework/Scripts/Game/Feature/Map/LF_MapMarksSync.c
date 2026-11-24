@@ -26,6 +26,78 @@ modded class SCR_MapMarkerSyncComponent
 //! own marks is sent to the server for saving (LF_MapMarksClient). Server markers (-1 owner) pass.
 modded class SCR_MapMarkerManagerComponent
 {
+	protected bool m_bLFMapEntityMissingLogged;
+
+	//------------------------------------------------------------------------------------------------
+	//! Vanilla reads the map entity once, in OnPostInit, and every later use (OnMapOpen, OnMapPanEnd, Update)
+	//! dereferences that copy. A world that places its SCR_MapEntity in a layer loaded after the game mode
+	//! (the playtest town, #4726) leaves the copy null, and OnMapOpen threw a VME every frame the map was
+	//! open (249 in one session). Pick the entity up again here; with no map entity at all, log once and
+	//! let the caller skip the map work.
+	//! \return true when the manager has a map entity to work with.
+	bool LF_BindMapEntity()
+	{
+		if (m_MapEntity)
+			return true;
+
+		m_MapEntity = SCR_MapEntity.GetMapInstance();
+		if (m_MapEntity)
+		{
+			LF_Debug.Info(LF_MapMarks.FEATURE, "marker manager picked up the map entity after its own init (the world placed it later)");
+			return true;
+		}
+
+		if (!m_bLFMapEntityMissingLogged)
+		{
+			m_bLFMapEntityMissingLogged = true;
+			LF_Debug.Error(LF_MapMarks.FEATURE, "marker manager has no map entity (this world has no SCR_MapEntity): map marks are off");
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the missing-map-entity error was logged (the test reads it).
+	bool LF_MapEntityMissingLogged()
+	{
+		return m_bLFMapEntityMissingLogged;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test hook: forget the map entity, as a game mode that initialised before the world placed one.
+	void LF_ForgetMapEntityForTest()
+	{
+		m_MapEntity = null;
+		m_bLFMapEntityMissingLogged = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnMapOpen(MapConfiguration mapConfig)
+	{
+		if (!LF_BindMapEntity())
+			return;
+
+		super.OnMapOpen(mapConfig);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnMapPanEnd(float x, float y)
+	{
+		if (!LF_BindMapEntity())
+			return;
+
+		super.OnMapPanEnd(x, y);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Update(float timeSlice)
+	{
+		if (!LF_BindMapEntity())
+			return;
+
+		super.Update(timeSlice);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void InsertStaticMarker(SCR_MapMarkerBase marker, bool isLocal, bool isServerMarker = false)
 	{
