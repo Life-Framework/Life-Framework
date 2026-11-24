@@ -75,6 +75,15 @@ export function judgeDressed(lines, count) {
   return fails;
 }
 
+// #4878: the car pool's reply is the server's log line, not the `use` verb's status (the verb says ok when the draw was
+// refused). Fails with the refusal line, which names the vehicle that blocks the bay. Pure. Returns the failures.
+export function judgeDraw(lines) {
+  const refused = lines.find((l) => l.includes("[LFDebug:MedicCarPool]") && l.includes("draw refused"));
+  if (refused) return [`draw: ${refused.slice(refused.indexOf("draw refused"))}`];
+  if (!lines.some((l) => l.includes("[LFDebug:MedicCarPool]") && l.includes(" drew "))) return ["draw: the car pool logged no draw"];
+  return [];
+}
+
 // #4849: a casualty put in a clinic bed closes its call: the bed line, the board line and the map mark. Pure. Returns the failures.
 export function judgeBed(lines, uid) {
   const delivered = findLine(lines, 0, "[LFDebug:Medic]", "put in a hospital bed by medic");
@@ -168,6 +177,7 @@ async function runCasualtyCall(args) {
   const draw = use("LF_MedicCarPoolDrawAction", POOL);
   if (draw.status !== "ok") console.log(`note: the car pool draw returned ${draw.status} ${draw.detail}`);
   wait(2500);
+  fails.push(...judgeDraw(fresh()));
   mark("ambulance drawn");
 
   // 5. Stand at the casualty body itself (the harness name Casualty, #4853), so the hold is in reach.

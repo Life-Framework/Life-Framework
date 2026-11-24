@@ -7,7 +7,7 @@
 // red-proof: 2026-11-24, with the "on the medic board closed" needle dropped from judgeCasualty this printed
 // "FAIL a treat with no board close is judged: ..." and exited 1; restored, it passes.
 import { buildLine } from "../../agent-box/harness.mjs";
-import { findLine, judgeBed, judgeCasualty, judgeDressed, parseCasualty, parseRollReply } from "../../agent-box/proofs/casualty-call.mjs";
+import { findLine, judgeBed, judgeCasualty, judgeDraw, judgeDressed, parseCasualty, parseRollReply } from "../../agent-box/proofs/casualty-call.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -77,6 +77,12 @@ ok(judgeBed(bedLines.filter((l) => !l.includes("put in a bed; call closed")), "c
 ok(judgeBed(bedLines.slice(1), "casualty:2").length === 1, "no bed delivery at all is judged");
 ok(judgeBed(bedLines.filter((l) => !l.includes("on the medic board closed")), "casualty:2").length === 1, "a delivery that left the board line is judged");
 ok(judgeBed(bedLines.filter((l) => !l.includes("closed: map mark")), "casualty:2").length === 1, "a delivery that left the map mark is judged");
+
+const drewLine = "16:37:12.615 SCRIPT : [LFDebug:MedicCarPool] uid (rank 0) drew {CD9E4E997EA1DFEF}Prefabs/Vehicles/Medic/LF_UAZ452_AmbulanceFleet.et into the bay at <4422.63,10.0254,10766.4>";
+const refusedLine = "16:35:00.956 SCRIPT (W): [LFDebug:MedicCarPool] draw refused: a vehicle stands in the bay at <4422.63,10.73,10766.4>: S105_beige.et (id 763) at <4425,10.5,10766>, 2.4 m from the bay centre";
+ok(judgeDraw([drewLine]).length === 0, "a logged draw passes");
+ok(judgeDraw([]).length === 1, "no draw line at all is judged");
+ok(judgeDraw([refusedLine]).length === 1 && judgeDraw([refusedLine])[0].includes("S105_beige.et"), "a refused draw is judged and names the blocker");
 
 console.log(failed ? `SUMMARY casualty-call-selftest fail ${failed}` : "SUMMARY casualty-call-selftest ok");
 process.exit(failed ? 1 : 0);
