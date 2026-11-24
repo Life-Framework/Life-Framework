@@ -142,13 +142,21 @@ GenericEntity Fit_coalmans_brow_mine_mine_rack : "{F6CF869062E6EDB0}Prefabs/Prop
  coords 4334.4 33.991 10399.8
  angleY 90
 }
-GenericEntity Fit_coalmans_brow_mine_mine_bench : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+GenericEntity Fit_coalmans_brow_mine_mine_bench : "{090B9013CF776866}Prefabs/Props/Furniture/TableLong_01/TableLong_01_base.et" {
  coords 4336.6 33.734 10399.8
  angleY 90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_bench_lamp : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
- coords 4336.63 34.768 10400.1
+ coords 4336.63 34.634 10400.1
  angleY 180
+}
+GenericEntity Fit_coalmans_brow_mine_mine_bench_toolbox : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
+ coords 4336.6 34.634 10399.4
+ angleY 90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_bench_vice : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
+ coords 4336.6 34.734 10398.75
+ angleY 90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_barrel_1 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
  coords 4329.3 34.752 10397.4
