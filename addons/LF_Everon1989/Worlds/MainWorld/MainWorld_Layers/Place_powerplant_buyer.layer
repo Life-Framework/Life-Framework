@@ -7,6 +7,27 @@ GenericEntity Fit_powerplant_buyer_Place {
  }
  coords 5896 5.8 9797
 }
+GenericEntity Fit_powerplant_buyer_clear_box1 {
+ components {
+  LF_BaseWorldClearComponent "{CC23E36095A72149}" {
+   m_vBoxHalfM 17 0 12.5
+   m_fBoxHeightM 12
+   m_fBoxBelowM 4
+   m_fRepeatS 5
+   m_aPrefabs {
+    "{0572596E23DDDC10}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_pinus_sylvestris_2f.et"
+    "{16D3707EA3F8DD41}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_alnus_glutinosa_3s.et"
+    "{425761285F36BF16}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_1s.et"
+    "{932E56F57F6F0C9A}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_salix_cinerea_1w.et"
+    "{960EA50FD57CD7D5}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_1sw.et"
+    "{C8E68C4C6AF159DA}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2sw.et"
+    "{DA7492F3E6B63251}PrefabLibrary/DefaultLibrary/Vegetation/Bushes/b_corylus_avellana_1l.et"
+    "{DB49D8B142D18E86}PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2s.et"
+   }
+  }
+ }
+ coords 5877 5.8 9800.5
+}
 DecalEntity Fit_powerplant_buyer_pad_a : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/Decal_Dirt_Patch_02.et" {
  coords 5874 0 9800
  angleX -90
@@ -30,11 +51,11 @@ DecalEntity Fit_powerplant_buyer_pad_d : "{AF4AA779A4546D51}Prefabs/Decals/Dirt/
  angleY -60
  scale 6
 }
-GenericEntity Fit_powerplant_buyer_coal_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 5872 4.134 9801
+GenericEntity Fit_powerplant_buyer_coal_counter : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+ coords 5872 4.164 9801
 }
 GenericEntity Fit_powerplant_buyer_coal_buyer : "{52895A24E4FC994C}Prefabs/Trader/LF_CoalBuyer_Everon1989.et" {
- coords 5872 5.174 9801
+ coords 5872 5.126 9801
 }
 GenericEntity Fit_powerplant_buyer_coal_clerk : "{DFBF063F590C7160}Configs/Npcs/LF_Npc_Townsfolk_CoalYardClerk.et" {
  coords 5872 4.094 9799.6
