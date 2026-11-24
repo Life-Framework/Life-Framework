@@ -16,10 +16,15 @@ class LF_CasualtyCallTestSink : LF_EventSubscriber
 //------------------------------------------------------------------------------------------------
 // red-proof: 2026-11-24, cli test --no-build --red LF_Test_CasualtyCall: RED-OK (RedProof() skips the medic tick, so "the tick
 //   raises a casualty", "one casualty is open" and "one medic call is placed" fail). Green without it.
+// red-proof: 2026-11-24 (#4852, #4853) the expiry, bleed-out and roll-now checks: RedProof() skips the medic tick, so the casualty
+//   is null and every one of them is skipped or fails with it; on the old code (expiry = the 900 s board expiry, bleed-out 180 s,
+//   no RollNow) "the casualty lasts 120 s" and "the body bleeds out when the call expires" fail.
 //! medic/casualty-call (#4827): with a medic on duty a generator tick spawns one hurt resident near
 //! a test place and places one medic call with that position, pinned to the medic board; a second
 //! tick with one medic stays at the cap; after the board expiry the body is gone and the call is off
-//! the board. With no medic on duty nothing spawns.
+//! the board. With no medic on duty nothing spawns. The casualty's own expiry (m_iExpirySeconds, #4852) sets
+//! both the call's end and the body's bleed-out; `RollNow` (#4853) raises one past the cap, filtered by kind,
+//! and the harness names `Casualty` / `casualty:<n>` find the body.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CasualtyCall : LF_Test
 {
@@ -44,6 +49,7 @@ class LF_Test_CasualtyCall : LF_Test
 		config.m_iPerMedic = 1;
 		config.m_iMaxOpen = 2;
 		config.m_fSpotRadius = 3;
+		config.m_iExpirySeconds = 120;
 		config.m_sPrefab = LF_CasualtyCallConfig.DEFAULT_PREFAB;
 		config.m_aRows = {};
 		config.m_aRows.Insert(LF_CasualtyCallRow.Make(KIND, SUMMARY, 1));
@@ -99,8 +105,12 @@ class LF_Test_CasualtyCall : LF_Test
 			return;
 		}
 
+		ctx.Equal(120000, casualty.m_iExpiresMs - now, "the casualty lasts 120 s, its own expiry and not the board's");
 		IEntity body = LF_CasualtyCalls.Body(casualty);
 		ctx.True(body != null, "the casualty body exists");
+		SCR_ChimeraCharacter hurt = SCR_ChimeraCharacter.Cast(body);
+		if (hurt)
+			ctx.True(Math.AbsFloat(hurt.LF_GetBleedLeft() - 120) < 1, "the body bleeds out when the call expires");
 		if (body)
 		{
 			ctx.True(vector.DistanceXZ(body.GetOrigin(), place.GetOrigin()) <= 4, "the casualty lies near the test place");
@@ -125,7 +135,29 @@ class LF_Test_CasualtyCall : LF_Test
 		ctx.True(LF_CasualtyCalls.Body(casualty) == null, "after the board expiry the body is gone");
 		ctx.Equal(0, BoardCount(expired), "after the board expiry the call is off the medic board");
 
+		RunRollNow(ctx, medic, expired + 1000);
+
 		LF_EventBus.Unsubscribe(LF_OnServiceCall, sink);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #4853: a dev roll skips the interval and the cap, takes a kind filter, and the harness names find the body.
+	protected void RunRollNow(LF_TestContext ctx, array<ref LF_ServiceCandidate> medic, int now)
+	{
+		LF_Casualty first = LF_CasualtyCalls.Tick(now, medic);
+		ctx.True(first != null, "roll now: the normal tick raises a casualty first");
+		ctx.True(LF_CasualtyCalls.RollNow(now + 1000, "no_such_kind", medic) == null, "roll now: a kind no row has rolls nothing");
+		LF_Casualty second = LF_CasualtyCalls.RollNow(now + 1000, KIND, medic);
+		ctx.True(second != null, "roll now: a second casualty past the one-per-medic cap");
+		ctx.Equal(2, LF_CasualtyCalls.Open().Count(), "roll now: both are open");
+		if (!first || !second)
+			return;
+
+		ctx.True(first.m_sCallerUid != second.m_sCallerUid, "roll now: each casualty has its own caller uid");
+		ctx.True(LF_CasualtyHarness.Named("Casualty") == LF_CasualtyCalls.Body(second), "stand name Casualty is the newest casualty body");
+		ctx.True(LF_CasualtyHarness.Named(first.m_sCallerUid) == LF_CasualtyCalls.Body(first), "stand name casualty:<n> is that casualty body");
+		ctx.True(LF_CasualtyHarness.Named("Bakery") == null, "another name is not a casualty");
+		ctx.True(LF_CasualtyHarness.Describe(second, now + 1000).Contains(second.m_sCallerUid), "the roll's reply names the casualty");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+// red-proof: 2026-11-24 (#4852) the board-line checks fail on the old code (a closed call stayed on the medic board until its expiry).
 // red-proof: 2026-11-24 `tools/cli test --no-build --red LF_Test_CasualtyTreat`: RED PROOF OK (the revive bonus check: expected 10, got 0; "MEDIC xp rose", "a second treat finds no casualty"). Green with --only.
 //! medic/casualty-treat (#4828): an on-duty medic beside a casualty from the generator (#4827) treats them:
 //! the patient wakes, the call closes (off the open list), the dressing is used up, one $10 revive bonus is
@@ -84,6 +85,8 @@ class LF_Test_CasualtyTreat : LF_Test
 		if (!body)
 			return;
 
+		ctx.Equal(1, BoardLines(now), "the casualty's call is on the medic board");
+
 		LF_InventoryUtils.AddAmount(medic, medicConfig.m_sReviveItemPrefab, 2);
 
 		// Off duty: refused, nothing changes.
@@ -101,6 +104,7 @@ class LF_Test_CasualtyTreat : LF_Test
 		ctx.Equal(LF_EReviveRefusal.NONE, treated, "the on-duty medic treats the casualty");
 		ctx.False(LF_Downed.IsDowned(body), "the patient is back on their feet");
 		ctx.Equal(0, LF_CasualtyCalls.Open().Count(), "the call is closed");
+		ctx.Equal(0, BoardLines(now), "the treated casualty's line is off the medic board");
 		ctx.Equal(1, LF_InventoryUtils.GetAmount(medic, medicConfig.m_sReviveItemPrefab), "one dressing is used up");
 		ctx.Equal(LF_DutyBonus.AmountFor(LF_DutyBonusKind.REVIVE), LF_DutyBonus.Pending(account), "the revive bonus is pending");
 		ctx.True(LF_JobLevels.XpOf(MEDIC_UID, "MEDIC") > xpBefore, "MEDIC xp rose");
@@ -124,6 +128,21 @@ class LF_Test_CasualtyTreat : LF_Test
 		ctx.Equal(0, LF_CasualtyCalls.Open().Count(), "that call closes too");
 		ctx.Equal(0, LF_DutyBonus.Pending(account), "a casualty the medic downed pays nothing");
 		ctx.Equal(1, LF_CasualtyTreat.GetUnpaidCount(), "the unpaid treat is counted");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Medic board lines with this test's summary.
+	protected int BoardLines(int nowMs)
+	{
+		array<string> entries = {};
+		LF_ServiceBoard.BuildEntries("medic", nowMs, 0, entries);
+		int count;
+		foreach (string entry : entries)
+		{
+			if (entry.Contains("test casualty: treat me"))
+				count++;
+		}
+		return count;
 	}
 
 	//------------------------------------------------------------------------------------------------

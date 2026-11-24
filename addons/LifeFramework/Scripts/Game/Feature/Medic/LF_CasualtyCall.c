@@ -108,23 +108,53 @@ class LF_CasualtyCalls
 			return null;
 		}
 
-		return Raise(config, nowMs, players);
+		return Raise(config, nowMs, players, "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, dev: roll one casualty now (#4853). Skips the interval and the open cap (a playtest wants a
+	//! second casualty while the first is still open); still needs the generator on and a medic on duty,
+	//! or nobody would get the call. The harness verb `casualty roll [kind]` and the suite call it.
+	//! \param kind Only rows of this LF_Places kind; empty picks by weight like a normal roll.
+	//! \return The casualty spawned, or null (logged).
+	static LF_Casualty RollNow(int nowMs, string kind = "", array<ref LF_ServiceCandidate> players = null)
+	{
+		if (!Replication.IsServer())
+			return null;
+
+		LF_CasualtyCallConfig config = LF_CasualtyCallConfig.Get();
+		if (!config.m_bEnabled)
+		{
+			LF_Debug.Warn(FEATURE, "roll now refused: casualty calls are off in the config");
+			return null;
+		}
+
+		LF_ServiceRoute check = LF_ServiceCalls.Check(SERVICE, players);
+		if (check.m_aReceivers.Count() <= 0)
+		{
+			LF_Debug.Warn(FEATURE, "roll now refused: no medic is on duty");
+			return null;
+		}
+
+		return Raise(config, nowMs, players, kind);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: pick a row and a place, spawn the casualty and place the call. \return The casualty, or null.
-	protected static LF_Casualty Raise(notnull LF_CasualtyCallConfig config, int nowMs, array<ref LF_ServiceCandidate> players)
+	protected static LF_Casualty Raise(notnull LF_CasualtyCallConfig config, int nowMs, array<ref LF_ServiceCandidate> players, string kind)
 	{
 		IEntity place;
-		LF_CasualtyCallRow row = PickRow(config.m_aRows, place);
+		LF_CasualtyCallRow row = PickRow(config.m_aRows, kind, place);
 		if (!row)
 		{
-			LF_Debug.Warn(FEATURE, string.Format("no casualty: none of the %1 row(s) has a place in this world", config.m_aRows.Count()));
+			LF_Debug.Warn(FEATURE, string.Format("no casualty: none of the %1 row(s) has a place in this world (kind filter %2)", config.m_aRows.Count(), kind));
 			return null;
 		}
 
+		// The call outlives the walk to it, and the body bleeds out with it; never past the board line.
+		int expirySeconds = LF_Utils.MinInt(config.ExpirySeconds(), LF_Utils.MaxInt(LF_ServiceCallsConfig.BoardExpirySeconds(), LF_CasualtyCallConfig.MIN_EXPIRY_SECONDS));
 		vector position = Spot(place.GetOrigin(), config.m_fSpotRadius);
-		IEntity body = SpawnCasualty(config.m_sPrefab, position);
+		IEntity body = SpawnCasualty(config.m_sPrefab, position, expirySeconds);
 		if (!body)
 			return null;
 
@@ -134,7 +164,7 @@ class LF_CasualtyCalls
 		casualty.m_sCallerUid = CALLER_PREFIX + s_iSequence.ToString();
 		casualty.m_sSummary = row.m_sSummary;
 		casualty.m_vPosition = position;
-		casualty.m_iExpiresMs = nowMs + LF_ServiceCallsConfig.BoardExpirySeconds() * 1000;
+		casualty.m_iExpiresMs = nowMs + expirySeconds * 1000;
 
 		LF_ServiceRoute route = LF_ServiceCalls.Place(casualty.m_sCallerUid, SERVICE, LF_WantedReports.GridPlace(position), row.m_sSummary, position, players);
 		if (!route || !route.IsAnswered())
@@ -145,7 +175,7 @@ class LF_CasualtyCalls
 		}
 
 		Open().Insert(casualty);
-		LF_Debug.Info(FEATURE, string.Format("casualty %1 '%2' at %3 (%4); %5 open", casualty.m_sCallerUid, row.m_sSummary, row.m_sPlaceKind, position, Open().Count()));
+		LF_Debug.Info(FEATURE, string.Format("casualty %1 '%2' at %3 (%4); %5 open; expires in %6 s (board %7 s, bleed-out matches)", casualty.m_sCallerUid, row.m_sSummary, row.m_sPlaceKind, position, Open().Count(), expirySeconds, LF_ServiceCallsConfig.BoardExpirySeconds()));
 		return casualty;
 	}
 
@@ -173,7 +203,7 @@ class LF_CasualtyCalls
 				continue;
 			}
 
-			Clear(casualty);
+			Clear(casualty, "call expired");
 			s_aOpen.Remove(i);
 			cleared++;
 		}
@@ -190,14 +220,14 @@ class LF_CasualtyCalls
 		int cleared = s_aOpen.Count();
 		foreach (LF_Casualty casualty : s_aOpen)
 		{
-			Clear(casualty);
+			Clear(casualty, "world reset or test cleanup");
 		}
 		s_aOpen.Clear();
 		return cleared;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void Clear(notnull LF_Casualty casualty)
+	protected static void Clear(notnull LF_Casualty casualty, string reason)
 	{
 		IEntity body;
 		if (GetGame() && GetGame().GetWorld())
@@ -209,7 +239,7 @@ class LF_CasualtyCalls
 			SCR_EntityHelper.DeleteEntityAndChildren(body);
 
 		LF_EventBus.Publish(LF_OnServiceCallClosed.Create(SERVICE, casualty.m_sCallerUid));
-		LF_Debug.Info(FEATURE, string.Format("casualty %1 cleared untreated (call expired)", casualty.m_sCallerUid));
+		LF_Debug.Info(FEATURE, string.Format("casualty %1 cleared untreated (%2)", casualty.m_sCallerUid, reason));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -231,14 +261,20 @@ class LF_CasualtyCalls
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A row by weight among those with at least one live place, and that place. \return null when none fits.
-	protected static LF_CasualtyCallRow PickRow(notnull array<ref LF_CasualtyCallRow> rows, out IEntity place)
+	//! A row by weight among those with at least one live place (only rows of `kind` when it is set), and that place. \return null when none fits.
+	protected static LF_CasualtyCallRow PickRow(notnull array<ref LF_CasualtyCallRow> rows, string kind, out IEntity place)
 	{
 		array<LF_CasualtyCallRow> usable = {};
 		int total;
 		foreach (LF_CasualtyCallRow row : rows)
 		{
-			if (!row || row.m_iWeight <= 0 || row.m_sPlaceKind.IsEmpty())
+			if (!row || row.m_sPlaceKind.IsEmpty())
+				continue;
+
+			// A named kind (the dev roll) takes any row of it, even a weight 0 one; a normal roll skips weight 0.
+			if (kind.IsEmpty() && row.m_iWeight <= 0)
+				continue;
+			if (!kind.IsEmpty() && row.m_sPlaceKind != kind)
 				continue;
 
 			array<IEntity> places = {};
@@ -292,7 +328,7 @@ class LF_CasualtyCalls
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: spawn the resident and lay them down. \return The character, or null (logged).
-	protected static IEntity SpawnCasualty(ResourceName prefab, vector position)
+	protected static IEntity SpawnCasualty(ResourceName prefab, vector position, int bleedSeconds)
 	{
 		if (prefab.IsEmpty())
 			prefab = LF_CasualtyCallConfig.DEFAULT_PREFAB;
@@ -335,6 +371,8 @@ class LF_CasualtyCalls
 
 		damage.ForceUnconsciousness();
 		LF_Downed.Down(character, damage, health, null);
+		// The body bleeds out when the call expires, not on the player default (180 s), so an ambulance run has the time.
+		character.LF_StartBleeding(bleedSeconds);
 		return body;
 	}
 }

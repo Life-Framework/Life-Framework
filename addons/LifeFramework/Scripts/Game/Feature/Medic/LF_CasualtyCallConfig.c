@@ -47,6 +47,12 @@ class LF_CasualtyCallConfig
 	[Attribute("6", UIWidgets.Auto, "Meters from the place's origin the casualty may lie")]
 	float m_fSpotRadius;
 
+	static const int DEFAULT_EXPIRY_SECONDS = 600;
+	static const int MIN_EXPIRY_SECONDS = 30; // lf-fixed: floor against a typo in the config, not a game rule
+
+	[Attribute("600", UIWidgets.Auto, "Seconds a casualty lasts untreated (#4852): the call leaves the board and the body is cleared, and the body's bleed-out is set to the same time. Long enough to read the board, draw an ambulance and drive; never above the shared board expiry (m_iBoardExpirySeconds)", params: "30 3600")]
+	int m_iExpirySeconds;
+
 	[Attribute("{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et", UIWidgets.ResourcePickerThumbnail, "Resident character spawned as the casualty (needs an RplComponent)", "et")]
 	ResourceName m_sPrefab;
 
@@ -111,6 +117,8 @@ class LF_CasualtyCallConfig
 				m_iMaxOpen = layer.m_iMaxOpen;
 			if (root.IsVariableSetDirectly("m_fSpotRadius"))
 				m_fSpotRadius = layer.m_fSpotRadius;
+			if (root.IsVariableSetDirectly("m_iExpirySeconds"))
+				m_iExpirySeconds = layer.m_iExpirySeconds;
 			if (root.IsVariableSetDirectly("m_sPrefab"))
 				m_sPrefab = layer.m_sPrefab;
 			if (root.IsVariableSetDirectly("m_aRows") && layer.m_aRows)
@@ -125,6 +133,16 @@ class LF_CasualtyCallConfig
 				rowCount = m_aRows.Count();
 			LF_Debug.Info(LF_CasualtyCalls.FEATURE, string.Format("casualty calls: pack overlay %1 applied, %2 rows, generator %3", names[i], rowCount, m_bEnabled));
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds a casualty lasts untreated: the config value, at least MIN_EXPIRY_SECONDS.
+	int ExpirySeconds()
+	{
+		if (m_iExpirySeconds <= 0)
+			return DEFAULT_EXPIRY_SECONDS;
+
+		return LF_Utils.MaxInt(m_iExpirySeconds, MIN_EXPIRY_SECONDS);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -4334,6 +4334,11 @@ class LF_AgentHarness
 		if (resident)
 			return resident;
 
+		// A casualty the medic generator spawned has no layer name either: Casualty or casualty:<n> (#4853).
+		IEntity casualty = LF_CasualtyHarness.Named(entityName);
+		if (casualty)
+			return casualty;
+
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
 			return null;
@@ -4441,6 +4446,16 @@ class LF_AgentHarness
 		{
 			if (FindOnEntity(patient, className))
 				return patient;
+
+			return null;
+		}
+
+		// A casualty the medic generator spawned (#4853): Casualty or casualty:<n>, the server's open list.
+		IEntity casualty = LF_CasualtyHarness.Named(entityName);
+		if (casualty)
+		{
+			if (FindOnEntity(casualty, className))
+				return casualty;
 
 			return null;
 		}
