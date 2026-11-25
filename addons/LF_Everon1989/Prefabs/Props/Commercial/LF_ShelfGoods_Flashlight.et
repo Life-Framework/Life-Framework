@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "817F59661903096E"
+ components {
+  MeshObject "{B667152E68469406}" {
+   Object "{30664C42D09E1831}Assets/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.xob"
+  }
+ }
+ coords 0 0 0
+}

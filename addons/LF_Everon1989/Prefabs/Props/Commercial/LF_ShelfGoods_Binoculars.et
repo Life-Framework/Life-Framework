@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "111360A323C38E50"
+ components {
+  MeshObject "{2D760D8D0F7E7685}" {
+   Object "{746CE09C894304E4}Assets/Items/Equipment/Binoculars/Binoculars_B12/Binoculars_B12.xob"
+  }
+ }
+ coords 0 0 0
+}

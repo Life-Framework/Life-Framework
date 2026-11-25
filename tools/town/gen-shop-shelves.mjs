@@ -93,7 +93,7 @@ export function boardRows(shop, unit, board, start, obstacles) {
   const rad = (unit.yaw * Math.PI) / 180;
   const along = [Math.cos(rad), -Math.sin(rad)];
   const front = [Math.sin(rad), Math.cos(rad)];
-  const y0 = BOARD_Y[unit.kind][board];
+  const y0 = (unit.boardY ?? BOARD_Y[unit.kind])[board];
   let t = -used / 2;
   const rows = [];
   kinds.forEach((k, i) => {
@@ -161,7 +161,7 @@ export async function plan(name) {
   const used = new Set();
   // Units and the furniture's own stock come from the vanilla furniture prefab, or a shop lists `units` (and `obstacles`) itself.
   const text = shop.furniture ? readFileSync(join(PACK, shop.furniture), "utf8") : "";
-  const units = shop.units ?? unitsOf(text);
+  const units = [...(shop.units ?? unitsOf(text)), ...(shop.extraUnits ?? [])];
   const obstacles = shop.obstacles ?? obstaclesOf(text);
   const rows = [];
   let n = 0;

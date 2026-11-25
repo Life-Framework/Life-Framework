@@ -8,11 +8,11 @@
   "kinds": [
     "GunCounter"
   ],
-  "rows": 7,
+  "rows": 95,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_saint_philippe_gun_counter_Place"
   },
-  "date": "2026-11-19"
+  "date": "2026-11-25"
 }

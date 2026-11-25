@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "B6B3EFA8586F7A9C"
+ components {
+  MeshObject "{F6AADD10DAEE5402}" {
+   Object "{FB0E7050A887C7F5}Assets/Weapons/Attachments/Optics/4x20/Optic_4x20.xob"
+  }
+ }
+ coords 0 0 0
+}

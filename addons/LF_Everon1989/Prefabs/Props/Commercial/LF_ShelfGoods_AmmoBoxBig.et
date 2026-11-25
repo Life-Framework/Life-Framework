@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "379D33792F4C1678"
+ components {
+  MeshObject "{553B458BEEC6DE3A}" {
+   Object "{9F3EBDC04E344A36}Assets/Props/Military/AmmoBox/AmmoBox_556x45_1680rnd/AmmoBox_556x45_1680rnd.xob"
+  }
+ }
+ coords 0 0 0
+}
