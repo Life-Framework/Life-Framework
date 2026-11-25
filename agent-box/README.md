@@ -229,7 +229,7 @@ the game profile). Hooks:
   then `input MenuDown` / `MenuUp` to move the focus and `input MenuSelect` to answer, or
   `input LF_Keypad1` for reply 1 (`LF_Keypad0` is Goodbye). The scene ignores a fresh press for 350 ms
   after each change, which `dialogue-wait` waits out. `dialogue pick <row>` and `dialogue bye` stay as
-  the fallback. The flows `arrival-chain`, `arrival-island` and `island-first-hour` do this.
+  the fallback. `dialogue-choose <node> <digit> <next>` is the whole answer step: it waits for the reply list on `<node>`, presses `LF_Keypad<digit>` (never 0), falls back to `dialogue pick <digit - 1>` after two dropped presses, and fails unless the scene reads `<next>` (or `closed`) afterwards (#4953). The flows `arrival-chain` and `playtest-030-first-two-hours` do this.
 - `shoot <playerId>` (dev gate) deals one lethal KINETIC hit from the local character to that
   player through `HandleDamage`, the path a bullet takes, so the safe zone and the murder hook
   see it. Replies `shot player=N refused=R alive=A downed=D` (a lethal hit downs a player, #255).

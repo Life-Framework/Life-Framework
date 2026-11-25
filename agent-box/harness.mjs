@@ -565,6 +565,64 @@ export function waitForDialogue(phase, node, timeoutMs = 45000, send = sendComma
   return { ...last, raw: "", found: false, status: "error", detail: `dialogue_not_${phase}${node ? ` ${node}` : ""} (last: ${last?.detail})` };
 }
 
+// The node a `dialogue` answer is on ("closed" when no scene is open, "" when it is not a scene line).
+export function dialogueNodeOf(detail) {
+  if (/^closed/.test(detail)) return "closed";
+  const at = /^open node=([\w-]+)/.exec(detail);
+  return at ? at[1] : "";
+}
+
+export const CHOOSE_KEY_TRIES = 2;
+
+// `dialogue-choose <node> <digit> <next>` answers a reply the way a player does and proves it landed.
+// It waits until the scene is choosing on <node>, presses LF_Keypad<digit> (1 is the first reply; the
+// Goodbye key 0 is refused) and polls `dialogue` for the scene to leave that choice. A harness key is
+// dropped now and then on a loaded client (the clerk talk picked "bye" or stalled on its greeting, #4953);
+// after CHOOSE_KEY_TRIES dropped presses it answers with `dialogue pick <digit - 1>` (the scene's own pick,
+// the documented fallback) and says so in the detail. It then reads the scene again: the node must be
+// <next> ("closed" is a valid next), else the step fails with `dialogue_chose_wrong`.
+export function chooseDialogue(node, digit, next, send = sendCommand, sleep = pause, now = Date.now) {
+  if (!node || !/^[1-9]$/.test(String(digit ?? "")) || !next) throw new Error(`dialogue-choose <node> <digit 1-9> <next node|closed>: got ${node} ${digit} ${next}`);
+  const here = waitForDialogue("choosing", node, 45000, send, sleep);
+  if (!here.found) return here;
+  const left = (budgetMs) => {
+    const deadline = now() + budgetMs;
+    let last = null;
+    do {
+      last = send({ verb: "dialogue" }, 5000);
+      if (last.status === "ok" && !dialogueMatches(last.detail, "choosing", node)) return last;
+      if (last.status !== "ok" && last.detail === "no_session") return last;
+      sleep(300);
+    } while (now() < deadline);
+    return null;
+  };
+  let via = "key";
+  let answer = null;
+  for (let attempt = 0; attempt < CHOOSE_KEY_TRIES && !answer; attempt++) {
+    send({ verb: "input", action: `LF_Keypad${digit}` }, 8000);
+    answer = left(4000);
+  }
+  if (!answer) {
+    via = "pick (keys dropped)";
+    const picked = send({ verb: "dialogue", arg: "pick", value: String(Number(digit) - 1) }, 10000);
+    if (picked.status !== "ok") return { ...picked, found: false };
+    answer = left(8000);
+  }
+  if (!answer) return { status: "error", detail: `dialogue_choice_not_taken ${node} digit ${digit}`, found: false };
+  // The pick is sent to the server, which answers with the next node: the scene reads phase=waiting on the old
+  // node meanwhile. Wait for it to reach another node (or close) before judging where it went.
+  const settleBy = now() + 15000;
+  while (dialogueNodeOf(answer.detail) === node && now() < settleBy) {
+    sleep(300);
+    const again = send({ verb: "dialogue" }, 5000);
+    if (again.status !== "ok") break;
+    answer = again;
+  }
+  const got = dialogueNodeOf(answer.detail);
+  if (got !== next) return { ...answer, status: "error", detail: `dialogue_chose_wrong wanted ${next}, scene says ${answer.detail}`, found: false };
+  return { ...answer, found: true, detail: `${node} -> ${got} via ${via}` };
+}
+
 export function toolchainPaths() {
   const programFiles = process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)";
   const steam = join(programFiles, "Steam", "steamapps", "common");
@@ -896,6 +954,9 @@ export function runFlow(lines, name = "flow") {
     // dialogue-wait <line|choosing|waiting|closed> [node]: poll `dialogue` until the scene is in that phase
     // (on that node): the player's "read, then answer". dialogue <verb> [value]: a scene verb, e.g. `dialogue pick 0`.
     else if (verb === "dialogue-wait") result = waitForDialogue(rest[0], rest[1]);
+    // dialogue-choose <node> <digit> <next|closed>: wait for the reply list on <node>, press the digit key, fall back to
+    // `dialogue pick` when keys are dropped, and fail unless the scene is on <next> afterwards.
+    else if (verb === "dialogue-choose") result = chooseDialogue(rest[0], rest[1], rest[2]);
     else if (verb === "dialogue") result = sendCommand({ verb: "dialogue", arg: rest[0], value: rest[1] }, 10000);
     else if (verb === "ui-shot") result = sendCommand({ verb: "capture", mode: "ui", name: rest[0] }, 25000);
     else if (verb === "click") result = sendCommand({ verb: "click", widget: rest[0], index: rest[1] });
@@ -1261,6 +1322,44 @@ function selftest() {
   const seen = [];
   const polled = waitForDialogue("choosing", "greet", 5000, () => { seen.push(1); return { status: "ok", detail: seen.length < 3 ? "open node=greet phase=line replies=0" : "open node=greet phase=choosing replies=1" }; }, () => {});
   if (!polled.found || seen.length !== 3) throw new Error(`waitForDialogue polled ${seen.length} times`);
+  // dialogue-choose: a key that lands, a key dropped twice (the pick fallback), a pick onto the wrong node, and the refused Goodbye digit.
+  const sceneAt = { node: "greet", log: [] };
+  const fake = (landKey) => (spec) => {
+    sceneAt.log.push(spec.verb === "input" ? `key ${spec.action}` : spec.verb === "dialogue" && spec.arg ? `pick ${spec.value}` : "poll");
+    if (spec.verb === "input" && landKey) sceneAt.node = "welcome_papers";
+    if (spec.verb === "dialogue" && spec.arg === "pick") sceneAt.node = "welcome_papers";
+    return { status: "ok", detail: spec.arg ? "picked=true" : `open node=${sceneAt.node} phase=choosing replies=1` };
+  };
+  let clock = 0;
+  const tick = () => clock;
+  const idle = (ms) => { clock += ms; };
+  let chose = chooseDialogue("greet", "1", "welcome_papers", fake(true), idle, tick);
+  if (!chose.found || !/greet -> welcome_papers via key/.test(chose.detail)) throw new Error(`dialogue-choose key: ${JSON.stringify(chose)}`);
+  sceneAt.node = "greet";
+  sceneAt.log = [];
+  chose = chooseDialogue("greet", "1", "welcome_papers", fake(false), idle, tick);
+  const keys = sceneAt.log.filter((l) => l.startsWith("key")).length;
+  if (!chose.found || !/via pick \(keys dropped\)/.test(chose.detail) || keys !== CHOOSE_KEY_TRIES || !sceneAt.log.includes("pick 0")) throw new Error(`dialogue-choose fallback: ${JSON.stringify(chose)} ${sceneAt.log.join(",")}`);
+  // The scene reads phase=waiting on the old node while the server answers: the choice settles on the next node.
+  let waitingPolls = 0;
+  sceneAt.node = "greet";
+  const slowServer = (spec) => {
+    if (spec.verb === "input") return { status: "ok", detail: "LF_Keypad1" };
+    waitingPolls++;
+    return { status: "ok", detail: waitingPolls < 4 ? "open node=greet phase=waiting replies=1" : "open node=welcome_papers phase=line replies=0" };
+  };
+  chose = chooseDialogue("greet", "1", "welcome_papers", (spec) => (waitingPolls === 0 && spec.verb === "dialogue" ? (waitingPolls++, { status: "ok", detail: "open node=greet phase=choosing replies=1" }) : slowServer(spec)), idle, tick);
+  if (!chose.found || !/greet -> welcome_papers via key/.test(chose.detail)) throw new Error(`dialogue-choose waiting: ${JSON.stringify(chose)}`);
+  sceneAt.node = "greet";
+  chose = chooseDialogue("greet", "1", "welcome_room", fake(true), idle, tick);
+  if (chose.found || !/dialogue_chose_wrong wanted welcome_room/.test(chose.detail)) throw new Error(`dialogue-choose wrong node: ${JSON.stringify(chose)}`);
+  let refusedBye = false;
+  try {
+    chooseDialogue("greet", "0", "bye", fake(true), idle, tick);
+  } catch {
+    refusedBye = true;
+  }
+  if (!refusedBye) throw new Error("dialogue-choose took the Goodbye digit 0");
   let rejected = false;
   try {
     buildLine(1, { verb: "input", action: "MoveForward" });

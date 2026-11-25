@@ -41,7 +41,7 @@ async function runStarterGatesProof() {
   wait(500);
 
   // The clerk's papers come first: no run (and no starter row) is listed before them. Talk at the town hall
-  // desk the way arrival-island does, answering each reply as it appears, until the card is carried.
+  // desk the way playtest-030-first-two-hours does, answering each reply as it appears, until the card is carried.
   const CLERK = "Fit_saint_philippe_arrival_town_hall_clerk";
   must(on(1, { verb: "stand", entityName: CLERK, side: "e2" }, 20000), "stand at the clerk");
   wait(1500);

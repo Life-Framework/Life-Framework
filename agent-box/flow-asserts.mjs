@@ -8,6 +8,8 @@
 //   expect job <NAME>              job= is that LF_EJobType name (PARCEL, UNEMPLOYED, ...)
 //   expect duty police|medic|off   on duty in that faction, or off duty
 //   expect item <prefab text>      a carried item's prefab path contains the text (the `carries` verb)
+//   expect state <key> set|unset|=V|~T   a state-line field (idcard, parked, quests, ...): set is anything but
+//                                  none/0/empty, unset is none/0/empty, =V is exactly V, ~T contains T
 
 const MONEY_FIELDS = new Set(["cash", "bank", "money"]);
 
@@ -44,7 +46,13 @@ export function parseExpect(words) {
     if (!/^[A-Za-z0-9_./-]+$/.test(want)) throw new Error(`expect item takes prefab text (letters, digits, _ . / -): ${want}`);
     return { field, want };
   }
-  throw new Error(`expect field must be cash, bank, money, job, duty or item: ${field}`);
+  if (field === "state") {
+    const [key, ...tail] = rest;
+    const rule = tail.join(" ");
+    if (!/^[a-z]+$/.test(key ?? "") || !/^(set|unset|=\S+|~\S+)$/.test(rule)) throw new Error(`expect state takes <key> set|unset|=V|~T: expect ${words.join(" ")}`);
+    return { field, key, want: rule };
+  }
+  throw new Error(`expect field must be cash, bank, money, job, duty, item or state: ${field}`);
 }
 
 // One state assert. before/after are parseState objects. "" when it holds, else why not.
@@ -62,6 +70,15 @@ export function checkExpect(spec, before, after) {
     if (want === "down") return delta < 0 ? "" : `expect ${field} down: ${shown}`;
     if (want === "same") return delta === 0 ? "" : `expect ${field} same: ${shown}`;
     return delta === Number(want) ? "" : `expect ${field} ${want}: ${shown}`;
+  }
+  if (field === "state") {
+    const have = after[spec.key];
+    const empty = have === undefined || have === "" || have === "none" || have === "0";
+    const shown = `expect state ${spec.key} ${want}: ${spec.key}=${have ?? "?"}`;
+    if (want === "set") return empty ? shown : "";
+    if (want === "unset") return empty ? "" : shown;
+    if (want.startsWith("=")) return have === want.slice(1) ? "" : shown;
+    return String(have ?? "").includes(want.slice(1)) ? "" : shown;
   }
   if (field === "job") return after.job === want ? "" : `expect job ${want}: job=${after.job ?? "?"}`;
   if (field === "duty") {
@@ -123,7 +140,7 @@ export function selftest() {
   const police = parseState("faction=POLICE duty=1 cash=0 bank=0 job=POLICE");
   if (at("duty police", s0, police) !== "" || at("duty medic", s0, police) === "" || at("duty off", s0, police) === "") fail("duty on as police");
   if (at("duty off", police, s0) !== "" || at("duty police", police, s0) === "") fail("duty off");
-  for (const bad of ["cash 40", "cash", "job parcel", "duty sheriff", "item a b!", "mood happy"]) {
+  for (const bad of ["cash 40", "cash", "job parcel", "duty sheriff", "item a b!", "mood happy", "state idcard", "state idcard maybe"]) {
     let threw = false;
     try {
       parseExpect(bad.split(" "));
@@ -132,6 +149,11 @@ export function selftest() {
     }
     if (!threw) fail(`expect ${bad} was accepted`);
   }
+  const arrived = parseState("cash=200 bank=2000 idcard=Ada_Lovelace quests=arrival_register parked=none");
+  const onState = (w) => at(`state ${w}`, s0, arrived);
+  if (onState("idcard set") !== "" || onState("parked set") === "" || onState("parked unset") !== "" || onState("idcard unset") === "") fail("expect state set/unset");
+  if (onState("idcard =Ada_Lovelace") !== "" || onState("idcard =Ada") === "" || onState("quests ~arrival_register") !== "" || onState("quests ~arrival_garage") === "") fail("expect state =V/~T");
+  if (!/idcard=Ada_Lovelace/.test(onState("idcard =Bob"))) fail("expect state names the value it read");
   if (parseExpect(["item", "Shirt"]).field !== "item") fail("expect item Shirt");
   const st = parseStep(["6b", "Buy", "the", "permit", "pending", "#2932"]);
   if (st.id !== "6b" || st.title !== "Buy the permit" || st.pending !== "#2932") fail(`parseStep read ${JSON.stringify(st)}`);

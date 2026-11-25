@@ -3,24 +3,24 @@
 The weekend promise on real Everon (Saint Philippe, `LF_EveronIsland.conf`), walked as a new player.
 Two forms of the same route:
 
-- **Scripted**: `agent-box/flows/island-first-hour.txt` (#2935), the Friday go/no-go gate on main.
+- **Scripted**: `agent-box/flows/playtest-030-first-two-hours.txt` (#4953), hours 0 to 2 (hostel, clerk, starter car, apples, juice, market, F2 errands 5 of 5). The old `island-first-hour.txt` (#2935) was retired: its quiz block, arrival money and car-lot steps no longer matched the game.
 - **Manual**: this page, the post-publish smoke on the 0grind alpha (a fresh character, about 15 minutes).
 
 ## Run the scripted flow
 
 ```powershell
-node agent-box/session.mjs up --mission island --clients 1 --roster 1 --profile full --wait
-node agent-box/harness.mjs --client 1 flow island-first-hour
+node agent-box/session.mjs up --mission island --clients 1 --profile full --wait
+node agent-box/harness.mjs --client 1 flow playtest-030-first-two-hours
 node agent-box/session.mjs down
 ```
 
-Use a fresh client profile (the quiz and form R-89 must be the first screens; step 1 checks the starting
-$100 and $1000). The flow judges itself: each `step` reads the player's state when it opens, and its
+Use a fresh client profile (the quiz and form R-89 must be the first screens; step 0a checks the arrival
+$100 cash and $2,000 bank). A second run in the same session needs another fresh client (`session.mjs join <n>`); the flow's last step stores the car so the garage pad is free for it. The flow judges itself: each `step` reads the player's state when it opens, and its
 `expect` lines (`cash -250`, `job PARCEL`, `duty police`, `item WaterBottle`, the list is in
 `agent-box/flow-asserts.mjs`) check what moved. A failed line or assert fails the step, and a failed step
 does not stop the run. It ends with one `step PASS|FAIL` row per step and a tally line such as
-`flow island-first-hour: 2 pass (1, 10), 10 fail of 12 steps`, and exits 1 when any step failed.
-A `use` whose named entity is missing fails as `entity_not_found` or `wrong_target:<what it would have hit>`.
+`flow playtest-030-first-two-hours: 9 pass (0a, ... 2d), 0 fail of 9 steps`, and exits 1 when any step failed.
+The clerk talk uses `dialogue-choose <node> <digit> <next>`, which presses the reply key and falls back to `dialogue pick` when the key is dropped. A `use` whose named entity is missing fails as `entity_not_found` or `wrong_target:<what it would have hit>`.
 When a slot card lands, check its entity names against `Place_saint-philippe_<slot>.layer`, fix the flow
 line if a kit row is named differently, and drop the `pending #N` from that step.
 
