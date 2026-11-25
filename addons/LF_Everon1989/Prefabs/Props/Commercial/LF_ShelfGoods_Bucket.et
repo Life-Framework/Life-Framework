@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "391D22E88C2AB54E"
+ components {
+  MeshObject "{8C97C2C931EF2AF5}" {
+   Object "{8D4E2E836BBABBDD}Assets/Props/Civilian/Bucket_01/Bucket_01.xob"
+  }
+ }
+ coords 0 0 0
+}
