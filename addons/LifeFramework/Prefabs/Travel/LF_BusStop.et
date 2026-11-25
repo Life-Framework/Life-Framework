@@ -8,7 +8,7 @@ GenericEntity : "{7FCD4E7C25D886A8}Prefabs/Structures/Signs/Traffic/SignBusStop_
    m_sStyle "timetable"
    m_sSize "quad4x3"
    m_sRowSource "bus_timetable"
-   m_vFaceOffset 0 1.45 0.05
+   m_vFaceOffset 0 1.45 0.25
    m_vFaceAngles -90 0 0
    m_fFaceScale 0.85
   }
