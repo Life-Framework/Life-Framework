@@ -5,10 +5,10 @@ GenericEntity {
    m_fHourOn 18
    m_fHourOff 6
    m_vColor 1 0.86 0.62
-   m_fLV 8
-   m_fRadius 16
+   m_fLV 5
+   m_fRadius 12
    m_bSpot 1
-   m_fConeAngle 140
+   m_fConeAngle 120
   }
  }
  {
@@ -17,13 +17,13 @@ GenericEntity {
    coords 0 0 0
    angles -90 0 0
    Color 1 0.86 0.62 1
-   LV 8
+   LV 5
    ClipEV -10
    CastShadow 0
    Type Spot
-   Radius 16
+   Radius 12
    NearPlane 0.31
-   SpotAngle 140
+   SpotAngle 120
    LensFlareType Disabled
   }
  }
