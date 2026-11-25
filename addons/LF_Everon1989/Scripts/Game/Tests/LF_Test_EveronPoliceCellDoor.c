@@ -46,6 +46,8 @@ class LF_Test_EveronPoliceCellDoor : LF_Test
 		ctx.True(door.FindComponent(DoorComponent) != null, "the placed entity is the door leaf the jail opens on release");
 		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(door);
 		ctx.NotNull(doorLock, "the cell door carries LF_LockComponent");
+		if (doorLock)
+			ctx.EqualStr("#LF-Cell_Locked", doorLock.GetLockedReason(), "a locked cell gate refuses with the cell wording, not 'House is locked'");
 		ctx.True(LF_Component<LF_BreachTargetComponent>.Find(door) != null, "and LF_BreachTargetComponent");
 		ctx.True(door.GetParent() != null, "it is a child of the villa, not a second door beside it");
 

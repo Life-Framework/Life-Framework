@@ -1,4 +1,4 @@
-// red-proof: RED-OK law/charge-sheet-screen, observed 2026-11-23 with `tools/cli test --no-build --red LF_Test_ChargeSheetScreen`: with the hook on nothing is ticked on the paper and the signature is skipped, so the rows, greyed rows, totals, the offer and `a signed sheet makes the booking offer (expected '', got 'skipped')` all fail. Green: `--only` passed.
+// red-proof: RED-OK law/charge-sheet-screen, observed 2026-11-23 with `tools/cli test --no-build --red LF_Test_ChargeSheetScreen`: with the hook on nothing is ticked on the paper and the signature is skipped, so the rows, greyed rows, totals, the offer and `a signed sheet makes the booking offer (expected '', got 'skipped')` all fail. Green: `--only` passed. Row status (playtest 2026-11-25): on the unfixed code `--only LF_Test_ChargeSheetScreen` failed the two new assertions (got 'Over cap'); green after the fix.
 //! law/charge-sheet-screen (#4426, police L4): the rows, greyed rows and total the screen model shows
 //! equal LF_ChargeSheetRules for a fixture sheet (stacked and over-cap rows grey); Sign takes the ticked
 //! codes only, drops an id the suspect has no open report for, and the booking offer is the server's
@@ -94,6 +94,9 @@ class LF_Test_ChargeSheetScreen : LF_Test
 		ctx.Equal(cappedRules.m_iFine, capped.m_iFine, "a capped total is the rules' capped total");
 		ctx.True(capped.m_bCapped, "the model shows the cap cut the fine");
 		ctx.Equal(LF_EChargeRow.OVER_CAP, RowOf(capped, c.m_sCrimeId).m_eState, "the row past the cap is greyed");
+		string cappedStatus = LF_ChargeSheetScreen.RowStatus(RowOf(capped, c.m_sCrimeId), 400);
+		ctx.True(cappedStatus.Contains("150"), "the greyed row shows its own fine, not a bare 'Over cap' (got '" + cappedStatus + "')");
+		ctx.True(cappedStatus.Contains("capped"), "and says the cap cut it (got '" + cappedStatus + "')");
 
 		// Untick A: B now counts. Untick all: nothing to sign.
 		array<string> noA = {b.m_sCrimeId, c.m_sCrimeId};

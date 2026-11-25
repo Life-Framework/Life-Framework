@@ -42,6 +42,9 @@ class LF_LockComponent : ScriptComponent
 	[Attribute("0", desc: "Editor binding: start the door locked at spawn.")]
 	protected bool m_bDebugLocked;
 
+	[Attribute("", desc: "Sign key shown as the refusal while this door is locked and the user has no key (a jail cell door says '#LF-Cell_Locked'). Empty: the house wording.")]
+	protected string m_sLockedReason;
+
 	[RplProp()]
 	protected bool m_bLocked;
 
@@ -148,6 +151,16 @@ class LF_LockComponent : ScriptComponent
 
 		m_sHouseIdentifier = identifier;
 		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The sign key this door answers a user with no key: the house wording unless the door sets its own.
+	string GetLockedReason()
+	{
+		if (m_sLockedReason.IsEmpty())
+			return "#EL-HouseLock_Reason";
+
+		return m_sLockedReason;
 	}
 
 	//------------------------------------------------------------------------------------------------

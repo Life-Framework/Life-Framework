@@ -22,6 +22,7 @@ SCR_DestructibleBuildingEntity : "{29CABA57BEA2A188}Prefabs/Structures/Houses/Vi
      components {
       LF_LockComponent "{5AC29970429B33BB}" {
        m_bDebugLocked 1
+       m_sLockedReason "#LF-Cell_Locked"
       }
       LF_BreachTargetComponent "{D2FC9663261624B6}" {
        m_sTargetId "PoliceStation_CellDoor"
