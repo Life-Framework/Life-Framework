@@ -474,6 +474,13 @@ export function selftestSession() {
     a = assignIdentities([a.clients[0], { n: 2, launchedAt: "3" }], slots, a.seen);
     if (a.clients[1].identity.uid !== uid(2) || a.clients[1].identity.playerId !== 3) failures.push(`a rejoined client keeps its slot: ${JSON.stringify(a.clients[1])}`);
     if (a.clients[0].identity.slot !== 1) failures.push("a client that did not rejoin lost its identity");
+    // #4954: a restart starts a new log, so identities are read from slot line 0 again, and each must match.
+    // red-proof 2026-11-25: with slotSeen carried over (2) the restarted clients got no identity.
+    const before = assignIdentities([{ n: 1, launchedAt: "1" }, { n: 2, launchedAt: "2" }], slots.slice(0, 2), 0).clients;
+    const restarted = assignIdentities([{ n: 1, launchedAt: "5" }, { n: 2, launchedAt: "6" }], slots.slice(0, 2), 0).clients;
+    if (identityChanges(before, restarted).length) failures.push(`a restart changed identities: ${identityChanges(before, restarted)}`);
+    if (identityChanges(before, assignIdentities(restarted.map(({ n, launchedAt }) => ({ n, launchedAt })), slots.slice(0, 2), 2).clients).length !== 2) failures.push("identities missing after a restart are not reported");
+    if (identityChanges(before, [{ n: 1, identity: before[1].identity }, before[1]]).length !== 1) failures.push("a swapped identity is not reported");
   }
   {
     // #1450 harness prerequisites. red-proof 2026-11-15: with the --admin-client branch of parseSeeds disabled,
@@ -975,6 +982,19 @@ export function assignIdentities(clients, slotLines, seen = 0) {
     c.identity = slotLines[seen++];
   }
   return { clients: out, seen };
+}
+
+// Pure: after a restart each client must be the account it was (same profile, same join order, same slot).
+// Returns one line per client whose identity is missing or not the one it had before.
+export function identityChanges(before, after) {
+  const out = [];
+  for (const b of before) {
+    if (!b.identity) continue;
+    const a = after.find((c) => c.n === b.n);
+    if (!a?.identity) out.push(`client ${b.n} has no identity after the restart (was ${b.identity.uid})`);
+    else if (a.identity.uid !== b.identity.uid) out.push(`client ${b.n} came back as ${a.identity.uid}, was ${b.identity.uid}`);
+  }
+  return out;
 }
 
 function writeRoster(playerIds) {

@@ -691,6 +691,9 @@ node agent-box/session.mjs down               # closes every process the session
   server with `-loadSessionSave`, and relaunches the same client profiles in
   the same order, 15 s apart, so player ids and the `LF_SESSION_IDENTITY`
   accounts match. It waits for `flow start for player <n>` per client.
+  Then it records each client's identity from the new server log again
+  (`session.mjs identity`) and fails when a client came back as another
+  account (#4954).
 - Server and clients pass `-noBackend` and `-scrDefine LF_SESSION_IDENTITY`.
   Without the backend every client has the NULL identity and the same Steam
   name, so the define gives each player id its own identity. The define must be
