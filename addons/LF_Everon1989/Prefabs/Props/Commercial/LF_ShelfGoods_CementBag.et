@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "967DC3A259D2127F"
+ components {
+  MeshObject "{B3E977CF9EAD2A3C}" {
+   Object "{645CDD79A583B1D5}Assets/Items/Resources/CementBag/CementBag.xob"
+  }
+ }
+ coords 0 0 0
+}

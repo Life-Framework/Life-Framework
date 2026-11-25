@@ -9,6 +9,32 @@ GenericEntity Fit_saint_philippe_hardware_Place {
  }
  coords 4535.4 16.5 10629.6
 }
+GenericEntity Fit_saint_philippe_hardware_clear {
+ components {
+  LF_BaseWorldClearComponent "{A0B95F9CC2F83E1F}" {
+   m_sBuilding "{4DC0293EF161C898}Prefabs/Structures/Industrial/Houses/Workshop_02/Workshop_02.et"
+   m_aPrefabs {
+    "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et"
+    "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et"
+    "{1CA1A9D19D7C8445}Prefabs/Props/Furniture/Rack_01_Short.et"
+    "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et"
+    "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et"
+    "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et"
+    "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et"
+    "{910424AC5CABE800}Prefabs/Props/Garbage/Bins/BinInterior_01_red.et"
+    "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et"
+    "{AC98FF880BD0F2C2}Prefabs/Props/Furniture/Chair_01/Chair_01_base.et"
+    "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et"
+    "{D0BD7A55306FC46B}Prefabs/Props/Furniture/Faucet_01/Faucet_01.et"
+    "{D416ECE78FF7078E}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_LightWood.et"
+    "{E521AEA6D14589B1}Prefabs/Props/Military/AmmoBoxes/AmmoBox_545x39_2160rnd.et"
+    "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et"
+    "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et"
+   }
+  }
+ }
+ coords 4535.4 16 10629.6
+}
 GenericEntity Fit_saint_philippe_hardware_hardware_shop_counter : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4532.025 16.458 10631.09
  angleY -99
@@ -92,7 +118,7 @@ GenericEntity Fit_saint_philippe_hardware_hardware_shelf_1 : "{B7669B7F8B7923F6}
  angleY 171
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_tool_rack_1 : "{20C6CD91EBCF3AD5}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01.et" {
- coords 4536.836 18.4 10633.32
+ coords 4536.812 18.4 10633.469
  angleY 171
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_tool_station : "{B6CCB3CFBFD054C7}Prefabs/Props/LF_ToolBench.et" {
@@ -123,100 +149,510 @@ GenericEntity Fit_saint_philippe_hardware_hardware_lamp_3 : "{0E2929AAD09289D1}P
  coords 4532.437 19.65 10629.131
  angleY -99
 }
+GenericEntity Fit_saint_philippe_hardware_hardware_shelf_3 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 4534.699 16.454 10626.163
+ angleY -9
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_shelf_4 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 4538.896 16.454 10630.538
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_shelf_5 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 4533.059 16.454 10626.799
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_shelf_6 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 4530.533 16.454 10632.322
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_drum_1 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 4530.455 16.475 10626.944
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_drum_2 : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
+ coords 4530.019 16.475 10630.013
+ angleY -59
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_drum_3 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 4529.855 16.475 10631.05
+ angleY -9
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_sack_truck : "{EB66EE2298D16D18}Prefabs/Props/Civilian/SackTruck_01.et" {
+ coords 4539.456 16.496 10627.003
+ angleY -9
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_pallet : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4534.216 16.462 10627.489
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_drum_4 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 4536.009 16.475 10627.672
+ angleY -99
+}
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b1_1 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
- coords 4537.76 16.885 10633.047
+ coords 4537.749 16.885 10633.045
  angleY 171
  scale 0.75
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b1_2 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
- coords 4537.454 16.919 10632.998
+ coords 4537.403 16.919 10632.99
  angleY 171
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b1_3 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
- coords 4537.056 16.884 10632.935
+ coords 4536.966 16.884 10632.921
  angleY 171
  scale 0.75
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b1_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4536.753 16.884 10632.887
+ coords 4536.624 16.884 10632.867
  angleY 171
  scale 1.4
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b1_5 : "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et" {
- coords 4536.451 16.904 10632.839
+ coords 4536.282 16.904 10632.813
  angleY -99
  scale 0.75
 }
-GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b1_6 : "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et" {
- coords 4536.038 16.885 10632.774
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b1_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4535.94 16.884 10632.758
  angleY 171
- scale 0.75
+ scale 1.4
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b2_1 : "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et" {
- coords 4537.694 17.277 10633.036
+ coords 4537.673 17.277 10633.033
  angleY 171
  scale 0.75
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b2_2 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
- coords 4537.374 17.277 10632.985
+ coords 4537.314 17.277 10632.976
  angleY 171
  scale 0.75
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b2_3 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4537.164 17.276 10632.952
+ coords 4537.065 17.276 10632.936
  angleY 171
  scale 1.4
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b2_4 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
- coords 4536.954 17.277 10632.919
+ coords 4536.816 17.277 10632.897
  angleY 171
  scale 0.75
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b2_5 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
- coords 4536.649 17.311 10632.871
+ coords 4536.47 17.311 10632.842
  angleY 171
 }
-GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b2_6 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
- coords 4536.251 17.276 10632.808
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b2_6 : "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et" {
+ coords 4536.078 17.277 10632.78
  angleY 171
  scale 0.75
 }
-GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b2_7 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4535.948 17.276 10632.76
- angleY 171
- scale 1.4
-}
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b3_1 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
- coords 4537.787 17.634 10633.051
+ coords 4537.749 17.634 10633.045
  angleY 171
  scale 0.75
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b3_2 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
- coords 4537.48 17.668 10633.002
+ coords 4537.403 17.668 10632.99
  angleY 171
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b3_3 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
- coords 4537.082 17.633 10632.939
+ coords 4536.966 17.633 10632.921
  angleY 171
  scale 0.75
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b3_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4536.78 17.633 10632.891
+ coords 4536.624 17.633 10632.867
  angleY 171
  scale 1.4
 }
 GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b3_5 : "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et" {
- coords 4536.478 17.653 10632.844
+ coords 4536.282 17.653 10632.813
  angleY -99
  scale 0.75
 }
-GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b3_6 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
- coords 4536.111 17.634 10632.786
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b3_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4535.94 17.633 10632.758
+ angleY 171
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b1_1 : "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et" {
+ coords 4533.871 16.885 10626.285
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b1_2 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4534.23 16.885 10626.342
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b1_3 : "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et" {
+ coords 4534.691 16.952 10626.415
+ angleY 81
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b1_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4535.087 16.884 10626.478
+ angleY -9
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b1_5 : "{AF6D5745FCBF47AE}Prefabs/Props/Commercial/LF_ShelfGoods_CardboardBox.et" {
+ coords 4535.371 16.884 10626.523
+ angleY 81
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b2_1 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4533.742 17.277 10626.265
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b2_2 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
+ coords 4534.088 17.311 10626.319
+ angleY -9
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b2_3 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
+ coords 4534.526 17.276 10626.389
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b2_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4534.867 17.276 10626.443
+ angleY -9
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b2_5 : "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et" {
+ coords 4535.209 17.296 10626.497
+ angleY 81
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b2_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4535.552 17.276 10626.551
+ angleY -9
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b3_1 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4533.743 17.634 10626.265
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b3_2 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4533.992 17.633 10626.304
+ angleY -9
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b3_3 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4534.241 17.634 10626.344
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b3_4 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
+ coords 4534.587 17.668 10626.398
+ angleY -9
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b3_5 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
+ coords 4535.024 17.633 10626.468
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b3_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4535.366 17.633 10626.522
+ angleY -9
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g3_b3_7 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4535.552 17.633 10626.551
+ angleY -9
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b1_1 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4539.783 16.885 10630.426
  angleY 171
  scale 0.75
 }
-GenericEntity Fit_saint_philippe_hardware_hardware_host_g1_b3_7 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4535.902 17.633 10632.752
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b1_2 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
+ coords 4539.438 16.919 10630.371
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b1_3 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
+ coords 4539.001 16.884 10630.302
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b1_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4538.659 16.884 10630.248
  angleY 171
  scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b1_5 : "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et" {
+ coords 4538.317 16.904 10630.194
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b1_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4537.974 16.884 10630.139
+ angleY 171
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b2_1 : "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et" {
+ coords 4539.708 17.277 10630.414
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b2_2 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4539.349 17.277 10630.357
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b2_3 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4539.099 17.276 10630.318
+ angleY 171
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b2_4 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4538.85 17.277 10630.278
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b2_5 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
+ coords 4538.506 17.311 10630.224
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b2_6 : "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et" {
+ coords 4538.113 17.277 10630.161
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b3_1 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4539.783 17.634 10630.426
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b3_2 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
+ coords 4539.438 17.668 10630.371
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b3_3 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
+ coords 4539.001 17.633 10630.302
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b3_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4538.659 17.633 10630.248
+ angleY 171
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b3_5 : "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et" {
+ coords 4538.317 17.653 10630.194
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g4_b3_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4537.974 17.633 10630.139
+ angleY 171
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b1_1 : "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et" {
+ coords 4532.926 16.885 10626.04
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b1_2 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4532.869 16.885 10626.4
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b1_3 : "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et" {
+ coords 4532.797 16.952 10626.86
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b1_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4532.734 16.884 10627.256
+ angleY -99
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b2_1 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4532.947 17.277 10625.913
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b2_2 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
+ coords 4532.892 17.311 10626.258
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b2_3 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
+ coords 4532.823 17.276 10626.695
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b2_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4532.769 17.276 10627.037
+ angleY -99
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b2_5 : "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et" {
+ coords 4532.714 17.296 10627.379
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b2_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4532.66 17.276 10627.721
+ angleY -99
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b3_1 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4532.947 17.634 10625.913
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b3_2 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4532.907 17.633 10626.162
+ angleY -99
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b3_3 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4532.868 17.634 10626.411
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b3_4 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
+ coords 4532.813 17.668 10626.756
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b3_5 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
+ coords 4532.744 17.633 10627.194
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b3_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4532.69 17.633 10627.536
+ angleY -99
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g5_b3_7 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4532.66 17.633 10627.721
+ angleY -99
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b1_1 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4531.45 16.885 10632.214
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b1_2 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
+ coords 4531.106 16.919 10632.16
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b1_3 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
+ coords 4530.668 16.884 10632.09
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b1_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4530.326 16.884 10632.036
+ angleY 171
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b1_5 : "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et" {
+ coords 4529.985 16.904 10631.982
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b1_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4529.642 16.884 10631.928
+ angleY 171
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b2_1 : "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et" {
+ coords 4531.375 17.277 10632.202
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b2_2 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4531.017 17.277 10632.146
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b2_3 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4530.767 17.276 10632.106
+ angleY 171
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b2_4 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4530.518 17.277 10632.067
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b2_5 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
+ coords 4530.172 17.311 10632.012
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b2_6 : "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et" {
+ coords 4529.78 17.277 10631.95
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b3_1 : "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et" {
+ coords 4531.45 17.634 10632.214
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b3_2 : "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et" {
+ coords 4531.106 17.668 10632.16
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b3_3 : "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et" {
+ coords 4530.668 17.633 10632.09
+ angleY 171
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b3_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4530.326 17.633 10632.036
+ angleY 171
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b3_5 : "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et" {
+ coords 4529.985 17.653 10631.982
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_g6_b3_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4529.642 17.633 10631.928
+ angleY 171
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_bag_a_1 : "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et" {
+ coords 4534.545 16.671 10627.328
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_bag_a_2 : "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et" {
+ coords 4534.479 16.671 10627.743
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_bag_a_3 : "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et" {
+ coords 4533.952 16.671 10627.234
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_bag_a_4 : "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et" {
+ coords 4533.887 16.671 10627.649
+ angleY -99
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_bag_b_1 : "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et" {
+ coords 4534.561 16.806 10627.543
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_bag_b_2 : "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et" {
+ coords 4534.206 16.806 10627.487
+ angleY -9
+ scale 0.75
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_host_bag_b_3 : "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et" {
+ coords 4533.85 16.806 10627.431
+ angleY -9
+ scale 0.75
 }
