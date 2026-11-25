@@ -49,6 +49,10 @@ export const FRONTS = [
   { id: "garage", sign: [4700.3, 10756.41], from: [4706.9, 10758.7], ground: 21 },
   { id: "carlot", sign: [4396.5, 10624.6], from: [4401.5, 10619.7], ground: 15.7, gap: 5, road: 3 },
   { id: "busstop_b32", sign: [4550.26, 10752.13], from: [4554.3, 10752.1], ground: 17.3 },
+  // Night re-check 2026-11-25: the cafe door (its fascia is `cafe-fascia` in the cafe kit, on the west wall) and the gang registry cabin
+  // (its plate is on the south wall, the door on the east end: the lamp stands off the south side, clear of the door's swing).
+  { id: "cafe", sign: [4447.15, 10701.36], from: [4439.5, 10701.4], ground: 12.5 },
+  { id: "registry", sign: [4503.49, 10621.95], from: [4503.5, 10615.5], ground: 16 },
 ];
 export const FRONT_OUT = 3.5; // the lamp stands this far out from the sign toward the player ...
 export const FRONT_SIDE = 3; // ... and this far to one side of the sign's axis (never in front of the door)

@@ -319,3 +319,11 @@ GenericEntity Lamp_saint_philippe_front_busstop_b32 : "{E021E2FFF02ADF0C}Prefabs
  coords 4553.78 0 10758.1
  angleY -149.48
 }
+GenericEntity Lamp_saint_philippe_front_cafe : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4443.63 0 10698.38
+ angleY 49.7
+}
+GenericEntity Lamp_saint_philippe_front_registry : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4506.5 0 10618.45
+ angleY -40.69
+}

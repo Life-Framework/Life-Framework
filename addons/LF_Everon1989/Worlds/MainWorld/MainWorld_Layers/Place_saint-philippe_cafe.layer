@@ -44,23 +44,35 @@ GenericEntity Fit_saint_philippe_cafe_anchor_bench {
  coords 4444.814 13.1 10703.053
  angleY 172
 }
+GenericEntity Fit_saint_philippe_cafe_cafe_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "cafe_square"
+   m_vRimColor 0.45 0.25 0.12
+   m_vPaintColor 0.96 0.9 0.74
+   m_vTextColor 0.45 0.25 0.12
+  }
+ }
+ coords 4447.032 16.1 10701.346
+ angleY -98
+}
 GenericEntity Fit_saint_philippe_cafe_cafe_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4460.715 16.300 10705.591
+ coords 4460.715 16.3 10705.591
  angleY 172
 }
 GenericEntity Fit_saint_philippe_cafe_cafe_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4457.536 16.300 10706.659
+ coords 4457.536 16.3 10706.659
  angleY 172
 }
 GenericEntity Fit_saint_philippe_cafe_cafe_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4459.856 16.300 10700.926
+ coords 4459.856 16.3 10700.926
  angleY 172
 }
 GenericEntity Fit_saint_philippe_cafe_cafe_lamp_4 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4453.706 16.300 10701.577
+ coords 4453.706 16.3 10701.577
  angleY 172
 }
 GenericEntity Fit_saint_philippe_cafe_cafe_lamp_5 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4450.318 16.300 10704.130
+ coords 4450.318 16.3 10704.13
  angleY 172
 }
