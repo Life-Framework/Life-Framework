@@ -7784,6 +7784,21 @@ StringTable {
      Target_en_us "The town square is a safe zone. Within 30 meters of the fountain nobody can hurt anyone: a shot fired on, into, or out of the square does no harm."
      Comment "Safe zone sign card, What section."
     }
+    CustomStringTableItem "{A67F5E5EC90DB73E}" {
+     Id "LF-Sign_SeedFeed_How"
+     Target_en_us "Walk in and ask the clerk at the counter. Open every day."
+     Comment "How line of the seed and feed barn sign (visual sweep 2026-11-25)."
+    }
+    CustomStringTableItem "{C1A9FCB01E90F72E}" {
+     Id "LF-Sign_SeedFeed_Title"
+     Target_en_us "Seed & Feed"
+     Comment "Title painted on the seed and feed barn fascia facing the road (visual sweep 2026-11-25). Shown in the prompt as Read: Seed & Feed."
+    }
+    CustomStringTableItem "{49D23E0191B2D3A9}" {
+     Id "LF-Sign_SeedFeed_What"
+     Target_en_us "Seeds, bait, fishing rods and bottled water for the farms and the harbor."
+     Comment "What line of the seed and feed barn sign (visual sweep 2026-11-25)."
+    }
     CustomStringTableItem "{80DF0709304FBA51}" {
      Id "LF-Sign_Smokehouse_How"
      Target_en_us "Bring a fresh fish and a *Firewood* bundle, then use the smoker and pick the species"

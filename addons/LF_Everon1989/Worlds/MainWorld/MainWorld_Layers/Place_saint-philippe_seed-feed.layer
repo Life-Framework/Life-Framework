@@ -25,6 +25,30 @@ GenericEntity Fit_saint_philippe_seed_feed_seed_feed_crate_1 : "{ABA40158860E5B6
  coords 4525.51 16.06 10653.373
  angleY -99
 }
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4527.595 18.8 10652.994
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4523.644 18.8 10652.369
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4518.181 18.8 10651.706
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_sign : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
+ components {
+  LF_SignComponent "{0F52A6E4DA40DB6F}" {
+   m_sSignId "seed_feed"
+   m_vRimColor 0.35 0.22 0.1
+   m_vPaintColor 0.93 0.88 0.7
+   m_vTextColor 0.12 0.3 0.14
+  }
+ }
+ coords 4525.668 17.9 10650.455
+ angleY 171
+}
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
  components {
   LF_ShopComponent "{7C4D2E1A5B6F80B3}" {
@@ -56,17 +80,5 @@ GenericEntity Fit_saint_philippe_seed_feed_seed_feed_till : "{4E4E1620C6B02E1F}P
   }
  }
  coords 4526.54 17.097 10652.625
- angleY 171
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4527.595 18.800 10652.994
- angleY 171
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4523.644 18.800 10652.369
- angleY 171
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4518.181 18.800 10651.706
  angleY 171
 }

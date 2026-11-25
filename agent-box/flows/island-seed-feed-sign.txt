@@ -1,0 +1,43 @@
+# Seed and feed barn sign at eye height (visual sweep 2026-11-25): the plate on the pier beside the shop door, from the road.
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow island-seed-feed-sign
+#   node agent-box/session.mjs down
+# Camera: world offsets from the plate; the plate faces the road along (0.156, -0.988) (barn yaw 171), feet at ground level (oy -1.8).
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+
+step 1 seed-feed sign
+stand Fit_saint_philippe_seed_feed_seed_feed_sign e3
+wait 4000
+shot world sf_seedfeed_close 4525.668 17.9 10650.455 0.39 -1.8 -2.47
+shot world sf_seedfeed_road 4525.668 17.9 10650.455 1.1 -1.8 -7
+shot world sf_seedfeed_wide 4525.668 17.9 10650.455 2.2 -1.8 -14
