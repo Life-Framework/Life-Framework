@@ -1,0 +1,47 @@
+# Gun store at eye height (visual sweep 2026-11-25): the pictures the PR embeds, from the door and the aisles.
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow island-gun-eye
+#   node agent-box/session.mjs down
+# Camera numbers come from the kit frame (door at -1.5, 1.4) through the fit's turn of -80 degrees; `shot world` stands the player at the offset.
+
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+
+step 1 gun store eye height
+stand Fit_saint_philippe_gun_counter_gun_counter_clerk e3
+wait 4000
+shot world gun_door_view 4554.493 19.45 10770.827 -0.405 -1.55 4.6
+shot world gun_door_stand 4554.533 19.45 10773.474 0.753 -1.55 2.062
+shot world gun_wall_units 4550.519 19.45 10772.055 3.626 -1.55 0.741
+shot world gun_west_wall 4557.5 19.45 10776.231 -0.719 -1.55 -3.985
+shot world gun_east_wall 4558.287 19.45 10769.465 -2.519 -1.55 5.648
+shot world gun_counter_back 4552.929 19.45 10771.059 6.169 -1.55 -0.435

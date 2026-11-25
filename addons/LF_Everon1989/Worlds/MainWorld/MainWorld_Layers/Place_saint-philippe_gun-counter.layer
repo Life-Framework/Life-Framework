@@ -9,6 +9,18 @@ GenericEntity Fit_saint_philippe_gun_counter_Place {
  }
  coords 4552.9 17.9 10774.1
 }
+GenericEntity Fit_saint_philippe_gun_counter_clear {
+ components {
+  LF_BaseWorldClearComponent "{24D097BAE6528661}" {
+   m_sBuilding "{FF48B5059EB0AC65}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_drugstore.et"
+   m_aPrefabs {
+    "{D24CDD53ECAA296C}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_Base.et"
+    "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et"
+   }
+  }
+ }
+ coords 4552.9 17.7 10774.1
+}
 GenericEntity Fit_saint_philippe_gun_counter_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
  components {
   LF_AlarmMountComponent "{11746D992348D6FB}" {
@@ -48,443 +60,601 @@ LF_NpcBaseEntity Fit_saint_philippe_gun_counter_gun_counter_clerk : "{7DF1D48E0A
  coords 4551.845 17.899 10770.868
  angleY 80
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b3_1 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4550.408 19.475 10772.613
+GenericEntity Fit_saint_philippe_gun_counter_lf_weapon_rack_stand_display_door : "{96114332715F34A3}Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et" {
+ coords 4554.533 17.899 10773.474
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_display_stand_door : "{AC4B253352965EE9}Prefabs/Buildings/GunStore/Furniture/GunStore_RackDisplay_Stand.et" {
+ coords 4553.274 17.899 10773.709
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b1_1 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
+ coords 4550.443 18.489 10772.417
+ angleY 170
+ scale 0.85
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b1_2 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
+ coords 4550.519 18.603 10771.983
+ angleY 80
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b1_3 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
+ coords 4550.579 18.585 10771.644
+ angleY 170
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b2_1 : "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et" {
+ coords 4550.409 19.196 10772.609
+ angleY 80
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b2_2 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
+ coords 4550.469 19.149 10772.267
+ angleY 170
+ scale 1.1
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b2_3 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
+ coords 4550.537 19.052 10771.882
+ angleY 170
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b2_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4550.599 18.982 10771.53
  angleY 80
  scale 1.4
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b3_6 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4550.591 19.589 10771.579
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b3_1 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4550.407 19.475 10772.623
  angleY 80
- scale 1.2
+ scale 1.4
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b3_3 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
- coords 4559.018 19.53 10769.592
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b3_2 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
+ coords 4550.456 19.573 10772.344
+ angleY 170
+ scale 1.6
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b3_3 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
+ coords 4550.523 19.475 10771.963
+ angleY 170
+ scale 0.85
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w1_b3_4 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
+ coords 4550.596 19.475 10771.549
+ angleY 80
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b1_1 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
+ coords 4558.709 18.544 10769.537
  angleY -10
  scale 1.2
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b3_6 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
- coords 4559.639 19.475 10769.701
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b1_2 : "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et" {
+ coords 4559.165 18.491 10769.618
+ angleY -10
+ scale 0.9
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b1_3 : "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et" {
+ coords 4559.566 18.703 10769.689
+ angleY -10
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b2_1 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
+ coords 4558.582 18.982 10769.515
  angleY -10
  scale 1.3
 }
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b2_2 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
+ coords 4558.996 18.996 10769.588
+ angleY 80
+ scale 0.9
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b2_3 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4559.392 18.982 10769.658
+ angleY -10
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b2_4 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
+ coords 4559.671 19.08 10769.707
+ angleY 80
+ scale 1.6
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b3_1 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
+ coords 4558.606 19.589 10769.519
+ angleY -10
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b3_2 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
+ coords 4558.946 19.571 10769.579
+ angleY 80
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b3_3 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
+ coords 4559.317 19.53 10769.645
+ angleY -10
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_w2_b3_4 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
+ coords 4559.666 19.573 10769.706
+ angleY 80
+ scale 1.6
+}
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b1_1 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
- coords 4556.288 18.496 10769.11
+ coords 4556.319 18.496 10769.116
  angleY 80
  scale 1.1
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b1_2 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
- coords 4556.524 18.399 10769.152
+ coords 4556.754 18.399 10769.193
  angleY 80
  scale 1.4
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b1_3 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
- coords 4556.746 18.329 10769.191
+ coords 4557.171 18.329 10769.266
  angleY -10
  scale 1.3
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b1_4 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
- coords 4557.013 18.343 10769.238
+ coords 4557.635 18.343 10769.348
  angleY 80
  scale 0.9
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b1_5 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4557.261 18.329 10769.282
+ coords 4558.08 18.329 10769.427
  angleY -10
  scale 1.4
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b1_6 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
- coords 4557.392 18.427 10769.305
- angleY 80
- scale 1.6
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b1_7 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
- coords 4557.626 18.329 10769.346
- angleY 80
- scale 0.85
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b1_8 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4557.912 18.443 10769.397
- angleY -10
- scale 1.2
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b1_9 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
- coords 4558.104 18.425 10769.431
- angleY 80
- scale 1.3
-}
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b2_1 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
- coords 4556.203 18.819 10769.096
+ coords 4556.28 18.819 10769.109
  angleY 80
  scale 1.6
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b2_2 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
- coords 4556.437 18.721 10769.137
+ coords 4556.71 18.721 10769.185
  angleY 80
  scale 0.85
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b2_3 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4556.722 18.835 10769.187
+ coords 4557.193 18.835 10769.27
  angleY -10
  scale 1.2
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b2_4 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
- coords 4556.914 18.817 10769.221
+ coords 4557.582 18.817 10769.339
  angleY 80
  scale 1.3
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b2_5 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
- coords 4557.138 18.776 10769.26
+ coords 4558.002 18.776 10769.413
  angleY -10
  scale 1.2
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b2_6 : "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et" {
- coords 4557.446 18.723 10769.315
- angleY -10
- scale 0.9
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b2_7 : "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et" {
- coords 4557.7 18.935 10769.36
- angleY -10
- scale 1.2
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b2_8 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
- coords 4557.894 18.888 10769.394
- angleY 80
- scale 1.1
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b3_1 : "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et" {
- coords 4556.262 19.292 10769.106
+ coords 4556.286 19.292 10769.11
  angleY -10
  scale 1.2
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b3_2 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
- coords 4556.457 19.245 10769.14
+ coords 4556.677 19.245 10769.179
  angleY 80
  scale 1.1
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b3_3 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
- coords 4556.694 19.148 10769.182
+ coords 4557.111 19.148 10769.256
  angleY 80
  scale 1.4
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b3_4 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
- coords 4556.915 19.078 10769.221
+ coords 4557.53 19.078 10769.329
  angleY -10
  scale 1.3
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b3_5 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
- coords 4557.182 19.092 10769.268
+ coords 4557.993 19.092 10769.411
  angleY 80
  scale 0.9
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b3_6 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4557.43 19.078 10769.312
- angleY -10
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_n1_b1_1 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
+ coords 4550.62 18.506 10771.139
+ angleY 170
+ scale 0.9
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_n1_b1_2 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4550.663 18.492 10770.891
+ angleY 80
  scale 1.4
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b3_7 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
- coords 4557.561 19.176 10769.335
- angleY 80
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_n1_b1_3 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
+ coords 4550.687 18.59 10770.759
+ angleY 170
  scale 1.6
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b3_8 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
- coords 4557.796 19.078 10769.376
- angleY 80
- scale 0.85
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_g1_b3_9 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4558.081 19.192 10769.427
- angleY -10
- scale 1.2
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_n1_b2_1 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
  coords 4550.611 19.085 10771.185
  angleY 170
  scale 1.3
 }
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_n1_b2_2 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
+ coords 4550.651 19.044 10770.962
+ angleY 80
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_n1_b2_3 : "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et" {
+ coords 4550.705 18.991 10770.654
+ angleY 80
+ scale 0.9
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_n1_b3_1 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
+ coords 4550.619 19.548 10771.143
+ angleY 170
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_n1_b3_2 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
+ coords 4550.658 19.478 10770.922
+ angleY 80
+ scale 1.3
+}
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b1_1 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
- coords 4556.993 18.489 10776.102
+ coords 4556.888 18.489 10776.084
  angleY -100
  scale 0.85
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b1_2 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4556.707 18.603 10776.052
+ coords 4556.455 18.603 10776.007
  angleY 170
  scale 1.2
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b1_3 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
- coords 4556.515 18.585 10776.018
+ coords 4556.115 18.585 10775.947
  angleY -100
  scale 1.3
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b1_4 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
- coords 4556.291 18.544 10775.978
- angleY 170
- scale 1.2
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b1_5 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4556.039 18.603 10775.934
- angleY 170
- scale 1.2
-}
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b2_1 : "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et" {
- coords 4557.052 19.196 10776.112
+ coords 4557.08 19.196 10776.118
  angleY 170
  scale 1.2
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b2_2 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
- coords 4556.858 19.149 10776.078
+ coords 4556.738 19.149 10776.057
  angleY -100
  scale 1.1
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b2_3 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
- coords 4556.62 19.052 10776.036
+ coords 4556.353 19.052 10775.989
  angleY -100
  scale 1.4
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b2_4 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
- coords 4556.399 18.982 10775.997
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b2_4 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4556.002 18.982 10775.927
  angleY 170
- scale 1.3
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b2_5 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
- coords 4556.133 18.996 10775.95
- angleY -100
- scale 0.9
+ scale 1.4
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b3_1 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4557.084 19.475 10776.118
+ coords 4557.094 19.475 10776.12
  angleY 170
  scale 1.4
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b3_2 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
- coords 4556.953 19.573 10776.095
+ coords 4556.815 19.573 10776.071
  angleY -100
  scale 1.6
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b3_3 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
- coords 4556.719 19.475 10776.054
+ coords 4556.434 19.475 10776.004
  angleY -100
  scale 0.85
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b3_4 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4556.433 19.589 10776.003
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b3_4 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
+ coords 4556.021 19.475 10775.931
  angleY 170
- scale 1.2
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b3_5 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
- coords 4556.242 19.571 10775.97
- angleY -100
  scale 1.3
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h1_b3_6 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4556.05 19.589 10775.936
- angleY 170
- scale 1.2
-}
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b1_1 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
- coords 4558.451 18.544 10776.36
+ coords 4558.382 18.544 10776.348
  angleY 170
  scale 1.2
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b1_2 : "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et" {
- coords 4558.143 18.491 10776.306
+ coords 4557.926 18.491 10776.268
  angleY 170
  scale 0.9
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b1_3 : "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et" {
- coords 4557.889 18.703 10776.261
- angleY 170
- scale 1.2
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b1_4 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
- coords 4557.695 18.656 10776.227
- angleY -100
- scale 1.1
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b1_5 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4557.478 18.603 10776.189
+ coords 4557.524 18.703 10776.197
  angleY 170
  scale 1.2
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b2_1 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
- coords 4558.463 18.982 10776.362
+ coords 4558.509 18.982 10776.37
  angleY 170
  scale 1.3
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b2_2 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
- coords 4558.196 18.996 10776.315
+ coords 4558.094 18.996 10776.297
  angleY -100
  scale 0.9
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b2_3 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4557.948 18.982 10776.271
+ coords 4557.698 18.982 10776.228
  angleY 170
  scale 1.4
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b2_4 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
- coords 4557.817 19.08 10776.248
+ coords 4557.42 19.08 10776.178
  angleY -100
  scale 1.6
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b2_5 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
- coords 4557.582 18.982 10776.207
- angleY -100
- scale 0.85
-}
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b3_1 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4558.488 19.589 10776.367
+ coords 4558.484 19.589 10776.366
  angleY 170
  scale 1.2
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b3_2 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
- coords 4558.297 19.571 10776.333
+ coords 4558.145 19.571 10776.306
  angleY -100
  scale 1.3
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b3_3 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
- coords 4558.073 19.53 10776.294
+ coords 4557.773 19.53 10776.241
  angleY 170
  scale 1.2
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b3_4 : "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et" {
- coords 4557.843 19.689 10776.253
- angleY 170
- scale 1.2
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b3_5 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
- coords 4557.649 19.642 10776.219
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b3_4 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
+ coords 4557.425 19.573 10776.179
  angleY -100
- scale 1.1
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h3_b3_6 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
- coords 4557.452 19.475 10776.184
- angleY 170
- scale 1.3
+ scale 1.6
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b1_1 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
- coords 4552.197 18.656 10768.385
+ coords 4552.248 18.656 10768.394
  angleY 80
  scale 1.1
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b1_2 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
- coords 4552.434 18.559 10768.427
+ coords 4552.682 18.559 10768.471
  angleY 80
  scale 1.4
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b1_3 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
- coords 4552.655 18.489 10768.466
+ coords 4553.101 18.489 10768.544
  angleY -10
  scale 1.3
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b1_4 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
- coords 4552.922 18.503 10768.513
- angleY 80
- scale 0.9
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b1_5 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4553.17 18.489 10768.557
- angleY -10
- scale 1.4
-}
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b2_1 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
- coords 4552.157 19.08 10768.378
+ coords 4552.184 19.08 10768.383
  angleY 80
  scale 1.6
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b2_2 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
- coords 4552.391 18.982 10768.419
+ coords 4552.614 18.982 10768.459
  angleY 80
  scale 0.85
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b2_3 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
- coords 4552.676 19.096 10768.47
- angleY -10
- scale 1.2
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b2_4 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
- coords 4552.868 19.078 10768.503
- angleY 80
- scale 1.3
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b2_5 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
- coords 4553.092 19.037 10768.543
+ coords 4553.097 19.096 10768.544
  angleY -10
  scale 1.2
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b3_1 : "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et" {
- coords 4552.163 19.689 10768.379
+ coords 4552.232 19.689 10768.391
  angleY -10
  scale 1.2
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b3_2 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
- coords 4552.357 19.642 10768.413
+ coords 4552.623 19.642 10768.46
  angleY 80
  scale 1.1
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b3_3 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
- coords 4552.595 19.545 10768.455
+ coords 4553.057 19.545 10768.537
  angleY 80
  scale 1.4
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b3_4 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
- coords 4552.816 19.475 10768.494
- angleY -10
- scale 1.3
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_h2_b3_5 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
- coords 4553.082 19.489 10768.541
- angleY 80
- scale 0.9
-}
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_hn2_b1_1 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
- coords 4551.203 18.506 10768.199
+ coords 4551.269 18.506 10768.21
  angleY 80
  scale 0.9
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_hn2_b1_2 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
- coords 4551.451 18.492 10768.242
+ coords 4551.763 18.492 10768.297
  angleY -10
  scale 1.4
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_hn2_b1_3 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
- coords 4551.583 18.59 10768.266
- angleY 80
- scale 1.6
-}
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_hn2_b1_4 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
- coords 4551.772 18.562 10768.299
- angleY 80
- scale 1.4
-}
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_hn2_b2_1 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
- coords 4551.157 19.085 10768.19
+ coords 4551.2 19.085 10768.198
  angleY 80
  scale 1.3
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_hn2_b2_2 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
- coords 4551.38 19.044 10768.23
+ coords 4551.67 19.044 10768.281
  angleY -10
  scale 1.2
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_hn2_b2_3 : "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et" {
- coords 4551.688 18.991 10768.284
- angleY -10
- scale 0.9
-}
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_hn2_b3_1 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
- coords 4551.199 19.548 10768.198
+ coords 4551.251 19.548 10768.207
  angleY 80
  scale 1.4
 }
 GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_hn2_b3_2 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
- coords 4551.42 19.478 10768.237
+ coords 4551.719 19.478 10768.29
  angleY -10
  scale 1.3
 }
-GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_hn2_b3_3 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
- coords 4551.687 19.492 10768.284
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i1_b1_1 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
+ coords 4558.716 18.329 10773.694
+ angleY 170
+ scale 0.85
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i1_b1_2 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
+ coords 4558.81 18.443 10773.162
+ angleY 80
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i1_b1_3 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
+ coords 4558.887 18.425 10772.724
+ angleY 170
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i1_b1_4 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
+ coords 4558.97 18.384 10772.254
+ angleY 80
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i1_b2_1 : "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et" {
+ coords 4558.679 18.935 10773.902
+ angleY 80
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i1_b2_2 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
+ coords 4558.757 18.888 10773.46
+ angleY 170
+ scale 1.1
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i1_b2_3 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
+ coords 4558.842 18.791 10772.978
+ angleY 170
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i1_b2_4 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
+ coords 4558.925 18.721 10772.51
+ angleY 80
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i1_b2_5 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
+ coords 4559 18.721 10772.083
+ angleY 80
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i2_b1_1 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4558.477 18.329 10771.975
+ angleY -100
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i2_b1_2 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
+ coords 4558.41 18.427 10772.352
+ angleY -10
+ scale 1.6
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i2_b1_3 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
+ coords 4558.325 18.329 10772.833
+ angleY -10
+ scale 0.85
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i2_b1_4 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
+ coords 4558.232 18.443 10773.365
+ angleY -100
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i2_b1_5 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
+ coords 4558.155 18.425 10773.802
+ angleY -10
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i2_b2_1 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
+ coords 4558.444 18.776 10772.163
+ angleY -100
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i2_b2_2 : "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et" {
+ coords 4558.346 18.723 10772.718
+ angleY -100
+ scale 0.9
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i2_b2_3 : "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et" {
+ coords 4558.258 18.935 10773.218
+ angleY -100
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i2_b2_4 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
+ coords 4558.18 18.888 10773.658
+ angleY -10
+ scale 1.1
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i3_b1_1 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
+ coords 4556.243 18.329 10773.471
+ angleY 80
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i3_b1_2 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
+ coords 4556.333 18.343 10772.958
+ angleY 170
+ scale 0.9
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i3_b1_3 : "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et" {
+ coords 4556.421 18.329 10772.463
+ angleY 80
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i3_b1_4 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
+ coords 4556.487 18.427 10772.086
+ angleY 170
+ scale 1.6
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i3_b1_5 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
+ coords 4556.56 18.443 10771.671
+ angleY 80
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i3_b2_1 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
+ coords 4556.27 18.835 10773.32
+ angleY 80
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i3_b2_2 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
+ coords 4556.347 18.817 10772.882
+ angleY 170
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i3_b2_3 : "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et" {
+ coords 4556.43 18.776 10772.412
+ angleY 80
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i3_b2_4 : "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et" {
+ coords 4556.527 18.723 10771.858
  angleY 80
  scale 0.9
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i4_b1_1 : "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et" {
+ coords 4556.013 18.496 10771.698
+ angleY -10
+ scale 1.1
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i4_b1_2 : "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et" {
+ coords 4555.928 18.399 10772.182
+ angleY -10
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i4_b1_3 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
+ coords 4555.846 18.329 10772.648
+ angleY -100
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i4_b1_4 : "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et" {
+ coords 4555.755 18.343 10773.162
+ angleY -10
+ scale 0.9
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i4_b2_1 : "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et" {
+ coords 4556.046 18.819 10771.514
+ angleY -10
+ scale 1.6
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i4_b2_2 : "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et" {
+ coords 4555.961 18.721 10771.995
+ angleY -10
+ scale 0.85
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i4_b2_3 : "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et" {
+ coords 4555.867 18.835 10772.526
+ angleY -100
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i4_b2_4 : "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et" {
+ coords 4555.79 18.817 10772.964
+ angleY -10
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i4_b2_5 : "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et" {
+ coords 4555.716 18.721 10773.382
+ angleY -100
+ scale 1.3
 }

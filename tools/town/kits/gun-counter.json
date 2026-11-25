@@ -245,13 +245,162 @@
       "floor": "f0"
     },
     {
+      "id": "lf-weapon-rack-stand-display-door",
+      "name": "Lf_Weapon_Rack_Stand_Display_Door",
+      "prefab": "{96114332715F34A3}Prefabs/Props/Commercial/LF_WeaponRackStand_Display.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.9,
+        0.199,
+        1.5
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "gun-display-stand-door",
+      "name": "Gun_Display_Stand_Door",
+      "prefab": "{AC4B253352965EE9}Prefabs/Buildings/GunStore/Furniture/GunStore_RackDisplay_Stand.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.45,
+        0.199,
+        0.3
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "gun-counter-host-w1-b1-1",
+      "name": "Gun_Counter_Host_w1_b1_1",
+      "prefab": "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.231,
+        0.789,
+        -2.712
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.85
+    },
+    {
+      "id": "gun-counter-host-w1-b1-2",
+      "name": "Gun_Counter_Host_w1_b1_2",
+      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.671,
+        0.903,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-w1-b1-3",
+      "name": "Gun_Counter_Host_w1_b1_3",
+      "prefab": "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.016,
+        0.885,
+        -2.712
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-w1-b2-1",
+      "name": "Gun_Counter_Host_w1_b2_1",
+      "prefab": "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.036,
+        1.496,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-w1-b2-2",
+      "name": "Gun_Counter_Host_w1_b2_2",
+      "prefab": "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.383,
+        1.449,
+        -2.712
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.1
+    },
+    {
+      "id": "gun-counter-host-w1-b2-3",
+      "name": "Gun_Counter_Host_w1_b2_3",
+      "prefab": "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.774,
+        1.352,
+        -2.712
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "gun-counter-host-w1-b2-4",
+      "name": "Gun_Counter_Host_w1_b2_4",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.131,
+        1.282,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
       "id": "gun-counter-host-w1-b3-1",
       "name": "Gun_Counter_Host_w1_b3_1",
       "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.032,
+        1.022,
         1.775,
         -2.712
       ],
@@ -262,21 +411,208 @@
       "scale": 1.4
     },
     {
-      "id": "gun-counter-host-w1-b3-6",
-      "name": "Gun_Counter_Host_w1_b3_6",
-      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
+      "id": "gun-counter-host-w1-b3-2",
+      "name": "Gun_Counter_Host_w1_b3_2",
+      "prefab": "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.082,
-        1.889,
+        1.305,
+        1.873,
+        -2.712
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.6
+    },
+    {
+      "id": "gun-counter-host-w1-b3-3",
+      "name": "Gun_Counter_Host_w1_b3_3",
+      "prefab": "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.692,
+        1.775,
+        -2.712
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.85
+    },
+    {
+      "id": "gun-counter-host-w1-b3-4",
+      "name": "Gun_Counter_Host_w1_b3_4",
+      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.112,
+        1.775,
         -2.712
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
       "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-w2-b1-1",
+      "name": "Gun_Counter_Host_w2_b1_1",
+      "prefab": "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        0.844,
+        4.928
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
       "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-w2-b1-2",
+      "name": "Gun_Counter_Host_w2_b1_2",
+      "prefab": "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        0.791,
+        5.391
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.9
+    },
+    {
+      "id": "gun-counter-host-w2-b1-3",
+      "name": "Gun_Counter_Host_w2_b1_3",
+      "prefab": "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.003,
+        5.799
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-w2-b2-1",
+      "name": "Gun_Counter_Host_w2_b2_1",
+      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.282,
+        4.799
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-w2-b2-2",
+      "name": "Gun_Counter_Host_w2_b2_2",
+      "prefab": "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.296,
+        5.22
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.9
+    },
+    {
+      "id": "gun-counter-host-w2-b2-3",
+      "name": "Gun_Counter_Host_w2_b2_3",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.282,
+        5.622
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "gun-counter-host-w2-b2-4",
+      "name": "Gun_Counter_Host_w2_b2_4",
+      "prefab": "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.38,
+        5.905
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.6
+    },
+    {
+      "id": "gun-counter-host-w2-b3-1",
+      "name": "Gun_Counter_Host_w2_b3_1",
+      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.889,
+        4.824
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-w2-b3-2",
+      "name": "Gun_Counter_Host_w2_b3_2",
+      "prefab": "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.502,
+        1.871,
+        5.169
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
     },
     {
       "id": "gun-counter-host-w2-b3-3",
@@ -287,7 +623,7 @@
       "offset": [
         5.502,
         1.83,
-        5.242
+        5.546
       ],
       "yaw": -90,
       "free": true,
@@ -296,21 +632,21 @@
       "scale": 1.2
     },
     {
-      "id": "gun-counter-host-w2-b3-6",
-      "name": "Gun_Counter_Host_w2_b3_6",
-      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
+      "id": "gun-counter-host-w2-b3-4",
+      "name": "Gun_Counter_Host_w2_b3_4",
+      "prefab": "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         5.502,
-        1.775,
-        5.873
+        1.873,
+        5.9
       ],
-      "yaw": -90,
+      "yaw": 0,
       "free": true,
       "wall": "free",
       "floor": "f0",
-      "scale": 1.3
+      "scale": 1.6
     },
     {
       "id": "gun-counter-host-g1-b1-1",
@@ -321,7 +657,7 @@
       "offset": [
         5.502,
         0.796,
-        2.47
+        2.502
       ],
       "yaw": 0,
       "free": true,
@@ -338,7 +674,7 @@
       "offset": [
         5.502,
         0.699,
-        2.71
+        2.943
       ],
       "yaw": 0,
       "free": true,
@@ -355,7 +691,7 @@
       "offset": [
         5.502,
         0.629,
-        2.935
+        3.367
       ],
       "yaw": -90,
       "free": true,
@@ -372,7 +708,7 @@
       "offset": [
         5.502,
         0.643,
-        3.206
+        3.838
       ],
       "yaw": 0,
       "free": true,
@@ -389,81 +725,13 @@
       "offset": [
         5.502,
         0.629,
-        3.458
+        4.29
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.4
-    },
-    {
-      "id": "gun-counter-host-g1-b1-6",
-      "name": "Gun_Counter_Host_g1_b1_6",
-      "prefab": "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.502,
-        0.727,
-        3.591
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.6
-    },
-    {
-      "id": "gun-counter-host-g1-b1-7",
-      "name": "Gun_Counter_Host_g1_b1_7",
-      "prefab": "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.502,
-        0.629,
-        3.829
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 0.85
-    },
-    {
-      "id": "gun-counter-host-g1-b1-8",
-      "name": "Gun_Counter_Host_g1_b1_8",
-      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.502,
-        0.743,
-        4.119
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.2
-    },
-    {
-      "id": "gun-counter-host-g1-b1-9",
-      "name": "Gun_Counter_Host_g1_b1_9",
-      "prefab": "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.502,
-        0.725,
-        4.314
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.3
     },
     {
       "id": "gun-counter-host-g1-b2-1",
@@ -474,7 +742,7 @@
       "offset": [
         5.502,
         1.119,
-        2.384
+        2.462
       ],
       "yaw": 0,
       "free": true,
@@ -491,7 +759,7 @@
       "offset": [
         5.502,
         1.021,
-        2.621
+        2.899
       ],
       "yaw": 0,
       "free": true,
@@ -508,7 +776,7 @@
       "offset": [
         5.502,
         1.135,
-        2.911
+        3.389
       ],
       "yaw": -90,
       "free": true,
@@ -525,7 +793,7 @@
       "offset": [
         5.502,
         1.117,
-        3.106
+        3.784
       ],
       "yaw": 0,
       "free": true,
@@ -542,64 +810,13 @@
       "offset": [
         5.502,
         1.076,
-        3.333
+        4.211
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.2
-    },
-    {
-      "id": "gun-counter-host-g1-b2-6",
-      "name": "Gun_Counter_Host_g1_b2_6",
-      "prefab": "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.502,
-        1.023,
-        3.646
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 0.9
-    },
-    {
-      "id": "gun-counter-host-g1-b2-7",
-      "name": "Gun_Counter_Host_g1_b2_7",
-      "prefab": "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.502,
-        1.235,
-        3.904
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.2
-    },
-    {
-      "id": "gun-counter-host-g1-b2-8",
-      "name": "Gun_Counter_Host_g1_b2_8",
-      "prefab": "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.502,
-        1.188,
-        4.101
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.1
     },
     {
       "id": "gun-counter-host-g1-b3-1",
@@ -610,7 +827,7 @@
       "offset": [
         5.502,
         1.592,
-        2.444
+        2.468
       ],
       "yaw": -90,
       "free": true,
@@ -627,7 +844,7 @@
       "offset": [
         5.502,
         1.545,
-        2.642
+        2.865
       ],
       "yaw": 0,
       "free": true,
@@ -644,7 +861,7 @@
       "offset": [
         5.502,
         1.448,
-        2.882
+        3.306
       ],
       "yaw": 0,
       "free": true,
@@ -661,7 +878,7 @@
       "offset": [
         5.502,
         1.378,
-        3.107
+        3.731
       ],
       "yaw": -90,
       "free": true,
@@ -678,7 +895,7 @@
       "offset": [
         5.502,
         1.392,
-        3.378
+        4.201
       ],
       "yaw": 0,
       "free": true,
@@ -687,72 +904,55 @@
       "scale": 0.9
     },
     {
-      "id": "gun-counter-host-g1-b3-6",
-      "name": "Gun_Counter_Host_g1_b3_6",
+      "id": "gun-counter-host-n1-b1-1",
+      "name": "Gun_Counter_Host_n1_b1_1",
+      "prefab": "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.52,
+        0.806,
+        -2.76
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.9
+    },
+    {
+      "id": "gun-counter-host-n1-b1-2",
+      "name": "Gun_Counter_Host_n1_b1_2",
       "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.502,
-        1.378,
-        3.63
+        2.772,
+        0.792,
+        -2.76
       ],
-      "yaw": -90,
+      "yaw": 0,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.4
     },
     {
-      "id": "gun-counter-host-g1-b3-7",
-      "name": "Gun_Counter_Host_g1_b3_7",
+      "id": "gun-counter-host-n1-b1-3",
+      "name": "Gun_Counter_Host_n1_b1_3",
       "prefab": "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.502,
-        1.476,
-        3.763
+        2.906,
+        0.89,
+        -2.76
       ],
-      "yaw": 0,
+      "yaw": 90,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.6
-    },
-    {
-      "id": "gun-counter-host-g1-b3-8",
-      "name": "Gun_Counter_Host_g1_b3_8",
-      "prefab": "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.502,
-        1.378,
-        4.001
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 0.85
-    },
-    {
-      "id": "gun-counter-host-g1-b3-9",
-      "name": "Gun_Counter_Host_g1_b3_9",
-      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.502,
-        1.492,
-        4.291
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.2
     },
     {
       "id": "gun-counter-host-n1-b2-1",
@@ -772,6 +972,74 @@
       "scale": 1.3
     },
     {
+      "id": "gun-counter-host-n1-b2-2",
+      "name": "Gun_Counter_Host_n1_b2_2",
+      "prefab": "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.7,
+        1.344,
+        -2.76
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-n1-b2-3",
+      "name": "Gun_Counter_Host_n1_b2_3",
+      "prefab": "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.013,
+        1.291,
+        -2.76
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.9
+    },
+    {
+      "id": "gun-counter-host-n1-b3-1",
+      "name": "Gun_Counter_Host_n1_b3_1",
+      "prefab": "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.516,
+        1.848,
+        -2.76
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "gun-counter-host-n1-b3-2",
+      "name": "Gun_Counter_Host_n1_b3_2",
+      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.74,
+        1.778,
+        -2.76
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
       "id": "gun-counter-host-h1-b1-1",
       "name": "Gun_Counter_Host_h1_b1_1",
       "prefab": "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et",
@@ -780,7 +1048,7 @@
       "offset": [
         -1.261,
         0.789,
-        4.378
+        4.272
       ],
       "yaw": 180,
       "free": true,
@@ -797,7 +1065,7 @@
       "offset": [
         -1.261,
         0.903,
-        4.088
+        3.832
       ],
       "yaw": 90,
       "free": true,
@@ -814,47 +1082,13 @@
       "offset": [
         -1.261,
         0.885,
-        3.893
+        3.487
       ],
       "yaw": 180,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.3
-    },
-    {
-      "id": "gun-counter-host-h1-b1-4",
-      "name": "Gun_Counter_Host_h1_b1_4",
-      "prefab": "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.261,
-        0.844,
-        3.666
-      ],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.2
-    },
-    {
-      "id": "gun-counter-host-h1-b1-5",
-      "name": "Gun_Counter_Host_h1_b1_5",
-      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.261,
-        0.903,
-        3.41
-      ],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.2
     },
     {
       "id": "gun-counter-host-h1-b2-1",
@@ -865,7 +1099,7 @@
       "offset": [
         -1.261,
         1.496,
-        4.438
+        4.467
       ],
       "yaw": 90,
       "free": true,
@@ -882,7 +1116,7 @@
       "offset": [
         -1.261,
         1.449,
-        4.241
+        4.12
       ],
       "yaw": 180,
       "free": true,
@@ -899,7 +1133,7 @@
       "offset": [
         -1.261,
         1.352,
-        4
+        3.729
       ],
       "yaw": 180,
       "free": true,
@@ -910,36 +1144,19 @@
     {
       "id": "gun-counter-host-h1-b2-4",
       "name": "Gun_Counter_Host_h1_b2_4",
-      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         -1.261,
         1.282,
-        3.775
+        3.372
       ],
       "yaw": 90,
       "free": true,
       "wall": "free",
       "floor": "f0",
-      "scale": 1.3
-    },
-    {
-      "id": "gun-counter-host-h1-b2-5",
-      "name": "Gun_Counter_Host_h1_b2_5",
-      "prefab": "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.261,
-        1.296,
-        3.505
-      ],
-      "yaw": 180,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 0.9
+      "scale": 1.4
     },
     {
       "id": "gun-counter-host-h1-b3-1",
@@ -950,7 +1167,7 @@
       "offset": [
         -1.261,
         1.775,
-        4.471
+        4.481
       ],
       "yaw": 90,
       "free": true,
@@ -967,7 +1184,7 @@
       "offset": [
         -1.261,
         1.873,
-        4.338
+        4.198
       ],
       "yaw": 180,
       "free": true,
@@ -984,7 +1201,7 @@
       "offset": [
         -1.261,
         1.775,
-        4.1
+        3.811
       ],
       "yaw": 180,
       "free": true,
@@ -995,53 +1212,19 @@
     {
       "id": "gun-counter-host-h1-b3-4",
       "name": "Gun_Counter_Host_h1_b3_4",
-      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
+      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         -1.261,
-        1.889,
-        3.81
+        1.775,
+        3.391
       ],
       "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.2
-    },
-    {
-      "id": "gun-counter-host-h1-b3-5",
-      "name": "Gun_Counter_Host_h1_b3_5",
-      "prefab": "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.261,
-        1.871,
-        3.616
-      ],
-      "yaw": 180,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.3
-    },
-    {
-      "id": "gun-counter-host-h1-b3-6",
-      "name": "Gun_Counter_Host_h1_b3_6",
-      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.261,
-        1.889,
-        3.421
-      ],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.2
     },
     {
       "id": "gun-counter-host-h3-b1-1",
@@ -1052,7 +1235,7 @@
       "offset": [
         -1.262,
         0.844,
-        5.859
+        5.789
       ],
       "yaw": 90,
       "free": true,
@@ -1069,7 +1252,7 @@
       "offset": [
         -1.262,
         0.791,
-        5.546
+        5.326
       ],
       "yaw": 90,
       "free": true,
@@ -1086,41 +1269,7 @@
       "offset": [
         -1.262,
         1.003,
-        5.288
-      ],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.2
-    },
-    {
-      "id": "gun-counter-host-h3-b1-4",
-      "name": "Gun_Counter_Host_h3_b1_4",
-      "prefab": "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.262,
-        0.956,
-        5.091
-      ],
-      "yaw": 180,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.1
-    },
-    {
-      "id": "gun-counter-host-h3-b1-5",
-      "name": "Gun_Counter_Host_h3_b1_5",
-      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.262,
-        0.903,
-        4.871
+        4.918
       ],
       "yaw": 90,
       "free": true,
@@ -1137,7 +1286,7 @@
       "offset": [
         -1.262,
         1.282,
-        5.871
+        5.918
       ],
       "yaw": 90,
       "free": true,
@@ -1154,7 +1303,7 @@
       "offset": [
         -1.262,
         1.296,
-        5.6
+        5.497
       ],
       "yaw": 180,
       "free": true,
@@ -1171,7 +1320,7 @@
       "offset": [
         -1.262,
         1.282,
-        5.348
+        5.095
       ],
       "yaw": 90,
       "free": true,
@@ -1188,30 +1337,13 @@
       "offset": [
         -1.262,
         1.38,
-        5.215
+        4.812
       ],
       "yaw": 180,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.6
-    },
-    {
-      "id": "gun-counter-host-h3-b2-5",
-      "name": "Gun_Counter_Host_h3_b2_5",
-      "prefab": "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.262,
-        1.282,
-        4.977
-      ],
-      "yaw": 180,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 0.85
     },
     {
       "id": "gun-counter-host-h3-b3-1",
@@ -1222,7 +1354,7 @@
       "offset": [
         -1.262,
         1.889,
-        5.897
+        5.893
       ],
       "yaw": 90,
       "free": true,
@@ -1239,7 +1371,7 @@
       "offset": [
         -1.262,
         1.871,
-        5.703
+        5.548
       ],
       "yaw": 180,
       "free": true,
@@ -1256,7 +1388,7 @@
       "offset": [
         -1.262,
         1.83,
-        5.475
+        5.171
       ],
       "yaw": 90,
       "free": true,
@@ -1267,53 +1399,19 @@
     {
       "id": "gun-counter-host-h3-b3-4",
       "name": "Gun_Counter_Host_h3_b3_4",
-      "prefab": "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et",
+      "prefab": "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         -1.262,
-        1.989,
-        5.242
-      ],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.2
-    },
-    {
-      "id": "gun-counter-host-h3-b3-5",
-      "name": "Gun_Counter_Host_h3_b3_5",
-      "prefab": "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.262,
-        1.942,
-        5.045
+        1.873,
+        4.817
       ],
       "yaw": 180,
       "free": true,
       "wall": "free",
       "floor": "f0",
-      "scale": 1.1
-    },
-    {
-      "id": "gun-counter-host-h3-b3-6",
-      "name": "Gun_Counter_Host_h3_b3_6",
-      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -1.262,
-        1.775,
-        4.845
-      ],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.3
+      "scale": 1.6
     },
     {
       "id": "gun-counter-host-h2-b1-1",
@@ -1324,7 +1422,7 @@
       "offset": [
         5.506,
         0.956,
-        -1.685
+        -1.633
       ],
       "yaw": 0,
       "free": true,
@@ -1341,7 +1439,7 @@
       "offset": [
         5.506,
         0.859,
-        -1.444
+        -1.192
       ],
       "yaw": 0,
       "free": true,
@@ -1358,47 +1456,13 @@
       "offset": [
         5.506,
         0.789,
-        -1.22
+        -0.767
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.3
-    },
-    {
-      "id": "gun-counter-host-h2-b1-4",
-      "name": "Gun_Counter_Host_h2_b1_4",
-      "prefab": "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.506,
-        0.803,
-        -0.949
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 0.9
-    },
-    {
-      "id": "gun-counter-host-h2-b1-5",
-      "name": "Gun_Counter_Host_h2_b1_5",
-      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.506,
-        0.789,
-        -0.697
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.4
     },
     {
       "id": "gun-counter-host-h2-b2-1",
@@ -1409,7 +1473,7 @@
       "offset": [
         5.506,
         1.38,
-        -1.725
+        -1.698
       ],
       "yaw": 0,
       "free": true,
@@ -1426,7 +1490,7 @@
       "offset": [
         5.506,
         1.282,
-        -1.488
+        -1.261
       ],
       "yaw": 0,
       "free": true,
@@ -1443,41 +1507,7 @@
       "offset": [
         5.506,
         1.396,
-        -1.198
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.2
-    },
-    {
-      "id": "gun-counter-host-h2-b2-4",
-      "name": "Gun_Counter_Host_h2_b2_4",
-      "prefab": "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.506,
-        1.378,
-        -1.003
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.3
-    },
-    {
-      "id": "gun-counter-host-h2-b2-5",
-      "name": "Gun_Counter_Host_h2_b2_5",
-      "prefab": "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.506,
-        1.337,
-        -0.776
+        -0.771
       ],
       "yaw": -90,
       "free": true,
@@ -1494,7 +1524,7 @@
       "offset": [
         5.506,
         1.989,
-        -1.719
+        -1.649
       ],
       "yaw": -90,
       "free": true,
@@ -1511,7 +1541,7 @@
       "offset": [
         5.506,
         1.942,
-        -1.522
+        -1.252
       ],
       "yaw": 0,
       "free": true,
@@ -1528,47 +1558,13 @@
       "offset": [
         5.506,
         1.845,
-        -1.281
+        -0.811
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.4
-    },
-    {
-      "id": "gun-counter-host-h2-b3-4",
-      "name": "Gun_Counter_Host_h2_b3_4",
-      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.506,
-        1.775,
-        -1.056
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.3
-    },
-    {
-      "id": "gun-counter-host-h2-b3-5",
-      "name": "Gun_Counter_Host_h2_b3_5",
-      "prefab": "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.506,
-        1.789,
-        -0.786
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 0.9
     },
     {
       "id": "gun-counter-host-hn2-b1-1",
@@ -1579,7 +1575,7 @@
       "offset": [
         5.517,
         0.806,
-        -2.696
+        -2.629
       ],
       "yaw": 0,
       "free": true,
@@ -1596,43 +1592,9 @@
       "offset": [
         5.517,
         0.792,
-        -2.444
+        -2.127
       ],
       "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.4
-    },
-    {
-      "id": "gun-counter-host-hn2-b1-3",
-      "name": "Gun_Counter_Host_hn2_b1_3",
-      "prefab": "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.517,
-        0.89,
-        -2.31
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.6
-    },
-    {
-      "id": "gun-counter-host-hn2-b1-4",
-      "name": "Gun_Counter_Host_hn2_b1_4",
-      "prefab": "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.517,
-        0.862,
-        -2.118
-      ],
-      "yaw": 0,
       "free": true,
       "wall": "free",
       "floor": "f0",
@@ -1647,7 +1609,7 @@
       "offset": [
         5.517,
         1.385,
-        -2.743
+        -2.699
       ],
       "yaw": 0,
       "free": true,
@@ -1664,30 +1626,13 @@
       "offset": [
         5.517,
         1.344,
-        -2.516
+        -2.222
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.2
-    },
-    {
-      "id": "gun-counter-host-hn2-b2-3",
-      "name": "Gun_Counter_Host_hn2_b2_3",
-      "prefab": "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        5.517,
-        1.291,
-        -2.203
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 0.9
     },
     {
       "id": "gun-counter-host-hn2-b3-1",
@@ -1698,7 +1643,7 @@
       "offset": [
         5.517,
         1.848,
-        -2.7
+        -2.647
       ],
       "yaw": 0,
       "free": true,
@@ -1715,7 +1660,7 @@
       "offset": [
         5.517,
         1.778,
-        -2.476
+        -2.172
       ],
       "yaw": -90,
       "free": true,
@@ -1724,21 +1669,620 @@
       "scale": 1.3
     },
     {
-      "id": "gun-counter-host-hn2-b3-3",
-      "name": "Gun_Counter_Host_hn2_b3_3",
+      "id": "gun-counter-host-i1-b1-1",
+      "name": "Gun_Counter_Host_i1_b1_1",
+      "prefab": "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.41,
+        0.629,
+        5.657
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.85
+    },
+    {
+      "id": "gun-counter-host-i1-b1-2",
+      "name": "Gun_Counter_Host_i1_b1_2",
+      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.95,
+        0.743,
+        5.657
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-i1-b1-3",
+      "name": "Gun_Counter_Host_i1_b1_3",
+      "prefab": "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.395,
+        0.725,
+        5.657
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-i1-b1-4",
+      "name": "Gun_Counter_Host_i1_b1_4",
+      "prefab": "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.872,
+        0.684,
+        5.657
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-i1-b2-1",
+      "name": "Gun_Counter_Host_i1_b2_1",
+      "prefab": "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.199,
+        1.235,
+        5.657
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-i1-b2-2",
+      "name": "Gun_Counter_Host_i1_b2_2",
+      "prefab": "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.647,
+        1.188,
+        5.657
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.1
+    },
+    {
+      "id": "gun-counter-host-i1-b2-3",
+      "name": "Gun_Counter_Host_i1_b2_3",
+      "prefab": "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.137,
+        1.091,
+        5.657
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "gun-counter-host-i1-b2-4",
+      "name": "Gun_Counter_Host_i1_b2_4",
+      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.612,
+        1.021,
+        5.657
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-i1-b2-5",
+      "name": "Gun_Counter_Host_i1_b2_5",
+      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.046,
+        1.021,
+        5.657
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-i2-b1-1",
+      "name": "Gun_Counter_Host_i2_b1_1",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.061,
+        0.629,
+        5.123
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "gun-counter-host-i2-b1-2",
+      "name": "Gun_Counter_Host_i2_b1_2",
+      "prefab": "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.678,
+        0.727,
+        5.123
+      ],
+      "yaw": 270,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.6
+    },
+    {
+      "id": "gun-counter-host-i2-b1-3",
+      "name": "Gun_Counter_Host_i2_b1_3",
+      "prefab": "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.19,
+        0.629,
+        5.123
+      ],
+      "yaw": 270,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.85
+    },
+    {
+      "id": "gun-counter-host-i2-b1-4",
+      "name": "Gun_Counter_Host_i2_b1_4",
+      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.65,
+        0.743,
+        5.123
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-i2-b1-5",
+      "name": "Gun_Counter_Host_i2_b1_5",
+      "prefab": "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.206,
+        0.725,
+        5.123
+      ],
+      "yaw": 270,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-i2-b2-1",
+      "name": "Gun_Counter_Host_i2_b2_1",
+      "prefab": "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.87,
+        1.076,
+        5.123
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-i2-b2-2",
+      "name": "Gun_Counter_Host_i2_b2_2",
+      "prefab": "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.307,
+        1.023,
+        5.123
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.9
+    },
+    {
+      "id": "gun-counter-host-i2-b2-3",
+      "name": "Gun_Counter_Host_i2_b2_3",
+      "prefab": "{CC507357A6B44405}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterM12.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.799,
+        1.235,
+        5.123
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-i2-b2-4",
+      "name": "Gun_Counter_Host_i2_b2_4",
+      "prefab": "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.352,
+        1.188,
+        5.123
+      ],
+      "yaw": 270,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.1
+    },
+    {
+      "id": "gun-counter-host-i3-b1-1",
+      "name": "Gun_Counter_Host_i3_b1_1",
+      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.2,
+        0.629,
+        3.183
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-i3-b1-2",
+      "name": "Gun_Counter_Host_i3_b1_2",
       "prefab": "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5.517,
-        1.792,
-        -2.205
+        1.721,
+        0.643,
+        3.183
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.9
+    },
+    {
+      "id": "gun-counter-host-i3-b1-3",
+      "name": "Gun_Counter_Host_i3_b1_3",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.223,
+        0.629,
+        3.183
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "gun-counter-host-i3-b1-4",
+      "name": "Gun_Counter_Host_i3_b1_4",
+      "prefab": "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.606,
+        0.727,
+        3.183
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.6
+    },
+    {
+      "id": "gun-counter-host-i3-b1-5",
+      "name": "Gun_Counter_Host_i3_b1_5",
+      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.028,
+        0.743,
+        3.183
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-i3-b2-1",
+      "name": "Gun_Counter_Host_i3_b2_1",
+      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.353,
+        1.135,
+        3.183
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-i3-b2-2",
+      "name": "Gun_Counter_Host_i3_b2_2",
+      "prefab": "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.798,
+        1.117,
+        3.183
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-i3-b2-3",
+      "name": "Gun_Counter_Host_i3_b2_3",
+      "prefab": "{4FC881026281A382}Prefabs/Props/Commercial/LF_ShelfGoods_Binoculars.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.275,
+        1.076,
+        3.183
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-i3-b2-4",
+      "name": "Gun_Counter_Host_i3_b2_4",
+      "prefab": "{B417E4B5FE91F753}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxBig.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.838,
+        1.023,
+        3.183
       ],
       "yaw": 0,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 0.9
+    },
+    {
+      "id": "gun-counter-host-i4-b1-1",
+      "name": "Gun_Counter_Host_i4_b1_1",
+      "prefab": "{2796B5E203D7D59D}Prefabs/Props/Commercial/LF_ShelfGoods_MagVz58.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.906,
+        0.796,
+        2.649
+      ],
+      "yaw": 270,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.1
+    },
+    {
+      "id": "gun-counter-host-i4-b1-2",
+      "name": "Gun_Counter_Host_i4_b1_2",
+      "prefab": "{9501A124436280F1}Prefabs/Props/Commercial/LF_ShelfGoods_Optic4x20.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.415,
+        0.699,
+        2.649
+      ],
+      "yaw": 270,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "gun-counter-host-i4-b1-3",
+      "name": "Gun_Counter_Host_i4_b1_3",
+      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.941,
+        0.629,
+        2.649
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-i4-b1-4",
+      "name": "Gun_Counter_Host_i4_b1_4",
+      "prefab": "{105186AF61EA51E8}Prefabs/Props/Commercial/LF_ShelfGoods_OpticArt.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.42,
+        0.643,
+        2.649
+      ],
+      "yaw": 270,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.9
+    },
+    {
+      "id": "gun-counter-host-i4-b2-1",
+      "name": "Gun_Counter_Host_i4_b2_1",
+      "prefab": "{F8E8B641FA788FA7}Prefabs/Props/Commercial/LF_ShelfGoods_MagPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.093,
+        1.119,
+        2.649
+      ],
+      "yaw": 270,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.6
+    },
+    {
+      "id": "gun-counter-host-i4-b2-2",
+      "name": "Gun_Counter_Host_i4_b2_2",
+      "prefab": "{C479F760CE6A8039}Prefabs/Props/Commercial/LF_ShelfGoods_AmmoBoxSmall.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.605,
+        1.021,
+        2.649
+      ],
+      "yaw": 270,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.85
+    },
+    {
+      "id": "gun-counter-host-i4-b2-3",
+      "name": "Gun_Counter_Host_i4_b2_3",
+      "prefab": "{D20EC546E28D520E}Prefabs/Props/Commercial/LF_ShelfGoods_HolsterPM.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.065,
+        1.135,
+        2.649
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "gun-counter-host-i4-b2-4",
+      "name": "Gun_Counter_Host_i4_b2_4",
+      "prefab": "{5CB509B65223CE77}Prefabs/Props/Commercial/LF_ShelfGoods_MagM14.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.621,
+        1.117,
+        2.649
+      ],
+      "yaw": 270,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "gun-counter-host-i4-b2-5",
+      "name": "Gun_Counter_Host_i4_b2_5",
+      "prefab": "{0D85F35B99C0657F}Prefabs/Props/Commercial/LF_ShelfGoods_MagPouch.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.196,
+        1.021,
+        2.649
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
     }
+  ],
+  "clear": [
+    "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et",
+    "{D24CDD53ECAA296C}Prefabs/Props/Commercial/ShoppingBasket_01/ShoppingBasket_01_Base.et"
   ]
 }
