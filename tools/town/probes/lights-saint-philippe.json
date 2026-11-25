@@ -287,6 +287,16 @@
    "y": 17.28,
    "ty": 17.28,
    "on": "Eden"
+  },
+  "Lamp_front_cafe": {
+   "y": 12.38,
+   "ty": 12.38,
+   "on": "Eden"
+  },
+  "Lamp_front_registry": {
+   "y": 16.16,
+   "ty": 16.16,
+   "on": "Eden"
   }
  },
  "rejected": [

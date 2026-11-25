@@ -1,0 +1,37 @@
+# Night fronts at 22:00 (night re-check 2026-11-25): the cafe door and fascia, the registry cabin, bus stop b32, the bank teller counter.
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow island-night-fronts
+#   node agent-box/session.mjs down
+# The flow signs in and pins the clock to 22:00; the shots are `capture world <name> x y z ox oy oz 22` lines run one by one, the feet at
+# target + offset, the target aimed at, the offset's y from `probe ground` (the cafe and registry fronts, the stop's street, the teller room).
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000

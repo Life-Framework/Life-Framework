@@ -6229,6 +6229,21 @@ StringTable {
      Target_en_us "The village butcher: dried meat, canned meat and cured cuts."
      Comment "What line of the butcher sign (#3228)."
     }
+    CustomStringTableItem "{40A341756036EC29}" {
+     Id "LF-Sign_CafeSquare_How"
+     Target_en_us "Walk in and order at the counter. Open every day."
+     Comment "How line of the square cafe sign (night re-check 2026-11-25)."
+    }
+    CustomStringTableItem "{6C8D81D26CB37D06}" {
+     Id "LF-Sign_CafeSquare_Title"
+     Target_en_us "Cafe"
+     Comment "Title painted on the square cafe fascia facing the street (night re-check 2026-11-25). Shown in the prompt as Read: Cafe."
+    }
+    CustomStringTableItem "{B07E31C94A5D2F86}" {
+     Id "LF-Sign_CafeSquare_What"
+     Target_en_us "The cafe on the square: bottled drinks and a bite to eat at the counter."
+     Comment "What line of the square cafe sign (night re-check 2026-11-25)."
+    }
     CustomStringTableItem "{6DED683EC28D2099}" {
      Id "LF-Sign_ChotainPub_How"
      Target_en_us "Walk in and talk to the barkeeper at the bar. Open every day."

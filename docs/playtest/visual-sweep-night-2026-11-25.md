@@ -89,3 +89,14 @@ Three cards, each with its own files. None edits the same file as another. Each 
 ## Method
 
 `session up --mission island --profile full`, one client; the client signed in through the quiz, then `time 22` (the server sets the clock and the weather to Clear) and a 35 s wait for the 30 s night-light tick. For each view the camera was placed from the layer coordinates (fascia or counter plus 3.5 to 9 m, aimed back at it), the floor taken from the harness `probe ground` for street views, and the shot taken with `capture world ... 22` (HUD off, the clock left to the server). `session down` ran straight after the last shot.
+
+## Fix pass 2026-11-25 (the last three BELOW and the unverified teller counter)
+
+One full-profile island session at 22:00 (`agent-box/flows/island-night-fronts.txt` signs in; the shots are `capture world ... 22` lines). Pictures in `website/public/docs-images/night-fronts-1125/`.
+
+| Stop | Result |
+|---|---|
+| Cafe exterior | OK. A vanilla street lamp (`Lamp_saint_philippe_front_cafe`) stands 4 m out and 3 m south of the door axis, and the kit gained a `CAFE` fascia over the door. [front](../../website/public/docs-images/night-fronts-1125/after-cafe-front.jpg), [sign](../../website/public/docs-images/night-fronts-1125/after-cafe-sign.jpg). The first fascia seat sat inside the rough stucco (only the rim showed); `standoff 0.12` in the kit row fixed it. |
+| Gang registry exterior | OK. A lamp (`Lamp_saint_philippe_front_registry`) 3 m off the plate's axis lights the cabin, its plate and the east door; the door swing is clear. [wide](../../website/public/docs-images/night-fronts-1125/after-registry-wide.jpg), [door](../../website/public/docs-images/night-fronts-1125/after-registry-door.jpg), [plate](../../website/public/docs-images/night-fronts-1125/after-registry-plate.jpg). |
+| Bus stop b32 | OK. Shot from the street (4553.8 / 10760 and 4555 / 10757.5). The #4968 lamp is lit and lights the forecourt, the door and the stop's timetable board. The round stop plate above the board stays dim. [lamp](../../website/public/docs-images/night-fronts-1125/after-busstop-lamp.jpg), [board](../../website/public/docs-images/night-fronts-1125/after-busstop-board.jpg). |
+| Bank teller counter | OK. From inside the room, 3.2 m south of the teller (target 4367.72 14.4 10650.73, offset 0.6 -1.3 3.2): the counter, the glass screen, both tills and the teller read under the ceiling lamp. [teller](../../website/public/docs-images/night-fronts-1125/after-bank-teller.jpg). |

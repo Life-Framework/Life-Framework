@@ -139,6 +139,35 @@
       "floor": "f0"
     },
     {
+      "id": "cafe-fascia",
+      "name": "Cafe_fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        8.6,
+        3,
+        -2.2
+      ],
+      "yaw": 90,
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "wall",
+      "standoff": 0.12,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"cafe_square\"",
+            "m_vRimColor": "0.45 0.25 0.12",
+            "m_vPaintColor": "0.96 0.9 0.74",
+            "m_vTextColor": "0.45 0.25 0.12"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
       "id": "cafe-lamp-1",
       "name": "Cafe_Lamp_1",
       "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
