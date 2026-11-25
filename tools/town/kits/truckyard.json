@@ -282,9 +282,9 @@
       "role": "npc",
       "verb": "on floor",
       "offset": [
-        -8.5,
+        -16.77,
         0,
-        5.2
+        4.78
       ],
       "yaw": -90,
       "class": "LF_NpcBaseEntity",

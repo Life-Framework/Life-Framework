@@ -129,7 +129,7 @@ GenericEntity Fit_ne_compound_truckyard_sign_gate : "{B7B489CA36A0E9F8}Prefabs/P
  angleY -90
 }
 LF_NpcBaseEntity Fit_ne_compound_truckyard_examiner : "{194B8115D8E97886}Prefabs/Characters/Npcs/Outfits/LF_Npc_TruckExaminer_1.et" {
- coords 5084.199 27.274 10841.139
+ coords 5075.997 27.383 10840
  angleY -95
 }
 GenericEntity Fit_ne_compound_truckyard_check_start {
