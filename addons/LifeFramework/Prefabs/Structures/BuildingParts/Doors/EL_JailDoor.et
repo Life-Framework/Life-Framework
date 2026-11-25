@@ -2,6 +2,7 @@ GenericEntity : "{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_P
  ID "787617D5B683FE41"
  components {
   LF_LockComponent "{5AC29970429B33BB}" {
+   m_sLockedReason "#LF-Cell_Locked"
   }
  }
 }

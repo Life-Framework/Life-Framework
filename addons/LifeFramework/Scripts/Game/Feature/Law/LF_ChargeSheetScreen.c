@@ -327,7 +327,7 @@ class LF_ChargeSheetScreen
 			return LF_Terms.Text("#LF-ChargeSheet_Stacked");
 
 		if (row.m_eState == LF_EChargeRow.OVER_CAP)
-			return LF_Terms.Text("#LF-ChargeSheet_OverCap", fineCap.ToString());
+			return LF_Terms.Text("#LF-ChargeSheet_OverCap", LF_Terms.Text("#LF-ChargeSheet_Money", row.m_iFine.ToString()));
 
 		int minutes = LF_BookingDesk.Minutes(row.m_iSeconds);
 		if (row.m_bJailOnly)

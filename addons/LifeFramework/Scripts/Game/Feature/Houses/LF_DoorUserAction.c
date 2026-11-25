@@ -126,7 +126,7 @@ modded class SCR_DoorUserAction
 		// The owner and key holders pass; the door stays locked behind them (#2410).
 		if (!m_pHouseLock.UserMayEnter(user))
 		{
-			SetCannotPerformReason("#EL-HouseLock_Reason");
+			SetCannotPerformReason(m_pHouseLock.GetLockedReason());
 			return false;
 		}
 

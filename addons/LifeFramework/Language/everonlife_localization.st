@@ -3255,6 +3255,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Patient treated. The call is closed."
      Comment "Toast to the medic after treating a casualty."
     }
+    CustomStringTableItem "{1407ED04A160A420}" {
+     Id "LF-Cell_Locked"
+     Target_en_us "The cell is locked"
+     Comment "Door action cannot-perform reason on a locked jail cell door (LF_LockComponent m_sLockedReason)."
+    }
     CustomStringTableItem "{C4A100000000A004}" {
      Id "LF-Chain_Cider_Name"
      Target_en_us "Cider"
@@ -3517,8 +3522,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F15EDBFA8B381B38}" {
      Id "LF-ChargeSheet_OverCap"
-     Target_en_us "Over cap"
-     Comment "Greyed row status: the rank fine cap is already reached. %1 = the cap in dollars."
+     Target_en_us "%1, capped"
+     Comment "Greyed row status: the charge's own fine, which the rank fine cap cuts from the total. %1 = the charge fine as money text (LF-ChargeSheet_Money)."
     }
     CustomStringTableItem "{36EB17C89AD9A18C}" {
      Id "LF-ChargeSheet_Pick"
@@ -10609,7 +10614,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F332871C9531979A}" {
      Id "LF-Lot_ChangeLocksRow"
-     Target_en_us "Change the locks: %1"
+     Target_en_us "Locks: %1"
      Comment "Car lot sheet row: re-key the car with this plate. %1 = the plate."
     }
     CustomStringTableItem "{EEBDBD6504C8B4FF}" {
