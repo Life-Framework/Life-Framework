@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "E89CEB93C0BB1969"
+ components {
+  MeshObject "{161A9D2113091392}" {
+   Object "{3D88A90E23197FCD}Assets/Items/Equipment/Accessories/Holster_M12/Holster_M12.xob"
+  }
+ }
+ coords 0 0 0
+}

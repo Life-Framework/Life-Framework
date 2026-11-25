@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "BF1807F6989460FD"
+ components {
+  MeshObject "{38ECD89EB9592A40}" {
+   Object "{9FB96EBAC79195C6}Assets/Weapons/Magazines/M14/Magazine_M14_20rnd.xob"
+  }
+ }
+ coords 0 0 0
+}

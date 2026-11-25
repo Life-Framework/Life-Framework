@@ -34,7 +34,7 @@
     },
     "front": "+z",
     "counters": [],
-    "adapt": "The labour office counter (perk pick at levels 10 and 20, the $500 change; #4416, #4684) stands in the town hall's ground-floor hall beside the licence desk row, in the arrival kit's frame, so the slot shares the arrival slot's building and anchor. Rows are rigid: shift, never stretch."
+    "adapt": "The labour office counter (perk pick at levels 10 and 20, the $500 change; #4416, #4684) stands in the town hall's ground-floor hall beside the licence desk row, in the arrival kit's frame, so the slot shares the arrival slot's building and anchor. Rows are rigid: shift, never stretch. The labour plate hangs on the town hall front facade at eye height (about 1.7 m above the doorstep), beside the entrance door and clear of its swing, mirroring the rules plate on the other side; it was low on the counter front, hidden behind the glass doors."
   },
   "rows": [
     {
@@ -58,11 +58,11 @@
       "name": "Labour_Sign",
       "prefab": "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et",
       "role": "sign",
-      "verb": "on floor",
+      "verb": "against wall",
       "offset": [
-        0.15,
-        0.78,
-        -0.53
+        1.9,
+        1.95,
+        7.99
       ],
       "yaw": 0,
       "floor": "f0",
@@ -78,7 +78,7 @@
           "blocks": []
         }
       ],
-      "free": true
+      "wall": "+z"
     }
   ]
 }

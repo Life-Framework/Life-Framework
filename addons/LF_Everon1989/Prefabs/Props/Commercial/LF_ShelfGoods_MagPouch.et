@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "BA28C0EA25BF3F4F"
+ components {
+  MeshObject "{526265FB72DE568A}" {
+   Object "{A89C472519F50877}Assets/Items/Equipment/Accessories/Pouch_ALICE_20rnd_M14/Pouch_ALICE_20rnd_M14.xob"
+  }
+ }
+ coords 0 0 0
+}
