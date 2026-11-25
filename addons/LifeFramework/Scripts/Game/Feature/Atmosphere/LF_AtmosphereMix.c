@@ -40,6 +40,22 @@ class LF_AtmosphereMix
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The hour window flipping, which an emitter logs once per flip: `last` is -1 (not seen yet), 0
+	//! (closed) or 1 (open). Returns "open" or "closed" when the window changed (or on the first look),
+	//! else "". A voice that never started (a session with `-noSound`) cannot log a stop, so the window
+	//! edge is the line a proof reads for "this bed ended at its hour" (#4955).
+	static string WindowEdge(int last, bool open)
+	{
+		if (open && last != 1)
+			return "open";
+
+		if (!open && last != 0)
+			return "closed";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! In range: inside the radius, or inside the radius plus the margin when it already plays.
 	static bool InRange(notnull LF_AmbientCandidate c)
 	{
