@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "58ACCDB578B5EE91"
+ components {
+  MeshObject "{733FDFAB12F2BEAD}" {
+   Object "{DBEAA3CD4B3B08DF}Assets/Props/Industrial/ToolBox_01/ToolBox_01.xob"
+  }
+ }
+ coords 0 0 0
+}

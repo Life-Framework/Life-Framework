@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "647BCE8F1E142F0D"
+ components {
+  MeshObject "{78609F8F8F80315B}" {
+   Object "{E1972FBA9F5D4BBB}Assets/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.xob"
+  }
+ }
+ coords 0 0 0
+}

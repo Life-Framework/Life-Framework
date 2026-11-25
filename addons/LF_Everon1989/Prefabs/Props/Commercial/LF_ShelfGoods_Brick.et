@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "7529A9122280A2A8"
+ components {
+  MeshObject "{ACF196E44AA92C30}" {
+   Object "{2A301FAA4ED493E3}Assets/Props/Debris/Brick/Brick_dbr_02.xob"
+  }
+ }
+ coords 0 0 0
+}
