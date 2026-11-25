@@ -9,11 +9,13 @@ import { arrive, clientBox, newestLog, sessionDir, sessionPaths } from "../sessi
 //
 //   outpost-north-proof [out]
 //     1. A walk up to the gate from the track side (pictures), the gate guard talks (scene opens, camera and caption).
-//     2. The chalk board beside the quartermaster is read at standing 0: the server logs the rows and the hint line.
+//     2. The chalk board beside the quartermaster is read at standing 0 (the proof sets it with `repgrant UNDERWORLD 0`: a
+//        `checkpoint N` character holds UNDERWORLD 140, #4962): the server logs the rows and the hint line.
 //     3. The quartermaster talks; at standing 0 the pistol is refused in words, the radio sells ($60 for anyone);
 //        with the UNDERWORLD standing at tier 1 (`repgrant`) the pistol sells too, the rifle (tier 2) does not.
 //     4. The ambience beds: at 12:00 the generator and the tent radio start, at 23:00 the fire and the wind do and
 //        the generator stops (the client's own [LFDebug:Atmosphere] lines).
+//   Every log read counts only the lines after the proof started, so a second run in the same session reads its own (#4962).
 //   No coordinate is typed here: every spot is a layer entity of Place_outpost-north_camp.layer.
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const LAYER = join(ROOT, "addons", "LF_Everon1989", "Worlds", "MainWorld", "MainWorld_Layers", "Place_outpost-north_camp.layer");
@@ -45,6 +47,30 @@ export function stoppedAfter(lines, name, from = 0) {
 // so no `stop` line exists; the emitter logs its hour window flipping either way (#4955).
 export function windowClosedAfter(lines, name, from = 0) {
   return lines.slice(from).some((l) => /^window closed/.test(l) && l.includes(name));
+}
+
+// Pure: whether the emitter is live at the end of the lines (oldest first) after `from`: its last `start`, `in range` or
+// `window open` line beats its last `stop` or `window closed` line. No line at all is silent. A session without sound logs
+// `in range ... no voice` once per emitter, so a second run in the same session reads the window flips instead (#4962).
+export function liveNow(lines, name, from = 0) {
+  let live = false;
+  for (const l of lines.slice(from)) {
+    if (!l.includes(name)) continue;
+    if (/^start\b/.test(l) || /is in range at/.test(l) || /^window open\b/.test(l)) live = true;
+    else if (/^stop\b/.test(l) || /^window closed\b/.test(l)) live = false;
+  }
+  return live;
+}
+
+// Pure: the last `harness standing <uid> <FACTION> points=N tier=T` line for the faction, or null.
+export function standingOf(lines, faction) {
+  let found = null;
+  const re = new RegExp(`harness standing \\S+ ${faction} points=(-?\\d+) tier=(-?\\d+)`);
+  for (const l of lines) {
+    const m = re.exec(l);
+    if (m) found = { points: Number(m[1]), tier: Number(m[2]) };
+  }
+  return found;
 }
 
 // Pure: the layer entity's top-level coords, or null (a camera target is read from the layer, never typed).
@@ -82,14 +108,20 @@ async function main(args) {
     return r;
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
-  const logLines = (kind, side) => {
+  // The lines of one kind from the newest log; `base` is how many such lines the log held when this run began, so a
+  // second run in the same session never reads the first run's lines (#4962).
+  const base = {};
+  const rawLines = (kind, side) => {
     const dirOf = side === "server" ? join(sessionPaths(dir).server, "logs") : sessionPaths(dir).clients[0].logs;
     const f = newestLog(dirOf);
     if (!f || !existsSync(f)) return [];
     return readFileSync(f, "utf8").split("\n").filter((l) => l.includes(`[LFDebug:${kind}]`)).map((l) => l.replace(new RegExp(`^.*\\[LFDebug:${kind}\\]\\s*`), "").trim());
   };
+  const logLines = (kind, side) => rawLines(kind, side).slice(base[`${kind}/${side}`] ?? 0);
+  for (const [kind, side] of [["Atmosphere", "client"], ["Outposts", "server"], ["Reputation", "server"]]) base[`${kind}/${side}`] = rawLines(kind, side).length;
   const atmo = () => logLines("Atmosphere", "client");
   const outpostServer = () => logLines("Outposts", "server");
+  const reputationServer = () => logLines("Reputation", "server");
   // The camera stands at the target (p.y + 1) plus the offset, so oy 0.7 is a standing player's eye over the ground.
   const free = (name, p, ox, oy, oz, hour) => on({ verb: "capture", mode: "world", name, x: p.x, y: p.y + 1, z: p.z, ox, oy, oz, hour, free: true }, 25000);
   // The free camera of a world shot stays until `clean`; a ui shot after it would show the free view, so end it first.
@@ -106,6 +138,13 @@ async function main(args) {
   wait(1500);
   on({ verb: "resetplayer", cash: 3000 }, 10000);
   wait(1500);
+  // The steps below need standing 0; a `checkpoint N` character holds UNDERWORLD 140 (tier 1) and the pistol would sell (#4962).
+  on({ verb: "repgrant", words: ["UNDERWORLD", "0"] }, 10000);
+  wait(2000);
+  on({ verb: "repshow", words: ["UNDERWORLD"] }, 10000);
+  wait(2000);
+  const standing = standingOf(reputationServer(), "UNDERWORLD");
+  expect(standing !== null && standing.points === 0 && standing.tier === 0, `UNDERWORLD standing is 0 before the standing-0 steps (${standing ? `points=${standing.points} tier=${standing.tier}` : "no server line"})`);
   on({ verb: "time", hour: 12 }, 15000);
 
   // 1. The walk up: 25 m out on the approach side of the gate, then at the gate line, then the guard.
@@ -191,16 +230,16 @@ async function main(args) {
   wait(6000);
   let now = atmo();
   let m = now.length;
-  expect(liveAfter(now, BED.generator, 0), "12:00: the generator bed starts");
-  expect(liveAfter(now, BED.radio, 0), "12:00: the tent radio bed starts");
-  expect(!liveAfter(now, BED.fire, 0) && !liveAfter(now, BED.wind, 0), "12:00: the fire and the wind are silent (outside their hours)");
+  expect(liveAfter(now, BED.generator, 0) || liveNow(now, BED.generator, 0), "12:00: the generator bed starts");
+  expect(liveAfter(now, BED.radio, 0) || liveNow(now, BED.radio, 0), "12:00: the tent radio bed starts");
+  expect(!liveNow(now, BED.fire, 0) && !liveNow(now, BED.wind, 0), "12:00: the fire and the wind are silent (outside their hours)");
   on({ verb: "clean" }, 10000);
   free("10_camp_noon", middle, 9, 5, -9, 12);
   on({ verb: "time", hour: 23 }, 15000);
   wait(9000);
   now = atmo();
-  expect(liveAfter(now, BED.fire, m), "23:00: the fire bed starts");
-  expect(liveAfter(now, BED.wind, m), "23:00: the wind bed starts");
+  expect(liveAfter(now, BED.fire, m) || liveNow(now, BED.fire, m), "23:00: the fire bed starts");
+  expect(liveAfter(now, BED.wind, m) || liveNow(now, BED.wind, m), "23:00: the wind bed starts");
   expect(stoppedAfter(now, BED.generator, m) || windowClosedAfter(now, BED.generator, m), "23:00: the generator bed stops (a stop line, or its hour window closes when no voice ran)");
   free("11_camp_night", middle, 9, 5, -9, 23);
 
@@ -215,7 +254,16 @@ function selftest() {
   const log = "x bought gang_radio at the outpost for 60\n y bought pistol at the outpost for 450";
   const ok = liveAfter(lines, "Fit_a") && !liveAfter(lines, "Fit_a", 1) && stoppedAfter(lines, "Fit_a", 0) && !stoppedAfter(lines, "Fit_a", 2)
     && liveAfter(lines, "Fit_b", 3) && windowClosedAfter(lines, "Fit_c") && !windowClosedAfter(lines, "Fit_a") && !windowClosedAfter(lines, "Fit_c", 3) && coordsOf(layer, "Fit_a")?.z === 3 && coordsOf(layer, "Nope") === null
-    && boughtIds(log).join(",") === "gang_radio,pistol" && boughtIds("").length === 0;
+    && boughtIds(log).join(",") === "gang_radio,pistol" && boughtIds("").length === 0
+    // #4962: the window flips decide a bed's state when a session without sound logs `in range` only once.
+    && !liveNow([], "Fit_a") && liveNow(["window open Fit_a (hour 12.00, 5.0 to 23.0)"], "Fit_a")
+    && !liveNow(["window open Fit_a (hour 12.00)", "window closed Fit_a (hour 23.00)"], "Fit_a")
+    && liveNow(["window closed Fit_a (hour 12.00)", "window open Fit_a (hour 23.00)"], "Fit_a")
+    && liveNow(["start Fit_a at 4 m", "stop Fit_a (hours)", "start Fit_a at 4 m"], "Fit_a") && !liveNow(["start Fit_a at 4 m", "stop Fit_a (hours)"], "Fit_a")
+    && !liveNow(["start Fit_a at 4 m", "stop Fit_a (hours)", "start Fit_b at 4 m"], "Fit_a") && !liveNow(["start Fit_a at 4 m"], "Fit_a", 1)
+    // #4962: the standing is the last harness line for the faction.
+    && standingOf(["harness standing u UNDERWORLD points=140 tier=1", "harness standing u UNDERWORLD points=0 tier=0", "harness standing u POLICE points=9 tier=2"], "UNDERWORLD")?.points === 0
+    && standingOf(["harness standing u POLICE points=9 tier=2"], "UNDERWORLD") === null && standingOf([], "UNDERWORLD") === null;
   console.log(ok ? "outpost-north-proof selftest: OK" : "outpost-north-proof selftest: FAIL");
   return ok ? 0 : 1;
 }

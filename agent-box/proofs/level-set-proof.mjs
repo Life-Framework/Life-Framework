@@ -12,6 +12,25 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 const COUNTER = "Fit_saint_philippe_labour_labour_counter";
 const ACTION = "LF_PerkPickAction";
 const SIDES = ["n2", "s2", "e2", "w2", "n", "s", "e", "w"];
+const TARGET_LEVEL = 10;
+
+// Pure: the level to set first so that the set to `target` is a real level-up (one below it, never under 1).
+export function stepDownLevel(target) {
+  return Math.max(1, target - 1);
+}
+
+// Pure: whether the `levelupcard state` detail names this job at this level as the last card.
+export function cardReached(detail, job, level) {
+  return new RegExp(`last=${job} ${level}\\b`).test(String(detail));
+}
+
+function selftest() {
+  const ok = stepDownLevel(10) === 9 && stepDownLevel(1) === 1
+    && cardReached("card=none last=MINER 10", "MINER", 10) && !cardReached("card=none last=DELIVERY 10", "MINER", 10)
+    && !cardReached("card=none last=MINER 100", "MINER", 10) && !cardReached("card=none last=MINER 9", "MINER", 10);
+  console.log(ok ? "level-set-proof selftest: OK" : "level-set-proof selftest: FAIL");
+  return ok ? 0 : 1;
+}
 
 async function runLevelSetProof(args) {
   const counter = String(args?.[0] ?? COUNTER);
@@ -30,10 +49,14 @@ async function runLevelSetProof(args) {
   wait(4000);
   on(1, { verb: "guide", words: ["close"] });
 
-  on(1, { verb: "levelset", words: [job, "10"] }, 10000);
+  // A `checkpoint N` character may already hold the target level, and setting the level it already has raises no card
+  // (#4962). Step to one below the target first so the set to the target is always a level-up.
+  on(1, { verb: "levelset", words: [job, String(stepDownLevel(TARGET_LEVEL))] }, 10000);
+  wait(2500);
+  on(1, { verb: "levelset", words: [job, String(TARGET_LEVEL)] }, 10000);
   wait(2500);
   const state = on(1, { verb: "levelupcard", words: ["state"] }, 10000);
-  if (!new RegExp(`last=${job} 10`).test(String(state.detail))) fails.push(`the level set did not reach ${job} 10: ${state.detail}`);
+  if (!cardReached(state.detail, job, TARGET_LEVEL)) fails.push(`the level set did not reach ${job} ${TARGET_LEVEL}: ${state.detail}`);
   on(1, { verb: "capture", mode: "ui", name: "levelset_card" }, 25000);
 
   let offered = false;
@@ -81,6 +104,9 @@ async function runLevelSetProof(args) {
 
 export default {
   name: "level-set-proof",
-  usage: "level-set-proof [counterEntity] [JOB]",
-  run: (ctx) => runLevelSetProof(ctx?.args ?? []),
+  usage: "level-set-proof [counterEntity] [JOB]   (--selftest runs the pure parts)",
+  run: (ctx) => {
+    const args = ctx?.args ?? process.argv.slice(2);
+    return args.includes("--selftest") ? selftest() : runLevelSetProof(args);
+  },
 };
