@@ -39,8 +39,11 @@ export const shop = {
   prefix: "gun-counter-host",
   furniture: "Prefabs/Buildings/GunStore/Furniture/GunStore_furniture_01.et",
   extraUnits: [g1, n1, ...hostUnits],
+  // The shop's own furniture prefab stands none of its stock on the island host (it is the drugstore's), so nothing is in the way of w1 and w2.
+  obstacles: [],
   cycle: ["AmmoBoxSmall", "HolsterPM", "MagM14", "Binoculars", "AmmoBoxBig", "HolsterM12", "MagVz58", "Optic4x20", "MagPouch", "OpticArt", "Flashlight", "MagPM"],
   only: { AmmoBoxBig: [1, 2], Binoculars: [1, 2, 3] },
 };
 // A spot the island audit refused (overlaps its neighbour by 4 cm).
-shop.dropRows = ["gun-counter-host-g1-b2-9"];
+shop.dropRows = ["gun-counter-host-g1-b2-9", "gun-counter-host-w1-b3-6", "gun-counter-host-w1-b3-5", "gun-counter-host-n1-b3-3", "gun-counter-host-n1-b1-4"];
+// (the last four keep the cell under the audit's 150-entity budget)
