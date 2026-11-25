@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { ROOT, arrive, clientBox, newestLog, parseState, readSession, sessionDir } from "../session.mjs";
+import { ROOT, arrive, clientBox, newestLog, parseState, readSession, sessionDir, sessionPaths } from "../session.mjs";
 
 // The truck licence check at the north-east compound, end to end (#4697), one client on the island:
 //   node agent-box/session.mjs up --mission island --profile full --wait
@@ -55,9 +55,14 @@ export function buyPercentOf(ownerJsonText) {
   }
 }
 
-function readYardPrices() {
+// `sessionOwnerConfig` is the owner config the session's server actually loaded (server/profile/LifeFramework/config.json,
+// written by a proof such as booking-desk-proof that stages the flagship config). A fresh session has none and charges the
+// base price (100 percent): reading the repo's flagship file instead priced the truck at 80 percent and failed the price
+// check on a bare session. Without a session (the selftest) the flagship file is the reference.
+function readYardPrices(sessionOwnerConfig) {
   const conf = existsSync(join(ROOT, PRICES_CONF)) ? readFileSync(join(ROOT, PRICES_CONF), "utf8") : "";
-  const owner = existsSync(join(ROOT, OWNER_CONFIG)) ? readFileSync(join(ROOT, OWNER_CONFIG), "utf8") : "";
+  const ownerFile = sessionOwnerConfig === undefined ? join(ROOT, OWNER_CONFIG) : sessionOwnerConfig;
+  const owner = existsSync(ownerFile) ? readFileSync(ownerFile, "utf8") : "";
   return yardPrices(conf, buyPercentOf(owner));
 }
 
@@ -75,6 +80,8 @@ export const passedLine = (log, uid) => new RegExp(`truck check: ${escape(uid)} 
 export const failedLine = (log, uid) => new RegExp(`truck check: ${escape(uid)} reached gate 0, expected 2`).test(String(log));
 export const lotRefusedLine = (log, uid) => new RegExp(`buy from the lot sheet refused for ${escape(uid)}: #LF-Lot_NeedsTruckLicence`).test(String(log));
 export const deskLine = (log, uid) => new RegExp(`licence desk: driving licence issued to ${escape(uid)}`).test(String(log));
+// A checkpoint character already holds the driving licence (hours 2 to 6): the desk refuses a second one with this line.
+export const deskHeldLine = (log, uid) => new RegExp(`driving licence refused: ${escape(uid)} already holds one`).test(String(log));
 export const lotBoughtLine = (log, uid) => new RegExp(`bought [^\\n]* from the lot sheet for ${escape(uid)}`).test(String(log));
 
 function selftest() {
@@ -86,6 +93,7 @@ function selftest() {
     + `truck check: ${uid} passed the course and holds the truck licence\n`
     + `buy from the lot sheet refused for ${uid}: #LF-Lot_NeedsTruckLicence\n`
     + `licence desk: driving licence issued to ${uid} for 150\n`
+    + `driving licence refused: ${uid} already holds one\n`
     + `bought #LF-Vehicle_Ural4320 from the lot sheet for ${uid}\n`;
   const fails = [];
   const entry = (n, op, prefab, base, lot) => ` LF_VehiclePriceEntry "{3436A0417A00000${n}}" {\n  m_sOp "${op}"\n  m_Prefab "{F1FBD0972FA5FE0${n}}${prefab}"\n  m_iBasePrice ${base}\n  m_sLotId "${lot}"\n }\n`;
@@ -103,6 +111,7 @@ function selftest() {
   if (lentCount(log, uid) !== 1 || deletedCount(log, uid) !== 1) fails.push("lent/deleted counts");
   if (!passedLine(log, uid) || !failedLine(log, uid) || !lotRefusedLine(log, uid) || !lotBoughtLine(log, uid) || !deskLine(log, uid)) fails.push("a one-line judge missed its line");
   if (passedLine(log, "someone-else")) fails.push("passedLine matched another account");
+  if (!deskHeldLine(log, uid) || deskHeldLine(log, "someone-else")) fails.push("deskHeldLine (a character that already holds the driving licence)");
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "truck-check-proof selftest: FAIL" : "truck-check-proof selftest: PASS");
   return fails.length ? 1 : 0;
@@ -163,7 +172,7 @@ async function run() {
   if (/WelcomeGuideDismissButton/.test(String(on(1, { verb: "ui" }).detail))) on(1, { verb: "click", widget: "WelcomeGuideDismissButton" });
   wait(1000);
   expect(!!uid, "client 1 has a recorded session identity");
-  const yard = readYardPrices();
+  const yard = readYardPrices(join(sessionPaths(dir).server, "profile", "LifeFramework", "config.json"));
   expect(yard.length > 0, `the truck yard's rows are read from the catalogue (${yard.map((r) => `${r.prefab.replace(/^.*\//, "")} $${r.price}`).join(", ")})`);
   const dearest = Math.max(0, ...yard.map((r) => r.price));
 
@@ -190,7 +199,7 @@ async function run() {
   // scene), so the harness buys it through the desk's own server entry, fee included.
   const dl = on(1, { verb: "truckcheck", words: ["licence"] }, 10000);
   wait(1500);
-  expect(dl.status === "ok" && deskLine(serverLog(), uid), "the driving licence is bought through the licence desk's server entry (server log)");
+  expect(dl.status === "ok" && (deskLine(serverLog(), uid) || deskHeldLine(serverLog(), uid)), "the driving licence is bought through the licence desk's server entry, or the character already held it (server log)");
 
   // 2. No licence: the yard's counter refuses before any cash moves.
   on(1, { verb: "stand", entityName: LOT });

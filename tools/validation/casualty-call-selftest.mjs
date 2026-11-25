@@ -7,7 +7,7 @@
 // red-proof: 2026-11-24, with the "on the medic board closed" needle dropped from judgeCasualty this printed
 // "FAIL a treat with no board close is judged: ..." and exited 1; restored, it passes.
 import { buildLine } from "../../agent-box/harness.mjs";
-import { findLine, judgeBed, judgeCasualty, judgeDraw, judgeDressed, parseCasualty, parseRollReply } from "../../agent-box/proofs/casualty-call.mjs";
+import { bonusOutcome, findLine, judgeBed, judgeCasualty, judgeDraw, judgeDressed, parseCasualty, parseRollReply } from "../../agent-box/proofs/casualty-call.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -55,6 +55,12 @@ for (const [needle, what] of [
   const fails = judgeCasualty(without(needle));
   ok(fails.length > 0, `a treat with no ${what} is judged: ${JSON.stringify(fails)}`);
 }
+// A re-run in the same game hour meets the hourly cap: the bonus is capped, not booked, and the payslip has no bonus line.
+const capped = good.filter((l) => !l.includes("bonus +$10") && !l.includes("duty bonus +")).concat("[LFDebug:DutyBonus] bonus capped for abc: $40 of $40 this hour already earned");
+ok(judgeCasualty(capped).length === 0, `a capped bonus passes (the hourly cap is working): ${judgeCasualty(capped).join("; ")}`);
+ok(bonusOutcome(good, 0, "REVIVE") === "booked" && bonusOutcome(capped, 0, "REVIVE") === "capped", "bonusOutcome tells booked from capped");
+ok(bonusOutcome(without("bonus +$10"), 0, "REVIVE") === "none", "no bonus line at all is none");
+ok(judgeCasualty(without("bonus +$10")).length > 0, "a treat with no bonus decision at all is judged");
 ok(judgeCasualty(without("treated by medic"), { treat: false }).every((f) => !f.startsWith("treat")), "--skip-treat does not expect a treat");
 ok(judgeCasualty([]).length === 1, "no casualty at all is one failure");
 
