@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "651EF0F4B680FAE9"
+ components {
+  MeshObject "{FB0F949040E617FB}" {
+   Object "{2E43837CC7A79F69}Assets/Weapons/Attachments/Optics/ARTII/Optic_ARTII.xob"
+  }
+ }
+ coords 0 0 0
+}
