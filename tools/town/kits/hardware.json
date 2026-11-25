@@ -5,7 +5,11 @@
   "source": {
     "file": "tools/town/kits/sources/hardware.layer",
     "origin": "building",
-    "frame": "building-local"
+    "frame": "building-local",
+    "also": [
+      "docs/everon/catalog-props.json",
+      "tools/town/kits/sources/plant-reagent-store.layer"
+    ]
   },
   "scope": "room",
   "building": {
@@ -201,7 +205,7 @@
       "role": "dressing",
       "verb": "on hardware-shelf-1",
       "offset": [
-        3.45,
+        3.6,
         2.4,
         -2
       ],
@@ -303,6 +307,170 @@
       "floor": "f0"
     },
     {
+      "id": "hardware-shelf-3",
+      "name": "Hardware_Shelf_3",
+      "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.285,
+        0.454,
+        1.3
+      ],
+      "yaw": 90,
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall",
+      "lift": -0.042
+    },
+    {
+      "id": "hardware-shelf-4",
+      "name": "Hardware_Shelf_4",
+      "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.38,
+        0.454,
+        -3.6
+      ],
+      "yaw": -90,
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall",
+      "lift": -0.042
+    },
+    {
+      "id": "hardware-shelf-5",
+      "name": "Hardware_Shelf_5",
+      "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.4,
+        0.454,
+        2.75
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall",
+      "lift": -0.042
+    },
+    {
+      "id": "hardware-shelf-6",
+      "name": "Hardware_Shelf_6",
+      "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.45,
+        0.454,
+        4.4
+      ],
+      "yaw": -90,
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall",
+      "lift": -0.042
+    },
+    {
+      "id": "hardware-drum-1",
+      "name": "Hardware_Drum_1",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.85,
+        0.475,
+        5.3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-drum-2",
+      "name": "Hardware_Drum_2",
+      "prefab": "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.25,
+        0.475,
+        5.25
+      ],
+      "yaw": 40,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-drum-3",
+      "name": "Hardware_Drum_3",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.3,
+        0.475,
+        5.25
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-sack-truck",
+      "name": "Hardware_Sack_Truck",
+      "prefab": "{EB66EE2298D16D18}Prefabs/Props/Civilian/SackTruck_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.2,
+        0.496,
+        -3.6
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-pallet",
+      "name": "Hardware_Pallet",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.9,
+        0.462,
+        1.5
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-drum-4",
+      "name": "Hardware_Drum_4",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2,
+        0.475,
+        -0.3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
       "id": "hardware-host-g1-b1-1",
       "name": "Hardware_Host_g1_b1_1",
       "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
@@ -311,7 +479,7 @@
       "offset": [
         3.035,
         0.885,
-        -2.87
+        -2.859
       ],
       "yaw": -90,
       "free": true,
@@ -328,7 +496,7 @@
       "offset": [
         3.035,
         0.919,
-        -2.56
+        -2.509
       ],
       "yaw": -90,
       "free": true,
@@ -344,7 +512,7 @@
       "offset": [
         3.035,
         0.884,
-        -2.157
+        -2.066
       ],
       "yaw": -90,
       "free": true,
@@ -361,7 +529,7 @@
       "offset": [
         3.035,
         0.884,
-        -1.851
+        -1.72
       ],
       "yaw": -90,
       "free": true,
@@ -378,7 +546,7 @@
       "offset": [
         3.035,
         0.904,
-        -1.545
+        -1.374
       ],
       "yaw": 0,
       "free": true,
@@ -389,19 +557,19 @@
     {
       "id": "hardware-host-g1-b1-6",
       "name": "Hardware_Host_g1_b1_6",
-      "prefab": "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         3.035,
-        0.885,
-        -1.127
+        0.884,
+        -1.027
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
       "floor": "f0",
-      "scale": 0.75
+      "scale": 1.4
     },
     {
       "id": "hardware-host-g1-b2-1",
@@ -412,7 +580,7 @@
       "offset": [
         3.035,
         1.277,
-        -2.803
+        -2.782
       ],
       "yaw": -90,
       "free": true,
@@ -429,7 +597,7 @@
       "offset": [
         3.035,
         1.277,
-        -2.479
+        -2.419
       ],
       "yaw": -90,
       "free": true,
@@ -446,7 +614,7 @@
       "offset": [
         3.035,
         1.276,
-        -2.267
+        -2.166
       ],
       "yaw": -90,
       "free": true,
@@ -463,7 +631,7 @@
       "offset": [
         3.035,
         1.277,
-        -2.054
+        -1.914
       ],
       "yaw": -90,
       "free": true,
@@ -480,7 +648,7 @@
       "offset": [
         3.035,
         1.311,
-        -1.745
+        -1.564
       ],
       "yaw": -90,
       "free": true,
@@ -490,36 +658,19 @@
     {
       "id": "hardware-host-g1-b2-6",
       "name": "Hardware_Host_g1_b2_6",
-      "prefab": "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et",
+      "prefab": "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         3.035,
-        1.276,
-        -1.342
+        1.277,
+        -1.167
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 0.75
-    },
-    {
-      "id": "hardware-host-g1-b2-7",
-      "name": "Hardware_Host_g1_b2_7",
-      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        3.035,
-        1.276,
-        -1.036
-      ],
-      "yaw": -90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0",
-      "scale": 1.4
     },
     {
       "id": "hardware-host-g1-b3-1",
@@ -530,7 +681,7 @@
       "offset": [
         3.035,
         1.634,
-        -2.897
+        -2.859
       ],
       "yaw": -90,
       "free": true,
@@ -547,7 +698,7 @@
       "offset": [
         3.035,
         1.668,
-        -2.587
+        -2.509
       ],
       "yaw": -90,
       "free": true,
@@ -563,7 +714,7 @@
       "offset": [
         3.035,
         1.633,
-        -2.184
+        -2.066
       ],
       "yaw": -90,
       "free": true,
@@ -580,7 +731,7 @@
       "offset": [
         3.035,
         1.633,
-        -1.878
+        -1.72
       ],
       "yaw": -90,
       "free": true,
@@ -597,7 +748,7 @@
       "offset": [
         3.035,
         1.653,
-        -1.572
+        -1.374
       ],
       "yaw": 0,
       "free": true,
@@ -608,13 +759,334 @@
     {
       "id": "hardware-host-g1-b3-6",
       "name": "Hardware_Host_g1_b3_6",
-      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         3.035,
+        1.633,
+        -1.027
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g3-b1-1",
+      "name": "Hardware_Host_g3_b1_1",
+      "prefab": "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        0.885,
+        2.029
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g3-b1-2",
+      "name": "Hardware_Host_g3_b1_2",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        0.885,
+        1.665
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g3-b1-3",
+      "name": "Hardware_Host_g3_b1_3",
+      "prefab": "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        0.952,
+        1.199
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g3-b1-4",
+      "name": "Hardware_Host_g3_b1_4",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        0.884,
+        0.798
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g3-b1-5",
+      "name": "Hardware_Host_g3_b1_5",
+      "prefab": "{AF6D5745FCBF47AE}Prefabs/Props/Commercial/LF_ShelfGoods_CardboardBox.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        0.884,
+        0.51
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g3-b2-1",
+      "name": "Hardware_Host_g3_b2_1",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.277,
+        2.159
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g3-b2-2",
+      "name": "Hardware_Host_g3_b2_2",
+      "prefab": "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.311,
+        1.809
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-host-g3-b2-3",
+      "name": "Hardware_Host_g3_b2_3",
+      "prefab": "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.276,
+        1.366
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g3-b2-4",
+      "name": "Hardware_Host_g3_b2_4",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.276,
+        1.02
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g3-b2-5",
+      "name": "Hardware_Host_g3_b2_5",
+      "prefab": "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.296,
+        0.674
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g3-b2-6",
+      "name": "Hardware_Host_g3_b2_6",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.276,
+        0.327
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g3-b3-1",
+      "name": "Hardware_Host_g3_b3_1",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
         1.634,
-        -1.201
+        2.158
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g3-b3-2",
+      "name": "Hardware_Host_g3_b3_2",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.633,
+        1.906
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g3-b3-3",
+      "name": "Hardware_Host_g3_b3_3",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.634,
+        1.654
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g3-b3-4",
+      "name": "Hardware_Host_g3_b3_4",
+      "prefab": "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.668,
+        1.304
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-host-g3-b3-5",
+      "name": "Hardware_Host_g3_b3_5",
+      "prefab": "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.633,
+        0.861
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g3-b3-6",
+      "name": "Hardware_Host_g3_b3_6",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.633,
+        0.515
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g3-b3-7",
+      "name": "Hardware_Host_g3_b3_7",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.035,
+        1.633,
+        0.327
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g4-b1-1",
+      "name": "Hardware_Host_g4_b1_1",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        0.885,
+        -4.458
       ],
       "yaw": -90,
       "free": true,
@@ -623,21 +1095,999 @@
       "scale": 0.75
     },
     {
-      "id": "hardware-host-g1-b3-7",
-      "name": "Hardware_Host_g1_b3_7",
+      "id": "hardware-host-g4-b1-2",
+      "name": "Hardware_Host_g4_b1_2",
+      "prefab": "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        0.919,
+        -4.109
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-host-g4-b1-3",
+      "name": "Hardware_Host_g4_b1_3",
+      "prefab": "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        0.884,
+        -3.666
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g4-b1-4",
+      "name": "Hardware_Host_g4_b1_4",
       "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        3.035,
-        1.633,
-        -0.989
+        0.13,
+        0.884,
+        -3.32
       ],
       "yaw": -90,
       "free": true,
       "wall": "free",
       "floor": "f0",
       "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g4-b1-5",
+      "name": "Hardware_Host_g4_b1_5",
+      "prefab": "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        0.904,
+        -2.974
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g4-b1-6",
+      "name": "Hardware_Host_g4_b1_6",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        0.884,
+        -2.627
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g4-b2-1",
+      "name": "Hardware_Host_g4_b2_1",
+      "prefab": "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.277,
+        -4.382
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g4-b2-2",
+      "name": "Hardware_Host_g4_b2_2",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.277,
+        -4.019
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g4-b2-3",
+      "name": "Hardware_Host_g4_b2_3",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.276,
+        -3.766
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g4-b2-4",
+      "name": "Hardware_Host_g4_b2_4",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.277,
+        -3.514
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g4-b2-5",
+      "name": "Hardware_Host_g4_b2_5",
+      "prefab": "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.311,
+        -3.165
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-host-g4-b2-6",
+      "name": "Hardware_Host_g4_b2_6",
+      "prefab": "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.277,
+        -2.767
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g4-b3-1",
+      "name": "Hardware_Host_g4_b3_1",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.634,
+        -4.458
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g4-b3-2",
+      "name": "Hardware_Host_g4_b3_2",
+      "prefab": "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.668,
+        -4.109
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-host-g4-b3-3",
+      "name": "Hardware_Host_g4_b3_3",
+      "prefab": "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.633,
+        -3.666
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g4-b3-4",
+      "name": "Hardware_Host_g4_b3_4",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.633,
+        -3.32
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g4-b3-5",
+      "name": "Hardware_Host_g4_b3_5",
+      "prefab": "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.653,
+        -2.974
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g4-b3-6",
+      "name": "Hardware_Host_g4_b3_6",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.13,
+        1.633,
+        -2.627
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g5-b1-1",
+      "name": "Hardware_Host_g5_b1_1",
+      "prefab": "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.129,
+        0.885,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g5-b1-2",
+      "name": "Hardware_Host_g5_b1_2",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.765,
+        0.885,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g5-b1-3",
+      "name": "Hardware_Host_g5_b1_3",
+      "prefab": "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.299,
+        0.952,
+        3
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g5-b1-4",
+      "name": "Hardware_Host_g5_b1_4",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.898,
+        0.884,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g5-b2-1",
+      "name": "Hardware_Host_g5_b2_1",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.258,
+        1.277,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g5-b2-2",
+      "name": "Hardware_Host_g5_b2_2",
+      "prefab": "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.909,
+        1.311,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-host-g5-b2-3",
+      "name": "Hardware_Host_g5_b2_3",
+      "prefab": "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.466,
+        1.276,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g5-b2-4",
+      "name": "Hardware_Host_g5_b2_4",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.12,
+        1.276,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g5-b2-5",
+      "name": "Hardware_Host_g5_b2_5",
+      "prefab": "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.774,
+        1.296,
+        3
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g5-b2-6",
+      "name": "Hardware_Host_g5_b2_6",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.427,
+        1.276,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g5-b3-1",
+      "name": "Hardware_Host_g5_b3_1",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.258,
+        1.634,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g5-b3-2",
+      "name": "Hardware_Host_g5_b3_2",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.006,
+        1.633,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g5-b3-3",
+      "name": "Hardware_Host_g5_b3_3",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.754,
+        1.634,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g5-b3-4",
+      "name": "Hardware_Host_g5_b3_4",
+      "prefab": "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.404,
+        1.668,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-host-g5-b3-5",
+      "name": "Hardware_Host_g5_b3_5",
+      "prefab": "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.961,
+        1.633,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g5-b3-6",
+      "name": "Hardware_Host_g5_b3_6",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.615,
+        1.633,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g5-b3-7",
+      "name": "Hardware_Host_g5_b3_7",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.427,
+        1.633,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g6-b1-1",
+      "name": "Hardware_Host_g6_b1_1",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        0.885,
+        3.492
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g6-b1-2",
+      "name": "Hardware_Host_g6_b1_2",
+      "prefab": "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        0.919,
+        3.841
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-host-g6-b1-3",
+      "name": "Hardware_Host_g6_b1_3",
+      "prefab": "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        0.884,
+        4.284
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g6-b1-4",
+      "name": "Hardware_Host_g6_b1_4",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        0.884,
+        4.63
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g6-b1-5",
+      "name": "Hardware_Host_g6_b1_5",
+      "prefab": "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        0.904,
+        4.976
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g6-b1-6",
+      "name": "Hardware_Host_g6_b1_6",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        0.884,
+        5.323
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g6-b2-1",
+      "name": "Hardware_Host_g6_b2_1",
+      "prefab": "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.277,
+        3.568
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g6-b2-2",
+      "name": "Hardware_Host_g6_b2_2",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.277,
+        3.931
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g6-b2-3",
+      "name": "Hardware_Host_g6_b2_3",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.276,
+        4.184
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g6-b2-4",
+      "name": "Hardware_Host_g6_b2_4",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.277,
+        4.436
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g6-b2-5",
+      "name": "Hardware_Host_g6_b2_5",
+      "prefab": "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.311,
+        4.786
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-host-g6-b2-6",
+      "name": "Hardware_Host_g6_b2_6",
+      "prefab": "{6CA7A8C9FEC0AB6F}Prefabs/Props/Commercial/LF_ShelfGoods_Bucket.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.277,
+        5.183
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g6-b3-1",
+      "name": "Hardware_Host_g6_b3_1",
+      "prefab": "{613A75E2BCAD25D4}Prefabs/Props/Commercial/LF_ShelfGoods_PaintCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.634,
+        3.492
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g6-b3-2",
+      "name": "Hardware_Host_g6_b3_2",
+      "prefab": "{CBBDDB3D6E9FE9C5}Prefabs/Props/Commercial/LF_ShelfGoods_Brick.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.668,
+        3.841
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hardware-host-g6-b3-3",
+      "name": "Hardware_Host_g6_b3_3",
+      "prefab": "{C96A65976FE9628B}Prefabs/Props/Commercial/LF_ShelfGoods_ToolBox.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.633,
+        4.284
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g6-b3-4",
+      "name": "Hardware_Host_g6_b3_4",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.633,
+        4.63
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-g6-b3-5",
+      "name": "Hardware_Host_g6_b3_5",
+      "prefab": "{B6F42046F580A3CC}Prefabs/Props/Commercial/LF_ShelfGoods_EntrenchTool.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.653,
+        4.976
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-g6-b3-6",
+      "name": "Hardware_Host_g6_b3_6",
+      "prefab": "{1793C42BDFA89D03}Prefabs/Props/Commercial/LF_ShelfGoods_Flashlight.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        1.633,
+        5.323
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "hardware-host-bag-a-1",
+      "name": "hardware-host_bag_a_1",
+      "prefab": "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.11,
+        0.671,
+        1.2
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-bag-a-2",
+      "name": "hardware-host_bag_a_2",
+      "prefab": "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.69,
+        0.671,
+        1.2
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-bag-a-3",
+      "name": "hardware-host_bag_a_3",
+      "prefab": "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.11,
+        0.671,
+        1.8
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-bag-a-4",
+      "name": "hardware-host_bag_a_4",
+      "prefab": "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.69,
+        0.671,
+        1.8
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-bag-b-1",
+      "name": "hardware-host_bag_b_1",
+      "prefab": "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.9,
+        0.806,
+        1.15
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-bag-b-2",
+      "name": "hardware-host_bag_b_2",
+      "prefab": "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.9,
+        0.806,
+        1.51
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
+    },
+    {
+      "id": "hardware-host-bag-b-3",
+      "name": "hardware-host_bag_b_3",
+      "prefab": "{AC0ED863CB545106}Prefabs/Props/Commercial/LF_ShelfGoods_CementBag.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.9,
+        0.806,
+        1.87
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.75
     }
   ],
   "stamp": {
@@ -676,5 +2126,23 @@
       }
     ],
     "clear": []
-  }
+  },
+  "clear": [
+    "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et",
+    "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et",
+    "{D0BD7A55306FC46B}Prefabs/Props/Furniture/Faucet_01/Faucet_01.et",
+    "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et",
+    "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et",
+    "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et",
+    "{1CA1A9D19D7C8445}Prefabs/Props/Furniture/Rack_01_Short.et",
+    "{AC98FF880BD0F2C2}Prefabs/Props/Furniture/Chair_01/Chair_01_base.et",
+    "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et",
+    "{D416ECE78FF7078E}Prefabs/Props/Furniture/TableSmall_01/TableSmall_01_LightWood.et",
+    "{910424AC5CABE800}Prefabs/Props/Garbage/Bins/BinInterior_01_red.et",
+    "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et",
+    "{E521AEA6D14589B1}Prefabs/Props/Military/AmmoBoxes/AmmoBox_545x39_2160rnd.et",
+    "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et",
+    "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et",
+    "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et"
+  ]
 }
