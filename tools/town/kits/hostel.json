@@ -204,6 +204,134 @@
           "blocks": []
         }
       ]
+    },
+    {
+      "id": "hostel-fill-1",
+      "name": "Hostel_Fill_1",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        1.7,
+        3.45,
+        3.9
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hostel-fill-2",
+      "name": "Hostel_Fill_2",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -3.5,
+        3.4,
+        3
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hostel-fill-3",
+      "name": "Hostel_Fill_3",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        6.5,
+        3.4,
+        -1.5
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hostel-fill-4",
+      "name": "Hostel_Fill_4",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -4.2,
+        3.4,
+        -2
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hostel-fill-5",
+      "name": "Hostel_Fill_5",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -0.5,
+        6.7,
+        2.8
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f1"
+    },
+    {
+      "id": "hostel-fill-6",
+      "name": "Hostel_Fill_6",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -5.5,
+        6.7,
+        2.4
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f1"
+    },
+    {
+      "id": "hostel-fill-7",
+      "name": "Hostel_Fill_7",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        6.6,
+        6.7,
+        -2.4
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f1"
+    },
+    {
+      "id": "hostel-fill-8",
+      "name": "Hostel_Fill_8",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        2.2,
+        6.7,
+        -1
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f1"
     }
   ],
   "stamp": {

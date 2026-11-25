@@ -8,16 +8,11 @@
   "kinds": [
     "HostelBed"
   ],
-  "rows": 8,
+  "rows": 16,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_saint_philippe_hostel_Place"
   },
-  "date": "2026-11-22",
-  "stamp": {
-    "kit": "hostel",
-    "prefab": "{54F1C704EB440885}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02.et",
-    "layer": "03799616c7ed"
-  }
+  "date": "2026-11-25"
 }
