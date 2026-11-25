@@ -11,7 +11,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { blockedLamps, buildAll, frameRows, ringRays, buildGlows, glowCount, GLOW, GLOW_COMPONENT, hourOff, layerPath, loadPlace, nearestRoad, occupied, renderLayer, seatsPath, streetWall, WALL_OFFSET } from "./nightlights.mjs";
+import { blockedLamps, buildAll, FRONTS, frameRows, ringRays, buildGlows, glowCount, GLOW, GLOW_COMPONENT, hourOff, layerPath, loadPlace, nearestRoad, occupied, renderLayer, seatsPath, streetWall, WALL_OFFSET } from "./nightlights.mjs";
 import { gameVfsSync } from "../lib/height-frame.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -71,7 +71,17 @@ const seatsFile = seatsPath(ROOT, "saint-philippe");
 const all = frameRows(buildAll(real, existsSync(seatsFile) ? JSON.parse(readFileSync(seatsFile, "utf8")) : null)); // each row in its prefab's frame, as main() writes it
 check(all.errors.length === 0, `Saint-Philippe lights build: ${all.errors.join("; ")}`);
 check(all.glows.length >= 25 && all.glows.length <= 40, `25 to 40 glows (${all.glows.length})`);
-check(all.lamps.length + all.heads.length >= 10 && all.lamps.length + all.heads.length <= 15, `10 to 15 lamp pieces (${all.lamps.length + all.heads.length})`);
+const gapLamps = all.lamps.filter((l) => !l.front);
+check(gapLamps.length + all.heads.length >= 10 && gapLamps.length + all.heads.length <= 15, `10 to 15 lamp pieces beside the front lamps (${gapLamps.length + all.heads.length})`);
+// Card C of the night sweep (2026-11-25): every dark front has its own lamp, within sight of its sign.
+const fronts = all.lamps.filter((l) => l.front);
+check(fronts.length === FRONTS.length, `every dark front has a lamp (${fronts.length} of ${FRONTS.length})`);
+for (const f of FRONTS) {
+  const l = fronts.find((q) => q.name === `Lamp_front_${f.id}`);
+  if (!l) continue;
+  const d = Math.hypot(l.x - f.sign[0], l.z - f.sign[1]);
+  check(d >= 2 && d <= 9, `the ${f.id} lamp stands within sight of its sign (${d.toFixed(1)} m)`);
+}
 const text = renderLayer("saint-philippe", all);
 check(text.includes(`: "${GLOW}" {`) && text.includes(`LF_NightLightComponent "${GLOW_COMPONENT}"`), "the layer overrides the glow component by GUID");
 check(!text.includes("CastShadow"), "a layer entity sets no shadow");
