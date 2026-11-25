@@ -658,3 +658,15 @@ GenericEntity Fit_saint_philippe_gun_counter_gun_counter_host_i4_b2_5 : "{0D85F3
  angleY -100
  scale 1.3
 }
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4554.725 20.65 10772.391
+ angleY 80
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_fill_1 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4552.031 20.6 10770.393
+ angleY 80
+}
+GenericEntity Fit_saint_philippe_gun_counter_gun_counter_fill_2 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4552.958 20.6 10776.649
+ angleY 80
+}
