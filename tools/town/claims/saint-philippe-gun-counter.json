@@ -8,7 +8,7 @@
   "kinds": [
     "GunCounter"
   ],
-  "rows": 133,
+  "rows": 130,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

@@ -2319,41 +2319,9 @@
       "role": "light",
       "verb": "on floor",
       "offset": [
-        0,
+        -2.5,
         2.9,
-        -4.5
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "gun-counter-fill-3",
-      "name": "Gun_Counter_Fill_3",
-      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
-      "role": "light",
-      "verb": "on floor",
-      "offset": [
-        4.5,
-        2.9,
-        4
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "gun-counter-fill-4",
-      "name": "Gun_Counter_Fill_4",
-      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
-      "role": "light",
-      "verb": "on floor",
-      "offset": [
-        -1.5,
-        2.9,
-        5
+        0.5
       ],
       "yaw": 0,
       "free": true,
