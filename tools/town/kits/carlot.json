@@ -21,7 +21,7 @@
       "source": "rows",
       "min": [
         -9.5,
-        -3.8
+        -8.5
       ],
       "max": [
         11,
@@ -256,14 +256,25 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -7.2,
-        -2.05,
-        10.5
+        6.76,
+        0,
+        -8.46
       ],
-      "yaw": 20,
+      "yaw": 99,
       "class": "Vehicle",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_VehicleLockComponent",
+          "guid": "54D6FBC0EA806FE5",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "lot-display-uaz452",
@@ -272,14 +283,25 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -5.2,
-        -1.1,
-        6.4
+        1.82,
+        0,
+        -7.68
       ],
-      "yaw": 160,
+      "yaw": 99,
       "class": "Vehicle",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_VehicleLockComponent",
+          "guid": "54D6FBC0EA806FE5",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "vehicle-lot-sign",
@@ -288,11 +310,11 @@
       "role": "sign",
       "verb": "on floor",
       "offset": [
-        -8.5,
-        -0.84,
-        5.5
+        4.6,
+        0,
+        -6.1
       ],
-      "yaw": 0,
+      "yaw": 180,
       "config": [
         {
           "component": "LF_SignComponent",
@@ -306,7 +328,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "terrain"
     }
   ]
 }
