@@ -154,6 +154,34 @@
       "attach": "counter:seed-feed-counter"
     },
     {
+      "id": "seed-feed-sign",
+      "name": "Seed_feed_sign",
+      "prefab": "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -2.7,
+        1.9,
+        3.205
+      ],
+      "yaw": 0,
+      "wall": "+z",
+      "floor": "f0",
+      "attach": "wall",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"seed_feed\"",
+            "m_vRimColor": "0.35 0.22 0.1",
+            "m_vPaintColor": "0.93 0.88 0.7",
+            "m_vTextColor": "0.12 0.3 0.14"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
       "id": "seed-feed-lamp-1",
       "name": "SeedFeed_Lamp_1",
       "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
