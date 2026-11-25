@@ -42,6 +42,15 @@ export function findLine(lines, from, ...needles) {
   return -1;
 }
 
+// How the duty bonus of `reason` went at or after line `from`: "booked" (a `bonus +$ (<reason>)` line), "capped" (the
+// hourly cap of LF_DutyBonus was already reached, so a re-run in the same game hour books nothing; the server then logs
+// `bonus capped for <id>`) or "none" (the server decided nothing: a real failure).
+export function bonusOutcome(lines, from, reason) {
+  if (findLine(lines, from, "[LFDebug:DutyBonus]", "bonus +$", reason) >= 0) return "booked";
+  if (findLine(lines, from, "[LFDebug:DutyBonus]", "bonus capped for") >= 0) return "capped";
+  return "none";
+}
+
 // The ordered judgement over the server lines after the baseline. Pure. Returns the failures.
 export function judgeCasualty(lines, { treat = true } = {}) {
   const fails = [];
@@ -54,10 +63,11 @@ export function judgeCasualty(lines, { treat = true } = {}) {
     if (treated < 0) fails.push(`treat: ${c.uid} was never treated`);
     if (findLine(lines, c.line, "[LFDebug:ServiceBoard]", "on the medic board closed", c.uid) < 0) fails.push(`board: the medic board line of ${c.uid} did not close on the treat`);
     if (findLine(lines, c.line, "[LFDebug:ServiceCalls]", "closed: map mark", "removed") < 0) fails.push(`map: the dispatch map mark of ${c.uid} did not close on the treat`);
-    const bonus = findLine(lines, c.line, "[LFDebug:DutyBonus]", "bonus +$", "REVIVE");
-    if (bonus < 0) fails.push("bonus: no revive bonus was booked for the treatment");
+    const bonus = bonusOutcome(lines, c.line, "REVIVE");
+    if (bonus === "none") fails.push("bonus: no revive bonus was booked or capped for the treatment");
+    // A capped bonus adds nothing to the payslip: the pay line is only required when a bonus was booked.
     const paid = findLine(lines, Math.max(c.line, 0), "[LFDebug:DutyPay]", "duty bonus +");
-    if (paid < 0) fails.push("payslip: clock-out paid no duty bonus");
+    if (bonus === "booked" && paid < 0) fails.push("payslip: clock-out paid no duty bonus");
   }
   const shift = findLine(lines, c.line, "[LFDebug:DutyPay]", "shift pay +");
   if (shift < 0) fails.push("payslip: clock-out paid no shift pay");
@@ -265,7 +275,7 @@ async function runCasualtyCall(args) {
   fails.push(...judgeCasualty(fresh(), { treat }));
   if (carried) {
     if (findLine(fresh(), 0, "put in a hospital bed by medic") < 0) fails.push("carry: no 'put in a hospital bed' line for the second casualty");
-    if (findLine(fresh(), 0, "[LFDebug:DutyBonus]", "bonus +$", "PATIENT_DELIVERED") < 0) fails.push("carry: no delivery bonus was booked");
+    if (bonusOutcome(fresh(), 0, "PATIENT_DELIVERED") === "none") fails.push("carry: no delivery bonus was booked or capped");
     fails.push(...judgeBed(fresh(), secondUid));
   }
   fails.push(...judgeDressed(fresh(), carried ? 2 : 1));

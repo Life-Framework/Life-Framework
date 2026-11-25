@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 
 // The truck run on the hardwood stand, played the way a player plays it (#4886). On a running island session that
-// already holds a bought truck (`truck-check-proof` buys the Ural; `tools\cli session up --mission island --profile
+// already holds a bought truck (`truck-check-proof` buys the first row of the yard, now the Cargo truck; `tools\cli session up --mission island --profile
 // full --wait`, one client):
 //   0 LUMBERJACK level 3, the truck parked beside the woodlot saw (`parkat`; the harness cannot drive)
 //   1 fell hardwood trees on the stand (`treefall fell` runs TryFell as if the axe were in hand), hoist each log
@@ -66,8 +66,48 @@ export function lastUnits(text) {
   return all.length ? Number(all[all.length - 1][1]) : 0;
 }
 
+// The lock flag ("0" open, "1" locked, "?" no vehicle) of the nearest vehicle in a `seen` reply: the entries are joined by
+// "|", nearest first, and the lot's display trucks stand locked a few metres away.
+export function nearestLock(text) {
+  return /veh=[^ ]*?:lock=(\d)/.exec(String(text))?.[1] ?? "?";
+}
+
+// Where the truck the buyer just bought was spawned, from the server log. The folder of the catalog prefab on the last
+// `[LFDebug:Vehicle] purchased <prefab> owner=` line (M923A1 for the Cargo truck, Ural4320 for the Ural: the lot's first
+// row is not always the same truck) names the family, and the nearest `Init entity ... <family> ... at <x y z>` line
+// before the purchase is the spawn. Returns [x, y, z] as strings, or null with no purchase line.
+export function boughtTruckSpawn(text) {
+  const lines = String(text).split(/\r?\n/);
+  let bought = -1;
+  let family = "";
+  lines.forEach((line, i) => {
+    const m = /\[LFDebug:Vehicle\] purchased (\S+) owner=/.exec(line);
+    const folder = m ? /([^/\\]+)[/\\][^/\\]*$/.exec(m[1]) : null;
+    if (folder) {
+      bought = i;
+      family = folder[1];
+    }
+  });
+  if (!family) return null;
+  const spawn = new RegExp(`Init entity [^\\n]*${family.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[^\\n]* at <(-?[\\d.]+) (-?[\\d.]+) (-?[\\d.]+)>`);
+  for (let i = bought; i >= 0; i--) {
+    const m = spawn.exec(lines[i]);
+    if (m) return [m[1], m[2], m[3]];
+  }
+  return null;
+}
+
 function selftest() {
   const fails = [];
+  const spawnLine = (family, x) => `01:11:12.597     ENTITY       : Init entity @"ENTITY:279" ('EL_${family}', Vehicle) at <${x}.5 14.1 10632.1> @"{E1A923BE1A000001}Prefabs/Vehicles/Wheeled/${family}/EL_${family}_transport.et"\n`;
+  const boughtLine = (family) => `01:11:13.000 SCRIPT: [LFDebug:Vehicle] purchased {F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/${family}/${family}_transport.et owner=u1 id=7 plate=CD MU 3665 cash=0 bank=9600\n`;
+  const cargo = spawnLine("Ural4320", 4000) + spawnLine("M923A1", 4333) + boughtLine("M923A1");
+  if (boughtTruckSpawn(cargo)?.join(",") !== "4333.5,14.1,10632.1") fails.push("the Cargo truck's spawn is read, not the Ural row's");
+  if (boughtTruckSpawn(spawnLine("M923A1", 4333) + boughtLine("Ural4320") + spawnLine("Ural4320", 4400)) !== null) fails.push("a spawn after the purchase is not the bought truck");
+  if (boughtTruckSpawn(spawnLine("Ural4320", 4000) + boughtLine("Ural4320"))?.[0] !== "4000.5") fails.push("a bought Ural is still found");
+  if (boughtTruckSpawn(spawnLine("M923A1", 4333)) !== null) fails.push("no purchase line, no truck");
+  if (nearestLock("veh=EL_M923A1_transport:d=4.6:eng=0:lock=0:ign=0|Ural:d=9:eng=0:lock=1 door=none") !== "0") fails.push("nearestLock reads the first vehicle");
+  if (nearestLock("veh=EL_M923A1_transport:d=2:eng=0:lock=1|Ural:d=9:lock=0") !== "1" || nearestLock("veh=none") !== "?") fails.push("nearestLock locked and none");
   const e = parseEconomy("  LOOP truck hardwood -> boards, firewood: ~24 logs/h, steady $680/h, first hour $680/h; duty police");
   if (!e || e.steady !== 680 || e.first !== 680) fails.push("economy row");
   if (parseEconomy("LOOP something else")) fails.push("economy refuses junk");
@@ -119,21 +159,27 @@ async function run(args) {
   // The lot left the bought truck locked and beside the buyer: unlock it at its door with the key, the way a player does
   // (the cargo bed follows the vehicle lock), then set it beside the woodlot saw.
   // The truck stands where the lot spawned it (the server logged the spawn); walk to its door, one side then the other.
-  const spawn = [...serverLog().matchAll(/Init entity [^\n]*Ural4320[^\n]* at <(-?[\d.]+) (-?[\d.]+) (-?[\d.]+)>/g)].pop();
+  const spawn = boughtTruckSpawn(serverLog());
   let seen = "";
   let unlock = { status: "no_spawn", detail: "the server log holds no spawn of the truck" };
-  for (const ox of [2.6, -2.6]) {
+  // The nearest vehicle's lock: `seen` lists vehicles nearest first, and the lot's display trucks stand locked nearby.
+  // Camera offsets from the spawn point, in world axes: the spawn is the truck's origin, not a door, and the truck's heading
+  // is unknown to the proof (the Ural's doors were 2.6 east and 2.2 south of it; the Cargo truck is longer and wider, its
+  // doors are further out). Two rings round the origin, nearest ring first, stop at the first offset that unlocks it.
+  const OFFSETS = [[2.6, 1.6, 2.2], [-2.6, 1.6, 2.2]]; // where the lot spawns it beside the buyer: the first two tries
+  for (const r of [2.8, 4.2]) for (let deg = 0; deg < 360; deg += 45) OFFSETS.push([Number((r * Math.cos(deg * Math.PI / 180)).toFixed(2)), 0.3, Number((r * Math.sin(deg * Math.PI / 180)).toFixed(2))]);
+  for (const [ox, oy, oz] of OFFSETS) {
     if (!spawn) break;
-    on({ verb: "capture", mode: "world", name: "truck_haul_door", x: Number(spawn[1]), y: Number(spawn[2]), z: Number(spawn[3]), ox, oy: 1.6, oz: 2.2, hour: 9 }, 30000);
+    on({ verb: "capture", mode: "world", name: "truck_haul_door", x: Number(spawn[0]), y: Number(spawn[1]), z: Number(spawn[2]), ox, oy, oz, hour: 9 }, 30000);
     wait(1500);
     seen = String(on({ verb: "seen", words: ["25"] }).detail);
-    if (!/lock=1/.test(seen)) break;
+    if (nearestLock(seen) === "0") break;
     unlock = on({ verb: "use", className: "LF_VehicleLockAction" }, 10000);
     wait(1500);
     seen = String(on({ verb: "seen", words: ["25"] }).detail);
-    if (/lock=0/.test(seen)) break;
+    if (nearestLock(seen) === "0") break;
   }
-  step("0b the owner unlocks the truck at its door", /lock=0/.test(seen), `${unlock.status} ${unlock.detail}; ${seen.slice(0, 200)}`);
+  step("0b the owner unlocks the truck at its door", nearestLock(seen) === "0", `${unlock.status} ${unlock.detail}; ${seen.slice(0, 200)}`);
   on({ verb: "guide", words: ["close"] });
   on({ verb: "time", hour: 9.0 }, 15000);
   on({ verb: "levelset", words: ["LUMBERJACK", "3"] }, 10000);
@@ -380,6 +426,9 @@ function finish(results) {
 
 export default {
   name: "truck-haul-proof",
+  // Straight after truck-check-proof the character holds the key of the truck it bought: the per-proof reset would clear
+  // the inventory (the key goes with it) and the owner could not unlock the truck.
+  noReset: true,
   usage: "truck-haul-proof [--cycles N] [--selftest]   (after truck-check-proof on `up --mission island --profile full`)",
   run: (ctx) => run(ctx?.args ?? []),
 };

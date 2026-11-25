@@ -19,6 +19,9 @@ const PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
 const IRON_ROCK = { entity: "Fit_highstone_mine_mine_ore_2", x: 4956.3, y: 115.795, z: 8474.6 };
 const COAL_ROCK = { entity: "Fit_eastrise_mine_mine_ore_2", x: 6681.3, y: 148.933, z: 7929.6 };
 const SMELTER = { entity: "Fit_eastcompound_smelter_smelter_furnace", x: 6442.481, y: 162.195, z: 6489.772 };
+// The node ids the server prints in `<node> rock hit` (a regex: the pack renamed them to iron-rich and coal-seam).
+const IRON_NODE = "iron(?:-rich)?";
+const COAL_NODE = "coal(?:-seam)?";
 const PROCESS = "LF_ProcessAction";
 const SWINGS_PER_PIECE = 3;
 const RUN_SECONDS = 60;
@@ -164,7 +167,7 @@ async function runIronChainProof() {
 
   // 2. Highstone: two pieces of the iron rock, two nuggets.
   siteShot(IRON_ROCK, "1_highstone", [3, 0.8, -3]);
-  const iron = mine(IRON_ROCK, "iron", 2, "highstone", "IronNugget");
+  const iron = mine(IRON_ROCK, IRON_NODE, 2, "highstone", "IronNugget");
   siteShot(IRON_ROCK, "2_highstone_mined", [3, 0.8, -3]);
   step("2 the Highstone iron rock gives two pieces to the pickaxe", iron.pieces >= 2 && iron.dropped >= 2, `pieces=${iron.pieces} dropped=${iron.dropped} (server \`iron rock hit\` lines)`);
   const nuggets = collect(IRON_ROCK, "IronNugget", base.nuggets + 2);
@@ -172,9 +175,9 @@ async function runIronChainProof() {
 
   // 3. East Rise: one piece of the coal rock, one lump.
   siteShot(COAL_ROCK, "3_eastrise", [3, 0.8, -3]);
-  const coal = mine(COAL_ROCK, "coal", 1, "east rise", "CoalLump");
+  const coal = mine(COAL_ROCK, COAL_NODE, 1, "east rise", "CoalLump");
   siteShot(COAL_ROCK, "4_eastrise_mined", [3, 0.8, -3]);
-  step("4 the East Rise coal rock gives a piece to the pickaxe", coal.pieces >= 1 && coal.dropped >= 1, `pieces=${coal.pieces} dropped=${coal.dropped} (server \`coal rock hit\` lines)`);
+  step("4 the East Rise coal rock gives a piece to the pickaxe", coal.pieces >= 1 && coal.dropped >= 1, `pieces=${coal.pieces} dropped=${coal.dropped} (server \`coal-seam rock hit\` lines)`);
   const lumps = collect(COAL_ROCK, "CoalLump", base.coal + 1);
   step("5 one Coal Lump is picked up", lumps >= base.coal + 1, `carried CoalLump=${lumps}`);
 
