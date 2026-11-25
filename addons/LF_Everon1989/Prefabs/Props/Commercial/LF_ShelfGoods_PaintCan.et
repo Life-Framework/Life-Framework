@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "AA23BE5AED4795EF"
+ components {
+  MeshObject "{02E1A6E732381440}" {
+   Object "{F552AD57783AD277}Assets/Props/Civilian/PaintCan_01/PaintCan_01.xob"
+  }
+ }
+ coords 0 0 0
+}
