@@ -27,6 +27,17 @@ GenericEntity : "{7D7C2DB551E9C36E}Prefabs/Structures/BuildingParts/Signs/Commer
    m_vFaceArea 1024 213 0
    m_fRimWidth 12
   }
+  LF_NightLightComponent "{3C5B71E0A94D2F68}" {
+   m_fHourOn 18
+   m_fHourOff 6
+   m_vColor 1 0.9 0.72
+   m_fLV 4
+   m_fRadius 6
+   m_bSpot 1
+   m_fConeAngle 110
+   m_vLightOffset 0 1.6 2.2
+   m_vLightDirection 0 -0.46 -0.89
+  }
   ActionsManagerComponent "{AA6A27A3F6345E87}" {
    ActionContexts {
     UserActionContext "{07DDFA0E055AB3F5}" {
@@ -44,6 +55,22 @@ GenericEntity : "{7D7C2DB551E9C36E}Prefabs/Structures/BuildingParts/Signs/Commer
      }
     }
    }
+  }
+ }
+ {
+  LightEntity {
+   ID "6A0D8E1F52B7C394"
+   coords 0 1.6 2.2
+   angles -27 180 0
+   Color 1 0.9 0.72 1
+   LV 4
+   ClipEV -10
+   CastShadow 0
+   Type Spot
+   Radius 6
+   NearPlane 0.3
+   SpotAngle 110
+   LensFlareType Disabled
   }
  }
 }
