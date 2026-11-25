@@ -64,6 +64,8 @@ class LF_AmbientEmitterComponent : ScriptComponent
 	protected int m_iPlayTicks;
 	protected int m_iRefusedTicks;
 	protected bool m_bRefusalSaid;
+	//! The hour window as last seen: -1 not yet, 0 closed, 1 open (logged on each flip, #4955).
+	protected int m_iWindow = -1;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -187,7 +189,19 @@ class LF_AmbientEmitterComponent : ScriptComponent
 	LF_AmbientCandidate Refresh(int id, float distance, float hour)
 	{
 		IEntity owner = GetOwner();
-		bool allowed = !m_bBroken && LF_AtmosphereMix.InHours(hour, m_fHourFrom, m_fHourTo);
+		bool inHours = LF_AtmosphereMix.InHours(hour, m_fHourFrom, m_fHourTo);
+		string edge = LF_AtmosphereMix.WindowEdge(m_iWindow, inHours);
+		if (!edge.IsEmpty())
+		{
+			if (inHours)
+				m_iWindow = 1;
+			else
+				m_iWindow = 0;
+
+			LF_Debug.Info(LF_Atmosphere.FEATURE, string.Format("window %1 %2 (hour %3, %4 to %5)", edge, Label(), hour.ToString(-1, 2), m_fHourFrom.ToString(-1, 1), m_fHourTo.ToString(-1, 1)));
+		}
+
+		bool allowed = !m_bBroken && inHours;
 		if (allowed && m_Condition)
 			allowed = m_Condition.IsMet(owner);
 

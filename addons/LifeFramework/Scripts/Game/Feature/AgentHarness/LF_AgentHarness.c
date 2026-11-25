@@ -2447,11 +2447,14 @@ class LF_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	//! What the restart judge reads besides money (#348): seconds left on a sentence, the stash's item
 	//! count (-1 with no stash placed), cars stored in the garage, and the plate of the car in the world.
+	//! parkedat is that car's origin (x,y,z, "none" without one): a proof finds it there after a restart,
+	//! when the purchase is in an older server log (#4954).
 	protected static string KeepsToken(string uid)
 	{
 		int jail = 0;
 		int stored = 0;
 		string parked = "none";
+		string parkedAt = "none";
 		if (!uid.IsEmpty())
 		{
 			if (LF_Jail.IsServing(uid))
@@ -2460,7 +2463,15 @@ class LF_AgentHarness
 			stored = LF_VehicleOwnership.StoredFor(uid).Count();
 			string worldId = LF_VehicleOwnership.LatestInWorld(uid);
 			if (!worldId.IsEmpty())
+			{
 				parked = Token(LF_VehicleOwnership.GetPlate(worldId));
+				IEntity car = LF_VehicleOwnership.GetVehicle(worldId);
+				if (car)
+				{
+					vector at = car.GetOrigin();
+					parkedAt = string.Format("%1,%2,%3", at[0], at[1], at[2]);
+				}
+			}
 		}
 
 		int stash = -1;
@@ -2476,7 +2487,7 @@ class LF_AgentHarness
 			}
 		}
 
-		return string.Format("jail=%1 garage=%2 parked=%3 stash=%4", jail, stored, parked, stash);
+		return string.Format("jail=%1 garage=%2 parked=%3 stash=%4 parkedat=%5", jail, stored, parked, stash, parkedAt);
 	}
 
 	//------------------------------------------------------------------------------------------------

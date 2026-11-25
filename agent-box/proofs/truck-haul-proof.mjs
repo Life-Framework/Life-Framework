@@ -17,6 +17,7 @@ import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 const SAW_ACTION = process.env.SAW_ACTION ?? "LF_ProcessAction__3";
 const SAW = "Fit_saint_philippe_woodlot_saw";
 const DESK = "Fit_saint_philippe_woodlot_desk";
+const IMPOUND_DESK = process.env.IMPOUND_DESK ?? "Fit_saint_philippe_carlot_impound_desk";
 const BUYER = process.env.BUYER ?? "Fit_saint_philippe_woodlot_buyer";
 const WHOLESALE = process.env.WHOLESALE ?? "Fit_saint_philippe_woodlot_wholesale";
 const JOG_MPS = 4.5;
@@ -32,13 +33,20 @@ const PARK_METRES = process.env.PARK_METRES ?? "8";
 
 const root = dirname(fileURLToPath(import.meta.url));
 
-// The newest server console log of this session.
+// Every server console log of this session, oldest first: after `session restart` the purchase is in the log of the
+// server before the restart (#4954).
 function serverLog() {
   const dir = join(sessionDir(), "server", "logs");
   if (!existsSync(dir)) return "";
   const runs = readdirSync(dir).filter((d) => existsSync(join(dir, d, "console.log")));
   runs.sort((a, b) => statSync(join(dir, a, "console.log")).mtimeMs - statSync(join(dir, b, "console.log")).mtimeMs);
-  return runs.length ? readFileSync(join(dir, runs[runs.length - 1], "console.log"), "utf8") : "";
+  return runs.map((d) => readFileSync(join(dir, d, "console.log"), "utf8")).join("\n");
+}
+
+// Where the owned truck stands now, from `state`'s parkedat=x,y,z (#4954). Returns [x, y, z] as strings, or null.
+export function parkedAt(detail) {
+  const m = /(?:^|\s)parkedat=(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/.exec(String(detail));
+  return m ? [m[1], m[2], m[3]] : null;
 }
 
 // The newest client console log of this session (the client's offer check logs there).
@@ -106,6 +114,8 @@ function selftest() {
   if (boughtTruckSpawn(spawnLine("M923A1", 4333) + boughtLine("Ural4320") + spawnLine("Ural4320", 4400)) !== null) fails.push("a spawn after the purchase is not the bought truck");
   if (boughtTruckSpawn(spawnLine("Ural4320", 4000) + boughtLine("Ural4320"))?.[0] !== "4000.5") fails.push("a bought Ural is still found");
   if (boughtTruckSpawn(spawnLine("M923A1", 4333)) !== null) fails.push("no purchase line, no truck");
+  if (parkedAt("jail=0 garage=0 parked=UI_OZ_2619 stash=-1 parkedat=4333.5,14.1,10632.1")?.join(",") !== "4333.5,14.1,10632.1") fails.push("parkedat is read");
+  if (parkedAt("parked=none stash=-1 parkedat=none") !== null) fails.push("parkedat=none is no position");
   if (nearestLock("veh=EL_M923A1_transport:d=4.6:eng=0:lock=0:ign=0|Ural:d=9:eng=0:lock=1 door=none") !== "0") fails.push("nearestLock reads the first vehicle");
   if (nearestLock("veh=EL_M923A1_transport:d=2:eng=0:lock=1|Ural:d=9:lock=0") !== "1" || nearestLock("veh=none") !== "?") fails.push("nearestLock locked and none");
   const e = parseEconomy("  LOOP truck hardwood -> boards, firewood: ~24 logs/h, steady $680/h, first hour $680/h; duty police");
@@ -152,16 +162,28 @@ async function run(args) {
   // Straight after truck-check-proof the player stands at the yard's lot beside the truck just bought: do not walk away.
   if (!/parked=(?!none)\S+/.test(String(on({ verb: "state" }).detail))) arrive((n, spec, t) => on(spec, t), 1, wait);
   wait(2000);
-  const parked = /parked=(\S+)/.exec(String(on({ verb: "state" }).detail))?.[1] ?? "none";
+  let stateLine = String(on({ verb: "state" }).detail);
+  const parked = /parked=(\S+)/.exec(stateLine)?.[1] ?? "none";
+  // A restart impounds every car left on the street (LF_VehicleOwnership.ImpoundStreetVehicles): the truck is still
+  // owned (parked=<plate>) but has no entity (parkedat=none). Collect it at the impound desk, as a player does (#4954).
+  if (parked !== "none" && !parkedAt(stateLine)) {
+    on({ verb: "stand", entityName: IMPOUND_DESK });
+    wait(1500);
+    const collect = on({ verb: "use", className: "LF_ImpoundCollectAction", entityName: IMPOUND_DESK }, 10000);
+    wait(3000);
+    stateLine = String(on({ verb: "state" }).detail);
+    step("0a the truck impounded at the restart is collected at the desk", !!parkedAt(stateLine), `${collect.status} ${collect.detail}; parkedat=${parkedAt(stateLine)?.join(",") ?? "none"}`);
+  }
   step("0 the player owns a truck in the world", parked !== "none", `parked=${parked}`);
   if (parked === "none") return finish(results);
 
   // The lot left the bought truck locked and beside the buyer: unlock it at its door with the key, the way a player does
   // (the cargo bed follows the vehicle lock), then set it beside the woodlot saw.
   // The truck stands where the lot spawned it (the server logged the spawn); walk to its door, one side then the other.
-  const spawn = boughtTruckSpawn(serverLog());
+  // Where it stands now first (it may have moved, or come back from a save), else the spawn the server logged.
+  const spawn = parkedAt(stateLine) ?? boughtTruckSpawn(serverLog());
   let seen = "";
-  let unlock = { status: "no_spawn", detail: "the server log holds no spawn of the truck" };
+  let unlock = { status: "no_spawn", detail: "neither state nor the server logs place the truck" };
   // The nearest vehicle's lock: `seen` lists vehicles nearest first, and the lot's display trucks stand locked nearby.
   // Camera offsets from the spawn point, in world axes: the spawn is the truck's origin, not a door, and the truck's heading
   // is unknown to the proof (the Ural's doors were 2.6 east and 2.2 south of it; the Cargo truck is longer and wider, its

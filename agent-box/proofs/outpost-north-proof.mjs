@@ -41,6 +41,12 @@ export function stoppedAfter(lines, name, from = 0) {
   return lines.slice(from).some((l) => /^stop\b/.test(l) && l.includes(name));
 }
 
+// Pure: whether a `window closed <name> ...` line follows index `from`. A session without a sound manager (`-noSound`) never starts a voice,
+// so no `stop` line exists; the emitter logs its hour window flipping either way (#4955).
+export function windowClosedAfter(lines, name, from = 0) {
+  return lines.slice(from).some((l) => /^window closed/.test(l) && l.includes(name));
+}
+
 // Pure: the layer entity's top-level coords, or null (a camera target is read from the layer, never typed).
 export function coordsOf(text, name) {
   const m = new RegExp(`^\\w+ ${name}\\b[^\\n]*\\{[\\s\\S]*?\\n coords ([-\\d.]+) ([-\\d.]+) ([-\\d.]+)`, "m").exec(text);
@@ -195,7 +201,7 @@ async function main(args) {
   now = atmo();
   expect(liveAfter(now, BED.fire, m), "23:00: the fire bed starts");
   expect(liveAfter(now, BED.wind, m), "23:00: the wind bed starts");
-  expect(stoppedAfter(now, BED.generator, m), "23:00: the generator bed stops");
+  expect(stoppedAfter(now, BED.generator, m) || windowClosedAfter(now, BED.generator, m), "23:00: the generator bed stops (a stop line, or its hour window closes when no voice ran)");
   free("11_camp_night", middle, 9, 5, -9, 23);
 
   for (const l of atmo().slice(-12)) console.log(`    ${l.slice(0, 200)}`);
@@ -204,11 +210,11 @@ async function main(args) {
 }
 
 function selftest() {
-  const lines = ["start Fit_a at 4 m (radius 30) x.acp", "stop Fit_a (hours)", "Fit_b is in range at 5 m (radius 54) and got no voice for 5 s"];
+  const lines = ["start Fit_a at 4 m (radius 30) x.acp", "stop Fit_a (hours)", "window closed Fit_c (hour 23.00, 5.0 to 23.0)", "Fit_b is in range at 5 m (radius 54) and got no voice for 5 s"];
   const layer = "GenericEntity Fit_a {\n components {\n }\n coords 1 2 3\n}\n";
   const log = "x bought gang_radio at the outpost for 60\n y bought pistol at the outpost for 450";
   const ok = liveAfter(lines, "Fit_a") && !liveAfter(lines, "Fit_a", 1) && stoppedAfter(lines, "Fit_a", 0) && !stoppedAfter(lines, "Fit_a", 2)
-    && liveAfter(lines, "Fit_b", 2) && coordsOf(layer, "Fit_a")?.z === 3 && coordsOf(layer, "Nope") === null
+    && liveAfter(lines, "Fit_b", 3) && windowClosedAfter(lines, "Fit_c") && !windowClosedAfter(lines, "Fit_a") && !windowClosedAfter(lines, "Fit_c", 3) && coordsOf(layer, "Fit_a")?.z === 3 && coordsOf(layer, "Nope") === null
     && boughtIds(log).join(",") === "gang_radio,pistol" && boughtIds("").length === 0;
   console.log(ok ? "outpost-north-proof selftest: OK" : "outpost-north-proof selftest: FAIL");
   return ok ? 0 : 1;
