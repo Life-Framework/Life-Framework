@@ -1,0 +1,88 @@
+# Sign faces in game (visual sweep 2026-11-25): pole and wall plates the sweep called blank, plus the respray control.
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow island-sign-faces
+#   node agent-box/session.mjs down
+
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+
+step 1 respray
+stand Fit_saint_philippe_districts_garage_respray_sign e3
+wait 4000
+shot world sf_respray 4690.956 22.813 10754.404 -2.5 -1.8 0
+shot world sf_respray_wide 4690.956 22.813 10754.404 -5 -1.8 0
+step 2 highstone
+stand Fit_highstone_mine_mine_sign e3
+wait 4000
+shot world sf_highstone 4959 115.859 8460 0 -1.8 -2.5
+shot world sf_highstone_wide 4959 115.859 8460 0 -1.8 -5
+step 3 eastrise
+stand Fit_eastrise_mine_mine_sign e3
+wait 4000
+shot world sf_eastrise 6684 151.672 7915 0 -1.8 -2.5
+shot world sf_eastrise_wide 6684 151.672 7915 0 -1.8 -5
+step 4 truckgate
+stand Fit_ne_compound_truckyard_sign_gate e3
+wait 4000
+shot world sf_truckgate 5024.116 30.072 10848.3 -2.5 -1.8 0
+shot world sf_truckgate_wide 5024.116 30.072 10848.3 -5 -1.8 0
+step 5 blacklake
+stand Fit_blacklake_shore_sign e3
+wait 4000
+shot world sf_blacklake 9520.1 210.58 2994.1 2.097 -1.8 -1.362
+shot world sf_blacklake_wide 9520.1 210.58 2994.1 4.193 -1.8 -2.723
+step 6 homesale_b01
+stand HomeSign_saint_philippe_sp_b01 e3
+wait 4000
+shot world sf_homesale_b01 4498.375 15.93 10697.828 2.476 -1.8 0.348
+shot world sf_homesale_b01_wide 4498.375 15.93 10697.828 4.951 -1.8 0.696
+step 7 atm
+stand Fit_saint_philippe_bank_lf_sign_atm e3
+wait 4000
+shot world sf_atm 4376.154 14.3 10650.165 0.244 -1.25 -1.985
+step 8 labour
+stand Fit_saint_philippe_labour_labour_sign e3
+wait 4000
+shot world sf_labour 4419.122 13.28 10646.996 -0.278 -0.6 1.981
+step 9 registry
+stand Fit_saint_philippe_org_registry_sign e3
+wait 4000
+shot world sf_registry 4503.489 17.8 10621.953 0.105 -1.35 -1.997
+step 10 rules
+stand Fit_saint_philippe_arrival_lf_sign_rules e3
+wait 4000
+shot world sf_rules 4415.846 14.1 10654.856 -0.278 -1.4 1.981
+step 11 bus stop timetable, both sides
+stand Fit_saint_philippe_bus_stops_drop_b45 e3
+wait 4000
+shot world sf_bus_front 4423.186 13.98 10655.964 -0.306 -1.2 2.179
+shot world sf_bus_back 4423.186 13.98 10655.964 0.306 -1.2 -2.179
