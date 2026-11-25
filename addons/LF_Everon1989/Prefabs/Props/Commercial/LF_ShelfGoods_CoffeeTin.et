@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "F9E8CF85ACA54E46"
+ components {
+  MeshObject "{A002F3943988EAD7}" {
+   Object "{55A5285C23AB92DE}Assets/Items/Store1989/CoffeeTin/CoffeeTin.xob"
+  }
+ }
+ coords 0 0 0
+}

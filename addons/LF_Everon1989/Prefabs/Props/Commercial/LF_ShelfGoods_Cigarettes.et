@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "5D6DB57F343AEA1A"
+ components {
+  MeshObject "{D4AABABDAF03D05D}" {
+   Object "{10D42E6612680C88}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_Cigarettes_01.xob"
+  }
+ }
+ coords 0 0 0
+}

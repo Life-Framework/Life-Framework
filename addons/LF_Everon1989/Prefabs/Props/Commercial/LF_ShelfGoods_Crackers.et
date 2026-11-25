@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "0077028933CEF263"
+ components {
+  MeshObject "{500265D0066138B1}" {
+   Object "{A47ED22E6647430A}Assets/Items/Food/ArmyCrackers_Soviet_01.xob"
+  }
+ }
+ coords 0 0 0
+}

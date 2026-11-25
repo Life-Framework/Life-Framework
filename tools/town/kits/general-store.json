@@ -328,6 +328,835 @@
       "free": true,
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "general-store-host-w1-b1-1",
+      "name": "General_Store_Host_w1_b1_1",
+      "prefab": "{BA8AFA2BBFDE918F}Prefabs/Props/Commercial/LF_ShelfGoods_CoffeeTin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        0.861,
+        5.893
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w1-b1-2",
+      "name": "General_Store_Host_w1_b1_2",
+      "prefab": "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        0.789,
+        5.719
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w1-b1-3",
+      "name": "General_Store_Host_w1_b1_3",
+      "prefab": "{9DD66E8B3652578E}Prefabs/Props/Commercial/LF_ShelfGoods_PickleJar.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        0.883,
+        5.548
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w1-b1-4",
+      "name": "General_Store_Host_w1_b1_4",
+      "prefab": "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        0.897,
+        5.4
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w1-b1-5",
+      "name": "General_Store_Host_w1_b1_5",
+      "prefab": "{C2D56FE2D748921E}Prefabs/Props/Commercial/LF_ShelfGoods_Crackers.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        0.793,
+        5.205
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "general-store-host-w1-b1-6",
+      "name": "General_Store_Host_w1_b1_6",
+      "prefab": "{E9A105EFCA89A2FD}Prefabs/Props/Commercial/LF_ShelfGoods_CannedMeat.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        0.823,
+        4.988
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w1-b1-7",
+      "name": "General_Store_Host_w1_b1_7",
+      "prefab": "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        0.789,
+        4.808
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w1-b2-1",
+      "name": "General_Store_Host_w1_b2_1",
+      "prefab": "{E9A105EFCA89A2FD}Prefabs/Props/Commercial/LF_ShelfGoods_CannedMeat.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.316,
+        5.833
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w1-b2-2",
+      "name": "General_Store_Host_w1_b2_2",
+      "prefab": "{7E79D7AAABB59880}Prefabs/Props/Commercial/LF_ShelfGoods_SodaBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.282,
+        5.641
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.85
+    },
+    {
+      "id": "general-store-host-w1-b2-3",
+      "name": "General_Store_Host_w1_b2_3",
+      "prefab": "{00F91B36422DB578}Prefabs/Props/Commercial/LF_ShelfGoods_TinCanB.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.282,
+        5.45
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w1-b2-4",
+      "name": "General_Store_Host_w1_b2_4",
+      "prefab": "{4889BEEF366C19EA}Prefabs/Props/Commercial/LF_ShelfGoods_CannedFish.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.304,
+        5.262
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "general-store-host-w1-b2-5",
+      "name": "General_Store_Host_w1_b2_5",
+      "prefab": "{01C6483DD651584C}Prefabs/Props/Commercial/LF_ShelfGoods_WaterBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.282,
+        5.101
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.2
+    },
+    {
+      "id": "general-store-host-w1-b2-6",
+      "name": "General_Store_Host_w1_b2_6",
+      "prefab": "{F8F5DCF53925D3EB}Prefabs/Props/Commercial/LF_ShelfGoods_Chocolate.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.29,
+        4.904
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "general-store-host-w1-b3-2",
+      "name": "General_Store_Host_w1_b3_2",
+      "prefab": "{302BF3A4DC8A58BD}Prefabs/Props/Commercial/LF_ShelfGoods_Cigarettes.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.775,
+        5.602
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "general-store-host-w1-b3-3",
+      "name": "General_Store_Host_w1_b3_3",
+      "prefab": "{4F8D8A211A143C7F}Prefabs/Props/Commercial/LF_ShelfGoods_BeerBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.776,
+        5.447
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "general-store-host-w1-b3-4",
+      "name": "General_Store_Host_w1_b3_4",
+      "prefab": "{BA8AFA2BBFDE918F}Prefabs/Props/Commercial/LF_ShelfGoods_CoffeeTin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.846,
+        5.297
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w1-b3-7",
+      "name": "General_Store_Host_w1_b3_7",
+      "prefab": "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.262,
+        1.883,
+        4.804
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w2-b1-1",
+      "name": "General_Store_Host_w2_b1_1",
+      "prefab": "{BA8AFA2BBFDE918F}Prefabs/Props/Commercial/LF_ShelfGoods_CoffeeTin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        0.861,
+        4.439
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w2-b1-2",
+      "name": "General_Store_Host_w2_b1_2",
+      "prefab": "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        0.789,
+        4.265
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w2-b1-3",
+      "name": "General_Store_Host_w2_b1_3",
+      "prefab": "{9DD66E8B3652578E}Prefabs/Props/Commercial/LF_ShelfGoods_PickleJar.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        0.883,
+        4.094
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w2-b1-4",
+      "name": "General_Store_Host_w2_b1_4",
+      "prefab": "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        0.897,
+        3.946
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w2-b1-6",
+      "name": "General_Store_Host_w2_b1_6",
+      "prefab": "{E9A105EFCA89A2FD}Prefabs/Props/Commercial/LF_ShelfGoods_CannedMeat.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        0.823,
+        3.534
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w2-b1-7",
+      "name": "General_Store_Host_w2_b1_7",
+      "prefab": "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        0.789,
+        3.354
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w2-b2-1",
+      "name": "General_Store_Host_w2_b2_1",
+      "prefab": "{E9A105EFCA89A2FD}Prefabs/Props/Commercial/LF_ShelfGoods_CannedMeat.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.316,
+        4.379
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w2-b2-2",
+      "name": "General_Store_Host_w2_b2_2",
+      "prefab": "{7E79D7AAABB59880}Prefabs/Props/Commercial/LF_ShelfGoods_SodaBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.282,
+        4.187
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.85
+    },
+    {
+      "id": "general-store-host-w2-b2-3",
+      "name": "General_Store_Host_w2_b2_3",
+      "prefab": "{00F91B36422DB578}Prefabs/Props/Commercial/LF_ShelfGoods_TinCanB.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.282,
+        3.996
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w2-b2-6",
+      "name": "General_Store_Host_w2_b2_6",
+      "prefab": "{F8F5DCF53925D3EB}Prefabs/Props/Commercial/LF_ShelfGoods_Chocolate.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.29,
+        3.45
+      ],
+      "yaw": 180,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "general-store-host-w2-b3-2",
+      "name": "General_Store_Host_w2_b3_2",
+      "prefab": "{302BF3A4DC8A58BD}Prefabs/Props/Commercial/LF_ShelfGoods_Cigarettes.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.775,
+        4.148
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "general-store-host-w2-b3-3",
+      "name": "General_Store_Host_w2_b3_3",
+      "prefab": "{4F8D8A211A143C7F}Prefabs/Props/Commercial/LF_ShelfGoods_BeerBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.776,
+        3.993
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "general-store-host-w2-b3-6",
+      "name": "General_Store_Host_w2_b3_6",
+      "prefab": "{9DD66E8B3652578E}Prefabs/Props/Commercial/LF_ShelfGoods_PickleJar.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.869,
+        3.498
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w2-b3-7",
+      "name": "General_Store_Host_w2_b3_7",
+      "prefab": "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.261,
+        1.883,
+        3.35
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w3-b1-6",
+      "name": "General_Store_Host_w3_b1_6",
+      "prefab": "{E9A105EFCA89A2FD}Prefabs/Props/Commercial/LF_ShelfGoods_CannedMeat.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.935,
+        0.823,
+        -2.712
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w3-b1-7",
+      "name": "General_Store_Host_w3_b1_7",
+      "prefab": "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.115,
+        0.789,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w3-b2-2",
+      "name": "General_Store_Host_w3_b2_2",
+      "prefab": "{7E79D7AAABB59880}Prefabs/Props/Commercial/LF_ShelfGoods_SodaBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.282,
+        1.282,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.85
+    },
+    {
+      "id": "general-store-host-w3-b2-3",
+      "name": "General_Store_Host_w3_b2_3",
+      "prefab": "{00F91B36422DB578}Prefabs/Props/Commercial/LF_ShelfGoods_TinCanB.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.473,
+        1.282,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w3-b2-6",
+      "name": "General_Store_Host_w3_b2_6",
+      "prefab": "{F8F5DCF53925D3EB}Prefabs/Props/Commercial/LF_ShelfGoods_Chocolate.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.019,
+        1.29,
+        -2.712
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.4
+    },
+    {
+      "id": "general-store-host-w3-b3-2",
+      "name": "General_Store_Host_w3_b3_2",
+      "prefab": "{302BF3A4DC8A58BD}Prefabs/Props/Commercial/LF_ShelfGoods_Cigarettes.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.321,
+        1.775,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "general-store-host-w3-b3-3",
+      "name": "General_Store_Host_w3_b3_3",
+      "prefab": "{4F8D8A211A143C7F}Prefabs/Props/Commercial/LF_ShelfGoods_BeerBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.476,
+        1.776,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "general-store-host-w3-b3-6",
+      "name": "General_Store_Host_w3_b3_6",
+      "prefab": "{9DD66E8B3652578E}Prefabs/Props/Commercial/LF_ShelfGoods_PickleJar.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.971,
+        1.869,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w3-b3-7",
+      "name": "General_Store_Host_w3_b3_7",
+      "prefab": "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.119,
+        1.883,
+        -2.712
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w5-b1-3",
+      "name": "General_Store_Host_w5_b1_3",
+      "prefab": "{9DD66E8B3652578E}Prefabs/Props/Commercial/LF_ShelfGoods_PickleJar.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        0.883,
+        -1.375
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w5-b1-4",
+      "name": "General_Store_Host_w5_b1_4",
+      "prefab": "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        0.897,
+        -1.227
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w5-b1-7",
+      "name": "General_Store_Host_w5_b1_7",
+      "prefab": "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        0.789,
+        -0.635
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w5-b2-2",
+      "name": "General_Store_Host_w5_b2_2",
+      "prefab": "{7E79D7AAABB59880}Prefabs/Props/Commercial/LF_ShelfGoods_SodaBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.282,
+        -1.468
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.85
+    },
+    {
+      "id": "general-store-host-w5-b2-3",
+      "name": "General_Store_Host_w5_b2_3",
+      "prefab": "{00F91B36422DB578}Prefabs/Props/Commercial/LF_ShelfGoods_TinCanB.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.282,
+        -1.277
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w5-b3-2",
+      "name": "General_Store_Host_w5_b3_2",
+      "prefab": "{302BF3A4DC8A58BD}Prefabs/Props/Commercial/LF_ShelfGoods_Cigarettes.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.775,
+        -1.429
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.5
+    },
+    {
+      "id": "general-store-host-w5-b3-3",
+      "name": "General_Store_Host_w5_b3_3",
+      "prefab": "{4F8D8A211A143C7F}Prefabs/Props/Commercial/LF_ShelfGoods_BeerBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.776,
+        -1.274
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "general-store-host-w5-b3-4",
+      "name": "General_Store_Host_w5_b3_4",
+      "prefab": "{BA8AFA2BBFDE918F}Prefabs/Props/Commercial/LF_ShelfGoods_CoffeeTin.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.846,
+        -1.124
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
+    },
+    {
+      "id": "general-store-host-w5-b3-7",
+      "name": "General_Store_Host_w5_b3_7",
+      "prefab": "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.506,
+        1.883,
+        -0.631
+      ],
+      "yaw": -90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "scale": 1.3
     }
   ],
   "clear": [

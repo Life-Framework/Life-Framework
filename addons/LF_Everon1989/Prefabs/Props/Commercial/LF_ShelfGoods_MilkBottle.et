@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "CEEBC829BB2D5B6C"
+ components {
+  MeshObject "{3491C1B85492CAC1}" {
+   Object "{6383289C35D3CECE}Assets/Items/Store1989/MilkBottle/MilkBottle.xob"
+  }
+ }
+ coords 0 0 0
+}

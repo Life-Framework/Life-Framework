@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "B2F6775270DC9A3D"
+ components {
+  MeshObject "{CA9914B94B2BF725}" {
+   Object "{52F9D510E620CE32}Assets/Items/Store1989/ChocolateBar/ChocolateBar.xob"
+  }
+ }
+ coords 0 0 0
+}

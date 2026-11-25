@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "46F644CA61A31231"
+ components {
+  MeshObject "{8AD08EB9187E5F36}" {
+   Object "{EF54929D5051A697}Assets/Items/Store1989/CannedFish/CannedFish.xob"
+  }
+ }
+ coords 0 0 0
+}

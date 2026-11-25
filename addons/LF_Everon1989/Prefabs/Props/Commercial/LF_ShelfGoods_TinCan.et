@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "A268496F17571479"
+ components {
+  MeshObject "{EC95E39E84BFC481}" {
+   Object "{FACB1ED350C087F9}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_TinCan_01.xob"
+  }
+ }
+ coords 0 0 0
+}
