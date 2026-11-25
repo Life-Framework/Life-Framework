@@ -93,3 +93,23 @@ GenericEntity Fit_saint_philippe_fuel_pump_b : "{3328A0000000F001}Prefabs/Props/
  coords 4612.523 0.174 10658.701
  angleY -100
 }
+GenericEntity Fit_saint_philippe_fuel_fuel_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4616.727 21.4 10655.676
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_fuel_fuel_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4615.859 21.4 10660.6
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_fuel_fuel_fill_1 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4617.596 21.3 10654.205
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_fuel_fuel_fill_2 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4615.418 21.3 10658.492
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_fuel_fuel_fill_3 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4615.425 21.3 10663.062
+ angleY -100
+}

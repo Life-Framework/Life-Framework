@@ -224,6 +224,86 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "fuel-lamp-1",
+      "name": "Fuel_Lamp_1",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -3,
+        2.6,
+        0.4
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fuel-lamp-2",
+      "name": "Fuel_Lamp_2",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        2,
+        2.6,
+        0.4
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fuel-fill-1",
+      "name": "Fuel_Fill_1",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -4.6,
+        2.5,
+        -0.2
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fuel-fill-2",
+      "name": "Fuel_Fill_2",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        0,
+        2.5,
+        1.2
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fuel-fill-3",
+      "name": "Fuel_Fill_3",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        4.5,
+        2.5,
+        0.4
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }
