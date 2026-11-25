@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "9281EDBD87FC2007"
+ components {
+  MeshObject "{AF9846B0BEEC1854}" {
+   Object "{77C616A2A56451AF}Assets/Items/Equipment/Accessories/Holster_PM/Holster_PM.xob"
+  }
+ }
+ coords 0 0 0
+}

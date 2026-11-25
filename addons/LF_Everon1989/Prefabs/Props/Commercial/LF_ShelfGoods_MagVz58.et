@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "1ACB307A4B833C05"
+ components {
+  MeshObject "{4905DCD04C9C2A8D}" {
+   Object "{6DA97AD816499726}Assets/Weapons/Magazines/VZ58/Magazine_30rnd_VZ58.xob"
+  }
+ }
+ coords 0 0 0
+}
