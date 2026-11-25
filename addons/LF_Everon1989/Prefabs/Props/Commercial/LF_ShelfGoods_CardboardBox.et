@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "E324A3AEDC97B207"
+ components {
+  MeshObject "{4B26B17D204BD54A}" {
+   Object "{2C2903391E74AAC9}Assets/Props/Crates/CardboardBox_01.xob"
+  }
+ }
+ coords 0 0 0
+}

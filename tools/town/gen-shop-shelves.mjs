@@ -74,20 +74,21 @@ export function obstaclesOf(text) {
 
 // One board's rows: goods packed along `len`, the leftover split at both ends; spots over an obstacle are dropped.
 export function boardRows(shop, unit, board, start, obstacles) {
+  const gap = shop.gap ?? GAP; // metres between two goods on a board (a shop may ask for more)
   const kinds = [];
   let used = 0;
   for (let i = 0; i < shop.cycle.length * 2; i++) {
     const k = shop.cycle[(start + i) % shop.cycle.length];
     if (shop.only?.[k] && !shop.only[k].includes(board)) continue;
     const w = widthOf(k);
-    if (used + (kinds.length ? GAP : 0) + w > unit.len) {
+    if (used + (kinds.length ? gap : 0) + w > unit.len) {
       const fit = shop.cycle
-        .filter((c) => !(shop.only?.[c] && !shop.only[c].includes(board)) && used + GAP + widthOf(c) <= unit.len)
+        .filter((c) => !(shop.only?.[c] && !shop.only[c].includes(board)) && used + gap + widthOf(c) <= unit.len)
         .sort((a, b) => widthOf(b) - widthOf(a))[0];
-      if (fit) { kinds.push(fit); used += GAP + widthOf(fit); }
+      if (fit) { kinds.push(fit); used += gap + widthOf(fit); }
       break;
     }
-    used += (kinds.length ? GAP : 0) + w;
+    used += (kinds.length ? gap : 0) + w;
     kinds.push(k);
   }
   const rad = (unit.yaw * Math.PI) / 180;
@@ -99,7 +100,7 @@ export function boardRows(shop, unit, board, start, obstacles) {
   kinds.forEach((k, i) => {
     const w = widthOf(k);
     const mid = t + w / 2;
-    t += w + GAP;
+    t += w + gap;
     const x = unit.at[0] + along[0] * mid + front[0] * FORWARD;
     const z = unit.at[1] + along[1] * mid + front[1] * FORWARD;
     const y = y0 + G[k].lift * G[k].scale;
@@ -171,6 +172,24 @@ export async function plan(name) {
       const made = boardRows(shop, unit, b, (n++ * 5) % shop.cycle.length, obstacles);
       if (!(shop.dropUnits ?? []).includes(unit.id)) rows.push(...made.filter((r) => !(shop.dropRows ?? []).includes(r.id)));
     }
+  }
+  // A shop may also stand single goods where no shelf is (a flat layer of cement bags on a pallet): `floorGoods` { id, good, offset, yaw }.
+  for (const f of shop.floorGoods ?? []) {
+    const g = G[f.good];
+    const row = {
+      id: `${shop.prefix}-${f.id}`,
+      name: `${shop.prefix.replace(/(^|-)(w)/g, (_, a, c) => `${a ? "_" : ""}${c.toUpperCase()}`)}_${f.id.replace(/-/g, "_")}`,
+      prefab: `{${GUIDS[f.good]}}${DIR}/${g.file}`,
+      role: "dressing",
+      verb: "on floor",
+      offset: [r3(f.offset[0]), r3(f.offset[1] + g.lift * g.scale), r3(f.offset[2])],
+      yaw: f.yaw + (g.yawOff ?? 0),
+      free: true,
+      wall: "free",
+      floor: "f0",
+    };
+    if (g.scale !== 1) row.scale = g.scale;
+    rows.push(row);
   }
   for (const r of rows) used.add(Object.keys(G).find((k) => r.prefab.endsWith(G[k].file)));
   for (const k of used) {

@@ -1,0 +1,47 @@
+# Hardware store at eye height (visual sweep 2026-11-25): the pictures the PR embeds, from the door and the aisles.
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow island-hardware-eye
+#   node agent-box/session.mjs down
+# Camera numbers come from the kit frame (door at 0.6, 5.7) through the fit's turn of 99 degrees; `shot world` stands the player at the offset.
+
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+
+step 1 hardware eye height
+stand Fit_saint_philippe_hardware_hardware_clerk e3
+wait 4000
+shot world hw_door_ahead 4532.723 18.05 10627.961 -2.558 -1.55 0.81
+shot world hw_door_right 4530.684 18.05 10631.89 -0.518 -1.55 -3.119
+shot world hw_lobby_wide 4532.061 18.05 10631.501 -1.297 -1.55 -5.875
+shot world hw_door_left 4531.721 18.05 10625.98 -1.556 -1.55 2.791
+shot world hw_stockroom_pallet 4534.294 18.05 10626.995 0.857 -1.55 2.262
+shot world hw_stockroom 4538.956 18.05 10630.163 -5.187 -1.55 -3.049
