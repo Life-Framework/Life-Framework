@@ -3219,7 +3219,8 @@ function cmdSessionRestart(root, dir, flags) {
   const clients = (prev.clients ?? []).length;
   const paths = session.sessionPaths(dir, clients);
   sessionLog = join(dir, "up.log");
-  const state = { ...prev, restartedAt: new Date().toISOString(), readyAt: undefined, serverPid: 0, clients: [], boots: (prev.boots ?? 1) + 1 };
+  // The new server has a new log and fresh session slots: identities are read again from slot line 0 (#4954).
+  const state = { ...prev, restartedAt: new Date().toISOString(), readyAt: undefined, serverPid: 0, clients: [], slotSeen: 0, boots: (prev.boots ?? 1) + 1 };
   const bootT0 = Date.now();
   const fail = (msg) => {
     console.log(`FAIL  ${msg}`);
@@ -3235,9 +3236,14 @@ function cmdSessionRestart(root, dir, flags) {
     if (joined < 0) return 1;
     const loaded = /session continued from a save point|loading the latest save point/.test(readFileSync(log, "utf8"));
     const bootS = Math.round((Date.now() - bootT0) / 100) / 10;
+    // Proofs read clients[n].identity (truck-check-proof): the rejoined clients get theirs from the new log (#4954).
+    recordIdentities(dir, state);
+    const changed = session.identityChanges(prev.clients ?? [], state.clients);
     session.writeSession(dir, { ...state, readyAt: new Date().toISOString(), bootS: [...(prev.bootS ?? []), bootS] });
     console.log(`session: restarted in ${bootS} s${loaded ? " from the save" : "; WARN the server log does not say it loaded a save"}; ${joined} client(s) rejoined`);
-    return 0;
+    for (const c of state.clients) console.log(`session: client ${c.n} ${c.identity ? `player ${c.identity.playerId} slot ${c.identity.slot} identity ${c.identity.uid}` : "no identity recorded"}`);
+    for (const x of changed) console.log(`FAIL  ${x}`);
+    return changed.length ? 1 : 0;
   } catch (e) {
     return fail(e.message);
   } finally {
