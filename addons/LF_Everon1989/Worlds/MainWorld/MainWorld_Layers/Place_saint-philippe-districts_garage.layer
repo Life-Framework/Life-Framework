@@ -84,7 +84,7 @@ GenericEntity Fit_saint_philippe_districts_garage_lf_sign_fascia : "{4697D9464B5
    m_vTextColor 0.96 0.93 0.82
   }
  }
- coords 4700.304 23.6 10756.408
+ coords 4700.57 23.45 10758.6
  angleY 93
 }
 GenericEntity Fit_saint_philippe_districts_garage_garage_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {

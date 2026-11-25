@@ -148,9 +148,9 @@
       "role": "sign",
       "verb": "against wall",
       "offset": [
-        -1.5,
-        3,
-        3.75
+        -3.7,
+        2.85,
+        3.9
       ],
       "yaw": 0,
       "config": [

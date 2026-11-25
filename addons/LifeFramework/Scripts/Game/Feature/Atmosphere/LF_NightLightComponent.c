@@ -68,6 +68,12 @@ class LF_NightLightComponent : ScriptComponent
 	[Attribute("140", UIWidgets.Auto, "Cone angle in degrees of a built spot light")]
 	protected float m_fConeAngle;
 
+	[Attribute("0 0 0", UIWidgets.Coords, "Where the built light sits, in the owner's local space. The prefab's own child carries the same place (a fascia lamp stands in front of its plate)")]
+	protected vector m_vLightOffset;
+
+	[Attribute("0 -1 0", UIWidgets.Coords, "Where a built spot light points, in the owner's local space (down for a lamp head; toward the plate for a fascia lamp)")]
+	protected vector m_vLightDirection;
+
 	protected bool m_bLit;
 	protected bool m_bApplied;
 	protected bool m_bTicking;
@@ -152,6 +158,20 @@ class LF_NightLightComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where the built light sits in the owner's local space.
+	vector LightOffset()
+	{
+		return m_vLightOffset;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a built spot light points in the owner's local space.
+	vector LightDirection()
+	{
+		return m_vLightDirection;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	int Misses()
 	{
 		return m_iMisses;
@@ -198,10 +218,11 @@ class LF_NightLightComponent : ScriptComponent
 		if (m_bSpot)
 		{
 			type = LightType.SPOT;
-			direction = "0 -1 0";
+			direction = m_vLightDirection;
+			direction.Normalize();
 		}
 
-		LightEntity light = LightEntity.CreateLight(type, 0, m_fRadius, Color.FromVector(m_vColor), m_fLV, vector.Zero, direction);
+		LightEntity light = LightEntity.CreateLight(type, 0, m_fRadius, Color.FromVector(m_vColor), m_fLV, m_vLightOffset, direction);
 		if (!light)
 			return false;
 
