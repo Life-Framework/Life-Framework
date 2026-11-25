@@ -245,3 +245,31 @@ GenericEntity Fit_chotain_pub_pub_fascia : "{4697D9464B596C24}Prefabs/Props/Sign
  coords 7060.686 121.1 6005.195
  angleY -41
 }
+GenericEntity Fit_chotain_pub_pub_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 7064.513 120.9 6000.793
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_pub_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 7063.595 120.9 6004.897
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_pub_fill_1 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 7062.594 120.8 6003.762
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_pub_fill_2 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 7060.839 120.8 6001.971
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_pub_fill_3 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 7067.827 120.8 6001.553
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_pub_fill_4 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 7065.005 120.8 5998.703
+ angleY 139
+}
+GenericEntity Fit_chotain_pub_pub_fill_5 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 7062.213 120.8 5999.323
+ angleY 139
+}
