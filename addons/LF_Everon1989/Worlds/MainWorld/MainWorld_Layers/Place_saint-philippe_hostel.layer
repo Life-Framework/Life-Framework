@@ -59,3 +59,35 @@ GenericEntity Fit_saint_philippe_hostel_hostel_kit_first_bed_2 : "{15468371DAC52
  coords 4472.892 16.26 10766.324
  angleY -100
 }
+GenericEntity Fit_saint_philippe_hostel_hostel_fill_1 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4471.864 15.65 10766.397
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_hostel_hostel_fill_2 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4473.653 15.6 10761.432
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_hostel_hostel_fill_3 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4476.348 15.6 10772.062
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_hostel_hostel_fill_4 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4478.699 15.6 10761.611
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_hostel_hostel_fill_5 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4473.329 18.9 10764.421
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_hostel_hostel_fill_6 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4474.592 18.9 10759.567
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_hostel_hostel_fill_7 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4477.217 18.9 10772.316
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_hostel_hostel_fill_8 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4476.603 18.9 10767.74
+ angleY -100
+}
