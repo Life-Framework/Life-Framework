@@ -38,7 +38,26 @@ export const HEAD_HEIGHT = 4.05; // the lamp head on a 4 m post; a taller post (
 export const WALL_OFFSET = 0.35; // a glow stands this far outside the wall plane (the light has no shadow: it lights both sides)
 export const FLOOR_Y = [2.1, 5.3]; // window height above the ground, ground floor and first floor
 
-const SKIP_STEM = /^(Shed|Chapel|NewspaperBooth|PortableCabin|FuelStation_E_01_building_small)/;
+// Fronts the night sweep found black (docs/playtest/visual-sweep-night-2026-11-25.md, card C): a player at 22:00 cannot find the
+// door or the stop. Each gets one vanilla self-lit street lamp beside its sign, on the pavement side of the player's approach.
+//   sign    the fascia, plate or stop the lamp is for [x, z]        from  where a player stands to read it [x, z] (the sweep camera)
+//   ground  the ground height at `from` (the sweep's `probe ground`): the probe ray's start, the seat settles the real height
+export const FRONTS = [
+  { id: "bank", sign: [4372.58, 10649.7], from: [4376.2, 10643.7], ground: 11.9 },
+  { id: "pharmacy", sign: [4437.82, 10847.02], from: [4443.1, 10851.6], ground: 9.1 },
+  { id: "furniture", sign: [4505.21, 10654.13], from: [4504.4, 10663.1], ground: 15.8 },
+  { id: "garage", sign: [4700.3, 10756.41], from: [4706.9, 10758.7], ground: 21 },
+  { id: "carlot", sign: [4396.5, 10624.6], from: [4401.5, 10619.7], ground: 15.7, gap: 5, road: 3 },
+  { id: "busstop_b32", sign: [4550.26, 10752.13], from: [4554.3, 10752.1], ground: 17.3 },
+];
+export const FRONT_OUT = 3.5; // the lamp stands this far out from the sign toward the player ...
+export const FRONT_SIDE = 3; // ... and this far to one side of the sign's axis (never in front of the door)
+export const FRONT_SEARCH = 4; // candidate spots within this of that point, every metre
+export const FRONT_LAMP_GAP = 7; // from every other lamp: a front lamp lights a dark front, it does not double a lit one (a front may set `gap`)
+export const FRONT_ROAD = 3.6; // metres from a road centre line: off the carriageway (a front may set `road`)
+export const FRONT_GROW = 1.2; // a building footprint grown this much is no place for a post
+
+const SKIP_STEM =/^(Shed|Chapel|NewspaperBooth|PortableCabin|FuelStation_E_01_building_small)/;
 const r2 = (n) => Math.round(n * 100) / 100;
 
 // A tiny deterministic hash in [0, 1) so the layer is the same on every run.
@@ -258,6 +277,39 @@ export function buildLamps({ buildings, roads, lamps, props }, rejected = []) {
     const y = best.y;
     const yaw = (Math.atan2(best.face[0] - best.p[0], best.face[1] - best.p[1]) * 180) / Math.PI;
     out.push({ name: `Lamp_${out.length + 1}`, x: r2(best.p[0]), y: r2(y), z: r2(best.p[1]), yaw: r2(yaw) });
+  }
+  // The dark fronts, after the gap lamps so those keep their places.
+  const fpolys = [...buildings.values()].filter((b) => b.footprint?.corners?.length === 4).map((b) => grow(b.footprint.corners, [b.footprint.cx, b.footprint.cz], FRONT_GROW));
+  for (const f of FRONTS) {
+    const d = dist(f.from, f.sign) || 1;
+    const u = [(f.from[0] - f.sign[0]) / d, (f.from[1] - f.sign[1]) / d];
+    let best = null;
+    for (const side of [1, -1]) {
+      const want = [f.sign[0] + u[0] * FRONT_OUT - u[1] * side * FRONT_SIDE, f.sign[1] + u[1] * FRONT_OUT + u[0] * side * FRONT_SIDE];
+      for (let dx = -FRONT_SEARCH; dx <= FRONT_SEARCH; dx++) {
+        for (let dz = -FRONT_SEARCH; dz <= FRONT_SEARCH; dz++) {
+          const p = [want[0] + dx, want[1] + dz];
+          const score = dist(p, want);
+          if (score > FRONT_SEARCH || (best && score >= best.score)) continue;
+          const along = (p[0] - f.sign[0]) * u[0] + (p[1] - f.sign[1]) * u[1]; // out from the sign
+          const lat = Math.abs(-(p[0] - f.sign[0]) * u[1] + (p[1] - f.sign[1]) * u[0]); // off the sign's axis
+          if (along < 1.5 || lat < 1.8) continue;
+          if (taken.some((t) => dist(t, p) < (f.gap ?? FRONT_LAMP_GAP))) continue;
+          if (fpolys.some((q) => inPoly(p, q))) continue;
+          if (props.some((q) => dist([q.x, q.z], p) < 1.8)) continue;
+          if (nearestRoad(roads, p).d < (f.road ?? FRONT_ROAD)) continue;
+          if (rejected.some((q) => dist(q, p) < REJECT_RADIUS)) continue;
+          best = { p, score };
+        }
+      }
+    }
+    if (!best) {
+      errors.push(`${f.id}: no clear spot for a front lamp near ${f.sign.join(", ")}`);
+      continue;
+    }
+    taken.push(best.p);
+    const yaw = (Math.atan2(f.sign[0] - best.p[0], f.sign[1] - best.p[1]) * 180) / Math.PI;
+    out.push({ name: `Lamp_front_${f.id}`, x: r2(best.p[0]), y: f.ground, z: r2(best.p[1]), yaw: r2(yaw), front: true });
   }
   return { lamps: out, errors };
 }
