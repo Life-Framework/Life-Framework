@@ -68,3 +68,11 @@ GenericEntity Fit_saint_philippe_org_org_lamp_1 : "{0E2929AAD09289D1}Prefabs/Pro
  coords 4501.500 19.150 10623.600
  angleY 87
 }
+GenericEntity Fit_saint_philippe_org_org_fill_1 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4502.315 18.7 10623.342
+ angleY 87
+}
+GenericEntity Fit_saint_philippe_org_org_fill_2 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4500.57 18.7 10624.152
+ angleY 87
+}

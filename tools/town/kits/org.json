@@ -164,8 +164,40 @@
       "verb": "on floor",
       "offset": [
         0,
-        2.95,
+        3,
         0
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "org-fill-1",
+      "name": "Org_Fill_1",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        0.3,
+        2.7,
+        0.8
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "org-fill-2",
+      "name": "Org_Fill_2",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -0.6,
+        2.7,
+        -0.9
       ],
       "yaw": 0,
       "free": true,
