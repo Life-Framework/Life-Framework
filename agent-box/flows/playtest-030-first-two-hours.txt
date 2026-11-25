@@ -1,0 +1,172 @@
+# First two hours on real Everon (#4953, X-6 hours 0 to 2): the one reliable new-player route.
+# Quiz and form R-89, hostel, the clerk's welcome, the starter car, apples, the juice press, the
+# market trader, the F2 file's "Errands done 5 / 5", and the car put back in the garage so the next
+# fresh character finds a free pad. It replaces arrival-island.txt and island-first-hour.txt (retired;
+# their later steps are not part of hours 0 to 2).
+#
+#   node agent-box/session.mjs up --mission island --profile full --clients 2 --wait
+#   node agent-box/harness.mjs --client 1 flow playtest-030-first-two-hours
+#   node agent-box/session.mjs down
+#
+# The client must be a fresh account: the rules quiz and form R-89 are its first screens, and the
+# step 0a asserts are the arrival values (cash $100, bank $2,000). A second run on the same account
+# fails step 0a on purpose; use another client (`session.mjs join <n>`) for another fresh character.
+#
+# The flow judges itself (agent-box/flow-asserts.mjs): `step` opens a judged step, a failed line or a
+# failed `expect` fails it, and the run ends with a PASS/FAIL table (exit 1 on any failed step).
+#
+# The clerk talk is driven the way a player does it, and a dropped keypress cannot pick "bye":
+#   - `dialogue-choose <node> <digit> <next>` (harness.mjs) waits for the reply list on <node>, presses
+#     LF_Keypad<digit> (1 is the first reply; the Goodbye key 0 is refused), and checks the scene moved on to
+#     <next>. Harness keys are dropped on a loaded client (a MenuDown/MenuUp/MenuSelect triple once picked "bye"):
+#     after two dropped presses it answers with `dialogue pick <digit - 1>`, the scene's own pick, and the
+#     flow log says "via pick (keys dropped)". A pick that lands on any other node fails the step.
+ui
+click QuizOption1Button
+wait 1200
+click QuizNextButton
+wait 500
+click QuizOption0Button
+wait 1200
+click QuizNextButton
+wait 500
+click QuizOption2Button
+wait 1200
+click QuizNextButton
+wait 500
+click QuizOption1Button
+wait 1200
+click QuizNextButton
+wait 500
+click QuizOption0Button
+wait 1200
+click QuizNextButton
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+
+step 0a Hour 0: wake in the hostel with the arrival money and no papers
+expect cash =100
+expect bank =2000
+expect state idcard unset
+expect state parked unset
+shot ui p_0a_hostel_spawn
+
+step 0b Hour 0: the clerk registers you (ID card, welcome pack, $100)
+stand Fit_saint_philippe_arrival_town_hall_clerk e2
+wait 1500
+shot ui p_0b_clerk_waypoint
+use LF_QuestAction Fit_saint_philippe_arrival_town_hall_clerk
+dialogue-wait choosing greet
+shot ui p_0b_clerk_greets
+# greet: reply 1 is "I'm new here" (reply 0 would be Goodbye). Each dialogue-choose waits for the reply list
+# on that node, presses the digit, and fails unless the scene is on the node named last afterwards.
+dialogue-choose greet 1 welcome_papers
+dialogue-choose welcome_papers 1 welcome_room
+dialogue-choose welcome_room 1 welcome_town
+# welcome_town: "Ready" hands in the register quest (ID card, $100, the starter car to the garage).
+dialogue-choose welcome_town 1 menu
+shot ui p_0b_welcome_pack
+input MenuBack
+dialogue-wait closed
+wait 3000
+expect cash =200
+expect state idcard set
+expect state quests ~arrival_register
+
+step 1a Hour 0: the starter car comes out of the garage
+stand Fit_saint_philippe_carlot_garage
+wait 1500
+shot ui p_1a_garage_waypoint
+use LF_VehicleRetrieveAction Fit_saint_philippe_carlot_garage
+wait 4000
+shot ui p_1a_car_out
+expect state parked set
+expect state quests ~arrival_garage
+
+step 1b Hour 1: the orchard, six apples
+stand Fit_saint_philippe_orchard_Place_OrchardTrees
+wait 2000
+shot ui p_1b_orchard
+use LF_GatherAction Fit_saint_philippe_orchard_orchard_apple_1
+wait 900
+use LF_GatherAction Fit_saint_philippe_orchard_orchard_apple_2
+wait 900
+use LF_GatherAction Fit_saint_philippe_orchard_orchard_apple_3
+wait 900
+use LF_GatherAction Fit_saint_philippe_orchard_orchard_apple_4
+wait 900
+use LF_GatherAction Fit_saint_philippe_orchard_orchard_apple_1
+wait 900
+use LF_GatherAction Fit_saint_philippe_orchard_orchard_apple_2
+wait 900
+use LF_GatherAction Fit_saint_philippe_orchard_orchard_apple_3
+wait 900
+use LF_GatherAction Fit_saint_philippe_orchard_orchard_apple_4
+wait 1500
+shot ui p_1b_apples_picked
+expect item Apple
+expect state quests ~arrival_apples
+
+step 1c Hour 1: the juicer presses two bottles
+stand Fit_saint_philippe_orchard_orchard_juicer
+wait 2000
+shot ui p_1c_juicer
+use LF_ProcessAction Fit_saint_philippe_orchard_orchard_juicer
+wait 6000
+use LF_ProcessAction Fit_saint_philippe_orchard_orchard_juicer
+wait 6000
+shot ui p_1c_juice_done
+expect item AppleJuice
+expect state quests ~arrival_juice
+
+step 2a Hour 2: the market trader buys the apples and the juice
+stand Fit_saint_philippe_market_market_trader
+wait 2000
+shot ui p_2a_market
+use LF_TraderSellAction Fit_saint_philippe_market_market_trader
+wait 2000
+use LF_TraderSellAction Fit_saint_philippe_market_market_trader
+wait 2000
+use LF_TraderSellAction Fit_saint_philippe_market_market_trader
+wait 2500
+shot ui p_2a_market_sold
+expect cash up
+expect state quests ~arrival_done
+
+step 2b Hour 2: the F2 file reads Errands done 5 / 5
+send playermenu open progress
+wait-text 5 / 5
+shot ui p_2b_f2_progress
+send playermenu open next
+wait 3000
+shot ui p_2b_f2_next
+send playermenu close
+wait 1000
+
+step 2c Hour 2: checkpoint 2 sets the hour-2 purse (the X-6 run goes on from here)
+send checkpoint 2
+wait 4000
+expect cash =60
+expect bank =2950
+
+# The garage has two pads: a car left out would block the next fresh character's starter car on the same
+# session (`spawn refused: no free pad for roadmap-garage`, #LF-Garage_PadBusy). `send park` stands in for
+# driving the car to the garage; the store action then frees the pad.
+step 2d Hour 2: drive the starter car back and store it in the garage
+send park
+wait 2000
+stand Fit_saint_philippe_carlot_garage
+wait 1500
+use LF_VehicleStoreAction Fit_saint_philippe_carlot_garage
+wait 3000
+shot ui p_2d_car_stored
+expect state parked unset
+expect state garage set
