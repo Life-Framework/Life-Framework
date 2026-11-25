@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "C733C18B579A7273"
+ components {
+  MeshObject "{EB61E2FD58E6647D}" {
+   Object "{4A6646A74DC7B489}Assets/Items/Store1989/CannedMeat/CannedMeat.xob"
+  }
+ }
+ coords 0 0 0
+}

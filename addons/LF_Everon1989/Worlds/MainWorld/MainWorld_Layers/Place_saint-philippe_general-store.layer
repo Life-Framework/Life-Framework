@@ -108,11 +108,6 @@ GenericEntity Fit_saint_philippe_general_store_general_store_radio : "{6E621E4B5
  angleY 171
 }
 GenericEntity Fit_saint_philippe_general_store_anchor_counter {
- components {
-  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
-   m_sAnchorId "counter"
-  }
- }
  coords 4513.059 15.494 10747.015
  angleY 171
 }
@@ -137,14 +132,255 @@ GenericEntity Fit_saint_philippe_general_store_general_store_alarm_box : "{CDE40
  angleY 171
 }
 GenericEntity Fit_saint_philippe_general_store_general_store_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4514.987 18.250 10748.075
+ coords 4514.987 18.25 10748.075
  angleY 171
 }
 GenericEntity Fit_saint_philippe_general_store_general_store_lamp_2 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4514.625 18.250 10743.968
+ coords 4514.625 18.25 10743.968
  angleY 171
 }
 GenericEntity Fit_saint_philippe_general_store_general_store_lamp_3 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
- coords 4519.407 18.250 10745.738
+ coords 4519.407 18.25 10745.738
  angleY 171
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b1_1 : "{BA8AFA2BBFDE918F}Prefabs/Props/Commercial/LF_ShelfGoods_CoffeeTin.et" {
+ coords 4517.468 16.161 10740.477
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b1_2 : "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et" {
+ coords 4517.441 16.089 10740.649
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b1_3 : "{9DD66E8B3652578E}Prefabs/Props/Commercial/LF_ShelfGoods_PickleJar.et" {
+ coords 4517.414 16.183 10740.818
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b1_4 : "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et" {
+ coords 4517.391 16.197 10740.964
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b1_5 : "{C2D56FE2D748921E}Prefabs/Props/Commercial/LF_ShelfGoods_Crackers.et" {
+ coords 4517.361 16.093 10741.157
+ angleY -99
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b1_6 : "{E9A105EFCA89A2FD}Prefabs/Props/Commercial/LF_ShelfGoods_CannedMeat.et" {
+ coords 4517.327 16.123 10741.371
+ angleY -9
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b1_7 : "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et" {
+ coords 4517.299 16.089 10741.549
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b2_1 : "{E9A105EFCA89A2FD}Prefabs/Props/Commercial/LF_ShelfGoods_CannedMeat.et" {
+ coords 4517.459 16.616 10740.536
+ angleY -9
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b2_2 : "{7E79D7AAABB59880}Prefabs/Props/Commercial/LF_ShelfGoods_SodaBottle.et" {
+ coords 4517.429 16.582 10740.726
+ angleY -99
+ scale 0.85
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b2_3 : "{00F91B36422DB578}Prefabs/Props/Commercial/LF_ShelfGoods_TinCanB.et" {
+ coords 4517.399 16.582 10740.915
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b2_4 : "{4889BEEF366C19EA}Prefabs/Props/Commercial/LF_ShelfGoods_CannedFish.et" {
+ coords 4517.37 16.604 10741.1
+ angleY -9
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b2_5 : "{01C6483DD651584C}Prefabs/Props/Commercial/LF_ShelfGoods_WaterBottle.et" {
+ coords 4517.344 16.582 10741.259
+ angleY -99
+ scale 1.2
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b2_6 : "{F8F5DCF53925D3EB}Prefabs/Props/Commercial/LF_ShelfGoods_Chocolate.et" {
+ coords 4517.314 16.59 10741.454
+ angleY -9
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b3_2 : "{302BF3A4DC8A58BD}Prefabs/Props/Commercial/LF_ShelfGoods_Cigarettes.et" {
+ coords 4517.423 17.075 10740.764
+ angleY -99
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b3_3 : "{4F8D8A211A143C7F}Prefabs/Props/Commercial/LF_ShelfGoods_BeerBottle.et" {
+ coords 4517.399 17.076 10740.917
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b3_4 : "{BA8AFA2BBFDE918F}Prefabs/Props/Commercial/LF_ShelfGoods_CoffeeTin.et" {
+ coords 4517.375 17.146 10741.066
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w1_b3_7 : "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et" {
+ coords 4517.298 17.183 10741.553
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b1_1 : "{BA8AFA2BBFDE918F}Prefabs/Props/Commercial/LF_ShelfGoods_CoffeeTin.et" {
+ coords 4517.24 16.161 10741.913
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b1_2 : "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et" {
+ coords 4517.213 16.089 10742.085
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b1_3 : "{9DD66E8B3652578E}Prefabs/Props/Commercial/LF_ShelfGoods_PickleJar.et" {
+ coords 4517.186 16.183 10742.254
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b1_4 : "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et" {
+ coords 4517.163 16.197 10742.4
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b1_6 : "{E9A105EFCA89A2FD}Prefabs/Props/Commercial/LF_ShelfGoods_CannedMeat.et" {
+ coords 4517.098 16.123 10742.807
+ angleY -9
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b1_7 : "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et" {
+ coords 4517.07 16.089 10742.985
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b2_1 : "{E9A105EFCA89A2FD}Prefabs/Props/Commercial/LF_ShelfGoods_CannedMeat.et" {
+ coords 4517.231 16.616 10741.972
+ angleY -9
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b2_2 : "{7E79D7AAABB59880}Prefabs/Props/Commercial/LF_ShelfGoods_SodaBottle.et" {
+ coords 4517.2 16.582 10742.162
+ angleY -99
+ scale 0.85
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b2_3 : "{00F91B36422DB578}Prefabs/Props/Commercial/LF_ShelfGoods_TinCanB.et" {
+ coords 4517.171 16.582 10742.35
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b2_6 : "{F8F5DCF53925D3EB}Prefabs/Props/Commercial/LF_ShelfGoods_Chocolate.et" {
+ coords 4517.085 16.59 10742.89
+ angleY -9
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b3_2 : "{302BF3A4DC8A58BD}Prefabs/Props/Commercial/LF_ShelfGoods_Cigarettes.et" {
+ coords 4517.194 17.075 10742.2
+ angleY -99
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b3_3 : "{4F8D8A211A143C7F}Prefabs/Props/Commercial/LF_ShelfGoods_BeerBottle.et" {
+ coords 4517.17 17.076 10742.353
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b3_6 : "{9DD66E8B3652578E}Prefabs/Props/Commercial/LF_ShelfGoods_PickleJar.et" {
+ coords 4517.093 17.169 10742.842
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w2_b3_7 : "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et" {
+ coords 4517.07 17.183 10742.989
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w3_b1_6 : "{E9A105EFCA89A2FD}Prefabs/Props/Commercial/LF_ShelfGoods_CannedMeat.et" {
+ coords 4512.965 16.123 10748.476
+ angleY -99
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w3_b1_7 : "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et" {
+ coords 4512.787 16.089 10748.448
+ angleY 171
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w3_b2_2 : "{7E79D7AAABB59880}Prefabs/Props/Commercial/LF_ShelfGoods_SodaBottle.et" {
+ coords 4513.61 16.582 10748.578
+ angleY 171
+ scale 0.85
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w3_b2_3 : "{00F91B36422DB578}Prefabs/Props/Commercial/LF_ShelfGoods_TinCanB.et" {
+ coords 4513.421 16.582 10748.548
+ angleY 171
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w3_b2_6 : "{F8F5DCF53925D3EB}Prefabs/Props/Commercial/LF_ShelfGoods_Chocolate.et" {
+ coords 4512.882 16.59 10748.463
+ angleY -99
+ scale 1.4
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w3_b3_2 : "{302BF3A4DC8A58BD}Prefabs/Props/Commercial/LF_ShelfGoods_Cigarettes.et" {
+ coords 4513.571 17.075 10748.572
+ angleY 171
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w3_b3_3 : "{4F8D8A211A143C7F}Prefabs/Props/Commercial/LF_ShelfGoods_BeerBottle.et" {
+ coords 4513.418 17.076 10748.548
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w3_b3_6 : "{9DD66E8B3652578E}Prefabs/Props/Commercial/LF_ShelfGoods_PickleJar.et" {
+ coords 4512.929 17.169 10748.47
+ angleY 171
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w3_b3_7 : "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et" {
+ coords 4512.783 17.183 10748.447
+ angleY 171
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w5_b1_3 : "{9DD66E8B3652578E}Prefabs/Props/Commercial/LF_ShelfGoods_PickleJar.et" {
+ coords 4509.647 16.183 10746.597
+ angleY 81
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w5_b1_4 : "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et" {
+ coords 4509.67 16.197 10746.451
+ angleY 81
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w5_b1_7 : "{CF59FDE1CB3A8623}Prefabs/Props/Commercial/LF_ShelfGoods_TinCan.et" {
+ coords 4509.762 16.089 10745.866
+ angleY 81
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w5_b2_2 : "{7E79D7AAABB59880}Prefabs/Props/Commercial/LF_ShelfGoods_SodaBottle.et" {
+ coords 4509.632 16.582 10746.689
+ angleY 81
+ scale 0.85
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w5_b2_3 : "{00F91B36422DB578}Prefabs/Props/Commercial/LF_ShelfGoods_TinCanB.et" {
+ coords 4509.662 16.582 10746.5
+ angleY 81
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w5_b3_2 : "{302BF3A4DC8A58BD}Prefabs/Props/Commercial/LF_ShelfGoods_Cigarettes.et" {
+ coords 4509.638 17.075 10746.65
+ angleY 81
+ scale 1.5
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w5_b3_3 : "{4F8D8A211A143C7F}Prefabs/Props/Commercial/LF_ShelfGoods_BeerBottle.et" {
+ coords 4509.662 17.076 10746.497
+ angleY 81
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w5_b3_4 : "{BA8AFA2BBFDE918F}Prefabs/Props/Commercial/LF_ShelfGoods_CoffeeTin.et" {
+ coords 4509.686 17.146 10746.349
+ angleY 81
+ scale 1.3
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_host_w5_b3_7 : "{0E8E11881BD65BCB}Prefabs/Props/Commercial/LF_ShelfGoods_MilkBottle.et" {
+ coords 4509.763 17.183 10745.862
+ angleY 81
+ scale 1.3
 }

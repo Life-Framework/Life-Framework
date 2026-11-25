@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "50E659259276DB8B"
+ components {
+  MeshObject "{23413FCCFD84E165}" {
+   Object "{1B98D6F1E0135F12}Assets/Props/Civilian/SodaBottle_01/SodaBottle_01.xob"
+  }
+ }
+ coords 0 0 0
+}

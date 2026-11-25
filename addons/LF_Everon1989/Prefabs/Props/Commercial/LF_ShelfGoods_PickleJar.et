@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "DF90BD4C35FC514B"
+ components {
+  MeshObject "{B4E9A37F234556AE}" {
+   Object "{849C48833EFCFDD4}Assets/Items/Store1989/PickleJar/PickleJar.xob"
+  }
+ }
+ coords 0 0 0
+}
