@@ -19,7 +19,7 @@ GenericEntity Fit_saint_philippe_pond_spot : "{E8C5BD1716B703E0}Prefabs/Systems/
    m_fRegrowSeconds 90
   }
  }
- coords 4670.999 12.533 10504.005
+ coords 4690.964 15.44 10507.025
  angleY -156
 }
 GenericEntity Fit_saint_philippe_pond_bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {

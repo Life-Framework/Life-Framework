@@ -24,13 +24,13 @@
         27.26
       ],
       "max": [
-        -46.69,
-        41.93
+        -62.76,
+        35.95
       ]
     },
     "front": null,
     "counters": [],
-    "adapt": "Spring Pond lies 62 m from the barn b64, which is only the anchor (the kit keeps the barn's own yaw). The pond is a lake shape whose surface is 15.0 m, 2.5 m above its bed at the centre: the fishing spot marker (table pond, radius 22 m) stands at the pond centre on the bed, and the rest is on the east bank, whose shore line runs north-south at x about 4690.7. A vanilla wooden pier (Pier_Wood_Long_01, 9.2 m, long axis east-west) is the jetty: its east end rests on the bank and its deck is 0.3 m above the water (mount free, y 2.75 under the barn's ground). A street bench on the bank south of the jetty faces the water, and a pole plate sign (id spring-pond) stands north of the jetty facing the road. Rows are rigid: shift, never stretch."
+    "adapt": "Spring Pond lies 62 m from the barn b64, which is only the anchor (the kit keeps the barn's own yaw). The pond is a lake shape whose surface is 15.0 m, 2.5 m above its bed at the centre: the fishing spot marker (table pond, radius 22 m) stands on the east bank at the water's edge, between the jetty root and the bench (it was on the bed, under the water), and the rest is on the east bank, whose shore line runs north-south at x about 4690.7. A vanilla wooden pier (Pier_Wood_Long_01, 9.2 m, long axis east-west) is the jetty: its east end rests on the bank and its deck is 0.3 m above the water (mount free, y 2.75 under the barn's ground). A street bench on the bank south of the jetty faces the water, and a pole plate sign (id spring-pond) stands north of the jetty facing the road. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -41,9 +41,9 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -46.69,
+        -63.7,
         0,
-        41.93
+        31.05
       ],
       "yaw": 0,
       "config": [
