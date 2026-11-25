@@ -75,3 +75,11 @@ GenericEntity Fit_saint_philippe_newsagent_anchor_counter {
  coords 4436.86 11.95 10690.71
  angleY -168
 }
+GenericEntity Fit_saint_philippe_newsagent_newsagent_lamp_1 : "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et" {
+ coords 4437 14.55 10691.4
+ angleY -5
+}
+GenericEntity Fit_saint_philippe_newsagent_newsagent_fill_1 : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 4437.386 14.4 10690.43
+ angleY -5
+}

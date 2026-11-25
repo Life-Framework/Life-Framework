@@ -200,6 +200,38 @@
           "blocks": []
         }
       ]
+    },
+    {
+      "id": "newsagent-lamp-1",
+      "name": "Newsagent_Lamp_1",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        0,
+        2.65,
+        0
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "newsagent-fill-1",
+      "name": "Newsagent_Fill_1",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        0.3,
+        2.5,
+        -1
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
     }
   ],
   "stamp": {
