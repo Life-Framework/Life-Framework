@@ -95,6 +95,7 @@ export function checkReloadBoot(text) {
 // gated to the save boot and nothing noticed when the reload boot stopped finding it).
 export const RESTART_PROOFS = [
   { cls: "LF_Test_CargoBedPersist", what: "cargo bed truck keeps its logs (#3266)", text: "[LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with N unit(s) on its bed", line: /\[LFDebug:Cargo\] e2e restart: e2e-cargo-bed-truck collected with [1-9]\d* unit\(s\) on its bed/ },
+  { cls: "LF_Test_WorkplaceJobRestart", what: "a desk job taken at a workplace survives a restart (#4959)", text: "[LFDebug:Jobs] e2e restart: test-workplacejob-e2e is still a MINER", line: /\[LFDebug:Jobs\] e2e restart: test-workplacejob-e2e is still a MINER/ },
   { cls: "LF_Test_ParkedCarRestart", what: "one locked parked car per marker after a restart (#4122)", text: "[LFDebug:ParkedCar] e2e restart: 1 car(s) at spot A, 1 at spot B", line: /\[LFDebug:ParkedCar\] e2e restart: 1 car\(s\) at spot A, 1 at spot B/ },
 ];
 

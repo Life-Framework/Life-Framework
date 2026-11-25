@@ -1,0 +1,15 @@
+{
+  "section": "workplacejobs",
+  "class": "LF_WorkplaceJobsSavePayload",
+  "version": 1,
+  "roots": "LF_WorkplaceJobRow",
+  "records": {
+    "LF_WorkplaceJobRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sPlayerUid",
+        "string m_sJob"
+      ]
+    }
+  }
+}

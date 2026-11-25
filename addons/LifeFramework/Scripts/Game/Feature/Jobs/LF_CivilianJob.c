@@ -228,6 +228,7 @@ class LF_CivilianJob
 		LF_ReputationContracts.Forget(playerUid);
 		LF_ReputationPay.Forget(playerUid);
 		LF_JobLevels.ForgetJob(playerUid, LF_JobLevels.JOB_DELIVERY);
+		LF_WorkplaceJobs.Forget(playerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -710,6 +711,8 @@ class LF_CivilianJob
 		LF_JobWorker worker = Worker(playerUid);
 		worker.m_eJob = job;
 		worker.m_bSignedUp = true;
+		// The newer job wins: a desk job taken earlier does not come back after a restart (#4959).
+		LF_WorkplaceJobs.Forget(playerUid);
 		LF_Debug.Log("Jobs", string.Format("signed up %1 -> %2 (level %3)", playerUid, typename.EnumToString(LF_EJobType, job), GetLevel(playerUid)));
 		return true;
 	}
