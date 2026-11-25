@@ -232,25 +232,9 @@
       "role": "light",
       "verb": "on floor",
       "offset": [
-        -3,
-        2.6,
-        0.4
-      ],
-      "yaw": 0,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "fuel-lamp-2",
-      "name": "Fuel_Lamp_2",
-      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
-      "role": "light",
-      "verb": "on floor",
-      "offset": [
-        2,
-        2.6,
-        0.4
+        -4,
+        2.55,
+        1
       ],
       "yaw": 0,
       "free": true,
@@ -264,9 +248,9 @@
       "role": "light",
       "verb": "on floor",
       "offset": [
-        -4.6,
-        2.5,
-        -0.2
+        -4.3,
+        2.4,
+        -0.6
       ],
       "yaw": 0,
       "free": true,
@@ -280,9 +264,9 @@
       "role": "light",
       "verb": "on floor",
       "offset": [
-        0,
-        2.5,
-        1.2
+        -4,
+        2.4,
+        1.6
       ],
       "yaw": 0,
       "free": true,
@@ -296,9 +280,9 @@
       "role": "light",
       "verb": "on floor",
       "offset": [
-        4.5,
-        2.5,
-        0.4
+        0.5,
+        2.4,
+        -1
       ],
       "yaw": 0,
       "free": true,
