@@ -5,8 +5,8 @@
 //! sell (2026-11-22). Police and medic desks keep the punch clock (LF_DutyAction); delivery jobs keep
 //! their counters (LF_JobSignUpAction). Server decides: the same standing gate as the counter and the
 //! job dialogue (LF_JobStandingGate), then LF_PlayerJobComponent.SetJob with no free job kit (the tools are bought at the tills), every outcome logged.
-//! The job lives on the body (LF_PlayerJobComponent), as the delivery counter's does for the body: a
-//! respawn starts unemployed in these jobs, and the desk takes the player back on.
+//! The job lives on the body (LF_PlayerJobComponent); LF_WorkplaceJobs keeps which one the player took
+//! (the "workplacejobs" save section, #4959), so a respawn and a restart give it back.
 class LF_WorkplaceJob
 {
 	static const string FEATURE = "Jobs";
@@ -69,6 +69,7 @@ class LF_WorkplaceJob
 				return -1;
 			}
 
+			LF_WorkplaceJobs.Forget(uid);
 			LF_Debug.Info(FEATURE, string.Format("%1 quit %2 at the desk", uid, jobName));
 			return LF_EJobType.UNEMPLOYED;
 		}
@@ -88,6 +89,7 @@ class LF_WorkplaceJob
 			return -1;
 		}
 
+		LF_WorkplaceJobs.Note(uid, deskJob);
 		LF_Debug.Info(FEATURE, string.Format("%1 took %2 at the desk", uid, jobName));
 		return deskJob;
 	}

@@ -401,6 +401,8 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		// The signed-up delivery job (kept across death and restarts) goes on the new body. After the
 		// hand-over: the job component reads the player id from the body its player controls.
 		LF_CivilianJob.ApplySignUpToCharacter(LF_Utils.GetPlayerUID(playerId), character);
+		// A gathering job taken at a desk after the sign-up is the newer one (#4959).
+		LF_WorkplaceJobs.ApplyToCharacter(LF_Utils.GetPlayerUID(playerId), character);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -426,6 +428,8 @@ class LF_SpawnLogic : SCR_SpawnLogic
 		// The saved delivery sign-up loads while nobody is connected, so it found no body then (#3353).
 		// Put the job and the career level on this one, as a fresh spawn does; both are idempotent.
 		LF_CivilianJob.ApplySignUpToCharacter(uid, body);
+		// Then the gathering job the player took at a desk, the newer one (#4959): a miner stays a miner.
+		LF_WorkplaceJobs.ApplyToCharacter(uid, body);
 		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(body);
 		if (jobs)
 			jobs.PullCareerFor(uid);

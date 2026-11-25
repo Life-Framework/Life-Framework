@@ -352,9 +352,15 @@ class LF_PlayerJobComponent : ScriptComponent
 			}
 		}
 
-		return SetJob(jobType);
+		if (!SetJob(jobType))
+			return false;
+
+		// The saved desk job follows the switch (#4959): a gathering job is recorded, any other job (off
+		// duty, police, medic, a delivery job) clears it, so a stale miner record never comes back later.
+		LF_WorkplaceJobs.Note(LF_Utils.GetPlayerUID(owner), jobType);
+		return true;
 	}
-	
+
 	//------------------------------------------------------------------------------------------------
 	//! Get current job type
 	LF_EJobType GetJob()
