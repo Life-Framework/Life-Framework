@@ -1,6 +1,6 @@
 {
  "place": "saint-philippe",
- "at": "2026-11-21",
+ "at": "2026-11-25",
  "glows": {
   "Glow_sp_b03_0": {
    "x": 4460.61,
@@ -257,6 +257,36 @@
    "y": 10,
    "ty": 10,
    "on": "Eden"
+  },
+  "Lamp_front_bank": {
+   "y": 12.05,
+   "ty": 11.88,
+   "on": "AsphaltPavement_01_Narrow_4m_A"
+  },
+  "Lamp_front_pharmacy": {
+   "y": 9.2,
+   "ty": 9.05,
+   "on": "AsphaltPavement_01_Narrow_4m_A"
+  },
+  "Lamp_front_furniture": {
+   "y": 16.22,
+   "ty": 16.22,
+   "on": "Eden"
+  },
+  "Lamp_front_garage": {
+   "y": 20.83,
+   "ty": 20.83,
+   "on": "Eden"
+  },
+  "Lamp_front_carlot": {
+   "y": 15.65,
+   "ty": 15.65,
+   "on": "Eden"
+  },
+  "Lamp_front_busstop_b32": {
+   "y": 17.28,
+   "ty": 17.28,
+   "on": "Eden"
   }
  },
  "rejected": [
@@ -271,6 +301,10 @@
   [
    4485.5,
    10717.23
+  ],
+  [
+   4553.78,
+   10755.1
   ]
  ]
 }
