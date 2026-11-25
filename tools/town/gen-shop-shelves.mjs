@@ -74,7 +74,7 @@ export function obstaclesOf(text) {
 
 // One board's rows: goods packed along `len`, the leftover split at both ends; spots over an obstacle are dropped.
 export function boardRows(shop, unit, board, start, obstacles) {
-  const gap = shop.gap ?? GAP; // metres between two goods on a board (a shop may ask for more)
+  const gap = unit.gap ?? shop.gap ?? GAP; // metres between two goods on a board (a shop, or one unit, may ask for more)
   const kinds = [];
   let used = 0;
   for (let i = 0; i < shop.cycle.length * 2; i++) {
@@ -167,8 +167,9 @@ export async function plan(name) {
   const rows = [];
   let n = 0;
   for (const k of Object.keys(G)) GUIDS[k] = guidOf(G[k].file);
-  for (const unit of units) {
-    for (const b of [1, 2, 3]) {
+  for (const base of units) {
+    const unit = { ...base, ...(shop.tune?.[base.id] ?? {}) }; // `tune`: per unit `gap` (metres between goods) and `boards` (which of 1 to 3 are stocked)
+    for (const b of unit.boards ?? [1, 2, 3]) {
       const made = boardRows(shop, unit, b, (n++ * 5) % shop.cycle.length, obstacles);
       if (!(shop.dropUnits ?? []).includes(unit.id)) rows.push(...made.filter((r) => !(shop.dropRows ?? []).includes(r.id)));
     }

@@ -34,11 +34,27 @@ const hostUnits = [
   { id: "hn2", at: [5.547, -2.43], yaw: -90, len: 0.85, kind: "narrow", boardY: { 1: 0.792, 2: 1.289, 3: 1.778 } },
 ];
 
+// The host's two double-sided gondola islands (ShelfShop_01 at 2.1, 5.4 and 2.1, 2.9: a pair back to back each, yaw 0 and 180, 0.47 m between
+// their boards), bare until now and the first thing the door shows. Boards as g1 (same model, same floor); the board middle is 0.22 in front of
+// the origin and 0.025 along it. The cell holds at most 150 entities (the audit's budget), so the islands carry two boards, spaced.
+const BOARDS = { 1: 0.629, 2: 1.021, 3: 1.378 };
+const islands = [
+  { id: "i1", at: [2.124, 5.627], yaw: 0, len: 2.0, kind: "gondola", boardY: BOARDS },
+  { id: "i2", at: [2.129, 5.153], yaw: 180, len: 2.0, kind: "gondola", boardY: BOARDS },
+  { id: "i3", at: [2.124, 3.153], yaw: 0, len: 2.0, kind: "gondola", boardY: BOARDS },
+  { id: "i4", at: [2.128, 2.679], yaw: 180, len: 2.0, kind: "gondola", boardY: BOARDS },
+];
+
 export const shop = {
   kit: "tools/town/kits/gun-counter.json",
   prefix: "gun-counter-host",
   furniture: "Prefabs/Buildings/GunStore/Furniture/GunStore_furniture_01.et",
-  extraUnits: [g1, n1, ...hostUnits],
+  extraUnits: [g1, n1, ...hostUnits, ...islands],
+  // Spread the wall units wider so the islands fit the same cell budget.
+  tune: {
+    i1: { gap: 0.3, boards: [1, 2] }, i2: { gap: 0.3, boards: [1, 2] }, i3: { gap: 0.3, boards: [1, 2] }, i4: { gap: 0.3, boards: [1, 2] },
+    h1: { gap: 0.2 }, h3: { gap: 0.2 }, h2: { gap: 0.25 }, hn2: { gap: 0.3 }, w1: { gap: 0.2 }, w2: { gap: 0.2 }, g1: { gap: 0.25 },
+  },
   // The shop's own furniture prefab stands none of its stock on the island host (it is the drugstore's), so nothing is in the way of w1 and w2.
   obstacles: [],
   cycle: ["AmmoBoxSmall", "HolsterPM", "MagM14", "Binoculars", "AmmoBoxBig", "HolsterM12", "MagVz58", "Optic4x20", "MagPouch", "OpticArt", "Flashlight", "MagPM"],
