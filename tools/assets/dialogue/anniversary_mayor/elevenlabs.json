@@ -53,6 +53,32 @@
       "request_id": "SpfNbDeJBYl4nsaarBfP",
       "seconds": 1.63,
       "mouth": "399973895298877663103335421111000"
+    },
+    "chairs": {
+      "hash": "ab5cc9a04002505f",
+      "date": "2026-11-26",
+      "voice_id": "CKPSX8kOS9MJCGVaFNok",
+      "voice_name": "Henri - French-American Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "The anniversary is tomorrow and the square is short of seats. Bring four chairs for the trestles.",
+      "chars": 97,
+      "chars_total": 39,
+      "request_id": "rCySerXNhDy1z7B5bmjD",
+      "seconds": 9.67,
+      "mouth": "33579656738843436755778636953014755667624889999711455545324534875302799999952368331123329999310121473134437981145542001000003579865576721159999411328777777524321016778861233375122534332212322000"
+    },
+    "flowers": {
+      "hash": "10b393a51f544da1",
+      "date": "2026-11-26",
+      "voice_id": "CKPSX8kOS9MJCGVaFNok",
+      "voice_name": "Henri - French-American Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "The tables want flowers before dusk tomorrow. Bring three potted plants from the shops.",
+      "chars": 87,
+      "chars_total": 35,
+      "request_id": "y6kuW4mv6dLuS5iG9gEj",
+      "seconds": 6.03,
+      "mouth": "3399319996999524687751116988889643125314874204887530026779848999533976652237861178256212464443311444464334542024420011000"
     }
   },
   "voice": {

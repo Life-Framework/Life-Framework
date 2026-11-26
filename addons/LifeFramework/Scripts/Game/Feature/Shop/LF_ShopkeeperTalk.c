@@ -59,6 +59,7 @@ class LF_ShopkeeperTalk
 //------------------------------------------------------------------------------------------------
 //! "Show me what you've got": offered by an NPC that keeps an open shop; after the talk closes the
 //! player's own screen opens the price list. Buying and selling still go through the till RPCs.
+// lf-spoken: #LF-Shopkeeper_ShowGoodsReply
 class LF_DialogueHook_OpenShop : LF_DialogueHook
 {
 	//------------------------------------------------------------------------------------------------

@@ -66,6 +66,19 @@
       "request_id": "vzle5JNEfP86R617z0Bx",
       "seconds": 1.18,
       "mouth": "498797316899663255443100"
+    },
+    "show_goods_reply": {
+      "hash": "d7a00c4c479fd6ed",
+      "date": "2026-11-26",
+      "voice_id": "ukUwdbHMYybjBQCOxbZ6",
+      "voice_name": "Nicolas Estrem - Mature",
+      "model": "eleven_multilingual_v2",
+      "text": "Take a look. Cash only.",
+      "chars": 23,
+      "chars_total": 9,
+      "request_id": "SfrzcXWZ7rmBDY3skg8p",
+      "seconds": 1.5,
+      "mouth": "2838999613210004695767655531000"
     }
   },
   "voice": {
