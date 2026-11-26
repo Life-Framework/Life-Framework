@@ -8,9 +8,9 @@ const Roadmap = () => {
     <>
       <PageHeader kicker="Roadmap" title="The Tree of Life">
         <p>
-          The plan is six milestones on GitHub, done in order. Each one ends with a public build and a filmed showcase, and the next
-          one's features wait until it is done. Below them, the Tree of Life sorts the same issues by topic. Find an open branch and
-          claim it.
+          The plan is a run of milestones on GitHub, from M1 onward. Some run side by side, and work that is merged but not yet
+          played by a person is marked "Built, not verified", never "Done". Below the milestones, the Tree of Life sorts the same
+          issues by topic. Find an open branch and claim it.
         </p>
       </PageHeader>
 
@@ -21,7 +21,7 @@ const Roadmap = () => {
         </div>
       </div>
 
-      <Section id="milestones" kicker="M1 to M6" title="The milestones">
+      <Section id="milestones" kicker="By milestone" title="The milestones">
         <div className="grid gap-8">
           <div className="grid gap-x-10 gap-y-4 muted md:grid-cols-2 lg:grid-cols-3 lg:items-start">
             <p>
@@ -30,8 +30,8 @@ const Roadmap = () => {
               prices, period look, vehicle catalogue, and story of 1989 Everon.
             </p>
             <p>
-              Today both live in one addon. M3 splits them into two Workshop items, the <code>LifeFramework</code> core and the{" "}
-              <code>LF_Everon1989</code> pack, so another community can swap our pack for their own and keep the core.
+              They are two addons: the <code>LifeFramework</code> core and the <code>LF_Everon1989</code> pack. Another community can
+              swap our pack for their own and keep the core.
             </p>
             <p>
               Each epic is a branch, with its sub-issues listed in build order. ✓ is done, ◐ has someone on it, ○ is open. An item shows a tag
