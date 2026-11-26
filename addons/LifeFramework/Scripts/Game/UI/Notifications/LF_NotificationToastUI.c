@@ -138,11 +138,13 @@ class LF_NotificationToastUI : ScriptedWidgetComponent
 	static float OpacityAt(float elapsedSeconds, float displaySeconds)
 	{
 		if (elapsedSeconds < FADE_SECONDS)
+			// lf-float: a 0..1 opacity fraction from a toast's elapsed seconds; float and a few seconds.
 			return Math.Clamp(0.25 + 0.75 * elapsedSeconds / FADE_SECONDS, 0, 1);
 
 		if (elapsedSeconds < displaySeconds)
 			return 1;
 
+		// lf-float: a 0..1 opacity fraction from a toast's elapsed seconds; float and a few seconds.
 		return Math.Clamp(1 - (elapsedSeconds - displaySeconds) / FADE_SECONDS, 0, 1);
 	}
 
