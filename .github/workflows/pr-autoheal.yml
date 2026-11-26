@@ -2,8 +2,8 @@
 # table, the language confs, debug-log-triage.md, the island baseline ...). GitHub runs no custom merge driver, so
 # every merge to main used to turn the other row-appending PRs CONFLICTING until an agent or `prs heal` merged main
 # in by hand. This job merges origin/main into each such PR with tools/merge/drivers.gitconfig, pushes the merge
-# commit, and dispatches validate on the branch (a GITHUB_TOKEN push starts no pull_request run; workflow_dispatch
-# does). Any other conflict is left alone. The script and its rules: tools/pr-autoheal.mjs.
+# commit, and approves the validate run GitHub parks for that bot push (action_required), so the PR's required check
+# reports and auto-merge goes ahead. Any other conflict is left alone. The script and its rules: tools/pr-autoheal.mjs.
 name: pr-autoheal
 
 on:
@@ -15,7 +15,7 @@ on:
 
 permissions:
   contents: write # push the merge commit to the PR branch
-  actions: write # dispatch validate on the healed head
+  actions: write # approve the parked validate run on the healed head
   pull-requests: read
 
 concurrency:

@@ -11,8 +11,10 @@
 //   3. Merge origin/BASE into the PR head with tools/merge/drivers.gitconfig included. A driver that fails
 //      leaves the PR alone.
 //   4. Push the merge commit (never forced: a push that lost a race with the agent is skipped).
-//   5. A push made with GITHUB_TOKEN starts no workflow, so the PR's required `validate` check would never
-//      report on the new head. workflow_dispatch is the documented exception: dispatch validate on the branch.
+//   5. GitHub parks the pull_request `validate` run a GITHUB_TOKEN push starts as `action_required` (the bot counts
+//      as a first-time contributor), so the required check never reports and auto-merge waits forever. Approve
+//      that run for the exact head this script pushed. A workflow_dispatch run does not help: its check suite is
+//      not linked to the PR and the PR stays BLOCKED (tested 2026-11-27, PR #5038).
 //
 // Env: GH_TOKEN, BASE (default main), HEAD_PREFIX (only heads starting with it, drafts included; the scratch experiment),
 // DRY_RUN=1 (report, push nothing). A PR labeled `no-autoheal` is skipped.
@@ -78,9 +80,36 @@ function healOne(pr, { base, drivers, dryRun }) {
   }
   const p = git(["push", "origin", `HEAD:refs/heads/${head}`]);
   if (p.status !== 0) return { pr, result: "skip", why: `push refused (the agent pushed, or a workflow file changed): ${p.stderr.trim().split("\n").slice(-2).join(" | ")}` };
-  const d = run("gh", ["workflow", "run", "validate.yml", "--ref", head, "-f", "all=false"]);
   const sha = git(["rev-parse", "HEAD"]).stdout.trim();
-  return { pr, result: "healed", why: paths.join(", "), sha, dispatched: d.status === 0 ? "validate dispatched" : `validate dispatch failed: ${d.stderr.trim()}` };
+  return { pr, result: "healed", why: paths.join(", "), sha };
+}
+
+// The pull_request runs on these heads that GitHub parked for approval. runs: the REST workflow-runs list.
+export function parkedRuns(runs, shas) {
+  const want = new Set(shas);
+  return runs.filter((r) => r.event === "pull_request" && want.has(r.head_sha) && r.conclusion === "action_required");
+}
+
+// Approve the parked runs on the heads this script pushed; GitHub creates them a few seconds after the push.
+// Bounded: about two minutes, then whatever is still missing is reported (`prs heal` or a re-ship covers it).
+function approveParked(shas, sleepMs = 10000, rounds = 12) {
+  const pending = new Set(shas);
+  const sleep = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  for (let i = 0; i < rounds && pending.size; i++) {
+    sleep(sleepMs);
+    for (const sha of [...pending]) {
+      const r = run("gh", ["api", `repos/{owner}/{repo}/actions/runs?head_sha=${sha}&event=pull_request`, "--jq", ".workflow_runs"]);
+      if (r.status !== 0) continue;
+      const all = JSON.parse(r.stdout || "[]");
+      for (const p of parkedRuns(all, [sha])) {
+        const a = run("gh", ["api", "-X", "POST", `repos/{owner}/{repo}/actions/runs/${p.id}/approve`]);
+        console.log(`  ${sha.slice(0, 9)}: ${a.status === 0 ? "approved" : "could not approve"} ${p.name} run ${p.id}${a.status === 0 ? "" : ` (${a.stderr.trim()})`}`);
+      }
+      // Done once a validate run exists for the head that is not parked (approved, queued, running or finished).
+      if (all.some((x) => x.head_sha === sha && x.name === "validate" && x.conclusion !== "action_required")) pending.delete(sha);
+    }
+  }
+  for (const sha of pending) console.log(`  ${sha.slice(0, 9)}: no running validate after ${(rounds * sleepMs) / 1000} s; prs heal or a re-ship covers it`);
 }
 
 function main() {
@@ -99,13 +128,15 @@ function main() {
   if (list.status !== 0) { console.log(`pr-autoheal: gh pr list failed: ${list.stderr.trim()}`); return 1; }
   const prs = candidates(JSON.parse(list.stdout), { headPrefix });
   let healed = 0;
+  const pushed = [];
   for (const pr of prs) {
     const r = healOne(pr, { base, drivers, dryRun });
     git(["checkout", "-q", "--force", "--detach", home]); // back to the workflow's own commit for the next PR
     if (r.result === "clean") continue;
-    if (r.result === "healed") healed++;
-    console.log(`#${pr.number} ${pr.headRefName}: ${r.result}${r.why ? ` (${r.why})` : ""}${r.sha ? ` head ${r.sha}` : ""}${r.dispatched ? `; ${r.dispatched}` : ""}`);
+    if (r.result === "healed") { healed++; pushed.push(r.sha); }
+    console.log(`#${pr.number} ${pr.headRefName}: ${r.result}${r.why ? ` (${r.why})` : ""}${r.sha ? ` head ${r.sha}` : ""}`);
   }
+  if (pushed.length) approveParked(pushed);
   console.log(`SUMMARY pr-autoheal ok base=${base} looked=${prs.length} healed=${healed}${dryRun ? " (dry run)" : ""}`);
   return 0;
 }
