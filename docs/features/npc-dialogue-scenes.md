@@ -1,4 +1,6 @@
-# NPC dialogue scenes (spike, 2026-11-13)
+# NPC dialogue scenes
+
+> **In short.** Talking to a character is a scene: the camera settles over your shoulder, the line shows as a caption at the bottom, and many of the lines are recorded voices. You pick a reply by number (1 to 4) or with up, down and confirm; 0 or Back says goodbye at any time. Voiced characters include the town clerk, the barkeeper, the fence, the coal yard clerk, the old man on the bench, the outpost quartermaster and guards, and a dispatcher voice on the police radio. Not every character is voiced yet, and the mouse cannot pick a row. This is in the current build and still being playtested. The rest of this page is the engineering record.
 
 ### `LF_Dialogue` / `LF_DialogueScene` — `Scripts/Game/Feature/Dialogue/`
 

@@ -20,8 +20,8 @@
     "footprint": {
       "source": "rows",
       "min": [
-        0.8,
-        -3.4
+        -1.6,
+        -4.6
       ],
       "max": [
         7.5,
@@ -92,6 +92,38 @@
       "wall": "free",
       "floor": "f0",
       "free": true
+    },
+    {
+      "id": "light",
+      "name": "RoadFuel_Light",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        2.4,
+        0,
+        -4.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "light-drop",
+      "name": "RoadFuel_Light_Drop",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -1.6,
+        0,
+        -3.9
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
     }
   ]
 }
