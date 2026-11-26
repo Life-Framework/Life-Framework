@@ -1,4 +1,4 @@
-// red-proof: 2026-11-15, `--tier perf` (PERF tier, 15 ref runs and repeats, 6 windows, cheapest cost over cheapest ref op, limits at 70 %): with the money publish tripled in the measured path (3 publishes per counted event, about 2.8x of the whole measure) 3 of 3 runs failed `perf money-event-us 42.1875 us/event over budget 26.52 (62 ref ops against 39, one ref op 680 ns)` (65 and 62 ref ops in the other two); restored, 3 of 3 passed with money-event-us at 18-19 ref ops against 39. The same plant at the old shared-suite settings failed only 2 runs of 3 (PR #1244: ref op 370-700 ns between runs, money-event baseline 21-44 of 56 ref ops), which is why this test left `fast` and `all`. Earlier: 2026-11-14, reference-op budgets: with the money publish tripled in the measured path, `perf-budget` failed `perf money-event-us 23.4375 us/event over budget 20.72 (63 ref ops against 56, one ref op 370 ns)` on this PC and `... 124.219 us/event over budget 89.6 (77 ref ops against 56, one ref op 1600 ns)` on lf-cloud. Observed 2026-11-11: with `m_iMaxMoneyEventUs 1` the run failed `perf money-event-us 33 us/event over budget 1` and exited 1.
+// red-proof: 2026-11-26, save-bytes-per-player (#4989 audit): `--tier perf` on main failed `perf save-bytes-per-player 1058 bytes/player over budget 1000`; the new section breakdown named `section-bytes-newspaper value=58614` (the Courier fact log, capped server-wide, never emptied for the per-player measure); with it emptied like the ledger and incident log the same run passed at 600 (newspaper 68 bytes). Earlier: 2026-11-15, `--tier perf` (PERF tier, 15 ref runs and repeats, 6 windows, cheapest cost over cheapest ref op, limits at 70 %): with the money publish tripled in the measured path (3 publishes per counted event, about 2.8x of the whole measure) 3 of 3 runs failed `perf money-event-us 42.1875 us/event over budget 26.52 (62 ref ops against 39, one ref op 680 ns)` (65 and 62 ref ops in the other two); restored, 3 of 3 passed with money-event-us at 18-19 ref ops against 39. The same plant at the old shared-suite settings failed only 2 runs of 3 (PR #1244: ref op 370-700 ns between runs, money-event baseline 21-44 of 56 ref ops), which is why this test left `fast` and `all`. Earlier: 2026-11-14, reference-op budgets: with the money publish tripled in the measured path, `perf-budget` failed `perf money-event-us 23.4375 us/event over budget 20.72 (63 ref ops against 56, one ref op 370 ns)` on this PC and `... 124.219 us/event over budget 89.6 (77 ref ops against 56, one ref op 1600 ns)` on lf-cloud. Observed 2026-11-11: with `m_iMaxMoneyEventUs 1` the run failed `perf money-event-us 33 us/event over budget 1` and exited 1.
 //! One row of the calibration workload in LF_Test_PerfBudget.
 class LF_PerfRefItem
 {
@@ -103,6 +103,34 @@ class LF_Test_PerfBudget : LF_Test
 		int shownRefNs = Math.Floor(m_fRefNs);
 		Say(string.Format("BENCH %1 value=%2 budget=%3 unit=%4 refOps=%5 maxRefOps=%6 refNs=%7", name, shownValue, shownLimit, unit, shownUsed, maxRef, shownRefNs));
 		ctx.True(used <= maxRef, string.Format("perf %1 %2 %3 over budget %4 (%5 ref ops against %6, one ref op %7 ns)", name, value, unit, limit, shownUsed, maxRef, m_fRefNs));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the save's bytes go: one `section-bytes-<name>` line per active section (the store minus the
+	//! store written without it) and `section-bytes-legacy` for the frozen positional payloads. A budget
+	//! miss names the section that grew.
+	protected void ReportSectionBytes(LF_PersistenceComponent persistence, int baseBytes)
+	{
+		array<string> all = {};
+		int sectionTotal = 0;
+		foreach (LF_SavePayload payload : LF_SaveSections.All())
+		{
+			if (!payload.IsActive())
+				continue;
+
+			all.Insert(payload.Name());
+			array<string> omit = {payload.Name()};
+			JsonSaveContext without = new JsonSaveContext(false);
+			LF_PersistenceComponentSerializer.SerializeStoreOmitting(persistence, without, omit);
+			int bytes = baseBytes - without.SaveToString().Length();
+			sectionTotal += bytes;
+			Report("section-bytes-" + payload.Name(), bytes, "bytes");
+		}
+
+		JsonSaveContext legacy = new JsonSaveContext(false);
+		LF_PersistenceComponentSerializer.SerializeStoreOmitting(persistence, legacy, all);
+		Report("section-bytes-legacy", legacy.SaveToString().Length(), "bytes");
+		Report("section-bytes-all-sections", sectionTotal, "bytes");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -366,13 +394,20 @@ class LF_Test_PerfBudget : LF_Test
 		Report("ledger-rows", LF_Ledger.Count(), "rows");
 		Report("incident-rows", LF_IncidentLog.Count(), "rows");
 
-		// What one character costs in the save: the same store with the two shared logs emptied.
+		// What one character costs in the save: the same store with the shared logs emptied. The Courier's
+		// fact log (section "newspaper", #4464) is one of them: the bus fills it from the crime and money above,
+		// and it is capped server-wide (LF_NewspaperEdition.MAX_FACTS facts, LF_NewspaperBackIssues.MAX_ISSUES
+		// editions; 58.6 KB with 128 players) and does not grow with the player count, so it is no per-player cost.
+		// Left in, it read as 458 bytes a player (1058 against 1000, the perf audit of PR #4989).
 		LF_Ledger.ApplyAll(null);
 		LF_IncidentLog.ApplyAll(null);
+		LF_NewspaperEdition.ForgetFacts();
+		LF_NewspaperBackIssues.ResetStatics();
 		JsonSaveContext baseContext = new JsonSaveContext(false);
 		LF_PersistenceComponentSerializer.SerializeStore(persistence, baseContext);
 		int baseBytes = baseContext.SaveToString().Length();
 		CheckBytes(ctx, "save-bytes-per-player", baseBytes / players, budget.m_iMaxSaveBytesPerPlayer, "bytes/player");
+		ReportSectionBytes(persistence, baseBytes);
 
 		// Money log at its retention cap: the steady state of a busy server. Fill it with rows
 		// of the same shape, then publish more.

@@ -186,7 +186,7 @@ StringTable {
     }
     CustomStringTableItem "{44D5E71018655F61}" {
      Id "LF-Activity_Medic_Pitch"
-     Target_en_us "Clock in at the clinic and answer calls for a wage. Casualty calls come in on the board while you are on duty."
+     Target_en_us "Clock in at the clinic and answer calls for a wage. Emergency calls come in on the board while you are on duty."
      Comment "Activity pitch, one line."
     }
     CustomStringTableItem "{A1503228206CA07A}" {
@@ -321,12 +321,12 @@ StringTable {
     }
     CustomStringTableItem "{8AA24D7948EBB5BF}" {
      Id "LF-Activity_Postal_Licence_Note"
-     Target_en_us "The van needs a driving license: get one at the license desk for $100."
+     Target_en_us "The van needs a driver's license: get one at the license desk for $100."
      Comment "Postal step note, one sentence. Skipped when held."
     }
     CustomStringTableItem "{DEC2262628F576DE}" {
      Id "LF-Activity_Postal_Licence_Title"
-     Target_en_us "Get a driving license"
+     Target_en_us "Get a driver's license"
      Comment "Postal step title."
     }
     CustomStringTableItem "{1E5B2469908D677D}" {
@@ -491,7 +491,7 @@ StringTable {
     }
     CustomStringTableItem "{494D3B2405DA9765}" {
      Id "LF-CasualtyCall_Dock"
-     Target_en_us "Docker down on the dock, crate fell on a leg"
+     Target_en_us "Dockworker down on the dock, crate fell on a leg"
      Comment "Casualty call summary on the medic board and pager (#4829): a hurt docker on the Saint-Philippe dock."
     }
     CustomStringTableItem "{2851E2B13741CE5C}" {
@@ -876,7 +876,7 @@ StringTable {
     }
     CustomStringTableItem "{C2B2AC304D6052FB}" {
      Id "LF-Dialogue_ClerkEveron_SettleFuel"
-     Target_en_us "Fuel runs are open to you now. Take a jerrycan job from the dispatch board and deliver it."
+     Target_en_us "Fuel runs are open to you now. Take a jerry can job from the dispatch board and deliver it."
      Comment "Pack patch of the clerk dialogue's line settle_fuel (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{13DD88E27207FBB3}" {
@@ -901,7 +901,7 @@ StringTable {
     }
     CustomStringTableItem "{847470DD455DE7B6}" {
      Id "LF-Dialogue_ClerkEveron_SettleWheels"
-     Target_en_us "Get your driving license at the town hall desk first, then buy any car at the car lot. The town board shows where it is."
+     Target_en_us "Get your driver's license at the town hall desk first, then buy any car at the car lot. The town board shows where it is."
      Comment "Pack patch of the clerk dialogue's line settle_wheels (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{66D17BEFEC6D7B97}" {
@@ -2131,7 +2131,7 @@ StringTable {
     }
     CustomStringTableItem "{3736E0D6C96857B0}" {
      Id "LF-Dialogue_HarbourMaster_ShipmentAsk"
-     Target_en_us "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?"
+     Target_en_us "That red crate on the pallet weighs eleven kilos over the manifest. I signed for canned fish. Would you count it for me?"
      Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
     }
     CustomStringTableItem "{BC6917D6F28F88CF}" {
@@ -2151,7 +2151,7 @@ StringTable {
     }
     CustomStringTableItem "{126E2D08A174D4AD}" {
      Id "LF-Dialogue_HarbourMaster_ShipmentThanksReport"
-     Target_en_us "You took it to the desk. Good. The town will sleep better, whatever the dockers say."
+     Target_en_us "You took it to the desk. Good. The town will sleep better, whatever the dockworkers say."
      Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
     }
     CustomStringTableItem "{61996AD6C64B434C}" {
@@ -2796,7 +2796,7 @@ StringTable {
     }
     CustomStringTableItem "{17E4C7B8C8E760FF}" {
      Id "LF-Dialogue_ResidentStoreClerk_AboutWork"
-     Target_en_us "Tins, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass."
+     Target_en_us "Cans, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass."
      Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
     }
     CustomStringTableItem "{B713054422C71238}" {
@@ -2821,7 +2821,7 @@ StringTable {
     }
     CustomStringTableItem "{86DEB827F5774B5E}" {
      Id "LF-Dialogue_ResidentStoreClerk_GreetRegular"
-     Target_en_us "My best customer! I put a tin of the good coffee aside for you."
+     Target_en_us "My best customer! I put a can of the good coffee aside for you."
      Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
     }
     CustomStringTableItem "{B1ED0C5D5934330F}" {
@@ -2976,7 +2976,7 @@ StringTable {
     }
     CustomStringTableItem "{1F9C08528FCD2960}" {
      Id "LF-Dialogue_RoleMechanicEveron_What"
-     Target_en_us "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a flat battery."
+     Target_en_us "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a dead battery."
      Comment "Pack patch of the role_mechanic dialogue's line what (voiced; tools/assets/dialogue/role_mechanic_everon). Changing it needs: tools\\cli asset dialogue role_mechanic_everon"
     }
     CustomStringTableItem "{67D6EE4A23585976}" {
@@ -4056,7 +4056,7 @@ StringTable {
     }
     CustomStringTableItem "{D02F5D225390E034}" {
      Id "LF-Handbook_Everon_LawAndOrderBody1"
-     Target_en_us "When an officer books you, they fill in a charge sheet at the booking desk in the police station. They tick each charge and sign it, and the sheet offers you the fine or the time. The paper is the record: what is on it is what you answer for."
+     Target_en_us "When an officer books you, they fill in a charge sheet at the booking desk in the police station. They check each charge and sign it, and the sheet offers you the fine or the time. The paper is the record: what is on it is what you answer for."
      Comment "Everon handbook page LawAndOrder, paragraph 1 (#4710)."
     }
     CustomStringTableItem "{7CBC65DCE88755D5}" {
@@ -4071,7 +4071,7 @@ StringTable {
     }
     CustomStringTableItem "{C7A7878B1A989B8B}" {
      Id "LF-Handbook_Everon_LawAndOrderBody4"
-     Target_en_us "Some road charges can get your driving license seized for a number of days. The license desk in the station porch turns you away until the days run out."
+     Target_en_us "Some road charges can get your driver's license seized for a number of days. The license desk in the station porch turns you away until the days run out."
      Comment "Everon handbook page LawAndOrder, paragraph 4 (#4710)."
     }
     CustomStringTableItem "{9D8B05786FC36FD7}" {
@@ -4301,7 +4301,7 @@ StringTable {
     }
     CustomStringTableItem "{043E558B24CB142C}" {
      Id "LF-Item_CannedFishDesc"
-     Target_en_us "A flat tin of sardines in oil. Open it with the pull ring."
+     Target_en_us "A flat can of sardines in oil. Open it with the pull ring."
      Comment "Item description: tinned sardines."
     }
     CustomStringTableItem "{1A7407C7026B2019}" {
@@ -4311,7 +4311,7 @@ StringTable {
     }
     CustomStringTableItem "{66474EA9E1485746}" {
      Id "LF-Item_CannedMeatDesc"
-     Target_en_us "A tin of corned beef. Heavy, salty, keeps for years."
+     Target_en_us "A can of corned beef. Heavy, salty, keeps for years."
      Comment "Item description: canned meat."
     }
     CustomStringTableItem "{228B558274FE0193}" {
@@ -4341,7 +4341,7 @@ StringTable {
     }
     CustomStringTableItem "{20A0BA389D7B7779}" {
      Id "LF-Item_CoffeeTinDesc"
-     Target_en_us "A tin of instant coffee. Stir a spoonful into hot water."
+     Target_en_us "A can of instant coffee. Stir a spoonful into hot water."
      Comment "Item description: instant coffee."
     }
     CustomStringTableItem "{E1BE7F6FF37D0EC9}" {
@@ -4736,7 +4736,7 @@ StringTable {
     }
     CustomStringTableItem "{CA4B6B802EFD710E}" {
      Id "LF-Lot_NeedsDrivingLicence"
-     Target_en_us "Not without a driving license. The town hall desk issues it for %1."
+     Target_en_us "Not without a driver's license. The town hall desk issues it for %1."
      Comment "Overrides the core row: the flagship's car lot refusal names the town hall licence desk (#3151). %1 is the fee."
     }
     CustomStringTableItem "{38CCD9128665A6C3}" {
@@ -5111,12 +5111,12 @@ StringTable {
     }
     CustomStringTableItem "{5E2A7C91B0D43F61}" {
      Id "LF-Market_BuyerFull"
-     Target_en_us "They have enough - try the wholesale warehouse at the dock. More in about %1 min."
+     Target_en_us "They have enough - a wholesale counter (the woodlot or the dock) still buys. More in about %1 min."
      Comment "Pack override of the core toast (#3599): the timber counter is full, the dock wholesale warehouse still buys. %1 = minutes."
     }
     CustomStringTableItem "{5E2A7C91B0D43F62}" {
      Id "LF-Market_BuyerNever"
-     Target_en_us "They have enough - try the wholesale warehouse at the dock."
+     Target_en_us "They have enough - a wholesale counter (the woodlot or the dock) still buys."
      Comment "Pack override of the core toast (#3599): a buyer that never refills."
     }
     CustomStringTableItem "{9C1E4A73D0B58F26}" {
@@ -5406,7 +5406,7 @@ StringTable {
     }
     CustomStringTableItem "{4B7A1E93C2D05F68}" {
      Id "LF-Place_SaintPhilippe"
-     Target_en_us "Saint Philippe"
+     Target_en_us "Saint-Philippe"
      Comment "Named place (#1943, town pass #1947): the map label dispatch reads for a robbery away from any sign; LF_NamedPlaces.Nearest."
     }
     CustomStringTableItem "{3F2132C5DE771A7C}" {
@@ -5636,7 +5636,7 @@ StringTable {
     }
     CustomStringTableItem "{6E07D3A5B533B63A}" {
      Id "LF-Quest_SettleFuel_Desc"
-     Target_en_us "Fuel runs are open to you now. Take a jerrycan job from the dispatch board and deliver it."
+     Target_en_us "Fuel runs are open to you now. Take a jerry can job from the dispatch board and deliver it."
      Comment "Settling-in chain step 2: one paid fuel run."
     }
     CustomStringTableItem "{233D2662DE4FBD92}" {
@@ -5686,7 +5686,7 @@ StringTable {
     }
     CustomStringTableItem "{A63268C6F419075E}" {
      Id "LF-Quest_SettleWheels_DescLicence"
-     Target_en_us "Get your driving license at the town hall desk first (00), then buy any car at the car lot. The town board shows where it is."
+     Target_en_us "Get your driver's license at the town hall desk first, then buy any car at the car lot. The town board shows where it is."
      Comment "Settling-in chain step 3 (#3151): the flagship's car lot asks for the driving licence, so the step says to get it first."
     }
     CustomStringTableItem "{71D42A3909D03894}" {
@@ -6421,7 +6421,7 @@ StringTable {
     }
     CustomStringTableItem "{C27AF568161F7892}" {
      Id "LF-Sign_BlackLake_How"
-     Target_en_us "Bring a rod and a bait tin, cast onto the water from the shore, and strike when the float dips"
+     Target_en_us "Bring a rod and a bait can, cast onto the water from the shore, and strike when the float dips"
      Comment "Sign card for the Black Lake plate, How section."
     }
     CustomStringTableItem "{468950476749EE18}" {
@@ -6536,7 +6536,7 @@ StringTable {
     }
     CustomStringTableItem "{CEB8C8C3972E0402}" {
      Id "LF-Sign_ClothingStore_What"
-     Target_en_us "The village clothing store: jackets, trousers, caps and boots, and a backpack."
+     Target_en_us "The village clothing store: jackets, pants, caps and boots, and a backpack."
      Comment "Sign card for the clothing store, What section."
     }
     CustomStringTableItem "{9F4BEADF5074C0BF}" {
@@ -6561,7 +6561,7 @@ StringTable {
     }
     CustomStringTableItem "{1DF3BFB27FDA81CC}" {
      Id "LF-Sign_CoalmansBrowMine_How"
-     Target_en_us "Take the miner job at the desk, buy a pickaxe at the supply counter beside it, swing at the big rust-red rocks (not the grey granite) and pick up the iron nuggets. Three nuggets make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
+     Target_en_us "Take the miner job at the desk, buy a pickaxe at the supply counter beside it, swing at the big rust-red rocks (not the gray granite) and pick up the iron nuggets. Three nuggets make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
      Comment "Sign card for the Coalman's Brow mine plate, How section."
     }
     CustomStringTableItem "{B30D7B3198E25E1E}" {
@@ -6791,7 +6791,7 @@ StringTable {
     }
     CustomStringTableItem "{8A3D51F7C20E64B9}" {
      Id "LF-Sign_EastRiseSeam_How"
-     Target_en_us "Swing a pickaxe at the black coal rocks (not the grey granite) and pick up the coal lumps. The dock's coal freighter takes coal on export orders."
+     Target_en_us "Swing a pickaxe at the black coal rocks (not the gray granite) and pick up the coal lumps. The dock's coal freighter takes coal on export orders."
      Comment "Sign card for the East Rise coal seam plate, How section."
     }
     CustomStringTableItem "{16C7E2B04D9A8F53}" {
@@ -6891,7 +6891,7 @@ StringTable {
     }
     CustomStringTableItem "{3018FA71B28E00A7}" {
      Id "LF-Sign_FarmPlots_Next"
-     Target_en_us "Sell cabbages at the general store on the main street."
+     Target_en_us "Sell cabbages at the market stalls on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
     }
     CustomStringTableItem "{7727C787985BD3E9}" {
@@ -6956,7 +6956,7 @@ StringTable {
     }
     CustomStringTableItem "{32CEDBEDFA32663E}" {
      Id "LF-Sign_FishermansBay_How"
-     Target_en_us "Bring a rod and a bait tin, cast onto the water from the beach, and strike when the float dips. Come at dusk for the bass."
+     Target_en_us "Bring a rod and a bait can, cast onto the water from the beach, and strike when the float dips. Come at dusk for the bass."
      Comment "Sign card for the Fisherman's Bay plate, How section."
     }
     CustomStringTableItem "{936E797B77A23A02}" {
@@ -6976,7 +6976,7 @@ StringTable {
     }
     CustomStringTableItem "{B36BFEC7627B930C}" {
      Id "LF-Sign_FuelDepot_Needs"
-     Target_en_us "A tanker truck and a driving license."
+     Target_en_us "A tanker truck and a driver's license."
      Comment "Sign card for the Montignac fuel depot, You need section."
     }
     CustomStringTableItem "{D7656097F74F86FF}" {
@@ -7256,7 +7256,7 @@ StringTable {
     }
     CustomStringTableItem "{E27A60C4195DB38F}" {
      Id "LF-Sign_HighstoneMine_How"
-     Target_en_us "Swing a pickaxe at the big rust-red rocks (not the grey granite) and pick up the iron nuggets. Smelt three nuggets into a bar at the furnace on Coalman's Brow; sell the bars at the iron counter in the dock wholesale warehouse."
+     Target_en_us "Swing a pickaxe at the big rust-red rocks (not the gray granite) and pick up the iron nuggets. Smelt three nuggets into a bar at the furnace on Coalman's Brow; sell the bars at the iron counter in the dock wholesale warehouse."
      Comment "Sign card for the Highstone mine plate, How section."
     }
     CustomStringTableItem "{5C1E7A93D20B4F68}" {
@@ -8101,7 +8101,7 @@ StringTable {
     }
     CustomStringTableItem "{F71E160D65C5338C}" {
      Id "LF-Sign_SpeedLimit100_What"
-     Target_en_us "The posted limit is 100 km/h on the open road. Officers with a radar gun check it from the lay-by."
+     Target_en_us "The posted limit is 100 km/h on the open road. Officers with a radar gun check it from the pull-off."
      Comment "Read card of the 100 km/h speed limit sign (card #4434)."
     }
     CustomStringTableItem "{CEE67BB33C9C4B39}" {
@@ -8111,7 +8111,7 @@ StringTable {
     }
     CustomStringTableItem "{230591BF3C6CC1C6}" {
      Id "LF-Sign_SpeedLimit30_What"
-     Target_en_us "The posted limit is 30 km/h near the markets and the village squares. Officers with a radar gun check it from the lay-by."
+     Target_en_us "The posted limit is 30 km/h near the markets and the village squares. Officers with a radar gun check it from the pull-off."
      Comment "Read card of the 30 km/h speed limit sign (card #4434)."
     }
     CustomStringTableItem "{B0D6C23589C23F33}" {
@@ -8121,12 +8121,12 @@ StringTable {
     }
     CustomStringTableItem "{9E57A1DB482CCDAF}" {
      Id "LF-Sign_SpeedLimit50_What"
-     Target_en_us "The posted limit is 50 km/h through the town streets. Officers with a radar gun check it from the lay-by."
+     Target_en_us "The posted limit is 50 km/h through the town streets. Officers with a radar gun check it from the pull-off."
      Comment "Read card of the 50 km/h speed limit sign (card #4434)."
     }
     CustomStringTableItem "{5F88AA844B7BCA38}" {
      Id "LF-Sign_SpringPond_How"
-     Target_en_us "Bring a rod and a bait tin, cast onto the water from the jetty or the bank, and strike when the float dips"
+     Target_en_us "Bring a rod and a bait can, cast onto the water from the jetty or the bank, and strike when the float dips"
      Comment "Sign card for the Spring Pond plate, How section."
     }
     CustomStringTableItem "{E3BA6C2EBFE96532}" {
@@ -8161,7 +8161,7 @@ StringTable {
     }
     CustomStringTableItem "{01D9AC4455F43C50}" {
      Id "LF-Sign_Supermarket_What"
-     Target_en_us "Groceries, drinks and the odd tin of dressings."
+     Target_en_us "Groceries, drinks and the odd can of dressings."
      Comment "Sign card for the supermarket, What section."
     }
     CustomStringTableItem "{DFA15542C4155B52}" {
@@ -8201,7 +8201,7 @@ StringTable {
     }
     CustomStringTableItem "{056E05DAE9CEB084}" {
      Id "LF-Sign_TimberYard_Next"
-     Target_en_us "Sell the planks to the lumberyard, or load a truck for the harbor."
+     Target_en_us "Sell the planks to the timber yard, or load a truck for the harbor."
      Comment "Sign card for the Saint-Philippe timber yard, Next section."
     }
     CustomStringTableItem "{2885C8350729DA74}" {

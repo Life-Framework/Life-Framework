@@ -98,6 +98,22 @@
       "floor": "f0"
     },
     {
+      "id": "lantern-glow",
+      "name": "Shore_Lantern_Glow",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on lantern",
+      "offset": [
+        -5.6,
+        0,
+        7.2
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
       "id": "sign",
       "name": "Shore_Sign",
       "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",

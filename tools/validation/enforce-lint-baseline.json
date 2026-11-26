@@ -1,53 +1,8 @@
 [
  {
-  "rule": "L1",
-  "file": "Scripts/Game/Feature/Character/Spawning/LF_SpawnLogic.c",
-  "text": "IEntity character = GetGame().SpawnEntityPrefab(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);"
- },
- {
-  "rule": "L1",
-  "file": "Scripts/Game/Tests/LF_Test_LoggingChain.c",
-  "text": "IEntity sawmill = GetGame().SpawnEntityPrefab(Resource.Load(SAWMILL), GetGame().GetWorld(), params);"
- },
- {
-  "rule": "L1",
-  "file": "Scripts/Game/Tests/LF_Test_LoggingChain.c",
-  "text": "IEntity tree = GetGame().SpawnEntityPrefab(Resource.Load(TREE), GetGame().GetWorld(), params);"
- },
- {
-  "rule": "L1",
-  "file": "Scripts/Game/Tests/LF_Test_MiningPrefabs.c",
-  "text": "IEntity area = GetGame().SpawnEntityPrefab(Resource.Load(MINING_AREA), GetGame().GetWorld(), params);"
- },
- {
-  "rule": "L1",
-  "file": "Scripts/Game/Tests/LF_Test_MiningPrefabs.c",
-  "text": "IEntity minable = GetGame().SpawnEntityPrefab(Resource.Load(MINABLE_ORE), GetGame().GetWorld(), params);"
- },
- {
-  "rule": "L1",
-  "file": "Scripts/Game/Tests/LF_Test_MiningPrefabs.c",
-  "text": "IEntity ore = GetGame().SpawnEntityPrefab(Resource.Load(COPPER_ORE), GetGame().GetWorld(), params);"
- },
- {
-  "rule": "L1",
-  "file": "Scripts/Game/Tests/LF_Test_MiningPrefabs.c",
-  "text": "IEntity pickaxe = GetGame().SpawnEntityPrefab(Resource.Load(PICKAXE), GetGame().GetWorld(), params);"
- },
- {
   "rule": "L3",
   "file": "Scripts/Game/Feature/AgentHarness/LF_AgentHarness.c",
   "text": "GetGame().GetCallqueue().CallLater(Poll, 400, true);"
- },
- {
-  "rule": "L4",
-  "file": "Scripts/Game/Core/LF_Utils.c",
-  "text": "protected static ref array<IEntity> s_aNearbyEntities = {};"
- },
- {
-  "rule": "L4",
-  "file": "Scripts/Game/Tests/LF_Test_Roadmap_Resources.c",
-  "text": "protected static ref array<IEntity> s_aBars = {};"
  },
  {
   "rule": "L9",

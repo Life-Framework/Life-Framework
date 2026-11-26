@@ -1,5 +1,7 @@
 # Character & Survival
 
+> **In short.** A lethal hit knocks you down instead of killing you, and you have a few minutes to be bandaged, revived by a medic or loaded into a car for the clinic. When a medic is on duty, hurt residents go down at work sites (the mine, the timber yard, the farm, the dock, a roadside stop) and show up as **medic calls** on the clinic's dispatch board, on the medic's pager and as marks on the map. A medic drives out, holds Treat the patient or carries the casualty to a clinic bed, and earns pay and medic experience for it; an untreated call leaves the board and the resident does not survive. This is built and in the current build; it is still being playtested. The rest of this page is the engineering record.
+
 ### `LF_SurvivalStats` — `Feature/Survival/LF_SurvivalStats.c`
 - ✅ Hunger and thirst clamped `[0,100]`. `Eat`/`Drink` are additive through
   clamped setters. `Create(id)` starts both at 100.
