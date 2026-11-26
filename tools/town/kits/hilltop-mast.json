@@ -198,7 +198,7 @@
       "verb": "on barrel",
       "offset": [
         -2.2,
-        0.9,
+        1.09,
         4.4
       ],
       "yaw": 0,
@@ -214,40 +214,8 @@
       "verb": "on mast-lamp-barrel",
       "offset": [
         -2.2,
-        1.18,
+        1.37,
         4.4
-      ],
-      "yaw": 0,
-      "class": "GenericEntity",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "mast-lamp-crate",
-      "name": "Mast_Lamp_Crate",
-      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
-      "role": "dressing",
-      "verb": "on crate-1",
-      "offset": [
-        3.1,
-        0.3,
-        8.2
-      ],
-      "yaw": 0,
-      "class": "GameEntity",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "mast-glow-crate",
-      "name": "Mast_Glow_Crate",
-      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
-      "role": "light",
-      "verb": "on mast-lamp-crate",
-      "offset": [
-        3.1,
-        0.58,
-        8.2
       ],
       "yaw": 0,
       "class": "GenericEntity",
