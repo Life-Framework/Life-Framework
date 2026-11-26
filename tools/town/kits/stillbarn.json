@@ -312,6 +312,9 @@
                      "yaw":  0,
                      "wall":  "+x",
                      "floor":  "f0"
-                 }
-             ]
+                 },
+        {"id":"barn-fill-w","name":"Barn_Fill_W","prefab":"{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et","role":"light","verb":"on floor","offset":[-5.9,1.5,-1],"yaw":0,"free":true,"wall":"free","floor":"f0"},
+        {"id":"barn-fill-e","name":"Barn_Fill_E","prefab":"{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et","role":"light","verb":"on floor","offset":[5.9,1.5,-2],"yaw":0,"free":true,"wall":"free","floor":"f0"},
+        {"id":"barn-fill-c","name":"Barn_Fill_C","prefab":"{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et","role":"light","verb":"on floor","offset":[0,2.4,-1.5],"yaw":0,"free":true,"wall":"free","floor":"f0"}
+    ]
 }
