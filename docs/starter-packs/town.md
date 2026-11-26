@@ -24,7 +24,8 @@ tools\cli town vegetation <place> <slot> [--write|--verify]   # open-ground slot
 tools\cli town check <place>                 # static kinds and claims; then audit placement --world MainWorld
 tools\cli town ready <state>                 # every place of the state passes, systems present, arrival route walks
 tools\cli look place:<place>/<slot>          # the slot on the island (MainWorld): wide, obliques, top, kit close-ups
-tools\cli look place:<place>/<slot> --interior auto   # its ground floor from inside
+tools\cli look place:<place>/<slot> --interior auto   # its ground floor from inside, at the slot's counter/desk/clerk row
+tools\cli look place:<place>/<slot> --interior <row>  # at one kit row (Fit_ name or suffix: lf_medic_duty_desk), any floor
 ```
 - **Pictures come from `look place:<place>/<slot>`** (docs/visual-testing.md "look place:"): it opens the pack's MainWorld
   and reads the viewpoint from the dossier and mapping. A plain area, `town:<area>` or `x,z` opens DebugWorld, where an

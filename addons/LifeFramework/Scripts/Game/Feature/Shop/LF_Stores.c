@@ -583,6 +583,7 @@ class LF_Stores
 		array<IEntity> staff = {};
 		StaffFor(store, key, staff);
 		foreach (IEntity npc : staff)
+			// lf-spoken: #LF-Store_ClerkThief
 			LF_Dialogue.Announce(npc, key);
 
 		return staff.Count();

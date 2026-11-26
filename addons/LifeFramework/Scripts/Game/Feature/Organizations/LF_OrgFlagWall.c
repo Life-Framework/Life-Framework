@@ -260,6 +260,7 @@ class LF_OrgFlagWall
 			if (!config || config.m_sId != REGISTRAR_DIALOGUE)
 				continue;
 
+			// lf-spoken: #LF-OrgFlagWall_Done #LF-OrgFlagWall_Same #LF-OrgFlagWall_NoGang #LF-OrgFlagWall_NotLeader #LF-OrgFlagWall_Held #LF-OrgFlagWall_Refused
 			LF_Dialogue.Announce(npc, MessageKey(result));
 			return;
 		}
