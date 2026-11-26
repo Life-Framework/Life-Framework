@@ -9,11 +9,11 @@
     "Workplace",
     "plant"
   ],
-  "rows": 12,
+  "rows": 19,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_eastcompound_smelter_Place"
   },
-  "date": "2026-11-24"
+  "date": "2026-11-26"
 }
