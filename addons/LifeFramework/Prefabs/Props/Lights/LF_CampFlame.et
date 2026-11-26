@@ -1,0 +1,26 @@
+ParticleEffectEntity {
+ ID "4F16159557422AF2"
+ components {
+  LF_NightLightComponent "{4677FF00C6225D46}" {
+   m_fHourOn 18
+   m_fHourOff 6
+   m_vColor 1 0.5 0.18
+   m_fLV 4
+   m_fRadius 10
+  }
+ }
+ {
+  LightEntity {
+   ID "542AC5DB4CA4ADC2"
+   coords 0 0 0
+   Color 1 0.5 0.18 1
+   LV 4
+   ClipEV -10
+   CastShadow 0
+   Radius 10
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+ }
+ EffectPath "{C0E2E7DC28B71E2C}Particles/Enviroment/Campfire_medium_normal.ptc"
+}

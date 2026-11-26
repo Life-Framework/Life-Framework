@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

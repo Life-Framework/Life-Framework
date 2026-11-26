@@ -232,3 +232,34 @@ GenericEntity Fit_outpost_north_camp_outpost_bed_wind : "{A8568D2A6C46B864}Prefa
  }
  coords 7661 16 8397
 }
+GameEntity Fit_outpost_north_camp_outpost_lamp_table : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 7655.9 16.83 8397.2
+}
+GenericEntity Fit_outpost_north_camp_outpost_glow_table : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 7655.9 17.05 8397.2
+}
+GenericEntity Fit_outpost_north_camp_outpost_stool_board : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 7658.1 16.06 8392.4
+ angleY -90
+}
+GameEntity Fit_outpost_north_camp_outpost_lamp_board : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 7658.1 16.56 8392.4
+}
+GenericEntity Fit_outpost_north_camp_outpost_glow_board : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 7658.1 16.84 8392.4
+}
+GameEntity Fit_outpost_north_camp_outpost_lamp_gate_s : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 7664.177 17.53 8388.691
+}
+GenericEntity Fit_outpost_north_camp_outpost_glow_gate_s : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 7664.177 17.81 8388.691
+}
+GameEntity Fit_outpost_north_camp_outpost_lamp_gate_n : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 7656.577 17.39 8388.691
+}
+GenericEntity Fit_outpost_north_camp_outpost_glow_gate_n : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 7656.577 17.67 8388.691
+}
+ParticleEffectEntity Fit_outpost_north_camp_outpost_flame_fire : "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et" {
+ coords 7661.48 16.37 8395.645
+}
