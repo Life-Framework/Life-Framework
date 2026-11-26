@@ -21,7 +21,7 @@
       "source": "rows",
       "min": [
         0.8,
-        -3.4
+        -4.6
       ],
       "max": [
         7.5,
@@ -92,6 +92,21 @@
       "wall": "free",
       "floor": "f0",
       "free": true
+    },
+    {
+      "id": "light",
+      "name": "RoadFuel_Light",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        2.4,
+        0,
+        -4.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }

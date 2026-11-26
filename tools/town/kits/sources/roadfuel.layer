@@ -24,3 +24,7 @@ GenericEntity Source_RoadFuel_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_S
  coords 7.5 0 -2
  angleY 90
 }
+// Night sweep 2026-11-27: the drop and the payphone stood in the dark, so a vanilla self-lit street lamp stands between them.
+GenericEntity Source_RoadFuel_Light : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 2.4 0 -4.6
+}

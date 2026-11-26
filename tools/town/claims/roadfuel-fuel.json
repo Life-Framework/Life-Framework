@@ -8,11 +8,11 @@
   "kinds": [
     "RoadFuel"
   ],
-  "rows": 3,
+  "rows": 4,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_roadfuel_fuel_Place"
   },
-  "date": "2026-11-19"
+  "date": "2026-11-26"
 }

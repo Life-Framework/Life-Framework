@@ -29,3 +29,7 @@ GenericEntity Fit_roadfuel_fuel_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF
  coords 5303.305 21.5 9837.288
  angleY 17
 }
+GenericEntity Fit_roadfuel_fuel_light : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 5304.301 0.187 9831.65
+ angleY -73
+}
