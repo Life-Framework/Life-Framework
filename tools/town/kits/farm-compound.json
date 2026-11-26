@@ -9,7 +9,8 @@
     "frame": "origin-entity",
     "also": [
       "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_slice_2685.layer",
-      "tools/town/kits/sources/farm-compound-centre.layer"
+      "tools/town/kits/sources/farm-compound-centre.layer",
+      "tools/town/kits/sources/farm-compound-night-props.txt"
     ]
   },
   "scope": "room",
@@ -360,6 +361,150 @@
       "wall": "free",
       "floor": "f0",
       "mount": "ground"
+    },
+    {
+      "id": "lamp-barrel-door",
+      "name": "Farm_Lamp_Barrel_Door",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -2.6,
+        0,
+        6.6
+      ],
+      "yaw": 20,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "lamp-barrel-flag",
+      "name": "Farm_Lamp_Barrel_Flag",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        5.2,
+        0,
+        9.3
+      ],
+      "yaw": 140,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "lamp-barrel-plate",
+      "name": "Farm_Lamp_Barrel_Plate",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -6.6,
+        0,
+        20.2
+      ],
+      "yaw": 260,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-lamp-door",
+      "name": "Farm_Lamp_Door",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on lamp-barrel-door",
+      "offset": [
+        -2.6,
+        0.9,
+        6.6
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-glow-door",
+      "name": "Farm_Glow_Door",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on farm-lamp-door",
+      "offset": [
+        -2.6,
+        1.18,
+        6.6
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-lamp-flag",
+      "name": "Farm_Lamp_Flag",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on lamp-barrel-flag",
+      "offset": [
+        5.2,
+        0.9,
+        9.3
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-glow-flag",
+      "name": "Farm_Glow_Flag",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on farm-lamp-flag",
+      "offset": [
+        5.2,
+        1.18,
+        9.3
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-lamp-plate",
+      "name": "Farm_Lamp_Plate",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on lamp-barrel-plate",
+      "offset": [
+        -6.6,
+        0.9,
+        20.2
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-glow-plate",
+      "name": "Farm_Glow_Plate",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on farm-lamp-plate",
+      "offset": [
+        -6.6,
+        1.18,
+        20.2
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }
