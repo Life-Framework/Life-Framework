@@ -1,2 +1,63 @@
+# Line endings: LF in the repo and in every checkout, whatever core.autocrlf says.
+# Agents patch files with node/sed/heredocs; CRLF working copies broke exact
+# string matches again and again. Enfusion, node and PowerShell all read LF.
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+# Workbench writes the language confs with CRLF; keep their bytes as generated.
+addons/LifeFramework/Language/*.conf -text
+addons/LF_Everon1989/Language/*.conf -text
 
+# Reforger / Enfusion binary assets - force Git to treat them as binary
+*.anm -text
+*.blend -text
+*.bterr -text
+*.dds -text
+*.edds -text
+*.fbx -text
+*.tif -text
+*.ttile -text
+*.txo -text
+*.wav -text
+*.xob -text
+*.png -text
+*.jpg -text
+*.webp -text
+*.gif -text
+*.ico -text
+*.woff2 -text
+
+# Rebase additions of keys, tests, feature rows, and triage rows. Drivers live in tools/merge/.
+addons/LifeFramework/Language/everonlife_localization.st merge=lf-string-table
+addons/LifeFramework/Language/everonlife_localization.*.conf merge=lf-regen-localization
+addons/LF_Everon1989/Language/lf_everon1989_localization.st merge=lf-string-table
+addons/LF_Everon1989/Language/lf_everon1989_localization.*.conf merge=lf-regen-localization
+docs/features.md merge=lf-markdown
+docs/features/*.md merge=lf-markdown
+docs/debug-log-triage.md merge=lf-markdown
+docs/architecture/events.md merge=lf-markdown
+tools/validation/enforce-lint-baseline.json merge=lf-lint-baseline
+
+# NOTE: Git LFS is NOT enabled yet. Binary assets are committed as plain blobs.
+# To migrate to LFS later (recommended once the repo is stable):
+#   git lfs track "*.edds" "*.tif" "*.fbx" "*.xob" "*.dds" "*.anm" "*.ttile" "*.bterr"
+#   git lfs migrate import --include="*.edds,*.tif,*.fbx,*.xob,*.dds,*.anm,*.ttile,*.bterr"
+docs/asset-inventory.md merge=lf-table-rows
+docs/playtest.md merge=lf-markdown
+website/content/gallery.json merge=lf-json-keys
+agent-box/areas.json merge=lf-json-keys
+*.wav -text
+# Append-only lists features add one line to: both sides' new lines are kept (tools/merge/merge-markdown.mjs).
+docs/architecture/core-pack-inventory.md merge=lf-markdown
+docs/decisions.md merge=lf-markdown
+# Per-area feature docs: sections features append (the ship queue never serializes on markdown).
+addons/*/Scripts/Game/Feature/*/Feature.md merge=lf-markdown
+
+# The credits source and what is generated from it: the string rows ride the string-table driver, the data file is regenerated (#4668).
+docs/credits.md merge=lf-markdown
+addons/LifeFramework/Scripts/Game/Feature/Credits/LF_CreditsData.c merge=lf-credits-data
+
+# Generated owner-config files: regenerated from the merged config classes (tools/merge/regen-config-schema.mjs).
+docs/config/config.schema.json merge=lf-regen-config-schema
+docs/config/config.example.json merge=lf-regen-config-schema
 tmp-merge-test/union.md merge=union
