@@ -127,3 +127,19 @@ SCR_DestructibleEntity Fit_montignac_depot_fence_11 : "{57873EAF69D5450E}Prefabs
  coords 4597.759 0 6995.485
  angleY 177
 }
+GameEntity Fit_montignac_depot_depot_lamp_drum : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 4614.969 159.198 7003.396
+ angleY -3
+}
+GenericEntity Fit_montignac_depot_depot_glow_drum : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 4614.969 159.478 7003.396
+ angleY -3
+}
+GameEntity Fit_montignac_depot_depot_lamp_pallet : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 4605.351 159.171 7005.395
+ angleY -3
+}
+GenericEntity Fit_montignac_depot_depot_glow_pallet : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 4605.351 159.451 7005.395
+ angleY -3
+}

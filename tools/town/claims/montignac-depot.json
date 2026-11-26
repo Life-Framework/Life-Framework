@@ -8,11 +8,11 @@
   "kinds": [
     "FuelDepot"
   ],
-  "rows": 25,
+  "rows": 29,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_montignac_depot_Place"
   },
-  "date": "2026-11-21"
+  "date": "2026-11-26"
 }

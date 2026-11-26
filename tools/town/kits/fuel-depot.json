@@ -94,7 +94,17 @@
       "yaw": 270,
       "class": "Vehicle",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_VehicleLockComponent",
+          "guid": "54D6FBC0EA806FE5",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "depot-load",
@@ -442,6 +452,70 @@
       ],
       "yaw": 180,
       "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "depot-lamp-drum",
+      "name": "Depot_Lamp_Drum",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on drum-blue-1",
+      "offset": [
+        1.6,
+        0.9,
+        -9
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "depot-glow-drum",
+      "name": "Depot_Glow_Drum",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on depot-lamp-drum",
+      "offset": [
+        1.6,
+        1.18,
+        -9
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "depot-lamp-pallet",
+      "name": "Depot_Lamp_Pallet",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on pallet-box",
+      "offset": [
+        -7.9,
+        0.9,
+        -6.5
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "depot-glow-pallet",
+      "name": "Depot_Glow_Pallet",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on depot-lamp-pallet",
+      "offset": [
+        -7.9,
+        1.18,
+        -6.5
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
       "wall": "free",
       "floor": "f0"
     }
