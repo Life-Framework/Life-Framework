@@ -67,7 +67,7 @@ import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAd
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
-import { cmdPrs, healMerge as healMergeSync } from "./prs.mjs";
+import { cmdPrs, healMerge as healMergeSync, markHandoff } from "./prs.mjs";
 import { cmdPromote } from "./promote.mjs";
 import { runRelease } from "./release/release.mjs";
 import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
@@ -5454,6 +5454,9 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
   const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
   console.log(`SUMMARY ship ${r.code === 0 ? "ok" : "fail"} ${slug}${r.pr ? ` PR #${r.pr.number}` : ""} auto-merge ${r.code === 0 && !draft ? "on" : "off"}${draft ? " (draft)" : ""}`);
   if (r.pr) console.log(`PR ${r.pr.url}, head ${head}`);
+  // The hand-off: `prs heal` may merge main into this worktree as soon as GitHub calls the PR CONFLICTING, without
+  // waiting out the 15-minute LIVE window the ship's own logs would start. A later edit or commit here ends it.
+  if (r.code === 0 && !draft) markHandoff(wtRoot, head, "ship");
   if (r.code === 0 && draft) console.log(`ship: draft PR left open for review. Prune after it merges: 'cli wt prune ${slug}'`);
   else if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
   return r.code;
