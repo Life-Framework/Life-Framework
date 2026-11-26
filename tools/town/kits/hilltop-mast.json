@@ -6,7 +6,10 @@
     "file": "tools/town/kits/sources/hilltop-mast.layer",
     "group": "*",
     "origin": "0,0,0",
-    "frame": "origin-entity"
+    "frame": "origin-entity",
+    "also": [
+      "tools/town/kits/sources/hilltop-mast-night-props.txt"
+    ]
   },
   "scope": "room",
   "anchoring": {
@@ -184,6 +187,38 @@
         4.4
       ],
       "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mast-lamp-barrel",
+      "name": "Mast_Lamp_Barrel",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on barrel",
+      "offset": [
+        -2.2,
+        1.09,
+        4.4
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mast-glow-barrel",
+      "name": "Mast_Glow_Barrel",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on mast-lamp-barrel",
+      "offset": [
+        -2.2,
+        1.37,
+        4.4
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
       "wall": "free",
       "floor": "f0"
     }
