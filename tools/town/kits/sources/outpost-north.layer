@@ -201,3 +201,33 @@ GenericEntity Outpost_FlagCloth : "{AE09DA7896F9DB37}Prefabs/Props/Fabric/Flags/
  }
  coords 366.001 5.45 90.973
 }
+GameEntity Outpost_Lamp_Table : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 358.5 0.8 86.5
+}
+GenericEntity Outpost_Glow_Table : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 358.5 1.02 86.5
+}
+GenericEntity Outpost_Stool_Board : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 353.7 0 84.3
+}
+GameEntity Outpost_Lamp_Board : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 353.7 0.47 84.3
+}
+GenericEntity Outpost_Glow_Board : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 353.7 0.75 84.3
+}
+GameEntity Outpost_Lamp_GateS : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 349.991 1.55 78.223
+}
+GenericEntity Outpost_Glow_GateS : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 349.991 1.83 78.223
+}
+GameEntity Outpost_Lamp_GateN : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 349.991 1.41 85.823
+}
+GenericEntity Outpost_Glow_GateN : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 349.991 1.69 85.823
+}
+ParticleEffectEntity Outpost_Flame_Fire : "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et" {
+ coords 356.945 0.34 80.92
+}

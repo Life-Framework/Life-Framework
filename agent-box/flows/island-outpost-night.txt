@@ -1,0 +1,37 @@
+# North outpost camp by night (#4978): the quartermaster, the board, the fire and the gate at 23:00 and at noon, before and after the camp lights.
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow island-outpost-night
+#   node agent-box/outpost-night-shots.mjs <before|after>       (the shot list: `capture world` with the hour, 23 then 12)
+#   node agent-box/session.mjs pull / copy the images, then node agent-box/session.mjs down
+# The flow only signs in (the registration sheet); the shots are the script's `capture world <name> x y z ox oy oz <hour>` lines.
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000

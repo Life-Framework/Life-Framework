@@ -7,7 +7,7 @@
   "kit": "outpost-north",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_outpost-north_camp.layer",
   "kinds": [],
-  "rows": 34,
+  "rows": 44,
   "destruction": {
     "mode": "none",
     "reason": "hostless plot: no building stands in the slot"

@@ -674,6 +674,167 @@
           "blocks": []
         }
       ]
+    },
+    {
+      "id": "outpost-lamp-table",
+      "name": "Outpost_Lamp_Table",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "dressing",
+      "verb": "on outpost-table",
+      "offset": [
+        -11.1,
+        0.8,
+        12.2
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "outpost-glow-table",
+      "name": "Outpost_Glow_Table",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on outpost-lamp-table",
+      "offset": [
+        -11.1,
+        1.02,
+        12.2
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "outpost-stool-board",
+      "name": "Outpost_Stool_Board",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -8.9,
+        0,
+        7.4
+      ],
+      "yaw": -90,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-lamp-board",
+      "name": "Outpost_Lamp_Board",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on outpost-stool-board",
+      "offset": [
+        -8.9,
+        0.47,
+        7.4
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "outpost-glow-board",
+      "name": "Outpost_Glow_Board",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on outpost-lamp-board",
+      "offset": [
+        -8.9,
+        0.75,
+        7.4
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "outpost-lamp-gate-s",
+      "name": "Outpost_Lamp_GateS",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on outpost-gate-sandbag-s1",
+      "offset": [
+        -2.823,
+        1.55,
+        3.691
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "outpost-glow-gate-s",
+      "name": "Outpost_Glow_GateS",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on outpost-lamp-gate-s",
+      "offset": [
+        -2.823,
+        1.83,
+        3.691
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "outpost-lamp-gate-n",
+      "name": "Outpost_Lamp_GateN",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on outpost-gate-sandbag-n1",
+      "offset": [
+        -10.423,
+        1.41,
+        3.691
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "outpost-glow-gate-n",
+      "name": "Outpost_Glow_GateN",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on outpost-lamp-gate-n",
+      "offset": [
+        -10.423,
+        1.69,
+        3.691
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "outpost-flame-fire",
+      "name": "Outpost_Flame_Fire",
+      "prefab": "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et",
+      "role": "light",
+      "verb": "on outpost-fire",
+      "offset": [
+        -5.52,
+        0.34,
+        10.645
+      ],
+      "yaw": 0,
+      "class": "ParticleEffectEntity",
+      "wall": "free",
+      "floor": "f0"
     }
   ],
   "clear": [
