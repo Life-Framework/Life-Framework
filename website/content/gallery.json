@@ -39,6 +39,26 @@
     { "id": "area-15-chopshop/wide", "caption": "The chop shop yard: an engine on the pad at sunset, bench and tyres along the wall." },
     { "id": "area-13-hideout/bench", "caption": "The hideout workbench under the pergola, with the evening sun low over the wall." },
     { "id": "area-16-moonshine/still", "caption": "The moonshine still, a boiler tank with its furnace and stack, under spruce." },
-    { "id": "area-11-quarry/barrier", "caption": "The lawless quarry: the lane barrier, a warning sign and granite walls behind." }
+    { "id": "area-11-quarry/barrier", "caption": "The lawless quarry: the lane barrier, a warning sign and granite walls behind." },
+    { "id": "4901/exterior-after", "caption": "The supermarket on the square, seen from the cobbles." },
+    { "id": "4901/aisle-after", "caption": "A supermarket aisle: tomato crates and bottles on the shelves, posters on the wall." },
+    { "id": "4903/bakery-rack-lit-after", "caption": "Bread on the bakery rack, with the shop light on." },
+    { "id": "4903/clothing-counter-after", "caption": "The clothing shop: boots and folded clothes on the tables, with customers inside." },
+    { "id": "4902/pub-sign-after", "caption": "The pub from the road, with its green sign over the door." },
+    { "id": "night-lamps-pub/bar-after", "caption": "Inside the pub with the lights on: the bar, stools and the barman." },
+    { "id": "4904/livery-bay-side-after", "caption": "The garage yard: a workbench and a rack outside the red bay doors." },
+    { "id": "night-lamps-fuel/clerk-after", "caption": "The fuel station kiosk at night, with the clerk and a customer at the counter." },
+    { "id": "4978/camp-noon-after", "caption": "An outpost camp in the pines by day: sandbags, a tent, a fire and the stock board." },
+    { "id": "4978/camp-night-after", "caption": "The same outpost at night, lit by lanterns and the fire, with guards behind the sandbags." },
+    { "id": "4978/stand-guard-night-after", "caption": "An outpost guard at night. You can talk to him." },
+    { "id": "3244/session-1-highstone-iron-rock-after", "caption": "A rust-colored iron rock in the woods, ready to mine." },
+    { "id": "3244/session-3-eastrise-coal-rock-after", "caption": "Coal rocks in a meadow, with a stack of planks nearby." },
+    { "id": "3244/session-5-smelter-prompt-after", "caption": "The smelter: the prompt reads two nuggets and one coal make a bar." },
+    { "id": "4907/buyer-front-after", "caption": "The coal buyer: a site container with the buyer at the counter and a scale beside it." },
+    { "id": "medic-patient/patient-lying-after", "caption": "A patient lying on the grass near the hospital, with the ambulance on the road." },
+    { "id": "fascia-night-1125/bakery-after", "caption": "The bakery front at night, its sign lit by a street lamp." },
+    { "id": "fascia-night-1125/clinic-after", "caption": "The clinic front at night, with its sign and the notice board by the door." },
+    { "id": "night-sweep-1125/night-street1-rw", "caption": "A village street at night, with lamps lit along the cobbles." },
+    { "id": "night-recheck-1125/night-recheck-market-board1", "caption": "The market at night, with the prices board and the stalls." }
   ]
 }

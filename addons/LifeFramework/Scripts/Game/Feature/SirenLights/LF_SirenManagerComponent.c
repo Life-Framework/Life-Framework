@@ -363,7 +363,7 @@ class LF_SirenManagerComponent : ScriptComponent
 	**/
 	void RegisterKnob(LF_SirenKnobComponent knob)
 	{
-		if (m_Knob) Print("Siren with multiple knobs", LogLevel.WARNING);
+		if (m_Knob) LF_Debug.Warn("Siren", "Siren with multiple knobs");
 		else
 		{
 			m_Knob = knob;

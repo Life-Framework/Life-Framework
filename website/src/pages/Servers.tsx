@@ -69,8 +69,8 @@ const Servers = () => {
             <h3 className="display-3 mt-1">The framework core</h3>
             <p className="mt-3 muted">
               Modular systems for a life server. The core decides what the game can do; a content pack decides what your server is.
-              Today the systems and our 1989 content share one addon. M3 splits them into two Workshop items, the{" "}
-              <code>LifeFramework</code> core and our <code>LF_Everon1989</code> pack, and the core will hold no 1989 copy or Everon
+              The systems and our 1989 content are two addons, the{" "}
+              <code>LifeFramework</code> core and our <code>LF_Everon1989</code> pack, and the core holds no 1989 copy or Everon
               place names. You keep the core and swap the pack for your own. Persistence uses Reforger's own{" "}
               <code>SCR_PersistenceSystem</code>; no third-party addon is needed.
             </p>
@@ -87,8 +87,8 @@ const Servers = () => {
               ))}
             </ul>
             <p className="text-sm muted mt-3">
-              Most systems are placed only in the test world so far, and none has been played on a dedicated server by strangers yet.
-              That is what M1 is for.
+              Most of these are built and still in playtest. A system counts as done only after a person has played it, so some
+              of what is listed may still change.
             </p>
           </article>
           <article className="sheet p-6 md:p-8">

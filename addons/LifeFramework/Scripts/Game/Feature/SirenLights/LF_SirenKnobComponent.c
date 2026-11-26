@@ -34,7 +34,7 @@ class LF_SirenKnobComponent : ScriptComponent
 			parent = parent.GetParent();
 		}
 		if (manager) manager.RegisterKnob(this);
-		else Print("Siren knob component with no manager", LogLevel.WARNING);
+		else LF_Debug.Warn("Siren", "Siren knob component with no manager");
 	}
 
 	//------------------------------------------------------------------------------------------------
