@@ -66,6 +66,19 @@
       "request_id": "9FjLcesr1yiB6FWe2F3N",
       "seconds": 0.69,
       "mouth": "59523998632000"
+    },
+    "show_goods_reply": {
+      "hash": "60f81d76695c1809",
+      "date": "2026-11-26",
+      "voice_id": "rqBDkieYYBoHyv690zPl",
+      "voice_name": "Eliot - Relaxed & Casual",
+      "model": "eleven_multilingual_v2",
+      "text": "Take a look. Cash only.",
+      "chars": 23,
+      "chars_total": 9,
+      "request_id": "VuNe1fr7oJyRGG9VT3qD",
+      "seconds": 1.32,
+      "mouth": "793779841102896256433211000"
     }
   },
   "voice": {

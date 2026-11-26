@@ -172,6 +172,14 @@ function shellSegments(command) {
   return segs;
 }
 
+// The command word of a segment: past sudo/command, a VAR=value prefix and the shell keywords a loop or branch puts in front
+// (`for d in a b; do cd $d && git merge` splits into "do cd ..."; read as the command "do", the cd was missed and the git
+// write was judged from the starting cwd, 2026-11-27).
+const PREFIX_WORDS = new Set(["sudo", "&", "command", "do", "then", "else", "elif", "if", "while", "until", "time", "!", "{", "(", "exec", "nohup"]);
+function firstWord(names) {
+  return names.find((n) => n && !PREFIX_WORDS.has(n) && !/^[A-Za-z_][A-Za-z0-9_]*=/.test(n)) ?? "";
+}
+
 const unwrap = (t) => t.replace(/^[(@{]+/, "").replace(/[)}]+$/, "");
 const isFlag = (t) => /^-{1,2}[A-Za-z]/.test(t.text) && !t.quoted;
 const isPathLike = (t) => t.length > 0 && !/[$*?%<>|]/.test(t) && !t.startsWith("~");
@@ -183,7 +191,7 @@ export function shellWriteTargets(command, startCwd) {
   let cwd = startCwd ?? null;
   for (const seg of shellSegments(command)) {
     const names = seg.map((t) => (t.quoted ? "" : unwrap(t.text).replace(/^.*[\\/]/, "").toLowerCase().replace(/\.exe$/, "")));
-    const first = names.find((n) => n && n !== "sudo" && n !== "&" && n !== "command") ?? "";
+    const first = firstWord(names);
 
     if (CD.has(first)) {
       const arg = seg.slice(names.indexOf(first) + 1).find((t) => !isFlag(t));
@@ -254,7 +262,7 @@ export function shellGitWrites(command, startCwd) {
   for (const seg of shellSegments(command)) {
     const texts = seg.map((t) => (t.quoted ? t.text : unwrap(t.text)));
     const names = seg.map((t) => (t.quoted ? "" : unwrap(t.text).replace(/^.*[\\/]/, "").toLowerCase().replace(/\.exe$/, "")));
-    const first = names.find((n) => n && n !== "sudo" && n !== "&" && n !== "command" && !/^[A-Za-z_][A-Za-z0-9_]*=/.test(n)) ?? "";
+    const first = firstWord(names);
     if (CD.has(first)) {
       const arg = seg.slice(names.indexOf(first) + 1).find((t) => !isFlag(t));
       if (arg && isPathLike(unwrap(arg.text)) && arg.text !== "-") cwd = cwd ? norm(isAbsolute(arg.text) || /^\/[a-zA-Z]\//.test(arg.text) ? arg.text : resolve(cwd, unwrap(arg.text))) : /^([a-zA-Z]:|\/)/.test(arg.text) ? norm(arg.text) : null;

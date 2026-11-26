@@ -11,7 +11,7 @@ const Gallery = () => {
   return (
     <>
       <PageHeader kicker="Gallery" title="Captured in the game">
-        <p>A few pictures from the playtest village, taken in the game with nothing added.</p>
+        <p>A few pictures from the playtest village and the island, taken in the game with nothing added.</p>
       </PageHeader>
       <div className="wrap pb-16">
         {!data ? (

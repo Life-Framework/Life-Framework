@@ -2135,8 +2135,8 @@
         },
         "harbourName": {
           "type": "string",
-          "default": "Saint Philippe",
-          "description": "The harbour town name the pack uses in announcements."
+          "default": "Saint-Philippe",
+          "description": "The harbor town name the pack uses in announcements."
         },
         "chainsEnabled": {
           "type": "boolean",

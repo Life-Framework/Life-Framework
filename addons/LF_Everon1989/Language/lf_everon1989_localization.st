@@ -186,7 +186,7 @@ StringTable {
     }
     CustomStringTableItem "{44D5E71018655F61}" {
      Id "LF-Activity_Medic_Pitch"
-     Target_en_us "Clock in at the clinic and answer calls for a wage. Casualty calls come in on the board while you are on duty."
+     Target_en_us "Clock in at the clinic and answer calls for a wage. Emergency calls come in on the board while you are on duty."
      Comment "Activity pitch, one line."
     }
     CustomStringTableItem "{A1503228206CA07A}" {
@@ -321,12 +321,12 @@ StringTable {
     }
     CustomStringTableItem "{8AA24D7948EBB5BF}" {
      Id "LF-Activity_Postal_Licence_Note"
-     Target_en_us "The van needs a driving license: get one at the license desk for $100."
+     Target_en_us "The van needs a driver's license: get one at the license desk for $100."
      Comment "Postal step note, one sentence. Skipped when held."
     }
     CustomStringTableItem "{DEC2262628F576DE}" {
      Id "LF-Activity_Postal_Licence_Title"
-     Target_en_us "Get a driving license"
+     Target_en_us "Get a driver's license"
      Comment "Postal step title."
     }
     CustomStringTableItem "{1E5B2469908D677D}" {
@@ -491,7 +491,7 @@ StringTable {
     }
     CustomStringTableItem "{494D3B2405DA9765}" {
      Id "LF-CasualtyCall_Dock"
-     Target_en_us "Docker down on the dock, crate fell on a leg"
+     Target_en_us "Dockworker down on the dock, crate fell on a leg"
      Comment "Casualty call summary on the medic board and pager (#4829): a hurt docker on the Saint-Philippe dock."
     }
     CustomStringTableItem "{2851E2B13741CE5C}" {
@@ -529,6 +529,11 @@ StringTable {
      Target_en_us "Till the day, then."
      Comment "The mayor says goodbye (#3794)."
     }
+    CustomStringTableItem "{1B91F1419F6EAEE7}" {
+     Id "LF-Dialogue_AnniversaryMayor_Chairs"
+     Target_en_us "The anniversary is tomorrow and the square is short of seats. Bring four chairs for the trestles."
+     Comment "Dialogue caption, spoken by the anniversary_mayor NPC (voiced; tools/assets/dialogue/anniversary_mayor). Changing it needs: tools\\cli asset dialogue anniversary_mayor"
+    }
     CustomStringTableItem "{3794F00000000004}" {
      Id "LF-Dialogue_AnniversaryMayor_Day"
      Target_en_us "Three years since the first families walked in from the dark. We lay trestles in the square, we light candles, we say thank you. Everyone remembers that night a little differently, and the town must hold all of it."
@@ -538,6 +543,11 @@ StringTable {
      Id "LF-Dialogue_AnniversaryMayor_Errand"
      Target_en_us "Then take what the square still lacks, and come back when it is done. I will not forget it."
      Comment "The mayor hands out an errand or thanks the player (#3794)."
+    }
+    CustomStringTableItem "{5901E9DCE2A5573C}" {
+     Id "LF-Dialogue_AnniversaryMayor_Flowers"
+     Target_en_us "The tables want flowers before dusk tomorrow. Bring three potted plants from the shops."
+     Comment "Dialogue caption, spoken by the anniversary_mayor NPC (voiced; tools/assets/dialogue/anniversary_mayor). Changing it needs: tools\\cli asset dialogue anniversary_mayor"
     }
     CustomStringTableItem "{3794F00000000002}" {
      Id "LF-Dialogue_AnniversaryMayor_Greet"
@@ -587,6 +597,16 @@ StringTable {
     CustomStringTableItem "{555A4099D123C72B}" {
      Id "LF-Dialogue_Barkeeper_Limit"
      Target_en_us "A bar that sells ten cartons a week is a shop, and a shop gets a visit. When my shelf is full, it is full. Come back next week."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{64152917786E1327}" {
+     Id "LF-Dialogue_Barkeeper_RumorAskedToday"
+     Target_en_us "I have told you what I know today. Ask again tomorrow."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{15B2A1FC76792B0E}" {
+     Id "LF-Dialogue_Barkeeper_RumorNothingNew"
+     Target_en_us "Nothing new. Ask me tomorrow."
      Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
     }
     CustomStringTableItem "{89B8C4EE047CD189}" {
@@ -744,6 +764,26 @@ StringTable {
      Target_en_us "Good day to you."
      Comment "Pack patch of the clerk dialogue's line bye (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{91F7D84D6A5502C5}" {
+     Id "LF-Dialogue_ClerkEveron_CardNeverIssued"
+     Target_en_us "You are not in the register yet. Tell me you are new in town."
+     Comment "Pack patch of the clerk dialogue's line card_never_issued (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{653CF3B17F96C494}" {
+     Id "LF-Dialogue_ClerkEveron_CardNoCash"
+     Target_en_us "A new card costs the fee, in cash. Come back when you have it."
+     Comment "Pack patch of the clerk dialogue's line card_no_cash (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{A7A514C5700B93B2}" {
+     Id "LF-Dialogue_ClerkEveron_CardReplaced"
+     Target_en_us "Here is your new card, with a new photograph. The old one is void now."
+     Comment "Pack patch of the clerk dialogue's line card_replaced (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{37CA05E939A58B15}" {
+     Id "LF-Dialogue_ClerkEveron_CardStillCarried"
+     Target_en_us "You have your card with you. I cannot issue a second one."
+     Comment "Pack patch of the clerk dialogue's line card_still_carried (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
     CustomStringTableItem "{F81986CEF21AEB71}" {
      Id "LF-Dialogue_ClerkEveron_Done"
      Target_en_us "Welcome to Everon. Here is something to start you off. The town is yours now. The shops, the car lot, the police station and the organization office are all on the town board."
@@ -766,13 +806,23 @@ StringTable {
     }
     CustomStringTableItem "{B3E611FAB38249E9}" {
      Id "LF-Dialogue_ClerkEveron_Market"
-     Target_en_us "Drive back to the market in the town center and sell your apple juice to the trader."
+     Target_en_us "Drive back to the market in the town center and sell your apple juice to the trader. Scroll to the juice row, the last one, and press F."
      Comment "Pack patch of the clerk dialogue's line market (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{3998D28021559542}" {
+     Id "LF-Dialogue_ClerkEveron_MarketDone"
+     Target_en_us "You are on your way. For steady pay, take a job: the town board lists who is hiring, and I have more errands for you. Your errands and jobs are in your player menu."
+     Comment "Pack patch of the clerk dialogue's line market_done (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{9F23A94BE325937D}" {
      Id "LF-Dialogue_ClerkEveron_Papers"
      Target_en_us "Your papers. Tell me what you need."
      Comment "Pack patch of the clerk dialogue's line papers (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{77E7B434D4D12CB8}" {
+     Id "LF-Dialogue_ClerkEveron_PapersFirst"
+     Target_en_us "Papers first. Tell me you are new in town, and I will write your name in the register."
+     Comment "Pack patch of the clerk dialogue's line papers_first (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{ACA40575917539FA}" {
      Id "LF-Dialogue_ClerkEveron_Register"
@@ -814,10 +864,60 @@ StringTable {
      Target_en_us "I understand. What now?"
      Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
     }
+    CustomStringTableItem "{0B405AFC680D264A}" {
+     Id "LF-Dialogue_ClerkEveron_SettleFish"
+     Target_en_us "Catch a fish and sell it at the fish counter."
+     Comment "Pack patch of the clerk dialogue's line settle_fish (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{F4258080CC43147C}" {
+     Id "LF-Dialogue_ClerkEveron_SettleFoundation"
+     Target_en_us "Lay the foundation of your cottage. The general store sells gravel and cement."
+     Comment "Pack patch of the clerk dialogue's line settle_foundation (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{C2B2AC304D6052FB}" {
+     Id "LF-Dialogue_ClerkEveron_SettleFuel"
+     Target_en_us "Fuel runs are open to you now. Take a jerry can job from the dispatch board and deliver it."
+     Comment "Pack patch of the clerk dialogue's line settle_fuel (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{13DD88E27207FBB3}" {
+     Id "LF-Dialogue_ClerkEveron_SettleParcels"
+     Target_en_us "Now run five parcels for the post office. Five runs will earn you the level for the fuel run, which comes next."
+     Comment "Pack patch of the clerk dialogue's line settle_parcels (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{B669E39E12724C30}" {
+     Id "LF-Dialogue_ClerkEveron_SettlePermit"
+     Target_en_us "Apply for a firearm permit at the gun store counter, and collect it when it is ready."
+     Comment "Pack patch of the clerk dialogue's line settle_permit (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{F0A81B7EA132AF99}" {
+     Id "LF-Dialogue_ClerkEveron_SettlePlot"
+     Target_en_us "Find a plot for sale and read its sign. It says what the plot costs and how to buy it."
+     Comment "Pack patch of the clerk dialogue's line settle_plot (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{FCF0E44FE675C888}" {
+     Id "LF-Dialogue_ClerkEveron_SettlePlotDone"
+     Target_en_us "That is how land is bought here. Save up, and the plot is yours."
+     Comment "Pack patch of the clerk dialogue's line settle_plot_done (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{847470DD455DE7B6}" {
+     Id "LF-Dialogue_ClerkEveron_SettleWheels"
+     Target_en_us "Get your driver's license at the town hall desk first, then buy any car at the car lot. The town board shows where it is."
+     Comment "Pack patch of the clerk dialogue's line settle_wheels (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
     CustomStringTableItem "{66D17BEFEC6D7B97}" {
      Id "LF-Dialogue_ClerkEveron_StarterCar"
      Target_en_us "Your new car waits at the garage counter of the car lot, next to the town hall: take it out there."
      Comment "Pack patch of the clerk dialogue's line starter_car (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{ABB7B71BB4F5B176}" {
+     Id "LF-Dialogue_ClerkEveron_SwitchNo"
+     Target_en_us "I cannot change your papers right now."
+     Comment "Pack patch of the clerk dialogue's line switch_no (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{B45B07B31E910425}" {
+     Id "LF-Dialogue_ClerkEveron_SwitchYes"
+     Target_en_us "Of course. Which of your files shall I pull?"
+     Comment "Pack patch of the clerk dialogue's line switch_yes (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{B696FB0623B2D98D}" {
      Id "LF-Dialogue_ClerkEveron_WelcomePack"
@@ -1934,6 +2034,11 @@ StringTable {
      Target_en_us "Not now. Let your arms rest. Come back in a little while."
      Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
     }
+    CustomStringTableItem "{0E301AA9095566A4}" {
+     Id "LF-Dialogue_HarbourMaster_ContractNotAble"
+     Target_en_us "You are in no state to take on work."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
     CustomStringTableItem "{2D047BD4994A439B}" {
      Id "LF-Dialogue_HarbourMaster_ContractRunOpen"
      Target_en_us "You are carrying something already. Deliver it, then we talk."
@@ -1942,6 +2047,11 @@ StringTable {
     CustomStringTableItem "{64B76FBB42089C1D}" {
      Id "LF-Dialogue_HarbourMaster_ContractStarted"
      Target_en_us "Good. Crates are on the quay by the crane. Mind the clock, I am watching it."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{3AAB0993638D055D}" {
+     Id "LF-Dialogue_HarbourMaster_ContractUnknown"
+     Target_en_us "That contract is not on offer."
      Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
     }
     CustomStringTableItem "{0CAB3606C5E90963}" {
@@ -2021,7 +2131,7 @@ StringTable {
     }
     CustomStringTableItem "{3736E0D6C96857B0}" {
      Id "LF-Dialogue_HarbourMaster_ShipmentAsk"
-     Target_en_us "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?"
+     Target_en_us "That red crate on the pallet weighs eleven kilos over the manifest. I signed for canned fish. Would you count it for me?"
      Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
     }
     CustomStringTableItem "{BC6917D6F28F88CF}" {
@@ -2029,9 +2139,19 @@ StringTable {
      Target_en_us "Open it, count what is in there and come back. If it is only fish, no harm done."
      Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
     }
+    CustomStringTableItem "{0A0F26A163353C73}" {
+     Id "LF-Dialogue_HarbourMaster_ShipmentCountDesc"
+     Target_en_us "That red crate on the quay weighs too much. Open it and count what is inside."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{EBDD6FE7B188699E}" {
+     Id "LF-Dialogue_HarbourMaster_ShipmentSoldDesc"
+     Target_en_us "What was under the canned fish is worth money to the right person. Sell it to a buyer."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
     CustomStringTableItem "{126E2D08A174D4AD}" {
      Id "LF-Dialogue_HarbourMaster_ShipmentThanksReport"
-     Target_en_us "You took it to the desk. Good. The town will sleep better, whatever the dockers say."
+     Target_en_us "You took it to the desk. Good. The town will sleep better, whatever the dockworkers say."
      Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
     }
     CustomStringTableItem "{61996AD6C64B434C}" {
@@ -2082,6 +2202,41 @@ StringTable {
     CustomStringTableItem "{313BEDDBB4D62D31}" {
      Id "LF-Dialogue_NightShift_GreetWary"
      Target_en_us "You again. Make it short, I have work."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{B5B1A28630B5F19A}" {
+     Id "LF-Dialogue_NightShift_InformantAlready"
+     Target_en_us "I told you already. He is where I marked it."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{4997AF932E6A7B63}" {
+     Id "LF-Dialogue_NightShift_InformantNeverHeard"
+     Target_en_us "Never heard of him. Go home."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{4689C8B893FA4161}" {
+     Id "LF-Dialogue_NightShift_InformantNoCash"
+     Target_en_us "A tip costs cash, friend. Come back when you have it."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{21F80B6984E3E904}" {
+     Id "LF-Dialogue_NightShift_InformantNoSpot"
+     Target_en_us "Nobody is buying tonight. Nothing to tell you."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{AA5921DB4DA7F5EF}" {
+     Id "LF-Dialogue_NightShift_InformantTold"
+     Target_en_us "He is buying tonight. I marked the spot on your map; it will not keep past this shift."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{432C31A4E8A18BCF}" {
+     Id "LF-Dialogue_NightShift_RumorAskedToday"
+     Target_en_us "I have told you what I know today. Ask again tomorrow."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{B14FC923F3AA48C7}" {
+     Id "LF-Dialogue_NightShift_RumorNothingNew"
+     Target_en_us "Nothing new. Ask me tomorrow."
      Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
     }
     CustomStringTableItem "{D435BA49E015D84F}" {
@@ -2157,6 +2312,16 @@ StringTable {
     CustomStringTableItem "{0DA987094106C72C}" {
      Id "LF-Dialogue_OldMan_GreetWary"
      Target_en_us "Hm. You again. Say what you want, and be quick."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{097CF39E5A9368A1}" {
+     Id "LF-Dialogue_OldMan_LetterDesc"
+     Target_en_us "The letter in the memorial's flowers is addressed to me. Bring it here, if you would."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{EC61205871AD3535}" {
+     Id "LF-Dialogue_OldMan_LetterTurnIn"
+     Target_en_us "Let me read it twice. Then sit with me a while."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
     CustomStringTableItem "{22873025BE77ACB7}" {
@@ -2377,6 +2542,26 @@ StringTable {
     CustomStringTableItem "{B59194FE8B41BBA8}" {
      Id "LF-Dialogue_Registrar_Bye"
      Target_en_us "Next."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{1045C9AC8D6F08CA}" {
+     Id "LF-Dialogue_Registrar_FlagNoGang"
+     Target_en_us "You need a gang to fly a flag."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{5FFFE2BEF96107E2}" {
+     Id "LF-Dialogue_Registrar_FlagNotLeader"
+     Target_en_us "Only a gang leader can pick the gang flag."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{AD20F8C5304283D6}" {
+     Id "LF-Dialogue_Registrar_FlagRefused"
+     Target_en_us "That flag cannot be picked."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{814BA5CAE5397532}" {
+     Id "LF-Dialogue_Registrar_FlagSame"
+     Target_en_us "Your gang already flies that flag."
      Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
     }
     CustomStringTableItem "{FF32057309662992}" {
@@ -2611,7 +2796,7 @@ StringTable {
     }
     CustomStringTableItem "{17E4C7B8C8E760FF}" {
      Id "LF-Dialogue_ResidentStoreClerk_AboutWork"
-     Target_en_us "Tins, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass."
+     Target_en_us "Cans, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass."
      Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
     }
     CustomStringTableItem "{B713054422C71238}" {
@@ -2636,7 +2821,7 @@ StringTable {
     }
     CustomStringTableItem "{86DEB827F5774B5E}" {
      Id "LF-Dialogue_ResidentStoreClerk_GreetRegular"
-     Target_en_us "My best customer! I put a tin of the good coffee aside for you."
+     Target_en_us "My best customer! I put a can of the good coffee aside for you."
      Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
     }
     CustomStringTableItem "{B1ED0C5D5934330F}" {
@@ -2754,6 +2939,11 @@ StringTable {
      Target_en_us "You have earned it. Here is the drill. Be quiet with it, and it never came from me."
      Comment "Pack patch of the role_fence dialogue's line sell_drill (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
     }
+    CustomStringTableItem "{E8697C7C7D9473FC}" {
+     Id "LF-Dialogue_RoleFenceEveron_ShowGoodsReply"
+     Target_en_us "Take a look. Cash only."
+     Comment "Pack patch of the role_fence dialogue's line show_goods_reply (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
+    }
     CustomStringTableItem "{4FDB1AC1ACEA8C7C}" {
      Id "LF-Dialogue_RoleFenceEveron_What"
      Target_en_us "I sell tools to people who do not ask what they are for. Locks are hard and the police are harder. Choose the right tool."
@@ -2779,9 +2969,14 @@ StringTable {
      Target_en_us "Somebody keeps asking me how to start a car without the key. I tell them to buy the key."
      Comment "Pack patch of the role_mechanic dialogue's line rumour (voiced; tools/assets/dialogue/role_mechanic_everon). Changing it needs: tools\\cli asset dialogue role_mechanic_everon"
     }
+    CustomStringTableItem "{40961692F9E10E12}" {
+     Id "LF-Dialogue_RoleMechanicEveron_ShowGoodsReply"
+     Target_en_us "Take a look. Cash only."
+     Comment "Pack patch of the role_mechanic dialogue's line show_goods_reply (voiced; tools/assets/dialogue/role_mechanic_everon). Changing it needs: tools\\cli asset dialogue role_mechanic_everon"
+    }
     CustomStringTableItem "{1F9C08528FCD2960}" {
      Id "LF-Dialogue_RoleMechanicEveron_What"
-     Target_en_us "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a flat battery."
+     Target_en_us "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a dead battery."
      Comment "Pack patch of the role_mechanic dialogue's line what (voiced; tools/assets/dialogue/role_mechanic_everon). Changing it needs: tools\\cli asset dialogue role_mechanic_everon"
     }
     CustomStringTableItem "{67D6EE4A23585976}" {
@@ -2803,6 +2998,11 @@ StringTable {
      Id "LF-Dialogue_RoleMedicEveron_Rumour"
      Target_en_us "A lot of cuts from the sawmill this month. The men will not wear gloves."
      Comment "Pack patch of the role_medic dialogue's line rumour (voiced; tools/assets/dialogue/role_medic_everon). Changing it needs: tools\\cli asset dialogue role_medic_everon"
+    }
+    CustomStringTableItem "{F630F3D9FA220544}" {
+     Id "LF-Dialogue_RoleMedicEveron_ShowGoodsReply"
+     Target_en_us "Take a look. Cash only."
+     Comment "Pack patch of the role_medic dialogue's line show_goods_reply (voiced; tools/assets/dialogue/role_medic_everon). Changing it needs: tools\\cli asset dialogue role_medic_everon"
     }
     CustomStringTableItem "{35F722E64421CE24}" {
      Id "LF-Dialogue_RoleMedicEveron_What"
@@ -2829,6 +3029,11 @@ StringTable {
      Target_en_us "We have had burglaries along the main street. If you saw anything, tell us. People here remember faces."
      Comment "Pack patch of the role_police dialogue's line rumour (voiced; tools/assets/dialogue/role_police_everon). Changing it needs: tools\\cli asset dialogue role_police_everon"
     }
+    CustomStringTableItem "{926ABE4B9D139DD9}" {
+     Id "LF-Dialogue_RolePoliceEveron_ShowGoodsReply"
+     Target_en_us "Take a look. Cash only."
+     Comment "Pack patch of the role_police dialogue's line show_goods_reply (voiced; tools/assets/dialogue/role_police_everon). Changing it needs: tools\\cli asset dialogue role_police_everon"
+    }
     CustomStringTableItem "{9C6A57BC1C12EAD7}" {
      Id "LF-Dialogue_RolePoliceEveron_What"
      Target_en_us "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again."
@@ -2853,6 +3058,11 @@ StringTable {
      Id "LF-Dialogue_RoleStoreClerkEveron_Rumour"
      Target_en_us "Somebody has been asking whether I keep a safe under the counter. I do not, and I do not keep much cash either."
      Comment "Pack patch of the role_store_clerk dialogue's line rumour (voiced; tools/assets/dialogue/role_store_clerk_everon). Changing it needs: tools\\cli asset dialogue role_store_clerk_everon"
+    }
+    CustomStringTableItem "{4C640AE20411F3B0}" {
+     Id "LF-Dialogue_RoleStoreClerkEveron_ShowGoodsReply"
+     Target_en_us "Take a look. Cash only."
+     Comment "Pack patch of the role_store_clerk dialogue's line show_goods_reply (voiced; tools/assets/dialogue/role_store_clerk_everon). Changing it needs: tools\\cli asset dialogue role_store_clerk_everon"
     }
     CustomStringTableItem "{8F9FDD48805CB8BF}" {
      Id "LF-Dialogue_RoleStoreClerkEveron_What"
@@ -2879,6 +3089,11 @@ StringTable {
      Target_en_us "A man with no work and a drill in his bag asked me about the vault. I told him the vault is none of my business."
      Comment "Pack patch of the role_teller dialogue's line rumour (voiced; tools/assets/dialogue/role_teller_everon). Changing it needs: tools\\cli asset dialogue role_teller_everon"
     }
+    CustomStringTableItem "{D12E6916CB22843D}" {
+     Id "LF-Dialogue_RoleTellerEveron_ShowGoodsReply"
+     Target_en_us "Take a look. Cash only."
+     Comment "Pack patch of the role_teller dialogue's line show_goods_reply (voiced; tools/assets/dialogue/role_teller_everon). Changing it needs: tools\\cli asset dialogue role_teller_everon"
+    }
     CustomStringTableItem "{606DF12C454471D4}" {
      Id "LF-Dialogue_RoleTellerEveron_What"
      Target_en_us "I keep the counter and the accounts. Cash in your pocket is gone when you die. Money in the bank is not. The cash machine on the wall does deposits and withdrawals."
@@ -2904,6 +3119,11 @@ StringTable {
      Target_en_us "People say the police are watching the main street. Burglars are about. Keep your doors locked."
      Comment "Pack patch of the role_townsfolk dialogue's line rumour (voiced; tools/assets/dialogue/role_townsfolk_everon). Changing it needs: tools\\cli asset dialogue role_townsfolk_everon"
     }
+    CustomStringTableItem "{6073D8269E9F39BF}" {
+     Id "LF-Dialogue_RoleTownsfolkEveron_ShowGoodsReply"
+     Target_en_us "Take a look. Cash only."
+     Comment "Pack patch of the role_townsfolk dialogue's line show_goods_reply (voiced; tools/assets/dialogue/role_townsfolk_everon). Changing it needs: tools\\cli asset dialogue role_townsfolk_everon"
+    }
     CustomStringTableItem "{47312B84FDA54AF0}" {
      Id "LF-Dialogue_RoleTownsfolkEveron_What"
      Target_en_us "I live here. I get by, as everyone does. The work is simple and the people are decent."
@@ -2928,6 +3148,11 @@ StringTable {
      Id "LF-Dialogue_RoleTraderEveron_Rumour"
      Target_en_us "The price of apples went up this week. Somebody is hoarding them, I think."
      Comment "Pack patch of the role_trader dialogue's line rumour (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
+    CustomStringTableItem "{CE8DE18090394B43}" {
+     Id "LF-Dialogue_RoleTraderEveron_ShowGoodsReply"
+     Target_en_us "Take a look. Cash only."
+     Comment "Pack patch of the role_trader dialogue's line show_goods_reply (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
     }
     CustomStringTableItem "{3FE540CB43FD7BCB}" {
      Id "LF-Dialogue_RoleTraderEveron_What"
@@ -3194,6 +3419,16 @@ StringTable {
      Target_en_us "Pick the goods up yourself, then pay at any till before you leave. You get a receipt. Walk out without paying and the alarm goes off."
      Comment "Pack patch of the shopkeeper dialogue's line how_to_pay (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
     }
+    CustomStringTableItem "{CF3BC5DDE823A95F}" {
+     Id "LF-Dialogue_ShopkeeperEveron_RumorAskedToday"
+     Target_en_us "I have told you what I know today. Ask again tomorrow."
+     Comment "Pack patch of the shopkeeper dialogue's line rumor_asked_today (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
+    }
+    CustomStringTableItem "{4374B66EC530FFDF}" {
+     Id "LF-Dialogue_ShopkeeperEveron_RumorNothingNew"
+     Target_en_us "Nothing new. Ask me tomorrow."
+     Comment "Pack patch of the shopkeeper dialogue's line rumor_nothing_new (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
+    }
     CustomStringTableItem "{48A3FBB00A316BF1}" {
      Id "LF-Dialogue_ShopkeeperEveron_Stock"
      Target_en_us "Food and household goods on the shelves, drinks in the chilled counter. What runs out comes back from the stockroom every few minutes."
@@ -3207,6 +3442,21 @@ StringTable {
     CustomStringTableItem "{5D5270FE6B9E5D3F}" {
      Id "LF-Dialogue_TallyClerk_Bye"
      Target_en_us "Mind the crane."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{6F2657DCE0CA91EB}" {
+     Id "LF-Dialogue_TallyClerk_FeeFailed"
+     Target_en_us "Not now. Your pockets are full. Your money is still yours."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{A9CD58651FD0DA94}" {
+     Id "LF-Dialogue_TallyClerk_FeeHeld"
+     Target_en_us "You already have one. Keep your money."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{E9E3BC899BD2ADBA}" {
+     Id "LF-Dialogue_TallyClerk_FeeShort"
+     Target_en_us "That is not enough. Come back with the full amount."
      Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
     }
     CustomStringTableItem "{E229C1F569881044}" {
@@ -3806,7 +4056,7 @@ StringTable {
     }
     CustomStringTableItem "{D02F5D225390E034}" {
      Id "LF-Handbook_Everon_LawAndOrderBody1"
-     Target_en_us "When an officer books you, they fill in a charge sheet at the booking desk in the police station. They tick each charge and sign it, and the sheet offers you the fine or the time. The paper is the record: what is on it is what you answer for."
+     Target_en_us "When an officer books you, they fill in a charge sheet at the booking desk in the police station. They check each charge and sign it, and the sheet offers you the fine or the time. The paper is the record: what is on it is what you answer for."
      Comment "Everon handbook page LawAndOrder, paragraph 1 (#4710)."
     }
     CustomStringTableItem "{7CBC65DCE88755D5}" {
@@ -3821,7 +4071,7 @@ StringTable {
     }
     CustomStringTableItem "{C7A7878B1A989B8B}" {
      Id "LF-Handbook_Everon_LawAndOrderBody4"
-     Target_en_us "Some road charges can get your driving license seized for a number of days. The license desk in the station porch turns you away until the days run out."
+     Target_en_us "Some road charges can get your driver's license seized for a number of days. The license desk in the station porch turns you away until the days run out."
      Comment "Everon handbook page LawAndOrder, paragraph 4 (#4710)."
     }
     CustomStringTableItem "{9D8B05786FC36FD7}" {
@@ -4051,7 +4301,7 @@ StringTable {
     }
     CustomStringTableItem "{043E558B24CB142C}" {
      Id "LF-Item_CannedFishDesc"
-     Target_en_us "A flat tin of sardines in oil. Open it with the pull ring."
+     Target_en_us "A flat can of sardines in oil. Open it with the pull ring."
      Comment "Item description: tinned sardines."
     }
     CustomStringTableItem "{1A7407C7026B2019}" {
@@ -4061,7 +4311,7 @@ StringTable {
     }
     CustomStringTableItem "{66474EA9E1485746}" {
      Id "LF-Item_CannedMeatDesc"
-     Target_en_us "A tin of corned beef. Heavy, salty, keeps for years."
+     Target_en_us "A can of corned beef. Heavy, salty, keeps for years."
      Comment "Item description: canned meat."
     }
     CustomStringTableItem "{228B558274FE0193}" {
@@ -4091,7 +4341,7 @@ StringTable {
     }
     CustomStringTableItem "{20A0BA389D7B7779}" {
      Id "LF-Item_CoffeeTinDesc"
-     Target_en_us "A tin of instant coffee. Stir a spoonful into hot water."
+     Target_en_us "A can of instant coffee. Stir a spoonful into hot water."
      Comment "Item description: instant coffee."
     }
     CustomStringTableItem "{E1BE7F6FF37D0EC9}" {
@@ -4486,7 +4736,7 @@ StringTable {
     }
     CustomStringTableItem "{CA4B6B802EFD710E}" {
      Id "LF-Lot_NeedsDrivingLicence"
-     Target_en_us "Not without a driving license. The town hall desk issues it for %1."
+     Target_en_us "Not without a driver's license. The town hall desk issues it for %1."
      Comment "Overrides the core row: the flagship's car lot refusal names the town hall licence desk (#3151). %1 is the fee."
     }
     CustomStringTableItem "{38CCD9128665A6C3}" {
@@ -4861,12 +5111,12 @@ StringTable {
     }
     CustomStringTableItem "{5E2A7C91B0D43F61}" {
      Id "LF-Market_BuyerFull"
-     Target_en_us "They have enough - try the wholesale warehouse at the dock. More in about %1 min."
+     Target_en_us "They have enough - a wholesale counter (the woodlot or the dock) still buys. More in about %1 min."
      Comment "Pack override of the core toast (#3599): the timber counter is full, the dock wholesale warehouse still buys. %1 = minutes."
     }
     CustomStringTableItem "{5E2A7C91B0D43F62}" {
      Id "LF-Market_BuyerNever"
-     Target_en_us "They have enough - try the wholesale warehouse at the dock."
+     Target_en_us "They have enough - a wholesale counter (the woodlot or the dock) still buys."
      Comment "Pack override of the core toast (#3599): a buyer that never refills."
     }
     CustomStringTableItem "{9C1E4A73D0B58F26}" {
@@ -5156,7 +5406,7 @@ StringTable {
     }
     CustomStringTableItem "{4B7A1E93C2D05F68}" {
      Id "LF-Place_SaintPhilippe"
-     Target_en_us "Saint Philippe"
+     Target_en_us "Saint-Philippe"
      Comment "Named place (#1943, town pass #1947): the map label dispatch reads for a robbery away from any sign; LF_NamedPlaces.Nearest."
     }
     CustomStringTableItem "{3F2132C5DE771A7C}" {
@@ -5386,7 +5636,7 @@ StringTable {
     }
     CustomStringTableItem "{6E07D3A5B533B63A}" {
      Id "LF-Quest_SettleFuel_Desc"
-     Target_en_us "Fuel runs are open to you now. Take a jerrycan job from the dispatch board and deliver it."
+     Target_en_us "Fuel runs are open to you now. Take a jerry can job from the dispatch board and deliver it."
      Comment "Settling-in chain step 2: one paid fuel run."
     }
     CustomStringTableItem "{233D2662DE4FBD92}" {
@@ -5436,7 +5686,7 @@ StringTable {
     }
     CustomStringTableItem "{A63268C6F419075E}" {
      Id "LF-Quest_SettleWheels_DescLicence"
-     Target_en_us "Get your driving license at the town hall desk first (00), then buy any car at the car lot. The town board shows where it is."
+     Target_en_us "Get your driver's license at the town hall desk first, then buy any car at the car lot. The town board shows where it is."
      Comment "Settling-in chain step 3 (#3151): the flagship's car lot asks for the driving licence, so the step says to get it first."
     }
     CustomStringTableItem "{71D42A3909D03894}" {
@@ -6171,7 +6421,7 @@ StringTable {
     }
     CustomStringTableItem "{C27AF568161F7892}" {
      Id "LF-Sign_BlackLake_How"
-     Target_en_us "Bring a rod and a bait tin, cast onto the water from the shore, and strike when the float dips"
+     Target_en_us "Bring a rod and a bait can, cast onto the water from the shore, and strike when the float dips"
      Comment "Sign card for the Black Lake plate, How section."
     }
     CustomStringTableItem "{468950476749EE18}" {
@@ -6286,7 +6536,7 @@ StringTable {
     }
     CustomStringTableItem "{CEB8C8C3972E0402}" {
      Id "LF-Sign_ClothingStore_What"
-     Target_en_us "The village clothing store: jackets, trousers, caps and boots, and a backpack."
+     Target_en_us "The village clothing store: jackets, pants, caps and boots, and a backpack."
      Comment "Sign card for the clothing store, What section."
     }
     CustomStringTableItem "{9F4BEADF5074C0BF}" {
@@ -6311,7 +6561,7 @@ StringTable {
     }
     CustomStringTableItem "{1DF3BFB27FDA81CC}" {
      Id "LF-Sign_CoalmansBrowMine_How"
-     Target_en_us "Take the miner job at the desk, buy a pickaxe at the supply counter beside it, swing at the big rust-red rocks (not the grey granite) and pick up the iron nuggets. Three nuggets make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
+     Target_en_us "Take the miner job at the desk, buy a pickaxe at the supply counter beside it, swing at the big rust-red rocks (not the gray granite) and pick up the iron nuggets. Three nuggets make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
      Comment "Sign card for the Coalman's Brow mine plate, How section."
     }
     CustomStringTableItem "{B30D7B3198E25E1E}" {
@@ -6541,7 +6791,7 @@ StringTable {
     }
     CustomStringTableItem "{8A3D51F7C20E64B9}" {
      Id "LF-Sign_EastRiseSeam_How"
-     Target_en_us "Swing a pickaxe at the black coal rocks (not the grey granite) and pick up the coal lumps. The dock's coal freighter takes coal on export orders."
+     Target_en_us "Swing a pickaxe at the black coal rocks (not the gray granite) and pick up the coal lumps. The dock's coal freighter takes coal on export orders."
      Comment "Sign card for the East Rise coal seam plate, How section."
     }
     CustomStringTableItem "{16C7E2B04D9A8F53}" {
@@ -6641,7 +6891,7 @@ StringTable {
     }
     CustomStringTableItem "{3018FA71B28E00A7}" {
      Id "LF-Sign_FarmPlots_Next"
-     Target_en_us "Sell cabbages at the general store on the main street."
+     Target_en_us "Sell cabbages at the market stalls on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
     }
     CustomStringTableItem "{7727C787985BD3E9}" {
@@ -6706,7 +6956,7 @@ StringTable {
     }
     CustomStringTableItem "{32CEDBEDFA32663E}" {
      Id "LF-Sign_FishermansBay_How"
-     Target_en_us "Bring a rod and a bait tin, cast onto the water from the beach, and strike when the float dips. Come at dusk for the bass."
+     Target_en_us "Bring a rod and a bait can, cast onto the water from the beach, and strike when the float dips. Come at dusk for the bass."
      Comment "Sign card for the Fisherman's Bay plate, How section."
     }
     CustomStringTableItem "{936E797B77A23A02}" {
@@ -6726,7 +6976,7 @@ StringTable {
     }
     CustomStringTableItem "{B36BFEC7627B930C}" {
      Id "LF-Sign_FuelDepot_Needs"
-     Target_en_us "A tanker truck and a driving license."
+     Target_en_us "A tanker truck and a driver's license."
      Comment "Sign card for the Montignac fuel depot, You need section."
     }
     CustomStringTableItem "{D7656097F74F86FF}" {
@@ -7006,7 +7256,7 @@ StringTable {
     }
     CustomStringTableItem "{E27A60C4195DB38F}" {
      Id "LF-Sign_HighstoneMine_How"
-     Target_en_us "Swing a pickaxe at the big rust-red rocks (not the grey granite) and pick up the iron nuggets. Smelt three nuggets into a bar at the furnace on Coalman's Brow; sell the bars at the iron counter in the dock wholesale warehouse."
+     Target_en_us "Swing a pickaxe at the big rust-red rocks (not the gray granite) and pick up the iron nuggets. Smelt three nuggets into a bar at the furnace on Coalman's Brow; sell the bars at the iron counter in the dock wholesale warehouse."
      Comment "Sign card for the Highstone mine plate, How section."
     }
     CustomStringTableItem "{5C1E7A93D20B4F68}" {
@@ -7836,7 +8086,7 @@ StringTable {
     }
     CustomStringTableItem "{F71E160D65C5338C}" {
      Id "LF-Sign_SpeedLimit100_What"
-     Target_en_us "The posted limit is 100 km/h on the open road. Officers with a radar gun check it from the lay-by."
+     Target_en_us "The posted limit is 100 km/h on the open road. Officers with a radar gun check it from the pull-off."
      Comment "Read card of the 100 km/h speed limit sign (card #4434)."
     }
     CustomStringTableItem "{CEE67BB33C9C4B39}" {
@@ -7846,7 +8096,7 @@ StringTable {
     }
     CustomStringTableItem "{230591BF3C6CC1C6}" {
      Id "LF-Sign_SpeedLimit30_What"
-     Target_en_us "The posted limit is 30 km/h near the markets and the village squares. Officers with a radar gun check it from the lay-by."
+     Target_en_us "The posted limit is 30 km/h near the markets and the village squares. Officers with a radar gun check it from the pull-off."
      Comment "Read card of the 30 km/h speed limit sign (card #4434)."
     }
     CustomStringTableItem "{B0D6C23589C23F33}" {
@@ -7856,12 +8106,12 @@ StringTable {
     }
     CustomStringTableItem "{9E57A1DB482CCDAF}" {
      Id "LF-Sign_SpeedLimit50_What"
-     Target_en_us "The posted limit is 50 km/h through the town streets. Officers with a radar gun check it from the lay-by."
+     Target_en_us "The posted limit is 50 km/h through the town streets. Officers with a radar gun check it from the pull-off."
      Comment "Read card of the 50 km/h speed limit sign (card #4434)."
     }
     CustomStringTableItem "{5F88AA844B7BCA38}" {
      Id "LF-Sign_SpringPond_How"
-     Target_en_us "Bring a rod and a bait tin, cast onto the water from the jetty or the bank, and strike when the float dips"
+     Target_en_us "Bring a rod and a bait can, cast onto the water from the jetty or the bank, and strike when the float dips"
      Comment "Sign card for the Spring Pond plate, How section."
     }
     CustomStringTableItem "{E3BA6C2EBFE96532}" {
@@ -7896,7 +8146,7 @@ StringTable {
     }
     CustomStringTableItem "{01D9AC4455F43C50}" {
      Id "LF-Sign_Supermarket_What"
-     Target_en_us "Groceries, drinks and the odd tin of dressings."
+     Target_en_us "Groceries, drinks and the odd can of dressings."
      Comment "Sign card for the supermarket, What section."
     }
     CustomStringTableItem "{DFA15542C4155B52}" {
@@ -7936,7 +8186,7 @@ StringTable {
     }
     CustomStringTableItem "{056E05DAE9CEB084}" {
      Id "LF-Sign_TimberYard_Next"
-     Target_en_us "Sell the planks to the lumberyard, or load a truck for the harbor."
+     Target_en_us "Sell the planks to the timber yard, or load a truck for the harbor."
      Comment "Sign card for the Saint-Philippe timber yard, Next section."
     }
     CustomStringTableItem "{2885C8350729DA74}" {

@@ -60,6 +60,13 @@
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
+    "informant_never_heard": { "for_key": "#LF-Informant_NeverHeard", "key_pin": "5f3860f0", "text": "Never heard of him. Go home." },
+    "informant_no_cash": { "for_key": "#LF-Informant_NoCash", "key_pin": "0d9bcf00", "text": "A tip costs cash, friend. Come back when you have it." },
+    "informant_told": { "for_key": "#LF-Informant_Told", "key_pin": "17835647", "text": "He is buying tonight. I marked the spot on your map; it will not keep past this shift." },
+    "informant_already": { "for_key": "#LF-Informant_Already", "key_pin": "e065e77d", "text": "I told you already. He is where I marked it." },
+    "informant_no_spot": { "for_key": "#LF-Informant_NoSpot", "key_pin": "ec29725c", "text": "Nobody is buying tonight. Nothing to tell you." },
+    "rumor_nothing_new": { "for_key": "#LF-RumorTalk_NothingNew", "key_pin": "84f9176b", "text": "Nothing new. Ask me tomorrow." },
+    "rumor_asked_today": { "for_key": "#LF-RumorTalk_AskedToday", "key_pin": "f51510e9", "text": "I have told you what I know today. Ask again tomorrow." },
     "greet_refuses": { "text": "I know your face from the night. Do not speak to me." },
     "greet_wary": { "text": "You again. Make it short, I have work." },
     "greet_friendly": { "text": "Ah, good evening. Good to see you. Sit if you like." },

@@ -184,8 +184,8 @@ const Home = () => {
           ))}
         </div>
         <p className="mt-8 max-w-prose muted">
-          Today both live in one addon, <code>addons/LifeFramework/</code>. M3 moves the 1989 content into its own addon and adds one{" "}
-          <code>config.json</code> where an owner sets prices, jobs, crimes, and the rest without forking.
+          They are two addons: the core in <code>addons/LifeFramework/</code> and the 1989 content in <code>addons/LF_Everon1989/</code>.
+          An owner sets prices, jobs, crimes, and the rest in one <code>config.json</code> without forking.
         </p>
         <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
           <GoLink to={CORE_VS_PACK_URL}>Core vs pack</GoLink>
