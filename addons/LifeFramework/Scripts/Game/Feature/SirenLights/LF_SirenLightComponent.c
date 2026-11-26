@@ -37,7 +37,7 @@ class LF_SirenLightComponent : ScriptComponent
 		Register();
 		if (!m_Material)
 		{
-			Print("LF_LightComponent requires ParametricMaterialInstanceComponent", LogLevel.ERROR);
+			LF_Debug.Error("Siren", "LF_LightComponent requires ParametricMaterialInstanceComponent");
 			return;
 		}
 		if (m_OverrideEmissiveColor) m_Material.SetEmissiveColor(Color.FromVector(m_EmissiveColor.Normalized()).PackToInt());
@@ -152,7 +152,7 @@ class LF_SirenLightComponent : ScriptComponent
 			parent = parent.GetParent();
 		}
 		if (manager) manager.RegisterLight(this);
-		else if (GetGame()) Print("Light component with no manager", LogLevel.WARNING);
+		else if (GetGame()) LF_Debug.Warn("Siren", "Light component with no manager");
 	}
 
 	//------------------------------------------------------------------------------------------------

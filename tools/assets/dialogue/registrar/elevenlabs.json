@@ -79,6 +79,58 @@
       "request_id": "yw4kk8xFiwFliOZADwxI",
       "seconds": 0.64,
       "mouth": "9995236644100"
+    },
+    "flag_same": {
+      "hash": "9fbab7cf4768d751",
+      "date": "2026-11-26",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam - Energetic, Social Media Creator",
+      "model": "eleven_multilingual_v2",
+      "text": "Your gang already flies that flag.",
+      "chars": 34,
+      "chars_total": 14,
+      "request_id": "8gONjJtLAvXe9H38Awfv",
+      "seconds": 1.68,
+      "mouth": "8958996689696632698756722355432100"
+    },
+    "flag_no_gang": {
+      "hash": "4112d473bab04cd3",
+      "date": "2026-11-26",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam - Energetic, Social Media Creator",
+      "model": "eleven_multilingual_v2",
+      "text": "You need a gang to fly a flag.",
+      "chars": 30,
+      "chars_total": 12,
+      "request_id": "viQ0xvy2qYKP6w5xk8lS",
+      "seconds": 1.59,
+      "mouth": "89998954978668437889734887532100"
+    },
+    "flag_not_leader": {
+      "hash": "ead1b3c6ed96064a",
+      "date": "2026-11-26",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam - Energetic, Social Media Creator",
+      "model": "eleven_multilingual_v2",
+      "text": "Only a gang leader can pick the gang flag.",
+      "chars": 42,
+      "chars_total": 17,
+      "request_id": "vhX9DKNyU3QMNXA20RZc",
+      "seconds": 2.12,
+      "mouth": "9968798689867897936847921849866436766531000"
+    },
+    "flag_refused": {
+      "hash": "43fdbdd177a753eb",
+      "date": "2026-11-26",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam - Energetic, Social Media Creator",
+      "model": "eleven_multilingual_v2",
+      "text": "That flag cannot be picked.",
+      "chars": 27,
+      "chars_total": 11,
+      "request_id": "aHYWpFU5ljG4ADD8fKms",
+      "seconds": 1.66,
+      "mouth": "3997233799733677769931762882112000"
     }
   },
   "voice": {

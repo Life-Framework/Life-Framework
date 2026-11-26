@@ -11,10 +11,12 @@
 // red-proof (2026-11-08): without `git merge --abort` in healMerge's abort path
 //   it printed "real-conflict: merge left in progress"; with the registry
 //   unclassified it printed "registry-only: expected healed, got needs-human".
+// red-proof (2026-11-27): with the hand-off not honoured (a fresh tmp/ log counted as dirty) "a shipped, clean worktree
+//   with fresh tmp/ logs should read as done" and "heal's own pushed merge should hand the worktree off again" failed.
 import { mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { gitSync } from "../lib/git-retry.mjs";
-import { conflictKind, healMerge, isLive, predictConflicts, pushBranch, LIVE_MS } from "../prs.mjs";
+import { autoMergeWithRetry, conflictKind, healMerge, isLive, markHandoff, predictConflicts, pushBranch, readHandoff, LIVE_MS } from "../prs.mjs";
 import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
@@ -228,6 +230,33 @@ ${t}`);
   if (isLive(stale).live) fail("a reverted worktree with an old commit should be idle");
   git(stale, ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "fresh"]);
   if (!isLive(stale).live) fail("a fresh commit should read as LIVE");
+
+  // 2026-11-27: the hand-off marker. A shipped (or healed) worktree whose HEAD is still the handed-off commit and whose
+  // tree is clean is done, even with fresh logs in tmp/ and a fresh reflog entry (heal's own merge commit on 2026-11-25).
+  const headNow = must(stale, ["rev-parse", "HEAD"]);
+  markHandoff(stale, headNow, "ship");
+  write(stale, "tmp/logs/wt-ship.log", "fresh ship log\n");
+  const h1 = isLive(stale);
+  if (h1.live || h1.done !== "ship") fail(`a shipped, clean worktree with fresh tmp/ logs should read as done, got ${JSON.stringify(h1)}`);
+  if (readHandoff(stale)?.head !== headNow) fail("readHandoff should return the recorded head");
+  write(stale, "docs/a.md", "agent keeps going\n");
+  if (!isLive(stale).live) fail("an edit after the hand-off should read as LIVE again");
+  must(stale, ["checkout", "-q", "--", "docs/a.md"]);
+  git(stale, ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "after ship"]);
+  if (!isLive(stale).live) fail("a commit after the hand-off should read as LIVE again");
+  markHandoff(stale, must(stale, ["rev-parse", "HEAD"]), "heal");
+  if (isLive(stale).done !== "heal") fail("heal's own pushed merge should hand the worktree off again");
+  writeFileSync(join(stale, "tmp", "wt", "handoff.json"), "{ not json");
+  if (!isLive(stale).live) fail("a broken marker falls back to the mtime rule (fresh commit: LIVE)");
+
+  // Transient GraphQL answers are retried; a real refusal is not.
+  const calls = [];
+  const flaky = [{ status: 1, stdout: "", stderr: "GraphQL: Something went wrong while executing your query on 2026-11-25T15:44:25Z." }, { status: 0, stdout: "", stderr: "" }];
+  const am1 = autoMergeWithRetry(".", 4972, { run: (a) => { calls.push(a); return flaky[calls.length - 1]; }, wait: () => {} });
+  if (am1.status !== 0 || calls.length !== 2) fail(`a transient GraphQL error should be retried once and succeed, got ${calls.length} call(s)`);
+  let n = 0;
+  const am2 = autoMergeWithRetry(".", 1, { run: () => { n++; return { status: 1, stdout: "", stderr: "Pull request is in clean status" }; }, wait: () => {} });
+  if (am2.status === 0 || n !== 1) fail(`a real refusal should not be retried, got ${n} call(s)`);
 } catch (e) {
   fail(`scenario threw: ${e.message}`);
 } finally {

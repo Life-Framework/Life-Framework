@@ -19,6 +19,7 @@
   },
   "budget_chars": 800,
   "lines": {
+    "show_goods_reply": { "for_key": "#LF-Shopkeeper_ShowGoodsReply", "key_pin": "b32a83e9", "text": "Take a look. Cash only." },
     "greet": {
       "text": "Officer on duty. Keep your hands where I can see them, and we will get along."
     },
