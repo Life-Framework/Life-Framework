@@ -234,6 +234,96 @@ class LF_PerfStressCount : Managed
 }
 
 //------------------------------------------------------------------------------------------------
+//! Client half of the night audit (#perf-audit-1127): switch the lights round a point off, or only their
+//! shadows off, and restore them, so one session can time the same view with the lights on, shadows off and
+//! lights off a few seconds apart (a busy shared box moves the absolute fps, not this paired difference).
+class LF_PerfStressLights : Managed
+{
+	protected static ref array<EntityID> s_aIds = {};
+	protected static ref array<bool> s_aWasEnabled = {};
+	protected static ref array<bool> s_aHadShadow = {};
+	protected vector m_vCentre;
+	protected float m_fRadiusSq;
+	protected string m_sMode;
+	protected int m_iTouched;
+
+	//------------------------------------------------------------------------------------------------
+	//! \param mode on (restore everything), noshadow, off.
+	string Run(vector centre, float radius, string mode)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return "no_world";
+
+		if (mode == "on")
+		{
+			int restored = Restore(world);
+			return string.Format("lights restored=%1", restored);
+		}
+		if (mode != "noshadow" && mode != "off")
+			return "bad_mode";
+
+		m_vCentre = centre;
+		m_fRadiusSq = radius * radius;
+		m_sMode = mode;
+		world.QueryEntitiesBySphere(centre, radius, AddRoot, null, EQueryEntitiesFlags.ALL);
+		return string.Format("lights mode=%1 touched=%2 remembered=%3", mode, m_iTouched, s_aIds.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int Restore(BaseWorld world)
+	{
+		int done = 0;
+		for (int i = 0; i < s_aIds.Count(); i++)
+		{
+			LightEntity light = LightEntity.Cast(world.FindEntityByID(s_aIds[i]));
+			if (!light)
+				continue;
+			light.SetEnabled(s_aWasEnabled[i]);
+			light.SetCastShadow(s_aHadShadow[i]);
+			done++;
+		}
+		s_aIds.Clear();
+		s_aWasEnabled.Clear();
+		s_aHadShadow.Clear();
+		return done;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool AddRoot(IEntity e)
+	{
+		if (e.GetParent())
+			return true;
+
+		Walk(e);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Walk(IEntity e)
+	{
+		LightEntity light = LightEntity.Cast(e);
+		if (light && vector.DistanceSq(e.GetOrigin(), m_vCentre) <= m_fRadiusSq && s_aIds.Find(e.GetID()) == -1)
+		{
+			s_aIds.Insert(e.GetID());
+			s_aWasEnabled.Insert(light.IsEnabled());
+			s_aHadShadow.Insert(light.IsCastShadow());
+			light.SetCastShadow(false);
+			if (m_sMode == "off")
+				light.SetEnabled(false);
+			m_iTouched++;
+		}
+
+		IEntity child = e.GetChildren();
+		while (child)
+		{
+			Walk(child);
+			child = child.GetSibling();
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! Server half: boxes that exist only on the server, so its frame time carries their cost.
 class LF_PerfStressServer
 {
@@ -306,6 +396,23 @@ modded class LF_AgentHarnessVerbs
 	{
 		if (cmd.Verb != "perfstress")
 			return super.Handle(cmd);
+
+		if (cmd.Arg1 == "lights")
+		{
+			// lights <on|noshadow|off> [r]: round the local character, restorable (the night audit).
+			IEntity me = LF_Utils.GetLocalCharacter();
+			if (!me)
+			{
+				LF_AgentHarness.Answer(cmd.Id, "error", "no_character");
+				return true;
+			}
+			float lightRadius = 80;
+			if (!cmd.Arg3.IsEmpty())
+				lightRadius = cmd.Arg3.ToFloat();
+			LF_PerfStressLights lights = new LF_PerfStressLights();
+			LF_AgentHarness.Answer(cmd.Id, "ok", lights.Run(me.GetOrigin(), lightRadius, cmd.Arg2));
+			return true;
+		}
 
 		if (cmd.Arg1 == "count")
 		{

@@ -17,7 +17,7 @@
 //      fetch, git in the worktree or another repo, and LF_ALLOW_MAIN_GIT=1 (environment or inline) are allowed.
 // inputs: tools/lib/main-write-guard.mjs, tools/hooks/main-write-guard.mjs, .claude/settings.json
 // red-proof: 2026-11-18, with decideWrite's claim lookup (liveClaim) returning null the "main-launched agent with a claim" check
-// failed; 2026-11-19, with the shell branch of decideWrite removed 14 shell checks failed; with the repo.linked branch removed the "cwd is a worktree" checks failed; with GUARDED emptied every deny check failed; 2026-11-27, with gitSubIsWrite's GIT_WRITE lookup returning false the 12 git-guard deny checks failed; restored.
+// failed; 2026-11-19, with the shell branch of decideWrite removed 14 shell checks failed; with the repo.linked branch removed the "cwd is a worktree" checks failed; with GUARDED emptied every deny check failed; 2026-11-27, with gitSubIsWrite's GIT_WRITE lookup returning false the 12 git-guard deny checks failed; with firstWord skipping no shell keyword the four loop and branch checks failed; restored.
 import { mkdirSync, writeFileSync, existsSync, readFileSync, utimesSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -174,6 +174,8 @@ const gitDenied = [
   ["Bash", "git branch -D ws/old", { cwd: main }, "git branch -D in main"],
   ["Bash", "git worktree remove --force ../x", { cwd: main }, "git worktree remove in main"],
   ["PowerShell", "git switch main; tools\\cli wt new x", { cwd: main }, "git switch before wt new"],
+  ["Bash", "for b in a; do git checkout $b; done", { cwd: main }, "git checkout behind a loop's do"],
+  ["Bash", "if true; then git pull; fi", { cwd: main }, "git pull behind then"],
 ];
 for (const [tool, command, over, what] of gitDenied) {
   const d = decideWrite(sh(tool, command, over), { env: ev });
@@ -194,6 +196,10 @@ const gitAllowed = [
   ["Bash", "LF_ALLOW_MAIN_GIT=1 git pull --ff-only", { cwd: main }, "an inline LF_ALLOW_MAIN_GIT=1"],
   ["PowerShell", "$env:LF_ALLOW_MAIN_GIT=1; git pull", { cwd: main }, "a PowerShell $env:LF_ALLOW_MAIN_GIT=1"],
   ["Bash", "echo 'git pull'", { cwd: main }, "git pull inside a quoted string"],
+  // 2026-11-27: the hook refused this very loop (the segment read "do cd ...", so the cd into each worktree was missed).
+  ["Bash", `for n in 5 6; do cd ${WT} && git merge -q --no-edit origin/main; done`, { cwd: main }, "a for loop that cds into a worktree before git merge"],
+  ["Bash", `if cd ${WT}; then git commit -m x; fi`, { cwd: main }, "if cd <worktree>; then git commit"],
+  ["Bash", `for n in 5 6; do cd /x/wt-$n && git merge origin/main; done`, { cwd: main }, "a cd to a variable path makes the git dir unknown (allowed, not guessed)"],
 ];
 for (const [tool, command, over, what] of gitAllowed) {
   check(decideWrite(sh(tool, command, over), { env: ev }).block === false, `git guard: ${what} is allowed`);

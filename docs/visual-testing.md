@@ -389,6 +389,13 @@ not load ...` and keeps no pictures. The asset verify/states clothing shots use 
 
 ### What it does not show
 
+- **Sign faces** (#4940). A sign's face is a render target that `LF_SignComponent` paints at runtime, and a
+  Workbench `look` never draws it: every sign plate shows blank white, and a blank plate in a `look` picture is NOT a
+  defect. The 2026-11-25 sweep first graded 21 working signs BELOW for it; a session then read 9 of 9. When the
+  area holds a sign prefab, `look` prints `NOTE <n> sign(s) here: sign faces are not drawn in look ...` under the
+  contact sheet path, tags the first tile `[SIGN FACES NOT DRAWN: check in a session]` and writes the note to
+  `index.json` `notes`. Grade sign text in a full-profile session: `node agent-box/harness.mjs --client 1 stand ...`
+  at eye height, then `shot world`. Placement, size and what blocks the sign are still judged from `look`.
 - **UI.** A Workbench play capture is the 3D view only.
 - **Anything a dedicated server does differently**, a second player, or late join.
 - **Red fans and lines on the ground.** A Workbench debug overlay that the game client does not

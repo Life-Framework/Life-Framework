@@ -459,6 +459,17 @@ export function tileLabel(shot, st, flags) {
   return bits.join("  ");
 }
 
+// Sign faces (#4940). A sign plate's face is a render target LF_SignComponent paints at runtime; a Workbench look never
+// draws it, so every sign in a look picture shows a blank white plate. The 2026-11-25 sweep graded 21 working signs as
+// BELOW for that. A look whose area holds a sign prefab says so on the summary, in index.json and on the sheet itself.
+const SIGN_PREFAB = /^(LF|EL)_(Sign|SignQuad|SignFace|BoardFace|TownBoard|HouseSaleSign|PlotSign|RaceStartSign|MiningSign|WhitelistSign|SpeedLimit|ClinicShortageNotice)/i;
+export const SIGN_FACE_NOTE = "sign faces are not drawn in look (a runtime render target), so a blank plate here is not a defect; read the text in a session (harness stand + shot world, docs/visual-testing.md \"Sign faces\")";
+
+export function signsInArea(world, area) {
+  if (!Array.isArray(world) || !area) return [];
+  return world.filter((e) => SIGN_PREFAB.test(baseOf(e)) && Math.hypot(e.x - area.x, e.z - area.z) <= (area.radius ?? 0));
+}
+
 export function sheetLayout(count) {
   const cols = count <= 6 ? 3 : 4;
   return { cols, rows: Math.ceil(count / cols) };
@@ -943,13 +954,15 @@ async function run(args) {
       else if (flags.length) flagged++;
       rows.push({ kind: shot.kind, label: shot.label, file: st && st.file ? file : null, flags, clear: st?.clear ?? null, size: st?.size ?? null, cam: st?.cam ?? null, px, entity: shot.entity ?? null, contact: st?.contact ?? null, tile: shot.contact ? (await import("./look-contact.mjs")).contactLabel(shot, st) : tileLabel(shot, st, flags) });
     }
+    const signs = signsInArea(world, area);
     const tiles = rows.map((r) => ({ file: r.file, label: r.tile, marks: [] }));
+    if (signs.length && tiles.length) tiles[0].label = `${tiles[0].label}  [SIGN FACES NOT DRAWN: check in a session]`;
     const { cols } = area.sheetCols ? { cols: area.sheetCols } : sheetLayout(tiles.length);
     const contact = join(dir, "contact.jpg");
     image({ op: "sheet", tiles, out: contact, cols, maxWidth: cols * 480, quality: 74 });
-    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, inputs: { addons: askedTree, rendered: renderedTree }, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows }, null, 2) + "\n");
+    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, inputs: { addons: askedTree, rendered: renderedTree }, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows, ...(signs.length ? { notes: [`${signs.length} sign(s): ${SIGN_FACE_NOTE}`] } : {}) }, null, 2) + "\n");
     const bad = rows.filter((r) => r.flags.length);
-    summaries.push({ area: area.name, contact, bad, count: rows.length });
+    summaries.push({ area: area.name, contact, bad, count: rows.length, signs: signs.length });
     if (rows[0].file) overview.push({ file: rows[0].file, label: `${area.name}${bad.length ? `  [${bad.length} flagged]` : ""}`, marks: [] });
   }
   if (perArea.length > 1 && overview.length) {
@@ -979,6 +992,7 @@ async function run(args) {
   console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} addons=${renderedTree ? renderedTree.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
   for (const s of summaries) {
     console.log(`  ${s.area}: ${s.contact}`);
+    if (s.signs) console.log(`    NOTE ${s.signs} sign(s) here: ${SIGN_FACE_NOTE}`);
     for (const b of s.bad) console.log(`    ${b.flags.join(",")}: ${b.kind} ${b.label}${b.size ? ` ${sizeText(b.size)}` : ""}`);
   }
   if (perArea.length > 1) console.log(`  overview: ${join(outRoot, "overview.jpg")}`);
@@ -1041,6 +1055,12 @@ export async function selftest() {
   ok(shots.every((s) => /^[A-Za-z0-9_-]+$/.test(s.name) && s.line.includes(s.name)), "a shot name is not file-safe or not in its line");
   ok(shots[0].line.startsWith("shot test_area__wide 100 - 200 1.2 0.85 90:10:2.2,"), `wide line: ${shots[0].line.slice(0, 60)}`);
   ok(shots[5].line === "close test_area__c01_Till_Test Till_Test 101 1 201 90", `close line: ${shots[5].line}`);
+  // #4940: an area with a sign prefab gets the "sign faces are not drawn" note; one without, or a sign out of range, does not.
+  ok(signsInArea(world, area).length === 0, "an area with no sign prefab carries no sign note");
+  const signed = [...world, { name: "", layer: "Signs.layer", actions: [], x: 102, y: 0, z: 199, anonPrefab: "{AB}Prefabs/Signs/LF_Sign_PolePlate.et" }, { name: "Plate", layer: "Signs.layer", actions: [], x: 99, y: 2, z: 201, prefab: "Prefabs/Signs/LF_SignQuad_2x1.et" }, { name: "", layer: "Signs.layer", actions: [], x: 400, y: 0, z: 200, prefab: "Prefabs/Signs/LF_Sign_Fascia.et" }];
+  ok(signsInArea(signed, area).length === 2, `two sign prefabs in range are found (got ${signsInArea(signed, area).length})`);
+  ok(signsInArea(null, area).length === 0, "no world (an item look) is no sign");
+  ok(/not drawn in look/.test(SIGN_FACE_NOTE) && /session/.test(SIGN_FACE_NOTE), "the sign note says faces are not drawn and to check in a session");
   ok(shots[6].line === "close test_area__c02_Commercial_Sack - 104 0 200 -90", `unnamed close line: ${shots[6].line}`);
   ok(shotsFor(area, world, { close: 0 }).length === 5, "--close 0 still planned a close-up");
   const plan = planText(shots, [area], { hour: 9 });
