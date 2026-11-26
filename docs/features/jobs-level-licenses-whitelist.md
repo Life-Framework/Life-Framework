@@ -1,5 +1,7 @@
 # Jobs / Level / Licenses / Whitelist
 
+> **In short.** Jobs are taken at a desk in the world, each trade has its own level, and a level opens licences, faster machine runs and perk picks at the labor office; a refusal always says in words what is missing. Two pieces are new for freight work. The **truck licence** is earned at the truck yard: pay the examiner a fee, drive a lent truck through four gates in order, and the licence is yours; miss a gate and the fee is lost, with a short wait before you can retake it. **Export orders** are posted on a board at the dock warehouse: take one (Delivery level 10 or higher), bring the goods to the crane spot on the quay, in your pockets or in a truck backed up to the pallet, and hand them in for cash. Both are built and in the current build; they are still being playtested. The rest of this page is the engineering record.
+
 ### `LF_PlayerJobComponent` — `Feature/Jobs/LF_PlayerJobComponent.c`
 - ✅ Per-player job state, per-job level/XP maps, license gates (POLICE→POLICE_ACCESS,
   MEDIC→MEDIC_ACCESS), client→server `RpcAsk_SetJob` re-validates licenses.

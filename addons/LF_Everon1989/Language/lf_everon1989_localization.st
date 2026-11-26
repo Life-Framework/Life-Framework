@@ -5111,12 +5111,12 @@ StringTable {
     }
     CustomStringTableItem "{5E2A7C91B0D43F61}" {
      Id "LF-Market_BuyerFull"
-     Target_en_us "They have enough - try the wholesale warehouse at the dock. More in about %1 min."
+     Target_en_us "They have enough - a wholesale counter (the woodlot or the dock) still buys. More in about %1 min."
      Comment "Pack override of the core toast (#3599): the timber counter is full, the dock wholesale warehouse still buys. %1 = minutes."
     }
     CustomStringTableItem "{5E2A7C91B0D43F62}" {
      Id "LF-Market_BuyerNever"
-     Target_en_us "They have enough - try the wholesale warehouse at the dock."
+     Target_en_us "They have enough - a wholesale counter (the woodlot or the dock) still buys."
      Comment "Pack override of the core toast (#3599): a buyer that never refills."
     }
     CustomStringTableItem "{9C1E4A73D0B58F26}" {
@@ -6891,7 +6891,7 @@ StringTable {
     }
     CustomStringTableItem "{3018FA71B28E00A7}" {
      Id "LF-Sign_FarmPlots_Next"
-     Target_en_us "Sell cabbages at the general store on the main street."
+     Target_en_us "Sell cabbages at the market stalls on the main street."
      Comment "Info board at the farm plots, Next section: where the player goes after this place."
     }
     CustomStringTableItem "{7727C787985BD3E9}" {

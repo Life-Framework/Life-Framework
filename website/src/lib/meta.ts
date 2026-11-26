@@ -17,7 +17,7 @@ const pages: Record<string, Omit<PageMeta, "path">> = {
   },
   "/roadmap": {
     title: "Roadmap",
-    description: "Milestones M1 to M6, each with its goal, its status, and its issues and epics, read from GitHub when the site is built.",
+    description: "Milestones from M1 onward, each with its goal, its status, and its issues and epics, read from GitHub when the site is built.",
     og: "roadmap",
   },
   "/features": {

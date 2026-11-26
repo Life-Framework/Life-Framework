@@ -113,11 +113,11 @@ GenericEntity Fit_eastrise_mine_mine_timber_r : "{67B5336A6D63CCA4}Prefabs/Props
  angleY 90
 }
 GenericEntity Fit_eastrise_mine_mine_flood_l : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
- coords 6679.8 149.263 7926.4
+ coords 6679.8 149.783 7926.4
  angleY 180
 }
 GenericEntity Fit_eastrise_mine_mine_flood_r : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
- coords 6691.4 148.453 7926.4
+ coords 6691.4 148.973 7926.4
  angleY 180
 }
 GenericEntity Fit_eastrise_mine_mine_fence_w1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
@@ -168,4 +168,38 @@ GenericEntity Fit_eastrise_mine_mine_ore_field {
 GenericEntity Fit_eastrise_mine_mine_coal_heap : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 6686.4 149.163 7921.4
  scale 0.8
+}
+GenericEntity Fit_eastrise_mine_mine_stool_fl : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 6679.8 149.283 7926.4
+ angleY 20
+}
+GenericEntity Fit_eastrise_mine_mine_glow_fl : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6679.8 150.033 7926.4
+}
+GenericEntity Fit_eastrise_mine_mine_stool_fr : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 6691.4 148.473 7926.4
+ angleY -30
+}
+GenericEntity Fit_eastrise_mine_mine_glow_fr : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6691.4 149.223 7926.4
+}
+GenericEntity Fit_eastrise_mine_mine_stool_ore : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 6685.5 148.903 7926.4
+ angleY 70
+}
+GameEntity Fit_eastrise_mine_mine_lamp_ore : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 6685.5 149.403 7926.4
+}
+GenericEntity Fit_eastrise_mine_mine_glow_ore : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6685.5 149.653 7926.4
+}
+GenericEntity Fit_eastrise_mine_mine_stool_sign : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 6685.4 149.65 7913.6
+ angleY -40
+}
+GameEntity Fit_eastrise_mine_mine_lamp_sign : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 6685.4 150.15 7913.6
+}
+GenericEntity Fit_eastrise_mine_mine_glow_sign : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6685.4 150.4 7913.6
 }
