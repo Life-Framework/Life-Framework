@@ -1106,7 +1106,7 @@ on the laptop's desktop. Everything that drives them follows the session there: 
 state`, `reset`, `join`, `roster`, `film` and every proof verb run in the run folder over ssh (`--local` keeps
 one on this PC), and a path of this worktree among a proof's arguments (an out dir) is mapped into the run folder
 and copied home afterwards. `asset states <slug> --shots` follows the session the same way; `--local` pins it here.
-`session pull` copies other evidence back. Filming there is #482.
+`session pull` copies other evidence back (a session on this PC: each client's newest `console.log` and `el-captures` and the server log into `tmp/session-pull/local-<time>/`). Filming there is #482.
 
 **A machine that goes away.** A remote test or e2e run whose slot holder drops, or whose ssh fails while the machine
 stops answering, is not a verdict: the machine is marked down for the health window and the run queues again
