@@ -295,6 +295,96 @@
       ],
       "yaw": 70,
       "floor": "f0"
+    },
+    {
+      "id": "pub-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        0.65,
+        2.9,
+        5.6
+      ],
+      "yaw": 0,
+      "wall": "+z",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"pub_levie\"",
+            "m_vRimColor": "0.85 0.7 0.3",
+            "m_vPaintColor": "0.12 0.22 0.15",
+            "m_vTextColor": "0.96 0.93 0.82"
+          },
+          "blocks": []
+        }
+      ],
+      "floor": "f0"
+    },
+    {
+      "id": "pub-lamp-1",
+      "name": "Pub_Lamp_1",
+      "prefab": "{0E2929AAD09289D1}Prefabs/Props/Lights/LF_LightCeiling_Interior.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        0.4,
+        2.64,
+        2.2
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "free": true,
+      "wall": "free"
+    },
+    {
+      "id": "pub-fill-1",
+      "name": "Pub_Fill_1",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        0.9,
+        2.5,
+        2.2
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "free": true,
+      "wall": "free"
+    },
+    {
+      "id": "pub-fill-2",
+      "name": "Pub_Fill_2",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -1.5,
+        2.5,
+        0.8
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "free": true,
+      "wall": "free"
+    },
+    {
+      "id": "pub-fill-3",
+      "name": "Pub_Fill_3",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -1.5,
+        2.5,
+        3.6
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "free": true,
+      "wall": "free"
     }
   ]
 }

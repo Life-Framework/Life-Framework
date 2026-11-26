@@ -8,11 +8,11 @@
   "kinds": [
     "StillBarn"
   ],
-  "rows": 13,
+  "rows": 16,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_stillbarn_1_Place"
   },
-  "date": "2026-11-19"
+  "date": "2026-11-26"
 }
