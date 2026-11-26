@@ -31,9 +31,7 @@ class LF_Test_LoggingChain : LF_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		EntitySpawnParams params();
-		params.TransformMode = ETransformMode.LOCAL;
-		IEntity tree = GetGame().SpawnEntityPrefab(Resource.Load(TREE), GetGame().GetWorld(), params);
+		IEntity tree = LF_Utils.SpawnEntityPrefab(TREE, "0 0 0");
 		ctx.True(tree != null, "cuttable tree spawns");
 		if (ctx.FailureCount() > 0)
 			return;
@@ -82,7 +80,7 @@ class LF_Test_LoggingChain : LF_Test
 		}
 		ctx.True(spawnsResolve, "tree destroy spawns all resolve");
 
-		IEntity sawmill = GetGame().SpawnEntityPrefab(Resource.Load(SAWMILL), GetGame().GetWorld(), params);
+		IEntity sawmill = LF_Utils.SpawnEntityPrefab(SAWMILL, "0 0 0");
 		ctx.True(sawmill != null, "sawmill spawns");
 		if (ctx.FailureCount() > 0)
 			return;

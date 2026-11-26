@@ -85,16 +85,16 @@ class LF_Test_Roadmap_ResourcesWorld : LF_Test
 	protected static const ResourceName BAR = "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et";
 	protected static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
 
-	protected static ref array<IEntity> s_aBars = {};
+	protected int m_iBarsFound;
 
 	override string GetName()
 	{
 		return "e2e/roadmap-resources";
 	}
 
-	protected static bool InsertBar(IEntity entity)
+	protected bool InsertBar(IEntity entity)
 	{
-		s_aBars.Insert(entity);
+		m_iBarsFound++;
 		return true;
 	}
 
@@ -108,9 +108,9 @@ class LF_Test_Roadmap_ResourcesWorld : LF_Test
 
 	protected int CountBarsNear(vector center)
 	{
-		s_aBars = new array<IEntity>();
+		m_iBarsFound = 0;
 		GetGame().GetWorld().QueryEntitiesBySphere(center, 4, InsertBar, FilterBar);
-		return s_aBars.Count();
+		return m_iBarsFound;
 	}
 
 	protected LF_ProcessAction FindIronProcess(IEntity furnace)

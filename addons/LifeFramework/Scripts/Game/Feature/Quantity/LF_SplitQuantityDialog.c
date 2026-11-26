@@ -12,8 +12,30 @@ class LF_SplitQuantityDialog : DialogUI
 		Widget w = GetRootWidget();
 		m_wKeepAmount = EditBoxWidget.Cast(w.FindAnyWidget("KeepAmount"));
 		m_wSplitAmount = EditBoxWidget.Cast(w.FindAnyWidget("SplitAmount"));
-		m_wSlider = LF_ThinSliderWidget.Cast(w.FindAnyWidget("AmountSlider").FindHandler(LF_ThinSliderWidget));
+		Widget sliderRoot = w.FindAnyWidget("AmountSlider");
+		if (!sliderRoot)
+		{
+			LF_Debug.Error("Quantity", "split dialog layout has no AmountSlider widget");
+			return;
+		}
+
+		m_wSlider = LF_ThinSliderWidget.Cast(sliderRoot.FindHandler(LF_ThinSliderWidget));
+		if (!m_wSlider)
+		{
+			LF_Debug.Error("Quantity", "split dialog AmountSlider has no LF_ThinSliderWidget handler");
+			return;
+		}
+
 		m_wSlider.GetOnValueChanged().Insert(OnSliderValueChanged);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuClose()
+	{
+		if (m_wSlider && m_wSlider.GetOnValueChanged())
+			m_wSlider.GetOnValueChanged().Remove(OnSliderValueChanged);
+
+		super.OnMenuClose();
 	}
 
 	//------------------------------------------------------------------------------------------------

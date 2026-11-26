@@ -70,7 +70,7 @@ AudioClass {
  sounds {
   SoundClass {
    id 102409
-   name "SOUND_DLG_OLD_MAN_GREET_REFUSES"
+   name "SOUND_DLG_OLD_MAN_LETTER_DESC"
    version 5
    tl 680 0
    ins {
@@ -92,7 +92,7 @@ AudioClass {
   }
   SoundClass {
    id 103433
-   name "SOUND_DLG_OLD_MAN_GREET_WARY"
+   name "SOUND_DLG_OLD_MAN_LETTER_TURN_IN"
    version 5
    tl 680 280
    ins {
@@ -114,7 +114,7 @@ AudioClass {
   }
   SoundClass {
    id 104457
-   name "SOUND_DLG_OLD_MAN_GREET_FRIENDLY"
+   name "SOUND_DLG_OLD_MAN_GREET_REFUSES"
    version 5
    tl 680 560
    ins {
@@ -136,7 +136,7 @@ AudioClass {
   }
   SoundClass {
    id 105481
-   name "SOUND_DLG_OLD_MAN_GREET_REGULAR"
+   name "SOUND_DLG_OLD_MAN_GREET_WARY"
    version 5
    tl 680 840
    ins {
@@ -158,7 +158,7 @@ AudioClass {
   }
   SoundClass {
    id 106505
-   name "SOUND_DLG_OLD_MAN_GREET"
+   name "SOUND_DLG_OLD_MAN_GREET_FRIENDLY"
    version 5
    tl 680 1120
    ins {
@@ -180,7 +180,7 @@ AudioClass {
   }
   SoundClass {
    id 107529
-   name "SOUND_DLG_OLD_MAN_ZONE"
+   name "SOUND_DLG_OLD_MAN_GREET_REGULAR"
    version 5
    tl 680 1400
    ins {
@@ -202,7 +202,7 @@ AudioClass {
   }
   SoundClass {
    id 108553
-   name "SOUND_DLG_OLD_MAN_MOVE"
+   name "SOUND_DLG_OLD_MAN_GREET"
    version 5
    tl 680 1680
    ins {
@@ -224,7 +224,7 @@ AudioClass {
   }
   SoundClass {
    id 109577
-   name "SOUND_DLG_OLD_MAN_START"
+   name "SOUND_DLG_OLD_MAN_ZONE"
    version 5
    tl 680 1960
    ins {
@@ -246,7 +246,7 @@ AudioClass {
   }
   SoundClass {
    id 110601
-   name "SOUND_DLG_OLD_MAN_COVE"
+   name "SOUND_DLG_OLD_MAN_MOVE"
    version 5
    tl 680 2240
    ins {
@@ -268,7 +268,7 @@ AudioClass {
   }
   SoundClass {
    id 111625
-   name "SOUND_DLG_OLD_MAN_BYE"
+   name "SOUND_DLG_OLD_MAN_START"
    version 5
    tl 680 2520
    ins {
@@ -290,7 +290,7 @@ AudioClass {
   }
   SoundClass {
    id 112649
-   name "SOUND_DLG_OLD_MAN_ANNIVERSARY_LETTER_THANKS"
+   name "SOUND_DLG_OLD_MAN_COVE"
    version 5
    tl 680 2800
    ins {
@@ -312,7 +312,7 @@ AudioClass {
   }
   SoundClass {
    id 113673
-   name "SOUND_DLG_OLD_MAN_ANNIVERSARY_LETTER_SECRET"
+   name "SOUND_DLG_OLD_MAN_BYE"
    version 5
    tl 680 3080
    ins {
@@ -321,6 +321,50 @@ AudioClass {
      links {
       ConnectionClass connection {
        id 216082
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 114697
+   name "SOUND_DLG_OLD_MAN_ANNIVERSARY_LETTER_THANKS"
+   version 5
+   tl 680 3360
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 217106
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 115721
+   name "SOUND_DLG_OLD_MAN_ANNIVERSARY_LETTER_SECRET"
+   version 5
+   tl 680 3640
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 218130
        port 65
       }
      }
@@ -392,6 +436,14 @@ AudioClass {
        id 113673
        port 65
       }
+      ConnectionClass connection {
+       id 114697
+       port 65
+      }
+      ConnectionClass connection {
+       id 115721
+       port 65
+      }
      }
     }
     ConnectionsClass connections {
@@ -434,7 +486,7 @@ AudioClass {
  shaders {
   ShaderClass {
    id 204818
-   name "SOUND_DLG_OLD_MAN_GREET_REFUSES"
+   name "SOUND_DLG_OLD_MAN_LETTER_DESC"
    version 5
    tl 432 0
    ins {
@@ -481,7 +533,7 @@ AudioClass {
   }
   ShaderClass {
    id 205842
-   name "SOUND_DLG_OLD_MAN_GREET_WARY"
+   name "SOUND_DLG_OLD_MAN_LETTER_TURN_IN"
    version 5
    tl 432 280
    ins {
@@ -528,7 +580,7 @@ AudioClass {
   }
   ShaderClass {
    id 206866
-   name "SOUND_DLG_OLD_MAN_GREET_FRIENDLY"
+   name "SOUND_DLG_OLD_MAN_GREET_REFUSES"
    version 5
    tl 432 560
    ins {
@@ -575,7 +627,7 @@ AudioClass {
   }
   ShaderClass {
    id 207890
-   name "SOUND_DLG_OLD_MAN_GREET_REGULAR"
+   name "SOUND_DLG_OLD_MAN_GREET_WARY"
    version 5
    tl 432 840
    ins {
@@ -622,7 +674,7 @@ AudioClass {
   }
   ShaderClass {
    id 208914
-   name "SOUND_DLG_OLD_MAN_GREET"
+   name "SOUND_DLG_OLD_MAN_GREET_FRIENDLY"
    version 5
    tl 432 1120
    ins {
@@ -669,7 +721,7 @@ AudioClass {
   }
   ShaderClass {
    id 209938
-   name "SOUND_DLG_OLD_MAN_ZONE"
+   name "SOUND_DLG_OLD_MAN_GREET_REGULAR"
    version 5
    tl 432 1400
    ins {
@@ -716,7 +768,7 @@ AudioClass {
   }
   ShaderClass {
    id 210962
-   name "SOUND_DLG_OLD_MAN_MOVE"
+   name "SOUND_DLG_OLD_MAN_GREET"
    version 5
    tl 432 1680
    ins {
@@ -763,7 +815,7 @@ AudioClass {
   }
   ShaderClass {
    id 211986
-   name "SOUND_DLG_OLD_MAN_START"
+   name "SOUND_DLG_OLD_MAN_ZONE"
    version 5
    tl 432 1960
    ins {
@@ -810,7 +862,7 @@ AudioClass {
   }
   ShaderClass {
    id 213010
-   name "SOUND_DLG_OLD_MAN_COVE"
+   name "SOUND_DLG_OLD_MAN_MOVE"
    version 5
    tl 432 2240
    ins {
@@ -857,7 +909,7 @@ AudioClass {
   }
   ShaderClass {
    id 214034
-   name "SOUND_DLG_OLD_MAN_BYE"
+   name "SOUND_DLG_OLD_MAN_START"
    version 5
    tl 432 2520
    ins {
@@ -904,7 +956,7 @@ AudioClass {
   }
   ShaderClass {
    id 215058
-   name "SOUND_DLG_OLD_MAN_ANNIVERSARY_LETTER_THANKS"
+   name "SOUND_DLG_OLD_MAN_COVE"
    version 5
    tl 432 2800
    ins {
@@ -951,7 +1003,7 @@ AudioClass {
   }
   ShaderClass {
    id 216082
-   name "SOUND_DLG_OLD_MAN_ANNIVERSARY_LETTER_SECRET"
+   name "SOUND_DLG_OLD_MAN_BYE"
    version 5
    tl 432 3080
    ins {
@@ -996,6 +1048,100 @@ AudioClass {
     23 0
    }
   }
+  ShaderClass {
+   id 217106
+   name "SOUND_DLG_OLD_MAN_ANNIVERSARY_LETTER_THANKS"
+   version 5
+   tl 432 3360
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 319492
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 218130
+   name "SOUND_DLG_OLD_MAN_ANNIVERSARY_LETTER_SECRET"
+   version 5
+   tl 432 3640
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 320516
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
  }
  amplitudes {
   AmplitudeClass : "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf" {
@@ -1030,9 +1176,33 @@ AudioClass {
  banks_local {
   BankLocalClass {
    id 307204
-   name "DLG_OLD_MAN_GREET_REFUSES"
+   name "DLG_OLD_MAN_LETTER_DESC"
    version 7
    tl 150 0
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{ECD190ED992739D7}Sounds/Dialogue/old_man/old_man_letter_desc.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 308228
+   name "DLG_OLD_MAN_LETTER_TURN_IN"
+   version 7
+   tl 150 280
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{80CC1A4CCFD8C354}Sounds/Dialogue/old_man/old_man_letter_turn_in.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 309252
+   name "DLG_OLD_MAN_GREET_REFUSES"
+   version 7
+   tl 150 560
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1041,10 +1211,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 308228
+   id 310276
    name "DLG_OLD_MAN_GREET_WARY"
    version 7
-   tl 150 280
+   tl 150 840
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1053,10 +1223,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 309252
+   id 311300
    name "DLG_OLD_MAN_GREET_FRIENDLY"
    version 7
-   tl 150 560
+   tl 150 1120
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1065,10 +1235,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 310276
+   id 312324
    name "DLG_OLD_MAN_GREET_REGULAR"
    version 7
-   tl 150 840
+   tl 150 1400
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1077,10 +1247,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 311300
+   id 313348
    name "DLG_OLD_MAN_GREET"
    version 7
-   tl 150 1120
+   tl 150 1680
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1089,10 +1259,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 312324
+   id 314372
    name "DLG_OLD_MAN_ZONE"
    version 7
-   tl 150 1400
+   tl 150 1960
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1101,10 +1271,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 313348
+   id 315396
    name "DLG_OLD_MAN_MOVE"
    version 7
-   tl 150 1680
+   tl 150 2240
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1113,10 +1283,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 314372
+   id 316420
    name "DLG_OLD_MAN_START"
    version 7
-   tl 150 1960
+   tl 150 2520
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1125,10 +1295,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 315396
+   id 317444
    name "DLG_OLD_MAN_COVE"
    version 7
-   tl 150 2240
+   tl 150 2800
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1137,10 +1307,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 316420
+   id 318468
    name "DLG_OLD_MAN_BYE"
    version 7
-   tl 150 2520
+   tl 150 3080
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1149,10 +1319,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 317444
+   id 319492
    name "DLG_OLD_MAN_ANNIVERSARY_LETTER_THANKS"
    version 7
-   tl 150 2800
+   tl 150 3360
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1161,10 +1331,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 318468
+   id 320516
    name "DLG_OLD_MAN_ANNIVERSARY_LETTER_SECRET"
    version 7
-   tl 150 3080
+   tl 150 3640
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1256,6 +1426,14 @@ AudioClass {
        id 113673
        port 5
       }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -1339,6 +1517,14 @@ AudioClass {
        id 113673
        port 5
       }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -1420,6 +1606,14 @@ AudioClass {
       }
       ConnectionClass connection {
        id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
        port 5
       }
      }
