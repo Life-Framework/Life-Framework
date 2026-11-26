@@ -289,30 +289,30 @@
       "mouth": "7778996211110010001699999941111244498995219956648965223385711976947533644421000000001010023399986599999654211005878787775766895998411235444443985565452111101110001736138765374213332100"
     },
     "settle_fuel": {
-      "hash": "b7b4748041cfaf54",
+      "hash": "4d41f3cae08c5026",
       "date": "2026-11-26",
       "voice_id": "NxYVRLlKssuLUMfbtwGR",
       "voice_name": "Julien - Serious",
       "model": "eleven_multilingual_v2",
-      "text": "Fuel runs are open to you now. Take a jerrycan job from the dispatch board and deliver it.",
-      "chars": 90,
-      "chars_total": 36,
-      "request_id": "B04YSdzJa60Gv51lFBVp",
-      "seconds": 6.3,
-      "mouth": "3439998799988734411246110998389824477878754431100000000000039953753699872367754898753347664454418854216765331155466574443111000"
+      "text": "Fuel runs are open to you now. Take a jerry can job from the dispatch board and deliver it.",
+      "chars": 91,
+      "chars_total": 72,
+      "request_id": "oJ1M8OMR1naoTsuw1YXD",
+      "seconds": 8.03,
+      "mouth": "23299998998864431126543999589963576778988653100000000000000002996427757998623266655111136999985563100010001359886558453189844118654533200000000026654566633444100"
     },
     "settle_wheels": {
-      "hash": "6cbef3c3b828853d",
+      "hash": "60721f9bd0afda99",
       "date": "2026-11-26",
       "voice_id": "NxYVRLlKssuLUMfbtwGR",
       "voice_name": "Julien - Serious",
       "model": "eleven_multilingual_v2",
-      "text": "Get your driving license at the town hall desk first, then buy any car at the car lot. The town board shows where it is.",
-      "chars": 120,
-      "chars_total": 48,
-      "request_id": "rUct0hwCa6g2ds9BONb7",
-      "seconds": 9.54,
-      "mouth": "49984993499989877752365322210274271384999878874676431226353310100000000000000589698765111007999833797776411147135135865444312100000000000000000038139399999797764521000035659986567665545222100"
+      "text": "Get your driver's license at the town hall desk first, then buy any car at the car lot. The town board shows where it is.",
+      "chars": 121,
+      "chars_total": 96,
+      "request_id": "kxjh0ftaQdUHtGWJO5iH",
+      "seconds": 9.64,
+      "mouth": "6993469859999686497633664321695271653899768763666422355334311010000000000387749764149999832399876531176163236997573311210000000000000000000085165699997897763411001366579976532100588763654333100"
     },
     "settle_permit": {
       "hash": "ac7f223eedda1122",
