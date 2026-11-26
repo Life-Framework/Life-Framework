@@ -35,7 +35,7 @@ import { townWorld } from "../lib/addons.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
 import { GRID_WORLD, ISLAND_WORLD, PACK_GRID_WORLD, gridLayerDirs, gridWorldFor, islandLayersDir } from "../lib/worlds.mjs";
-import { PLACE_RX, resolvePlace } from "./look-place.mjs";
+import { PLACE_RX, anchorRoom, resolvePlace } from "./look-place.mjs";
 import { lookStartVerdict, lookSummaryLine, phaseText, renderProblem, requestNeedsRam, timeline } from "../lib/look-job.mjs";
 import * as poolRam from "../lib/pool-ram.mjs";
 import { SEED_PEAKS_MB } from "../lib/pool-ram.mjs";
@@ -142,9 +142,15 @@ export function resolveInterior(area, spec, radius) {
   // auto: the room a place: target carries (its ground floor, from the dossier).
   if (String(spec) === "auto" || spec === true) {
     if (!area.room) throw new Error("--interior auto needs a place:<place>/<slot> target (it reads the room from the dossier); else give x,y,z");
-    return { ...area, name: `${area.name}-interior`, x: area.room.x, y: area.room.y, z: area.room.z, radius: radius ?? area.room.radius, interior: true };
+    return { ...area, name: `${area.name}-interior`, x: area.room.x, y: area.room.y, z: area.room.z, radius: radius ?? area.room.radius, interior: true, interiorFrom: area.room.from ?? "footprint centre" };
   }
-  const m = /^\s*(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)\s*$/.exec(String(spec));
+  // --interior <Fit_row>: stand at one named row of the slot's kit (a counter, a clerk, a bed), any floor.
+  if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(String(spec))) {
+    if (!area.kit) throw new Error(`--interior ${spec} names a kit row, which needs a place:<place>/<slot> target; else give x,y,z`);
+    const r = anchorRoom(area.kit, spec, radius ?? 5);
+    return { ...area, name: `${area.name}-interior`, x: r.x, y: r.y, z: r.z, radius: r.radius, interior: true, interiorFrom: r.from };
+  }
+  const m =/^\s*(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)\s*$/.exec(String(spec));
   if (!m) throw new Error(`--interior wants x,y,z (the room's centre on its floor), got "${spec}"`);
   return { ...area, name: `${area.name}-interior`, x: Number(m[1]), y: Number(m[2]), z: Number(m[3]), radius: radius ?? 6, interior: true };
 }
@@ -743,6 +749,7 @@ async function run(args) {
       if (args.flags.interior !== undefined) {
         if (areas.length !== 1) throw new Error("--interior shoots one room: give exactly one area");
         areas = [resolveInterior(areas[0], args.flags.interior, radius)];
+        console.log(`look: interior camera at ${areas[0].x},${areas[0].y},${areas[0].z} r ${areas[0].radius} (${areas[0].interiorFrom ?? "given x,y,z"})`);
       }
       worldOfAreas(areas); // refuses grid: and town targets in one run before anything starts
     }
@@ -1089,6 +1096,35 @@ export async function selftest() {
       }
       const inside = resolveInterior(arr, "auto");
       ok(inside.interior && inside.y === 12.4 && inside.x === 1012 && inside.radius >= 4 && inside.radius <= 8, `--interior auto: ${JSON.stringify(inside)}`);
+      // 2026-11-27: --interior auto stands at the slot's own counter (the footprint centre put it in the clinic's stairwell),
+      // and --interior <row> at a named kit row. red-proof: with kitRoom returning null the "auto stands at the counter" check failed.
+      {
+        const { kitRoom, anchorRoom } = await import("./look-place.mjs");
+        const kit = [
+          { name: "Fit_s_a_clear", x: 1012, y: 12.1, z: 2018 },
+          { name: "Fit_s_a_house_furniture_01", x: 1012, y: 12.05, z: 2018 },
+          { name: "Fit_s_a_lf_medic_duty_desk", x: 1006, y: 12.4, z: 2015 },
+          { name: "Fit_s_a_lf_hospital_bed", x: 1009, y: 12.4, z: 2016 },
+          { name: "Fit_s_a_upstairs_bed", x: 1013, y: 15.6, z: 2019 },
+          { name: "Fit_s_a_far_sign", x: 1080, y: 12.4, z: 2018 },
+        ];
+        const g = { cx: 1012, cz: 2018, floorY: 12.4, reach: 9, radius: 6 };
+        const kr = kitRoom(kit, g);
+        ok(kr && /duty_desk/.test(kr.from) && Math.hypot(kr.x - 1006, kr.z - 2015) <= 2.01 && kr.y === 12.4 && kr.radius <= 5, `auto stands at the counter, not the footprint centre: ${JSON.stringify(kr)}`);
+        const mid = kitRoom(kit.filter((r) => !/desk/.test(r.name)), g);
+        ok(mid && mid.x === 1009 && mid.z === 2016 && /middle/.test(mid.from), `no business row: the middle of the ground-floor kit (upstairs and far rows left out): ${JSON.stringify(mid)}`);
+        ok(kitRoom([kit[0], kit[1], kit[4]], g) === null, "only the clear volume, the furniture kit and an upper floor: no kit room (footprint centre stays)");
+        const named = anchorRoom(kit, "upstairs_bed");
+        ok(named.y === 15.6 && named.x === 1013 && /upstairs_bed/.test(named.from), `--interior <suffix> stands at that row on its own floor: ${JSON.stringify(named)}`);
+        let why = "";
+        try { anchorRoom(kit, "nothing_here"); } catch (e) { why = e.message; }
+        ok(/no kit row/.test(why) && /duty_desk/.test(why) && !/_clear/.test(why), `an unknown row name is refused with the row names: ${why}`);
+        const viaFlag = resolveInterior({ ...inside, kit }, "lf_medic_duty_desk");
+        ok(viaFlag.interior && viaFlag.x === 1006 && viaFlag.z === 2015 && /anchor/.test(viaFlag.interiorFrom), `--interior lf_medic_duty_desk: ${JSON.stringify(viaFlag)}`);
+        let noKit = false;
+        try { resolveInterior(area, "lf_medic_duty_desk"); } catch { noKit = true; }
+        ok(noKit, "--interior <row> off a place target refuses");
+      }
       let refused = 0;
       for (const bad of [() => placeArea(placeData, "sample-square", "nope"), () => resolveInterior(area, "auto"), () => worldOfAreas([arr, area])]) {
         try {
@@ -1315,7 +1351,7 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | town:<area> | place:<place>/<slot> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--world <path|island>] [--edit] [--close N] [--radius m] [--interior x,y,z|auto] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look stats [--hours 24] | look selftest";
+const USAGE = "usage: tools\\cli look <area | town:<area> | place:<place>/<slot> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--world <path|island>] [--edit] [--close N] [--radius m] [--interior x,y,z|auto|<kit row>] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look stats [--hours 24] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);

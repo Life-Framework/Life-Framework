@@ -326,7 +326,13 @@ files, never a typed coordinate (`tools/visual/look-place.mjs`):
 - **Front:** the first known entrance seen from the footprint centre, else the building's local +z (its yaw). The wide
   tries eye level on that side first, then look's usual fan.
 - **Ground:** the plugin's `GetSurfaceY` on the island terrain (`ty -`), so cameras stand on the street, not under it.
-- **Inside:** `--interior auto` stands on the ground floor (footprint centre, the dossier's floor height), four views.
+- **Inside:** `--interior auto` stands on the ground floor at the slot's own business row: the first counter, till, desk,
+  clerk or bar row of its kit within the footprint and on the dossier's floor height, moved up to 2 m toward the middle
+  of the ground-floor kit. With no business row it uses that middle, and with no ground-floor kit row the footprint
+  centre. The footprint centre put the 2026-11-25 sweep's cameras in the clinic stairwell, on roofs and in a neighbour's
+  flat. `--interior <row>` stands at one named row of the slot's layer, on its own floor: the full `Fit_...` name or a
+  unique suffix (`--interior lf_medic_duty_desk`, `--interior upstairs_bed`). An unknown name is refused with the row
+  list. `look` prints the pick: `look: interior camera at x,y,z r R (kit anchor Fit_..._counter)`. Four views.
 - **Close-ups:** the entities of the island's `Place_*` layers within the radius (the fitted kit rows).
 - `--world island` does the same for a bare `x,z`. A place: target and a town or grid area cannot share one run.
 
