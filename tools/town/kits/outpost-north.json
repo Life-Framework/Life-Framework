@@ -732,7 +732,7 @@
       "verb": "on outpost-stool-board",
       "offset": [
         -8.9,
-        0.47,
+        0.53,
         7.4
       ],
       "yaw": 0,
@@ -748,7 +748,7 @@
       "verb": "on outpost-lamp-board",
       "offset": [
         -8.9,
-        0.75,
+        0.81,
         7.4
       ],
       "yaw": 0,
@@ -764,7 +764,7 @@
       "verb": "on outpost-gate-sandbag-s1",
       "offset": [
         -2.823,
-        1.55,
+        1.5,
         3.691
       ],
       "yaw": 0,
@@ -780,7 +780,7 @@
       "verb": "on outpost-lamp-gate-s",
       "offset": [
         -2.823,
-        1.83,
+        1.78,
         3.691
       ],
       "yaw": 0,
@@ -796,7 +796,7 @@
       "verb": "on outpost-gate-sandbag-n1",
       "offset": [
         -10.423,
-        1.41,
+        1.36,
         3.691
       ],
       "yaw": 0,
@@ -812,7 +812,7 @@
       "verb": "on outpost-lamp-gate-n",
       "offset": [
         -10.423,
-        1.69,
+        1.64,
         3.691
       ],
       "yaw": 0,
