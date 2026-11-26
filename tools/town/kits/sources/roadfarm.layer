@@ -25,3 +25,11 @@ GenericEntity Source_RoadFarm_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_S
  coords 21 0 2.5
  angleY 90
 }
+// Night sweep 2026-11-27: the payphone, the farm sign and the fuel drop stood in the dark, so two vanilla self-lit street lamps stand
+// one between the payphone and the sign on the lane and one by the shed's front corner at the drop.
+GenericEntity Source_RoadFarm_LightLane : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 21 0 -0.25
+}
+GenericEntity Source_RoadFarm_LightShed : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 8.4 0 7.6
+}
