@@ -135,11 +135,3 @@ GenericEntity Fit_montignac_depot_depot_glow_drum : "{86D9B6CC9F81ADAF}Prefabs/P
  coords 4614.969 159.668 7003.396
  angleY -3
 }
-GameEntity Fit_montignac_depot_depot_lamp_pallet : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
- coords 4603.753 158.389 7005.312
- angleY -3
-}
-GenericEntity Fit_montignac_depot_depot_glow_pallet : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
- coords 4603.753 158.669 7005.312
- angleY -3
-}

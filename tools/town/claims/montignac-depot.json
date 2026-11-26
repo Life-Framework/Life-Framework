@@ -8,7 +8,7 @@
   "kinds": [
     "FuelDepot"
   ],
-  "rows": 29,
+  "rows": 27,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

@@ -486,38 +486,6 @@
       "class": "GenericEntity",
       "wall": "free",
       "floor": "f0"
-    },
-    {
-      "id": "depot-lamp-pallet",
-      "name": "Depot_Lamp_Pallet",
-      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
-      "role": "dressing",
-      "verb": "on pallet-1",
-      "offset": [
-        -9.5,
-        0.137,
-        -6.5
-      ],
-      "yaw": 0,
-      "class": "GameEntity",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "depot-glow-pallet",
-      "name": "Depot_Glow_Pallet",
-      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
-      "role": "light",
-      "verb": "on depot-lamp-pallet",
-      "offset": [
-        -9.5,
-        0.417,
-        -6.5
-      ],
-      "yaw": 0,
-      "class": "GenericEntity",
-      "wall": "free",
-      "floor": "f0"
     }
   ]
 }
