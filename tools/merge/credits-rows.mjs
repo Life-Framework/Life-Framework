@@ -23,10 +23,41 @@ function plain(text) {
     .trim();
 }
 
+// What a player reads: repo paths, file names and tool ids are dropped (the website and README keep them).
+export function playerText(text) {
+  let t = text;
+  t = t.replace(/\s*\([^()]*(?:docs\/|tools[\/]|website\/|assets-source\/|\.md\b|LICENSE|CONTRIBUTING)[^()]*\)/g, "");
+  t = t.replace(/,? see [\w./-]+\.json/g, "");
+  t = t.replace(/ on (?:the same )?[\w./-]+\.py\b/g, "");
+  t = t.replace(/(Modeled in Blender) by [\w./-]+\.py(?:(?:,| and|, and) [\w./-]+\.py)*/g, "$1");
+  t = t.replace(/ are listed in [\w./-]+\.md: so far only/g, " so far are only");
+  t = t.replace(/, music_v1/g, "");
+  // A straight double quote ends the sheet's row markup early (a voice credit read 'voice "' and stopped).
+  t = t.replace(/"/g, "'");
+  return t.replace(/\s+/g, " ").replace(/ ([,.;:])/g, "$1").trim();
+}
+
+// An LF_ prefab id on a credits row (a livery, a label) reads as a name.
+export function prettyId(text, heading) {
+  if (!/^LF_[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*$/.test(text)) return text;
+  const parts = text.slice(3).split("_").filter((p) => p !== "BCR");
+  const words = parts.map((p) => p.replace(/([a-z])([A-Z])/g, "$1 $2")).join(" ").split(" ");
+  const out = words.map((w, i) => (i === 0 ? w : w.toLowerCase())).join(" ");
+  if (/liver/i.test(heading || "")) return out + " livery";
+  if (/label/i.test(heading || "")) return out + " label";
+  return out;
+}
+
+// Longest text a row holds; a longer one ends at its last sentence or clause, never mid-word with dots.
 function clip(text) {
+  text = playerText(text);
   if (text.length <= MAX_LABEL) return text;
-  const cut = text.slice(0, MAX_LABEL).replace(/\s+\S*$/, "");
-  return `${cut}...`;
+  const head = text.slice(0, MAX_LABEL);
+  const stop = Math.max(head.lastIndexOf(". "), head.lastIndexOf("; "), head.lastIndexOf(": "));
+  if (stop >= 60) return head.slice(0, stop).replace(/[;:,]$/, "") + ".";
+  const comma = head.lastIndexOf(", ");
+  if (comma >= 60) return head.slice(0, comma) + ".";
+  return head.replace(/\s+\S*$/, "") + ".";
 }
 
 function cells(line) {
@@ -98,7 +129,7 @@ export function entries(md) {
   for (const s of parse(md)) {
     out.push({ kind: "H", label: { key: `${PREFIX}${++n}`, text: s.heading.toUpperCase() } });
     for (const r of s.rows) {
-      const e = { kind: "R", label: { key: `${PREFIX}${++n}`, text: r.label } };
+      const e = { kind: "R", label: { key: `${PREFIX}${++n}`, text: prettyId(r.label, s.heading) } };
       if (r.value) e.value = { key: `${PREFIX}${++n}`, text: r.value };
       out.push(e);
     }

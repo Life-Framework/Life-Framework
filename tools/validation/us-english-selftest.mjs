@@ -52,8 +52,15 @@ check(r.code === 1 && /p\.st:\d+ LF-Shop_Name_Bakery: "Boulangerie"/.test(r.out)
 r = run({ [PACK]: st([row("LF-Shop_Name_Bakery", "Bakery"), row("LF-Sign_Town_Title", "Welcome to Saint-Philippe"), row("LF-Who", "Mr. O. Marchand, Rémi Duval")]) });
 check(r.code === 0, "English, place names and people's names pass; an Id or Comment with the word is not text");
 
-r = run({ [CORE]: st([row("LF-Licence_Title", "Driving licence")]) });
+r = run({ [CORE]: st([row("LF-Licence_Title", "Your licence")]) });
 check(r.code === 1 && /"licence" \(british; US: license\)/.test(r.out), "a British spelling fails and names the US form");
+
+for (const [bad, us] of [["Authorises arrests", "authorizes"], ["a grey badge", "gray"], ["Driving license", "driver's license"], ["Trip cancelled", "canceled"], ["a lay-by", "pull-off"], ["Tinned fish", "canned"], ["Casualty calls", "emergency"], ["Your behaviour", "behavior"], ["He organises it", "organizes"]]) {
+  r = run({ [CORE]: st([row("LF-Bad", bad)]) });
+  check(r.code === 1 && r.out.includes(`US: ${us}`), `"${bad}" fails and names the US form (${us})`);
+}
+r = run({ [CORE]: st([row("LF-Ok", "Authorizes a gray badge, the driver's license, a trip canceled, a pull-off, canned fish and the behavior")]) });
+check(r.code === 0, "the US forms of those words pass");
 
 r = run({ [PACK]: st([row("LF-Lock", "À vendre : voir le panneau")]) });
 check(r.code === 1 && /À vendre/.test(r.out), "an accented French phrase fails");
