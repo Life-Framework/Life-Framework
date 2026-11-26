@@ -402,9 +402,9 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -6.6,
+        -5,
         0,
-        20.2
+        18.8
       ],
       "yaw": 260,
       "wall": "free",
@@ -418,7 +418,7 @@
       "verb": "on lamp-barrel-door",
       "offset": [
         -2.6,
-        0.9,
+        1.09,
         6.6
       ],
       "yaw": 0,
@@ -434,7 +434,7 @@
       "verb": "on farm-lamp-door",
       "offset": [
         -2.6,
-        1.18,
+        1.37,
         6.6
       ],
       "yaw": 0,
@@ -450,7 +450,7 @@
       "verb": "on lamp-barrel-flag",
       "offset": [
         5.2,
-        0.9,
+        1.09,
         9.3
       ],
       "yaw": 0,
@@ -466,7 +466,7 @@
       "verb": "on farm-lamp-flag",
       "offset": [
         5.2,
-        1.18,
+        1.37,
         9.3
       ],
       "yaw": 0,
@@ -481,9 +481,9 @@
       "role": "dressing",
       "verb": "on lamp-barrel-plate",
       "offset": [
-        -6.6,
-        0.9,
-        20.2
+        -5,
+        1.09,
+        18.8
       ],
       "yaw": 0,
       "class": "GameEntity",
@@ -497,9 +497,9 @@
       "role": "light",
       "verb": "on farm-lamp-plate",
       "offset": [
-        -6.6,
-        1.18,
-        20.2
+        -5,
+        1.37,
+        18.8
       ],
       "yaw": 0,
       "class": "GenericEntity",
