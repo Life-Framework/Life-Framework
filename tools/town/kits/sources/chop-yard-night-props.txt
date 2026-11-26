@@ -1,0 +1,2 @@
+Vanilla props the night-light rows add (villages sweep 2026-11-27). GUIDs resolved from the game's own prefab index, listed because the kit check wants every vanilla GUID in a source file.
+{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et
