@@ -876,7 +876,7 @@ StringTable {
     }
     CustomStringTableItem "{C2B2AC304D6052FB}" {
      Id "LF-Dialogue_ClerkEveron_SettleFuel"
-     Target_en_us "Fuel runs are open to you now. Take a jerrycan job from the dispatch board and deliver it."
+     Target_en_us "Fuel runs are open to you now. Take a jerry can job from the dispatch board and deliver it."
      Comment "Pack patch of the clerk dialogue's line settle_fuel (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{13DD88E27207FBB3}" {
@@ -901,7 +901,7 @@ StringTable {
     }
     CustomStringTableItem "{847470DD455DE7B6}" {
      Id "LF-Dialogue_ClerkEveron_SettleWheels"
-     Target_en_us "Get your driving license at the town hall desk first, then buy any car at the car lot. The town board shows where it is."
+     Target_en_us "Get your driver's license at the town hall desk first, then buy any car at the car lot. The town board shows where it is."
      Comment "Pack patch of the clerk dialogue's line settle_wheels (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{66D17BEFEC6D7B97}" {
