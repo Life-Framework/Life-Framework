@@ -8,11 +8,11 @@
   "kinds": [
     "PubBar"
   ],
-  "rows": 17,
+  "rows": 22,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_levie_pub_Place"
   },
-  "date": "2026-11-23"
+  "date": "2026-11-26"
 }

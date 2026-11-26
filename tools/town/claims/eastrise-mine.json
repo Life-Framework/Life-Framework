@@ -10,10 +10,10 @@
     "Workplace",
     "mine"
   ],
-  "rows": 29,
+  "rows": 39,
   "destruction": {
     "mode": "none",
     "reason": "hostless plot: no building stands in the slot"
   },
-  "date": "2026-11-24"
+  "date": "2026-11-26"
 }

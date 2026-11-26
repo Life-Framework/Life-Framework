@@ -66,6 +66,19 @@
       "request_id": "eoMZFeBtUnkEXhY9yWRy",
       "seconds": 1.26,
       "mouth": "19989974678766859752211000"
+    },
+    "show_goods_reply": {
+      "hash": "3a9b64380b227b88",
+      "date": "2026-11-26",
+      "voice_id": "xTZlmU8dKXdyk4XGYGFg",
+      "voice_name": "Antoine - Articulate, Calm and Bright",
+      "model": "eleven_multilingual_v2",
+      "text": "Take a look. Cash only.",
+      "chars": 23,
+      "chars_total": 9,
+      "request_id": "uTTStk0jXv5Zhkf3dzd2",
+      "seconds": 1.67,
+      "mouth": "3992998620311000004997675754431000"
     }
   },
   "voice": {

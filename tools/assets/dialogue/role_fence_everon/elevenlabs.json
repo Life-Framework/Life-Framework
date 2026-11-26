@@ -92,6 +92,19 @@
       "request_id": "mFyrqGCkTqdHxyluDtux",
       "seconds": 4.49,
       "mouth": "269999521499846522101399995397459963310017623489884465674200465612448845522665324434543000"
+    },
+    "show_goods_reply": {
+      "hash": "d5f0d7a96dc88950",
+      "date": "2026-11-26",
+      "voice_id": "KZW681TTkoQ1dS9Hu5WY",
+      "voice_name": "Lucas - Deep, Raspy and Natural",
+      "model": "eleven_multilingual_v2",
+      "text": "Take a look. Cash only.",
+      "chars": 23,
+      "chars_total": 9,
+      "request_id": "8zBfQzEpUzjcQgfH3oyt",
+      "seconds": 1.41,
+      "mouth": "39828585121003799638743531000"
     }
   },
   "voice": {
