@@ -66,6 +66,19 @@
       "request_id": "JZtYTQX9CirnW9u0JkCy",
       "seconds": 1.2,
       "mouth": "4327963125796577898641000"
+    },
+    "show_goods_reply": {
+      "hash": "2a4efbac3ea12893",
+      "date": "2026-11-26",
+      "voice_id": "1a6onbE6zC5AwIN3pEp0",
+      "voice_name": "Nicolas - French English Male",
+      "model": "eleven_multilingual_v2",
+      "text": "Take a look. Cash only.",
+      "chars": 23,
+      "chars_total": 9,
+      "request_id": "Nn9RYJj7aImCewHEKF6A",
+      "seconds": 1.24,
+      "mouth": "6669993321111269544534300"
     }
   },
   "voice": {

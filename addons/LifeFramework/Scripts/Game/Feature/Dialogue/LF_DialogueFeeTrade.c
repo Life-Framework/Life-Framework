@@ -153,6 +153,8 @@ class LF_DialogueFeeTrade
 
 //------------------------------------------------------------------------------------------------
 //! Action: pay the NPC's fee for an item. Param `<fee>|<item prefab>`.
+// lf-spoken: #LF-Dialogue_FeePaid #LF-Dialogue_FeeShort #LF-Dialogue_FeeHeld #LF-Dialogue_FeeFailed
+// lf-not-spoken: #LF-Dialogue_FeeTitle #LF-Dialogue_FeePaidToast
 class LF_DialogueHook_FeeForItem : LF_DialogueHook
 {
 	//------------------------------------------------------------------------------------------------
