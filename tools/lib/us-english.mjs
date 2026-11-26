@@ -34,6 +34,34 @@ export const BRITISH = {
   recognised: "recognized", petrol: "gas", "taxi rank": "taxi stand", newsagent: "newsstand", "café": "cafe",
 };
 
+// Generated forms: -ise verbs and -our nouns (each with its common endings) map to the US spelling.
+const ISE = ["authoris", "organis", "recognis", "realis", "apologis", "specialis", "minimis", "maximis", "customis", "utilis", "summaris", "categoris", "criticis", "finalis", "legalis", "memoris", "normalis", "penalis", "prioritis", "sympathis", "visualis", "capitalis", "civilis", "emphasis", "familiaris", "hospitalis", "idealis", "mobilis", "neutralis", "personalis", "standardis", "stabilis", "sterilis", "subsidis"];
+for (const stem of ISE) {
+  if (stem === "emphasis") continue; // "emphasis" is the noun, the same in US English
+  const us = stem.slice(0, -2) + "iz";
+  for (const end of ["e", "es", "ed", "ing", "ation", "ations"]) BRITISH[stem.slice(0, -2) + "is" + end] = us + end;
+}
+for (const stem of ["labo", "hono", "behavio", "flavo", "humo", "rumo", "vapo", "odo", "savo", "endeavo", "parlo", "splendo", "valo", "fervo", "rigo", "vigo", "candou"]) {
+  if (stem === "candou") continue;
+  for (const end of ["ur", "urs", "ured", "uring", "urable"]) BRITISH[stem + end] = stem + "r" + end.slice(2);
+}
+Object.assign(BRITISH, {
+  grey: "gray", greys: "grays", greyed: "grayed", greying: "graying", "lay-by": "pull-off", jerrycan: "jerry can",
+  "driving licence": "driver's license", "driving license": "driver's license", "driving licences": "driver's licenses",
+  "driving licenses": "driver's licenses", theatre: "theater", fibre: "fiber", calibre: "caliber", lustre: "luster",
+  sabre: "saber", spectre: "specter", sombre: "somber", meagre: "meager", manoeuvre: "maneuver", defence: "defense",
+  pretence: "pretense", practise: "practice", practised: "practiced", plough: "plow", mould: "mold", storey: "story",
+  aluminium: "aluminum", sceptic: "skeptic", sceptical: "skeptical", tonne: "ton", tonnes: "tons", lorry: "truck",
+  lorries: "trucks", pavement: "sidewalk", bonnet: "hood", windscreen: "windshield", spanner: "wrench",
+  spanners: "wrenches", dustbin: "trash can", postcode: "ZIP code", fortnight: "two weeks", whilst: "while",
+  amongst: "among", learnt: "learned", spelt: "spelled", jewellery: "jewelry", cosy: "cozy", pyjamas: "pajamas",
+  programme: "program", programmes: "programs", artefact: "artifact", artefacts: "artifacts", sulphur: "sulfur",
+  gaol: "jail", gaoler: "jailer", draught: "draft", judgement: "judgment", ageing: "aging", tinned: "canned",
+  casualty: "emergency", mum: "mom", trousers: "pants", rubbish: "trash", queue: "line", queues: "lines",
+  autumn: "fall", holdall: "duffel bag", forecourt: "gas station lot", cancelled: "canceled", cancelling: "canceling",
+  travelling: "traveling", travelled: "traveled", labelled: "labeled", modelled: "modeled", modelling: "modeling",
+});
+
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const wordRe = (list) => new RegExp(`(?<![\\p{L}\\p{N}_])(${list.map(esc).join("|")})(?![\\p{L}\\p{N}_])`, "giu");
 const FRENCH_RE = wordRe(FRENCH);

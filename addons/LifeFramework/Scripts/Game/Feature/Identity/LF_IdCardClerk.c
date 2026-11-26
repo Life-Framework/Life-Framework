@@ -97,6 +97,8 @@ class LF_DialogueHook_IdCardMissing : LF_DialogueHook
 
 //------------------------------------------------------------------------------------------------
 //! Action: "I have lost my identity card." The clerk replaces it for the fee.
+// lf-spoken: #LF-IdCard_ClerkReplaced #LF-IdCard_ClerkStillCarried #LF-IdCard_ClerkNoCash #LF-IdCard_ClerkNeverIssued
+// lf-not-spoken: #LF-ID_CardTitle #LF-IdCard_ReplacedToast #LF-IdCard_FeeToast
 class LF_DialogueHook_IdCardReplace : LF_DialogueHook
 {
 	//------------------------------------------------------------------------------------------------

@@ -434,6 +434,7 @@ class LF_DialogueVoice
 	{
 		BaseWorld world = GetGame().GetWorld();
 		int now = System.GetTickCount();
+		// lf-float: a frame delta in seconds clamped to 0..0.1; the millisecond difference is divided before the clamp.
 		float dt = Math.Clamp((now - s_iLastTickMs) / 1000.0, 0, 0.1);
 		s_iLastTickMs = now;
 		if (s_aPlaying && world)

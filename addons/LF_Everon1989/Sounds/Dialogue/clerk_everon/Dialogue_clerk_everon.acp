@@ -70,7 +70,7 @@ AudioClass {
  sounds {
   SoundClass {
    id 102409
-   name "SOUND_DLG_CLERK_EVERON_GREET"
+   name "SOUND_DLG_CLERK_EVERON_PAPERS_FIRST"
    version 5
    tl 680 0
    ins {
@@ -92,7 +92,7 @@ AudioClass {
   }
   SoundClass {
    id 103433
-   name "SOUND_DLG_CLERK_EVERON_REGISTER"
+   name "SOUND_DLG_CLERK_EVERON_MARKET_DONE"
    version 5
    tl 680 280
    ins {
@@ -114,7 +114,7 @@ AudioClass {
   }
   SoundClass {
    id 104457
-   name "SOUND_DLG_CLERK_EVERON_BOARD"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_PARCELS"
    version 5
    tl 680 560
    ins {
@@ -136,7 +136,7 @@ AudioClass {
   }
   SoundClass {
    id 105481
-   name "SOUND_DLG_CLERK_EVERON_WORK_ERRAND"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_FUEL"
    version 5
    tl 680 840
    ins {
@@ -158,7 +158,7 @@ AudioClass {
   }
   SoundClass {
    id 106505
-   name "SOUND_DLG_CLERK_EVERON_BANK"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_WHEELS"
    version 5
    tl 680 1120
    ins {
@@ -180,7 +180,7 @@ AudioClass {
   }
   SoundClass {
    id 107529
-   name "SOUND_DLG_CLERK_EVERON_DONE"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_PERMIT"
    version 5
    tl 680 1400
    ins {
@@ -202,7 +202,7 @@ AudioClass {
   }
   SoundClass {
    id 108553
-   name "SOUND_DLG_CLERK_EVERON_IDLE"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_FISH"
    version 5
    tl 680 1680
    ins {
@@ -224,7 +224,7 @@ AudioClass {
   }
   SoundClass {
    id 109577
-   name "SOUND_DLG_CLERK_EVERON_ABOUT_WORK"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_PLOT"
    version 5
    tl 680 1960
    ins {
@@ -246,7 +246,7 @@ AudioClass {
   }
   SoundClass {
    id 110601
-   name "SOUND_DLG_CLERK_EVERON_ABOUT_TOWN"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_PLOT_DONE"
    version 5
    tl 680 2240
    ins {
@@ -268,7 +268,7 @@ AudioClass {
   }
   SoundClass {
    id 111625
-   name "SOUND_DLG_CLERK_EVERON_BYE"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_FOUNDATION"
    version 5
    tl 680 2520
    ins {
@@ -290,7 +290,7 @@ AudioClass {
   }
   SoundClass {
    id 112649
-   name "SOUND_DLG_CLERK_EVERON_WELCOME_PAPERS"
+   name "SOUND_DLG_CLERK_EVERON_CARD_REPLACED"
    version 5
    tl 680 2800
    ins {
@@ -312,7 +312,7 @@ AudioClass {
   }
   SoundClass {
    id 113673
-   name "SOUND_DLG_CLERK_EVERON_WELCOME_ROOM"
+   name "SOUND_DLG_CLERK_EVERON_CARD_STILL_CARRIED"
    version 5
    tl 680 3080
    ins {
@@ -334,7 +334,7 @@ AudioClass {
   }
   SoundClass {
    id 114697
-   name "SOUND_DLG_CLERK_EVERON_WELCOME_TOWN"
+   name "SOUND_DLG_CLERK_EVERON_CARD_NO_CASH"
    version 5
    tl 680 3360
    ins {
@@ -356,7 +356,7 @@ AudioClass {
   }
   SoundClass {
    id 115721
-   name "SOUND_DLG_CLERK_EVERON_WELCOME_PACK"
+   name "SOUND_DLG_CLERK_EVERON_CARD_NEVER_ISSUED"
    version 5
    tl 680 3640
    ins {
@@ -378,7 +378,7 @@ AudioClass {
   }
   SoundClass {
    id 116745
-   name "SOUND_DLG_CLERK_EVERON_STARTER_CAR"
+   name "SOUND_DLG_CLERK_EVERON_SWITCH_NO"
    version 5
    tl 680 3920
    ins {
@@ -400,7 +400,7 @@ AudioClass {
   }
   SoundClass {
    id 117769
-   name "SOUND_DLG_CLERK_EVERON_APPLES"
+   name "SOUND_DLG_CLERK_EVERON_SWITCH_YES"
    version 5
    tl 680 4200
    ins {
@@ -422,7 +422,7 @@ AudioClass {
   }
   SoundClass {
    id 118793
-   name "SOUND_DLG_CLERK_EVERON_JUICE"
+   name "SOUND_DLG_CLERK_EVERON_GREET"
    version 5
    tl 680 4480
    ins {
@@ -444,7 +444,7 @@ AudioClass {
   }
   SoundClass {
    id 119817
-   name "SOUND_DLG_CLERK_EVERON_MARKET"
+   name "SOUND_DLG_CLERK_EVERON_REGISTER"
    version 5
    tl 680 4760
    ins {
@@ -466,7 +466,7 @@ AudioClass {
   }
   SoundClass {
    id 120841
-   name "SOUND_DLG_CLERK_EVERON_PAPERS"
+   name "SOUND_DLG_CLERK_EVERON_BOARD"
    version 5
    tl 680 5040
    ins {
@@ -475,6 +475,358 @@ AudioClass {
      links {
       ConnectionClass connection {
        id 223250
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 121865
+   name "SOUND_DLG_CLERK_EVERON_WORK_ERRAND"
+   version 5
+   tl 680 5320
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 224274
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 122889
+   name "SOUND_DLG_CLERK_EVERON_BANK"
+   version 5
+   tl 680 5600
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 225298
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 123913
+   name "SOUND_DLG_CLERK_EVERON_DONE"
+   version 5
+   tl 680 5880
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 226322
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 124937
+   name "SOUND_DLG_CLERK_EVERON_IDLE"
+   version 5
+   tl 680 6160
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 227346
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 125961
+   name "SOUND_DLG_CLERK_EVERON_ABOUT_WORK"
+   version 5
+   tl 680 6440
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 228370
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 126985
+   name "SOUND_DLG_CLERK_EVERON_ABOUT_TOWN"
+   version 5
+   tl 680 6720
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 229394
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 128009
+   name "SOUND_DLG_CLERK_EVERON_BYE"
+   version 5
+   tl 680 7000
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 230418
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 129033
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_PAPERS"
+   version 5
+   tl 680 7280
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 231442
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 130057
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_ROOM"
+   version 5
+   tl 680 7560
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 232466
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 131081
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_TOWN"
+   version 5
+   tl 680 7840
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 233490
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 132105
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_PACK"
+   version 5
+   tl 680 8120
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 234514
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 133129
+   name "SOUND_DLG_CLERK_EVERON_STARTER_CAR"
+   version 5
+   tl 680 8400
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 235538
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 134153
+   name "SOUND_DLG_CLERK_EVERON_APPLES"
+   version 5
+   tl 680 8680
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 236562
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 135177
+   name "SOUND_DLG_CLERK_EVERON_JUICE"
+   version 5
+   tl 680 8960
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 237586
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 136201
+   name "SOUND_DLG_CLERK_EVERON_MARKET"
+   version 5
+   tl 680 9240
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 238610
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 137225
+   name "SOUND_DLG_CLERK_EVERON_PAPERS"
+   version 5
+   tl 680 9520
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 239634
        port 65
       }
      }
@@ -574,6 +926,70 @@ AudioClass {
        id 120841
        port 65
       }
+      ConnectionClass connection {
+       id 121865
+       port 65
+      }
+      ConnectionClass connection {
+       id 122889
+       port 65
+      }
+      ConnectionClass connection {
+       id 123913
+       port 65
+      }
+      ConnectionClass connection {
+       id 124937
+       port 65
+      }
+      ConnectionClass connection {
+       id 125961
+       port 65
+      }
+      ConnectionClass connection {
+       id 126985
+       port 65
+      }
+      ConnectionClass connection {
+       id 128009
+       port 65
+      }
+      ConnectionClass connection {
+       id 129033
+       port 65
+      }
+      ConnectionClass connection {
+       id 130057
+       port 65
+      }
+      ConnectionClass connection {
+       id 131081
+       port 65
+      }
+      ConnectionClass connection {
+       id 132105
+       port 65
+      }
+      ConnectionClass connection {
+       id 133129
+       port 65
+      }
+      ConnectionClass connection {
+       id 134153
+       port 65
+      }
+      ConnectionClass connection {
+       id 135177
+       port 65
+      }
+      ConnectionClass connection {
+       id 136201
+       port 65
+      }
+      ConnectionClass connection {
+       id 137225
+       port 65
+      }
      }
     }
     ConnectionsClass connections {
@@ -616,7 +1032,7 @@ AudioClass {
  shaders {
   ShaderClass {
    id 204818
-   name "SOUND_DLG_CLERK_EVERON_GREET"
+   name "SOUND_DLG_CLERK_EVERON_PAPERS_FIRST"
    version 5
    tl 432 0
    ins {
@@ -663,7 +1079,7 @@ AudioClass {
   }
   ShaderClass {
    id 205842
-   name "SOUND_DLG_CLERK_EVERON_REGISTER"
+   name "SOUND_DLG_CLERK_EVERON_MARKET_DONE"
    version 5
    tl 432 280
    ins {
@@ -710,7 +1126,7 @@ AudioClass {
   }
   ShaderClass {
    id 206866
-   name "SOUND_DLG_CLERK_EVERON_BOARD"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_PARCELS"
    version 5
    tl 432 560
    ins {
@@ -757,7 +1173,7 @@ AudioClass {
   }
   ShaderClass {
    id 207890
-   name "SOUND_DLG_CLERK_EVERON_WORK_ERRAND"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_FUEL"
    version 5
    tl 432 840
    ins {
@@ -804,7 +1220,7 @@ AudioClass {
   }
   ShaderClass {
    id 208914
-   name "SOUND_DLG_CLERK_EVERON_BANK"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_WHEELS"
    version 5
    tl 432 1120
    ins {
@@ -851,7 +1267,7 @@ AudioClass {
   }
   ShaderClass {
    id 209938
-   name "SOUND_DLG_CLERK_EVERON_DONE"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_PERMIT"
    version 5
    tl 432 1400
    ins {
@@ -898,7 +1314,7 @@ AudioClass {
   }
   ShaderClass {
    id 210962
-   name "SOUND_DLG_CLERK_EVERON_IDLE"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_FISH"
    version 5
    tl 432 1680
    ins {
@@ -945,7 +1361,7 @@ AudioClass {
   }
   ShaderClass {
    id 211986
-   name "SOUND_DLG_CLERK_EVERON_ABOUT_WORK"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_PLOT"
    version 5
    tl 432 1960
    ins {
@@ -992,7 +1408,7 @@ AudioClass {
   }
   ShaderClass {
    id 213010
-   name "SOUND_DLG_CLERK_EVERON_ABOUT_TOWN"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_PLOT_DONE"
    version 5
    tl 432 2240
    ins {
@@ -1039,7 +1455,7 @@ AudioClass {
   }
   ShaderClass {
    id 214034
-   name "SOUND_DLG_CLERK_EVERON_BYE"
+   name "SOUND_DLG_CLERK_EVERON_SETTLE_FOUNDATION"
    version 5
    tl 432 2520
    ins {
@@ -1086,7 +1502,7 @@ AudioClass {
   }
   ShaderClass {
    id 215058
-   name "SOUND_DLG_CLERK_EVERON_WELCOME_PAPERS"
+   name "SOUND_DLG_CLERK_EVERON_CARD_REPLACED"
    version 5
    tl 432 2800
    ins {
@@ -1133,7 +1549,7 @@ AudioClass {
   }
   ShaderClass {
    id 216082
-   name "SOUND_DLG_CLERK_EVERON_WELCOME_ROOM"
+   name "SOUND_DLG_CLERK_EVERON_CARD_STILL_CARRIED"
    version 5
    tl 432 3080
    ins {
@@ -1180,7 +1596,7 @@ AudioClass {
   }
   ShaderClass {
    id 217106
-   name "SOUND_DLG_CLERK_EVERON_WELCOME_TOWN"
+   name "SOUND_DLG_CLERK_EVERON_CARD_NO_CASH"
    version 5
    tl 432 3360
    ins {
@@ -1227,7 +1643,7 @@ AudioClass {
   }
   ShaderClass {
    id 218130
-   name "SOUND_DLG_CLERK_EVERON_WELCOME_PACK"
+   name "SOUND_DLG_CLERK_EVERON_CARD_NEVER_ISSUED"
    version 5
    tl 432 3640
    ins {
@@ -1274,7 +1690,7 @@ AudioClass {
   }
   ShaderClass {
    id 219154
-   name "SOUND_DLG_CLERK_EVERON_STARTER_CAR"
+   name "SOUND_DLG_CLERK_EVERON_SWITCH_NO"
    version 5
    tl 432 3920
    ins {
@@ -1321,7 +1737,7 @@ AudioClass {
   }
   ShaderClass {
    id 220178
-   name "SOUND_DLG_CLERK_EVERON_APPLES"
+   name "SOUND_DLG_CLERK_EVERON_SWITCH_YES"
    version 5
    tl 432 4200
    ins {
@@ -1368,7 +1784,7 @@ AudioClass {
   }
   ShaderClass {
    id 221202
-   name "SOUND_DLG_CLERK_EVERON_JUICE"
+   name "SOUND_DLG_CLERK_EVERON_GREET"
    version 5
    tl 432 4480
    ins {
@@ -1415,7 +1831,7 @@ AudioClass {
   }
   ShaderClass {
    id 222226
-   name "SOUND_DLG_CLERK_EVERON_MARKET"
+   name "SOUND_DLG_CLERK_EVERON_REGISTER"
    version 5
    tl 432 4760
    ins {
@@ -1462,7 +1878,7 @@ AudioClass {
   }
   ShaderClass {
    id 223250
-   name "SOUND_DLG_CLERK_EVERON_PAPERS"
+   name "SOUND_DLG_CLERK_EVERON_BOARD"
    version 5
    tl 432 5040
    ins {
@@ -1507,6 +1923,758 @@ AudioClass {
     23 0
    }
   }
+  ShaderClass {
+   id 224274
+   name "SOUND_DLG_CLERK_EVERON_WORK_ERRAND"
+   version 5
+   tl 432 5320
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 326660
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 225298
+   name "SOUND_DLG_CLERK_EVERON_BANK"
+   version 5
+   tl 432 5600
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 327684
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 226322
+   name "SOUND_DLG_CLERK_EVERON_DONE"
+   version 5
+   tl 432 5880
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 328708
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 227346
+   name "SOUND_DLG_CLERK_EVERON_IDLE"
+   version 5
+   tl 432 6160
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 329732
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 228370
+   name "SOUND_DLG_CLERK_EVERON_ABOUT_WORK"
+   version 5
+   tl 432 6440
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 330756
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 229394
+   name "SOUND_DLG_CLERK_EVERON_ABOUT_TOWN"
+   version 5
+   tl 432 6720
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 331780
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 230418
+   name "SOUND_DLG_CLERK_EVERON_BYE"
+   version 5
+   tl 432 7000
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 332804
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 231442
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_PAPERS"
+   version 5
+   tl 432 7280
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 333828
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 232466
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_ROOM"
+   version 5
+   tl 432 7560
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 334852
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 233490
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_TOWN"
+   version 5
+   tl 432 7840
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 335876
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 234514
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_PACK"
+   version 5
+   tl 432 8120
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 336900
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 235538
+   name "SOUND_DLG_CLERK_EVERON_STARTER_CAR"
+   version 5
+   tl 432 8400
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 337924
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 236562
+   name "SOUND_DLG_CLERK_EVERON_APPLES"
+   version 5
+   tl 432 8680
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 338948
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 237586
+   name "SOUND_DLG_CLERK_EVERON_JUICE"
+   version 5
+   tl 432 8960
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 339972
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 238610
+   name "SOUND_DLG_CLERK_EVERON_MARKET"
+   version 5
+   tl 432 9240
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 340996
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 239634
+   name "SOUND_DLG_CLERK_EVERON_PAPERS"
+   version 5
+   tl 432 9520
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 342020
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
  }
  amplitudes {
   AmplitudeClass : "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf" {
@@ -1541,9 +2709,201 @@ AudioClass {
  banks_local {
   BankLocalClass {
    id 307204
-   name "DLG_CLERK_EVERON_GREET"
+   name "DLG_CLERK_EVERON_PAPERS_FIRST"
    version 7
    tl 150 0
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{6023C8D7602B267A}Sounds/Dialogue/clerk_everon/clerk_everon_papers_first.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 308228
+   name "DLG_CLERK_EVERON_MARKET_DONE"
+   version 7
+   tl 150 280
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{170F0308911E630B}Sounds/Dialogue/clerk_everon/clerk_everon_market_done.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 309252
+   name "DLG_CLERK_EVERON_SETTLE_PARCELS"
+   version 7
+   tl 150 560
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{667A789ED8ADD7E0}Sounds/Dialogue/clerk_everon/clerk_everon_settle_parcels.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 310276
+   name "DLG_CLERK_EVERON_SETTLE_FUEL"
+   version 7
+   tl 150 840
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{4FE47DD861463D6F}Sounds/Dialogue/clerk_everon/clerk_everon_settle_fuel.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 311300
+   name "DLG_CLERK_EVERON_SETTLE_WHEELS"
+   version 7
+   tl 150 1120
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{50D32CA7E46FAAB6}Sounds/Dialogue/clerk_everon/clerk_everon_settle_wheels.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 312324
+   name "DLG_CLERK_EVERON_SETTLE_PERMIT"
+   version 7
+   tl 150 1400
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{8034E3CEA174EC03}Sounds/Dialogue/clerk_everon/clerk_everon_settle_permit.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 313348
+   name "DLG_CLERK_EVERON_SETTLE_FISH"
+   version 7
+   tl 150 1680
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{BD652D161AF72AE2}Sounds/Dialogue/clerk_everon/clerk_everon_settle_fish.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 314372
+   name "DLG_CLERK_EVERON_SETTLE_PLOT"
+   version 7
+   tl 150 1960
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{1FC1763954F6CC24}Sounds/Dialogue/clerk_everon/clerk_everon_settle_plot.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 315396
+   name "DLG_CLERK_EVERON_SETTLE_PLOT_DONE"
+   version 7
+   tl 150 2240
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{CD52A3CA4E0BDCF5}Sounds/Dialogue/clerk_everon/clerk_everon_settle_plot_done.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 316420
+   name "DLG_CLERK_EVERON_SETTLE_FOUNDATION"
+   version 7
+   tl 150 2520
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{AF17B46686D5CA51}Sounds/Dialogue/clerk_everon/clerk_everon_settle_foundation.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 317444
+   name "DLG_CLERK_EVERON_CARD_REPLACED"
+   version 7
+   tl 150 2800
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{3DE4A4691C0C5211}Sounds/Dialogue/clerk_everon/clerk_everon_card_replaced.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 318468
+   name "DLG_CLERK_EVERON_CARD_STILL_CARRIED"
+   version 7
+   tl 150 3080
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{973CA4FE0A65CD5A}Sounds/Dialogue/clerk_everon/clerk_everon_card_still_carried.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 319492
+   name "DLG_CLERK_EVERON_CARD_NO_CASH"
+   version 7
+   tl 150 3360
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{E17E7835C037989C}Sounds/Dialogue/clerk_everon/clerk_everon_card_no_cash.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 320516
+   name "DLG_CLERK_EVERON_CARD_NEVER_ISSUED"
+   version 7
+   tl 150 3640
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{58E8373E60EB288E}Sounds/Dialogue/clerk_everon/clerk_everon_card_never_issued.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 321540
+   name "DLG_CLERK_EVERON_SWITCH_NO"
+   version 7
+   tl 150 3920
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{A0EEFB29FABA7F57}Sounds/Dialogue/clerk_everon/clerk_everon_switch_no.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 322564
+   name "DLG_CLERK_EVERON_SWITCH_YES"
+   version 7
+   tl 150 4200
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{38C7BD2185F0A8BD}Sounds/Dialogue/clerk_everon/clerk_everon_switch_yes.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 323588
+   name "DLG_CLERK_EVERON_GREET"
+   version 7
+   tl 150 4480
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1552,10 +2912,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 308228
+   id 324612
    name "DLG_CLERK_EVERON_REGISTER"
    version 7
-   tl 150 280
+   tl 150 4760
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1564,10 +2924,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 309252
+   id 325636
    name "DLG_CLERK_EVERON_BOARD"
    version 7
-   tl 150 560
+   tl 150 5040
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1576,10 +2936,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 310276
+   id 326660
    name "DLG_CLERK_EVERON_WORK_ERRAND"
    version 7
-   tl 150 840
+   tl 150 5320
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1588,10 +2948,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 311300
+   id 327684
    name "DLG_CLERK_EVERON_BANK"
    version 7
-   tl 150 1120
+   tl 150 5600
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1600,10 +2960,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 312324
+   id 328708
    name "DLG_CLERK_EVERON_DONE"
    version 7
-   tl 150 1400
+   tl 150 5880
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1612,10 +2972,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 313348
+   id 329732
    name "DLG_CLERK_EVERON_IDLE"
    version 7
-   tl 150 1680
+   tl 150 6160
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1624,10 +2984,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 314372
+   id 330756
    name "DLG_CLERK_EVERON_ABOUT_WORK"
    version 7
-   tl 150 1960
+   tl 150 6440
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1636,10 +2996,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 315396
+   id 331780
    name "DLG_CLERK_EVERON_ABOUT_TOWN"
    version 7
-   tl 150 2240
+   tl 150 6720
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1648,10 +3008,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 316420
+   id 332804
    name "DLG_CLERK_EVERON_BYE"
    version 7
-   tl 150 2520
+   tl 150 7000
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1660,10 +3020,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 317444
+   id 333828
    name "DLG_CLERK_EVERON_WELCOME_PAPERS"
    version 7
-   tl 150 2800
+   tl 150 7280
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1672,10 +3032,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 318468
+   id 334852
    name "DLG_CLERK_EVERON_WELCOME_ROOM"
    version 7
-   tl 150 3080
+   tl 150 7560
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1684,10 +3044,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 319492
+   id 335876
    name "DLG_CLERK_EVERON_WELCOME_TOWN"
    version 7
-   tl 150 3360
+   tl 150 7840
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1696,10 +3056,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 320516
+   id 336900
    name "DLG_CLERK_EVERON_WELCOME_PACK"
    version 7
-   tl 150 3640
+   tl 150 8120
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1708,10 +3068,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 321540
+   id 337924
    name "DLG_CLERK_EVERON_STARTER_CAR"
    version 7
-   tl 150 3920
+   tl 150 8400
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1720,10 +3080,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 322564
+   id 338948
    name "DLG_CLERK_EVERON_APPLES"
    version 7
-   tl 150 4200
+   tl 150 8680
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1732,10 +3092,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 323588
+   id 339972
    name "DLG_CLERK_EVERON_JUICE"
    version 7
-   tl 150 4480
+   tl 150 8960
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1744,10 +3104,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 324612
+   id 340996
    name "DLG_CLERK_EVERON_MARKET"
    version 7
-   tl 150 4760
+   tl 150 9240
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1756,10 +3116,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 325636
+   id 342020
    name "DLG_CLERK_EVERON_PAPERS"
    version 7
-   tl 150 5040
+   tl 150 9520
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1879,6 +3239,70 @@ AudioClass {
        id 120841
        port 5
       }
+      ConnectionClass connection {
+       id 121865
+       port 5
+      }
+      ConnectionClass connection {
+       id 122889
+       port 5
+      }
+      ConnectionClass connection {
+       id 123913
+       port 5
+      }
+      ConnectionClass connection {
+       id 124937
+       port 5
+      }
+      ConnectionClass connection {
+       id 125961
+       port 5
+      }
+      ConnectionClass connection {
+       id 126985
+       port 5
+      }
+      ConnectionClass connection {
+       id 128009
+       port 5
+      }
+      ConnectionClass connection {
+       id 129033
+       port 5
+      }
+      ConnectionClass connection {
+       id 130057
+       port 5
+      }
+      ConnectionClass connection {
+       id 131081
+       port 5
+      }
+      ConnectionClass connection {
+       id 132105
+       port 5
+      }
+      ConnectionClass connection {
+       id 133129
+       port 5
+      }
+      ConnectionClass connection {
+       id 134153
+       port 5
+      }
+      ConnectionClass connection {
+       id 135177
+       port 5
+      }
+      ConnectionClass connection {
+       id 136201
+       port 5
+      }
+      ConnectionClass connection {
+       id 137225
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -1990,6 +3414,70 @@ AudioClass {
        id 120841
        port 5
       }
+      ConnectionClass connection {
+       id 121865
+       port 5
+      }
+      ConnectionClass connection {
+       id 122889
+       port 5
+      }
+      ConnectionClass connection {
+       id 123913
+       port 5
+      }
+      ConnectionClass connection {
+       id 124937
+       port 5
+      }
+      ConnectionClass connection {
+       id 125961
+       port 5
+      }
+      ConnectionClass connection {
+       id 126985
+       port 5
+      }
+      ConnectionClass connection {
+       id 128009
+       port 5
+      }
+      ConnectionClass connection {
+       id 129033
+       port 5
+      }
+      ConnectionClass connection {
+       id 130057
+       port 5
+      }
+      ConnectionClass connection {
+       id 131081
+       port 5
+      }
+      ConnectionClass connection {
+       id 132105
+       port 5
+      }
+      ConnectionClass connection {
+       id 133129
+       port 5
+      }
+      ConnectionClass connection {
+       id 134153
+       port 5
+      }
+      ConnectionClass connection {
+       id 135177
+       port 5
+      }
+      ConnectionClass connection {
+       id 136201
+       port 5
+      }
+      ConnectionClass connection {
+       id 137225
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -2099,6 +3587,70 @@ AudioClass {
       }
       ConnectionClass connection {
        id 120841
+       port 5
+      }
+      ConnectionClass connection {
+       id 121865
+       port 5
+      }
+      ConnectionClass connection {
+       id 122889
+       port 5
+      }
+      ConnectionClass connection {
+       id 123913
+       port 5
+      }
+      ConnectionClass connection {
+       id 124937
+       port 5
+      }
+      ConnectionClass connection {
+       id 125961
+       port 5
+      }
+      ConnectionClass connection {
+       id 126985
+       port 5
+      }
+      ConnectionClass connection {
+       id 128009
+       port 5
+      }
+      ConnectionClass connection {
+       id 129033
+       port 5
+      }
+      ConnectionClass connection {
+       id 130057
+       port 5
+      }
+      ConnectionClass connection {
+       id 131081
+       port 5
+      }
+      ConnectionClass connection {
+       id 132105
+       port 5
+      }
+      ConnectionClass connection {
+       id 133129
+       port 5
+      }
+      ConnectionClass connection {
+       id 134153
+       port 5
+      }
+      ConnectionClass connection {
+       id 135177
+       port 5
+      }
+      ConnectionClass connection {
+       id 136201
+       port 5
+      }
+      ConnectionClass connection {
+       id 137225
        port 5
       }
      }

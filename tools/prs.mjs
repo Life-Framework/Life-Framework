@@ -130,7 +130,40 @@ export function lastActivity(wtPath) {
   return Math.max(newestMtime(paths), lastReflogTime(wtPath));
 }
 
+// The hand-off marker (2026-11-27). On 2026-11-25 six night-light PRs sat CONFLICTING for an hour: each agent had shipped
+// and stopped, but the ship's own logs in tmp/ and then heal's OWN merge commit (a fresh reflog entry) read as "LIVE 7m",
+// so every 10-minute pass skipped the PR it had just healed while main moved again. `wt ship` and a heal push now write
+// tmp/wt/handoff.json with the head they left. While HEAD is still that commit and the tree is clean (tmp/ is ignored),
+// nobody is working there: the worktree is "done", whatever its mtimes say. A new edit or commit ends it at once.
+export const HANDOFF_FILE = join("tmp", "wt", "handoff.json");
+
+export function markHandoff(wtPath, head, by, now = Date.now()) {
+  try {
+    mkdirSync(join(wtPath, "tmp", "wt"), { recursive: true });
+    writeFileSync(join(wtPath, HANDOFF_FILE), JSON.stringify({ head, by, at: new Date(now).toISOString() }) + "\n");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function readHandoff(wtPath) {
+  try {
+    const h = JSON.parse(readFileSync(join(wtPath, HANDOFF_FILE), "utf8"));
+    return h && typeof h.head === "string" ? h : null;
+  } catch {
+    return null;
+  }
+}
+
 export function isLive(wtPath, now = Date.now()) {
+  const h = readHandoff(wtPath);
+  if (h) {
+    const head = wt.git(wtPath, ["rev-parse", "HEAD"]).stdout.trim();
+    // tmp/ is scratch (gitignored in the repo; skipped here too, so the marker and post-ship logs never count).
+    const dirty = wt.git(wtPath, ["status", "--porcelain", "-uall"]).stdout.split(/\r?\n/).filter((l) => l.length > 3 && !/^"?tmp\//.test(l.slice(3))).length > 0;
+    if (head === h.head && !dirty) return { live: false, last: Date.parse(h.at) || 0, done: h.by || "ship" };
+  }
   const last = lastActivity(wtPath);
   return { live: last > 0 && now - last < LIVE_MS, last };
 }
@@ -369,8 +402,9 @@ function worktreeFor(root, branch) {
 function describeWorktree(root, branch, now) {
   const w = worktreeFor(root, branch);
   if (!w) return { w: null, live: false, label: "none" };
-  const { live, last } = isLive(w.path, now);
-  return { w, live, label: `${live ? "LIVE" : "idle"} ${last ? age(now - last) : "?"}` };
+  const { live, last, done } = isLive(w.path, now);
+  const state = done ? `done (${done})` : live ? "LIVE" : "idle";
+  return { w, live, label: `${state} ${last ? age(now - last) : "?"}` };
 }
 
 // ---------------------------------------------------------------- commands
@@ -403,7 +437,7 @@ export function prsStatus(root) {
     ];
   });
   table(rows, ["PR", "STATE", "AUTO", "CHECKS", "AGE", "WORKTREE", "TITLE"]);
-  console.log("prs: LIVE = an edit, commit or log write in the worktree within 15 min; heal never touches it. Heal: tools\\cli prs heal [--dry-run] [<n>...]");
+  console.log("prs: LIVE = an edit, commit or log write in the worktree within 15 min; heal never touches it. done = shipped or healed and untouched since (tmp/wt/handoff.json); heal may merge. Heal: tools\\cli prs heal [--dry-run] [<n>...]");
   return 0;
 }
 
@@ -492,9 +526,11 @@ function healOne(root, pr, { dryRun, log, validateOnly = false }) {
       if (push.status !== 0) return { kind: "attention", msg: `push failed (not forced): ${wt.describeRun(push)}` };
     }
     const head = wt.git(dir, ["rev-parse", "HEAD"]).stdout.trim();
+    // Our own merge commit is not an agent at work: without this the next pass read it as LIVE and skipped (2026-11-25).
+    if (!temp) markHandoff(dir, head, "heal");
     // Re-queue only what was queued: a PR left for review (auto-merge off, REVIEW-NEEDED) stays off (#2940).
     if (!pr.autoMergeRequest) return { kind: "healed", msg: `healed: ${m.status}, gate ${g.tier} green, pushed ${head.slice(0, 7)}, auto-merge stays off (left for review)` };
-    const am = gh(root, ["pr", "merge", String(pr.number), "--auto", "--merge"]);
+    const am = autoMergeWithRetry(root, pr.number);
     const amOut = (am.stdout + am.stderr).trim();
     if (am.status !== 0 && !/already/i.test(amOut)) return { kind: "attention", msg: `pushed, but auto-merge failed: ${amOut}` };
     return { kind: "healed", msg: `healed: ${m.status}, gate ${g.tier} green, pushed ${head.slice(0, 7)}, auto-merge queued` };
@@ -503,6 +539,22 @@ function healOne(root, pr, { dryRun, log, validateOnly = false }) {
   } finally {
     if (temp && dir) dropTempWorktree(root, dir);
   }
+}
+
+// GitHub's GraphQL answers "Something went wrong while executing your query" (a 502) now and then; twice on 2026-11-25 a
+// healed PR was left with auto-merge off because of one. A transient answer is retried twice, 5 s apart.
+export function isTransientGhError(text) {
+  return /something went wrong while executing your query|\b50[234]\b|timed? ?out|connection reset|EOF/i.test(String(text));
+}
+
+export function autoMergeWithRetry(root, number, { run = (a) => gh(root, a), wait = sleepMs, tries = 3 } = {}) {
+  let am;
+  for (let i = 0; i < tries; i++) {
+    am = run(["pr", "merge", String(number), "--auto", "--merge"]);
+    if (am.status === 0 || !isTransientGhError(`${am.stdout ?? ""}${am.stderr ?? ""}`)) return am;
+    if (i < tries - 1) wait(5000);
+  }
+  return am;
 }
 
 function mergeStuck(root, pr, { dryRun }) {

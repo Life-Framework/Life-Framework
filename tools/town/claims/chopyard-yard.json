@@ -8,7 +8,7 @@
   "kinds": [
     "ChopYard"
   ],
-  "rows": 17,
+  "rows": 21,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

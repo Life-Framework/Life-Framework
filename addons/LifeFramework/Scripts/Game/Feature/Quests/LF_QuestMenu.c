@@ -203,6 +203,13 @@ class LF_QuestMenu : ChimeraMenuBase
 		if (!m_wQuestList || !m_Giver)
 			return;
 
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
+		{
+			LF_Debug.Error("Quests", "quest menu refresh: no UI workspace");
+			return;
+		}
+
 		ClearRows();
 
 		foreach (LF_QuestDefinition def : m_Giver.GetQuests())
@@ -213,7 +220,7 @@ class LF_QuestMenu : ChimeraMenuBase
 			if (!def.IsListed(StatusOf(def.m_sQuestId), StatusOf(def.m_sRequiredPreviousQuestId) == LF_EQuestStatus.TURNED_IN))
 				continue;
 
-			Widget rowWidget = GetGame().GetWorkspace().CreateWidgets("{CE14CB47B66299DC}UI/Layouts/QuestMenuRow.layout", m_wQuestList);
+			Widget rowWidget = workspace.CreateWidgets("{CE14CB47B66299DC}UI/Layouts/QuestMenuRow.layout", m_wQuestList);
 			if (!rowWidget)
 			{
 				LF_Debug.Error("Quests", string.Format("quest row layout failed to create for %1", def.m_sQuestId));

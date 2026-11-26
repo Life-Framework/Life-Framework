@@ -55,30 +55,30 @@
       "mouth": "588943575552110018749996269885248724624655444100"
     },
     "greet_regular": {
-      "hash": "8a9e4ea8375a608f",
-      "date": "2026-11-22",
+      "hash": "11c3bf44ac1886af",
+      "date": "2026-11-26",
       "voice_id": "WUsdxD2jzqOBENDBdPBm",
       "voice_name": "Kevin Nitcheu",
       "model": "eleven_multilingual_v2",
-      "text": "My best customer! I put a tin of the good coffee aside for you.",
+      "text": "My best customer! I put a can of the good coffee aside for you.",
       "chars": 63,
-      "chars_total": 25,
-      "request_id": "IgdHodRqpsphjIfvtMtv",
-      "seconds": 3.5,
-      "mouth": "5764994259537655411111110178199835998596497228726753565135444211111100"
+      "chars_total": 50,
+      "request_id": "XRi3W8d5czbsXTpSilpv",
+      "seconds": 3.27,
+      "mouth": "589599515732543331111100000492299912899666285238515652453144443000"
     },
     "about_work": {
-      "hash": "c5636c9296199545",
-      "date": "2026-11-22",
+      "hash": "5bcb127ad80f5bb6",
+      "date": "2026-11-26",
       "voice_id": "WUsdxD2jzqOBENDBdPBm",
       "voice_name": "Kevin Nitcheu",
       "model": "eleven_multilingual_v2",
-      "text": "Tins, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass.",
+      "text": "Cans, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass.",
       "chars": 131,
-      "chars_total": 52,
-      "request_id": "UPEmXhGIiaz2B7SObLfh",
-      "seconds": 8.18,
-      "mouth": "29998643211468998111110447889865653210000003395775442343210000000001499318669999741486432866664677464126545544411111101029995174249997256577755786754524334432101000"
+      "chars_total": 104,
+      "request_id": "RcNYao69DYzSlzwWErqP",
+      "seconds": 7.6,
+      "mouth": "279999864310479931111110577999997422454847654324310011000001299325878888722765337566456654521565444331111100001999637322899875677754577664424433221001000"
     },
     "about_ferry": {
       "hash": "d8fa97883d07e3be",

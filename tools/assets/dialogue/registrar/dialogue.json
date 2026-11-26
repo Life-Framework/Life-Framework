@@ -33,11 +33,15 @@
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
+    "flag_same": { "for_key": "#LF-OrgFlagWall_Same", "key_pin": "9f8c256a", "text": "Your gang already flies that flag." },
+    "flag_no_gang": { "for_key": "#LF-OrgFlagWall_NoGang", "key_pin": "2db6462a", "text": "You need a gang to fly a flag." },
+    "flag_not_leader": { "for_key": "#LF-OrgFlagWall_NotLeader", "key_pin": "29eeb23f", "text": "Only a gang leader can pick the gang flag." },
+    "flag_refused": { "for_key": "#LF-OrgFlagWall_Refused", "key_pin": "156f8d8e", "text": "That flag cannot be picked." },
     "greet": { "text": "Registry. Crews and flags are my desk. What do you need?" },
     "found": { "text": "Name, flag, and two hundred fifty dollars." },
     "flags": { "text": "A leader picks the flag at the wall. If another crew flies it and has someone around, it is taken." },
-    "picked": { "for_key": "#LF-OrgFlagWall_Done", "text": "That is your flag. It is on the books." },
-    "taken": { "for_key": "#LF-OrgFlagWall_Held", "text": "That one is taken. Another crew flies it. Pick a different one." },
+    "picked": { "for_key": "#LF-OrgFlagWall_Done", "key_pin": "c6c0609f", "text": "That is your flag. It is on the books." },
+    "taken": { "for_key": "#LF-OrgFlagWall_Held", "key_pin": "c4ff44ae", "text": "That one is taken. Another crew flies it. Pick a different one." },
     "bye": { "text": "Next." }
   },
   "replies": {

@@ -31,107 +31,107 @@
     },
     "type_robbery": {
       "text": "Robbery in progress.",
-      "for_key": "#LF-Offence_Robbery"
+      "for_key": "#LF-Offence_Robbery", "key_pin": "c5dab9cd"
     },
     "type_vehicle_theft": {
       "text": "Vehicle theft reported.",
-      "for_key": "#LF-Offence_VehicleTheft"
+      "for_key": "#LF-Offence_VehicleTheft", "key_pin": "05c5b5fd"
     },
     "type_carjacking": {
       "text": "Carjacking in progress.",
-      "for_key": "#LF-Offence_Carjacking"
+      "for_key": "#LF-Offence_Carjacking", "key_pin": "05c5b5fd"
     },
     "type_weapon_theft": {
       "text": "Weapon theft reported.",
-      "for_key": "#LF-Offence_WeaponTheft"
+      "for_key": "#LF-Offence_WeaponTheft", "key_pin": "35b221ca"
     },
     "type_break_in": {
       "text": "Break-in in progress.",
-      "for_key": "#LF-Offence_BreakIn"
+      "for_key": "#LF-Offence_BreakIn", "key_pin": "29769fdb"
     },
     "type_hospital": {
       "text": "Hospital robbery in progress.",
-      "for_key": "#LF-Offence_HospitalRobbery"
+      "for_key": "#LF-Offence_HospitalRobbery", "key_pin": "8a576d2f"
     },
     "type_murder": {
       "text": "Homicide reported. Man down.",
-      "for_key": "#LF-Offence_Murder"
+      "for_key": "#LF-Offence_Murder", "key_pin": "a8455a05"
     },
     "type_cash_van": {
       "text": "Cash van attacked.",
-      "for_key": "#LF-Offence_CashVan"
+      "for_key": "#LF-Offence_CashVan", "key_pin": "680a346e"
     },
     "type_armory": {
       "text": "Armory break-in. All units respond.",
-      "for_key": "#LF-Offence_ArmoryHeist"
+      "for_key": "#LF-Offence_ArmoryHeist", "key_pin": "f4822118"
     },
     "type_jailbreak": {
       "text": "Jailbreak in progress. All units respond.",
-      "for_key": "#LF-Offence_JailBreak"
+      "for_key": "#LF-Offence_JailBreak", "key_pin": "18b9b453"
     },
     "type_escaped": {
       "text": "Prisoner escaped custody.",
-      "for_key": "#LF-Offence_EscapedCustody"
+      "for_key": "#LF-Offence_EscapedCustody", "key_pin": "53d82296"
     },
     "type_shoplifting": {
       "text": "Shoplifting reported.",
-      "for_key": "#LF-Offence_Shoplifting"
+      "for_key": "#LF-Offence_Shoplifting", "key_pin": "52c0daf1"
     },
     "type_chop_shop": {
       "text": "Chop shop activity reported.",
-      "for_key": "#LF-Offence_ChopShop"
+      "for_key": "#LF-Offence_ChopShop", "key_pin": "aa8d4b5b"
     },
     "place_bank": {
       "text": "At the bank.",
-      "for_key": "#LF-Sign_Bank_Title"
+      "for_key": "#LF-Sign_Bank_Title", "key_pin": "9e89988c"
     },
     "place_fuel_station": {
       "text": "At the fuel station.",
-      "for_key": "#LF-Sign_FuelStation_Title"
+      "for_key": "#LF-Sign_FuelStation_Title", "key_pin": "805cd4df"
     },
     "place_general_store": {
       "text": "At the general store.",
-      "for_key": "#LF-Sign_GeneralStore_Title"
+      "for_key": "#LF-Sign_GeneralStore_Title", "key_pin": "7a3e132e"
     },
     "place_gun_store": {
       "text": "At the gunsmith.",
-      "for_key": "#LF-Sign_GunStore_Title"
+      "for_key": "#LF-Sign_GunStore_Title", "key_pin": "4fe25cf4"
     },
     "place_hospital": {
       "text": "At the hospital.",
-      "for_key": "#LF-Sign_Hospital_Title"
+      "for_key": "#LF-Sign_Hospital_Title", "key_pin": "5f4b0ab3"
     },
     "place_pharmacy": {
       "text": "At the pharmacy.",
-      "for_key": "#LF-Sign_Pharmacy_Title"
+      "for_key": "#LF-Sign_Pharmacy_Title", "key_pin": "2f6c536b"
     },
     "place_post_office": {
       "text": "At the post office.",
-      "for_key": "#LF-Sign_PostOffice_Title"
+      "for_key": "#LF-Sign_PostOffice_Title", "key_pin": "10e948a9"
     },
     "place_supermarket": {
       "text": "At the supermarket.",
-      "for_key": "#LF-Sign_Supermarket_Title"
+      "for_key": "#LF-Sign_Supermarket_Title", "key_pin": "7247fb59"
     },
     "place_clothing_store": {
       "text": "At the clothing store.",
-      "for_key": "#LF-Sign_ClothingStore_Title"
+      "for_key": "#LF-Sign_ClothingStore_Title", "key_pin": "d31d367b"
     },
     "place_furniture_store": {
       "text": "At the furniture store.",
-      "for_key": "#LF-Sign_FurnitureStore_Title"
+      "for_key": "#LF-Sign_FurnitureStore_Title", "key_pin": "fe8691c1"
     },
     "place_garage": {
       "text": "At the garage.",
-      "for_key": "#LF-Sign_Garage_Title"
+      "for_key": "#LF-Sign_Garage_Title", "key_pin": "f614ac32"
     },
     "place_hostel": {
       "text": "At the hostel.",
-      "for_key": "#LF-Sign_Hostel_Title"
+      "for_key": "#LF-Sign_Hostel_Title", "key_pin": "29451019"
     },
     "place_saint_philippe": {
       "text": "In Saint-Philippe.",
-      "for_key": "#LF-Place_SaintPhilippe"
+      "for_key": "#LF-Place_SaintPhilippe", "key_pin": "9de3ceb0"
     }
   },
   "replies": {}
