@@ -30,18 +30,10 @@ GenericEntity Fit_roadfarm_a_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Si
  angleY 40
 }
 GenericEntity Fit_roadfarm_a_light_lane : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 5144.58 0.974 7029.406
+ coords 5144.58 0.233 7029.406
  angleY -50
 }
 GenericEntity Fit_roadfarm_a_light_shed : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 5130.467 0.403 7024.8
- angleY -50
-}
-GenericEntity Fit_roadfarm_a_light_lane : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 5144.58 0 7029.406
- angleY -50
-}
-GenericEntity Fit_roadfarm_a_light_shed : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 5130.467 0 7024.8
+ coords 5130.467 0.233 7024.8
  angleY -50
 }
