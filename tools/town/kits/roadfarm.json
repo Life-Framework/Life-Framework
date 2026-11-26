@@ -25,7 +25,7 @@
       ],
       "max": [
         21,
-        5.4
+        7.6
       ]
     },
     "front": "+x",
@@ -106,7 +106,8 @@
       ],
       "yaw": 0,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "terrain"
     },
     {
       "id": "light-shed",
@@ -121,7 +122,8 @@
       ],
       "yaw": 0,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "terrain"
     }
   ]
 }
