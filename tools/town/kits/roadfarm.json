@@ -92,6 +92,36 @@
       "wall": "free",
       "floor": "f0",
       "free": true
+    },
+    {
+      "id": "light-lane",
+      "name": "RoadFarm_Light_Lane",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        21,
+        0,
+        -0.25
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "light-shed",
+      "name": "RoadFarm_Light_Shed",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        8.4,
+        0,
+        7.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }
