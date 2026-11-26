@@ -239,6 +239,8 @@ class LF_InformantTip
 //! The dialogue hook "Informant" (the class name is the registration, see LF_DialogueHook.Find). As a
 //! condition the reply shows only to a character the informant would talk to; as an action it runs
 //! LF_InformantTip.Ask and tells the player the outcome in words (a toast, and the NPC's answer).
+// lf-spoken: #LF-Informant_NeverHeard #LF-Informant_NoCash #LF-Informant_Told #LF-Informant_Already #LF-Informant_NoSpot
+// lf-not-spoken: #LF-Informant_Mark
 class LF_DialogueHook_Informant : LF_DialogueHook
 {
 	//------------------------------------------------------------------------------------------------

@@ -438,6 +438,7 @@ class LF_DialogueHook_PapersOffered : LF_DialogueHook
 //------------------------------------------------------------------------------------------------
 //! Action: the clerk pulls the register. Refused with the reason in the clerk's answer (and a toast);
 //! allowed, the clerk grants the ask and the player's screen asks for the sheet once the talk closes.
+// lf-spoken: #LF-CharSwitch_ClerkNo #LF-CharSwitch_ClerkYes
 class LF_DialogueHook_CharacterSwitch : LF_DialogueHook
 {
 	//------------------------------------------------------------------------------------------------

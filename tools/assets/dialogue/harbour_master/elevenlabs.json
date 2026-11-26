@@ -183,6 +183,58 @@
       "request_id": "RWWLuYc84fW0s1SxekRG",
       "seconds": 10.42,
       "mouth": "67367568945119998795034105799998105824379996414211000000000000100000476899899151789857625332100000000000000100055305898635996210699999875321000005998578113667887432110000010100135585057744567862899998654542000"
+    },
+    "shipment_count_desc": {
+      "hash": "6447a0f11e27b87d",
+      "date": "2026-11-26",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "That red crate on the quay weighs too much. Open it and count what is inside.",
+      "chars": 77,
+      "chars_total": 31,
+      "request_id": "BKdBEkPwVoPBOoIDMMDM",
+      "seconds": 7.26,
+      "mouth": "33761437963206599981533005864730096779987998866066678985288742000000000000000000000000699615989816687600879998743379999330677642897788797654221000"
+    },
+    "contract_unknown": {
+      "hash": "673537b18f27c595",
+      "date": "2026-11-26",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "That contract is not on offer.",
+      "chars": 30,
+      "chars_total": 12,
+      "request_id": "siYqpfUPS1gDNctsl9DI",
+      "seconds": 2.18,
+      "mouth": "27614578856797245677894546986109984467531000"
+    },
+    "contract_not_able": {
+      "hash": "694f9e5cc38b7950",
+      "date": "2026-11-26",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "You are in no state to take on work.",
+      "chars": 36,
+      "chars_total": 14,
+      "request_id": "HHTO3nYSjrJaGk4MJUeh",
+      "seconds": 2.77,
+      "mouth": "36999999976778998776049986114533699545665679997321421000"
+    },
+    "shipment_sold_desc": {
+      "hash": "112ac60ce85e90c1",
+      "date": "2026-11-26",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "What was under the canned fish is worth money to the right person. Sell it to a buyer.",
+      "chars": 86,
+      "chars_total": 34,
+      "request_id": "KAE4IPQgYTUd382Knyvy",
+      "seconds": 9.35,
+      "mouth": "25853568997610799995999459306588875335799887652100000000130001446657999963346897998513544998689981105999877853210000000000000000000000000004676755997136421000156515667510488887777654311000"
     }
   },
   "voice": {

@@ -1,18 +1,1 @@
-{
- "LifeFramework/Scripts/Game/Feature/Crime/LF_RobHold.c::Progress": {
-  "count": 1,
-  "reason": "Clamps a float 0..1 progress fraction (elapsed / holdMs, a hold of a few seconds); the time operands are float and small."
- },
- "LifeFramework/Scripts/Game/Feature/Dialogue/LF_DialogueConfig.c::HoldSeconds": {
-  "count": 1,
-  "reason": "Float caption hold time: a character count times a seconds-per-char float, a few seconds at most."
- },
- "LifeFramework/Scripts/Game/Feature/Dialogue/LF_DialogueVoice.c::Tick": {
-  "count": 1,
-  "reason": "Clamps a float frame delta in seconds to 0..0.1; the millisecond difference is divided before the clamp."
- },
- "LifeFramework/Scripts/Game/UI/Notifications/LF_NotificationToastUI.c::OpacityAt": {
-  "count": 2,
-  "reason": "Clamps a float 0..1 opacity fraction from a toast's elapsed seconds; float and a few seconds."
- }
-}
+{}

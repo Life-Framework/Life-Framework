@@ -33,7 +33,7 @@
   "lines": {
     "greet": { "text": "Quartermaster. I keep the crate and I keep the count. Nothing leaves this camp without a price on it." },
     "stock": { "text": "A radio, a pistol, a rifle. The crate shows what I will sell you today. The longer people have known you, the more of it I will show." },
-    "refuse": { "for_key": "#LF-Outpost_TraderRefusesOfficer", "text": "We don't deal with the law here. Take the badge off and come back." },
+    "refuse": { "for_key": "#LF-Outpost_TraderRefusesOfficer", "key_pin": "523cf32a", "text": "We don't deal with the law here. Take the badge off and come back." },
     "bye": { "text": "Keep your head down." }
   },
   "replies": {

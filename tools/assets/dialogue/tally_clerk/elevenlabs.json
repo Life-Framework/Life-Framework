@@ -66,6 +66,45 @@
       "request_id": "QTGYKbjnjsRCTnJ1Y1WU",
       "seconds": 1.16,
       "mouth": "599876553814797642111000"
+    },
+    "fee_short": {
+      "hash": "52ded6a3c5970827",
+      "date": "2026-11-26",
+      "voice_id": "bObiIpcSB2feMOHORpee",
+      "voice_name": "Antonin - Warm, Unsettling, Elegant",
+      "model": "eleven_multilingual_v2",
+      "text": "That is not enough. Come back with the full amount.",
+      "chars": 51,
+      "chars_total": 20,
+      "request_id": "MLloNNy9Mb4jMtoPVPy0",
+      "seconds": 2.97,
+      "mouth": "269997954797753422111000000004796698226526221998432211011000"
+    },
+    "fee_held": {
+      "hash": "10e14fac7923c3cb",
+      "date": "2026-11-26",
+      "voice_id": "bObiIpcSB2feMOHORpee",
+      "voice_name": "Antonin - Warm, Unsettling, Elegant",
+      "model": "eleven_multilingual_v2",
+      "text": "You already have one. Keep your money.",
+      "chars": 38,
+      "chars_total": 15,
+      "request_id": "SLYxhk714IWs7Z6f0Ezy",
+      "seconds": 2.4,
+      "mouth": "247899996975534541353211000000228502555333221100"
+    },
+    "fee_failed": {
+      "hash": "8d71a4e5a70f90df",
+      "date": "2026-11-26",
+      "voice_id": "bObiIpcSB2feMOHORpee",
+      "voice_name": "Antonin - Warm, Unsettling, Elegant",
+      "model": "eleven_multilingual_v2",
+      "text": "Not now. Your pockets are full. Your money is still yours.",
+      "chars": 58,
+      "chars_total": 23,
+      "request_id": "Krtq3Qeyj7HH3dGWPGcP",
+      "seconds": 2.39,
+      "mouth": "697398889419637284159731188796772167468542111000"
     }
   },
   "voice": {
