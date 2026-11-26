@@ -187,7 +187,7 @@ node tools/cli.mjs wt new my-change   # your own worktree`}
               flagship content.
             </p>
             <p>
-              Today both live in <code>addons/LifeFramework/</code>. M3 moves the content into its own addon,{" "}
+              The core lives in <code>addons/LifeFramework/</code> and the content in its own addon,{" "}
               <code>LF_Everon1989</code>, and the core must never reference it. So write systems that do not assume 1989, and put
               every value in config. Each issue on the <Link to="/roadmap#milestones" className="link">roadmap</Link> is tagged Core or
               Flagship.
