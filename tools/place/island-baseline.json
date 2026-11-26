@@ -10,8 +10,6 @@
     "Place_everon-sawmill_yard.layer|Fit_everon_sawmill_yard_source_sawmill_desk|contact",
     "Place_fishermansbay_cove.layer|Fit_fishermansbay_cove_bench|contact",
     "Place_roadfuel_fuel.layer|Fit_roadfuel_fuel_payphone|clips",
-    "Place_saint-philippe-dock_raid.layer|Fit_saint_philippe_dock_shipment_raid_target|contact",
-    "Place_saint-philippe-dock_shipment.layer|Fit_saint_philippe_dock_shipment_docks_target|contact",
     "Place_saint-philippe-dock_warehouse.layer|Fit_saint_philippe_dock_warehouse_crate_3_a|size",
     "Place_saint-philippe-dock_warehouse.layer|Fit_saint_philippe_dock_warehouse_crate_6_a|size",
     "Place_saint-philippe_arrival.layer|Fit_saint_philippe_arrival_town_hall_clerk|clips",
@@ -23,7 +21,6 @@
     "Place_saint-philippe_parcel-drops.layer|Fit_saint_philippe_dock_parcel_drops_drop_b05|unreachable",
     "Place_saint-philippe_parcel.layer|Fit_saint_philippe_parcel_post_office_sign|blocks-door",
     "Place_saint-philippe_pond.layer|Fit_saint_philippe_pond_bench|contact",
-    "Place_saint-philippe_square-evening.layer|Fit_saint_philippe_square_evening_spawn2|sunk",
     "Place_saint-philippe_taxi.layer|Fit_saint_philippe_taxi_job_taxi_pad|action-off-mesh"
   ]
 }
