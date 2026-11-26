@@ -17,7 +17,9 @@
 // Env: GH_TOKEN, BASE (default main), HEAD_PREFIX (only heads starting with it; the scratch experiment),
 // DRY_RUN=1 (report, push nothing). A PR labeled `no-autoheal` is skipped.
 import { spawnSync } from "node:child_process";
-import { resolve } from "node:path";
+import { copyFileSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const run = (cmd, args, opts = {}) => {
   const r = spawnSync(cmd, args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, ...opts });
@@ -84,7 +86,10 @@ function main() {
   const base = process.env.BASE || "main";
   const headPrefix = process.env.HEAD_PREFIX || "";
   const dryRun = process.env.DRY_RUN === "1";
-  const drivers = resolve("tools/merge/drivers.gitconfig");
+  // A copy: the checkout moves to each PR head, which may carry an older drivers file or none.
+  const drivers = join(mkdtempSync(join(tmpdir(), "lf-autoheal-")), "drivers.gitconfig");
+  copyFileSync("tools/merge/drivers.gitconfig", drivers);
+  const home = git(["rev-parse", "HEAD"]).stdout.trim();
   git(["config", "user.name", "github-actions[bot]"]);
   git(["config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"]);
   git(["fetch", "-q", "origin", `+refs/heads/${base}:refs/remotes/origin/${base}`]);
@@ -95,6 +100,7 @@ function main() {
   let healed = 0;
   for (const pr of prs) {
     const r = healOne(pr, { base, drivers, dryRun });
+    git(["checkout", "-q", "--force", "--detach", home]); // back to the workflow's own commit for the next PR
     if (r.result === "clean") continue;
     if (r.result === "healed") healed++;
     console.log(`#${pr.number} ${pr.headRefName}: ${r.result}${r.why ? ` (${r.why})` : ""}${r.sha ? ` head ${r.sha}` : ""}${r.dispatched ? `; ${r.dispatched}` : ""}`);
