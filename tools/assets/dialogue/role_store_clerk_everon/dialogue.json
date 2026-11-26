@@ -19,6 +19,7 @@
   },
   "budget_chars": 900,
   "lines": {
+    "show_goods_reply": { "for_key": "#LF-Shopkeeper_ShowGoodsReply", "key_pin": "b32a83e9", "text": "Take a look. Cash only." },
     "greet": {
       "text": "Morning. Looking for something in particular?"
     },

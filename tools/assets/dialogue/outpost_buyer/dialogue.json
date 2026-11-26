@@ -37,7 +37,7 @@
     "greet": { "text": "Buyer. Crates, cartons, anything that fell off a truck. I pay cash and I don't ask which truck." },
     "price": { "text": "Two hundred thirty a crate, and not a cent over. Bring me more than I can shift in an hour and I will tell you to wait." },
     "haggle": { "text": "More? Ha. The price is the price, friend. Bring me a crate I can sell and we will talk." },
-    "refuse": { "for_key": "#LF-Outpost_TraderRefusesOfficer", "text": "We don't deal with the law here. Take the badge off and come back." },
+    "refuse": { "for_key": "#LF-Outpost_TraderRefusesOfficer", "key_pin": "523cf32a", "text": "We don't deal with the law here. Take the badge off and come back." },
     "bye": { "text": "Pleasure. Mind where you drive." }
   },
   "replies": {
