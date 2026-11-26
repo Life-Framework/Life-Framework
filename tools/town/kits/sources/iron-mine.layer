@@ -232,3 +232,44 @@ DecalEntity Mine_PadF : "{4AD6EB80A8B1FA3A}Prefabs/Decals/Dirt/Decal_Dirt_Patch_
  angleY 20
  scale 8
 }
+GenericEntity Mine_Glow_Lantern : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords -4 0.3 1.6
+}
+GenericEntity Mine_Glow_Flood : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 9 0.3 -8
+}
+GenericEntity Mine_Glow_Bench : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6.63 1.15 -3.9
+}
+GenericEntity Mine_Glow_Barrel : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords -0.7 1.4 -6.6
+}
+GenericEntity Mine_Stool_Ore : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 4.4 0 6.4
+ angleY 30
+}
+GameEntity Mine_Lamp_Ore : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 4.4 0.5 6.4
+}
+GenericEntity Mine_Glow_Ore : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 4.4 0.75 6.4
+}
+GenericEntity Mine_Stool_Sign : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 13 0 6.6
+ angleY -60
+}
+GameEntity Mine_Lamp_Sign : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 13 0.5 6.6
+}
+GenericEntity Mine_Glow_Sign : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 13 0.75 6.6
+}
+GameEntity Mine_Lamp_Counter : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 8.6 0.5 3.4
+}
+GenericEntity Mine_Glow_Counter : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 8.6 0.75 3.4
+}
+GenericEntity Mine_Stool_Counter : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 8.6 0 3.4
+}
