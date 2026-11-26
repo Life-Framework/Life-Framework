@@ -66,6 +66,19 @@
       "request_id": "f1pe5lTGsdfefWXG1301",
       "seconds": 1.23,
       "mouth": "3319989942752137648753100"
+    },
+    "show_goods_reply": {
+      "hash": "70003d906f2b7a85",
+      "date": "2026-11-26",
+      "voice_id": "o86w79lw8Y208S2HjL2M",
+      "voice_name": "Benjamin - Deep and Calm",
+      "model": "eleven_multilingual_v2",
+      "text": "Take a look. Cash only.",
+      "chars": 23,
+      "chars_total": 20,
+      "request_id": "JJGLUhWnk44dJT1bqS4s",
+      "seconds": 1.59,
+      "mouth": "79729799411000001697546653332100"
     }
   },
   "voice": {

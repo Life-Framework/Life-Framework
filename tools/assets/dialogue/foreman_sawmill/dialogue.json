@@ -59,27 +59,27 @@
     },
     "next_top": {
       "text": "I have nothing left to show you. You know every saw in this yard.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_Top"
+      "for_key": "#LF-Foreman_LUMBERJACK_Next_Top", "key_pin": "598ae03c"
     },
     "next_02": {
       "text": "Next up, level 2. Felling permit: fell trees with an axe. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_02"
+      "for_key": "#LF-Foreman_LUMBERJACK_Next_02", "key_pin": "d8123e91", "pin_key": "#LF-Unlock_Lumberjack_02"
     },
     "next_03": {
       "text": "Next up, level 3. Sawmill hand license: saw logs into planks. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_03"
+      "for_key": "#LF-Foreman_LUMBERJACK_Next_03", "key_pin": "0770fb6e", "pin_key": "#LF-Unlock_Lumberjack_03"
     },
     "next_04": {
       "text": "Next up, level 4. Seasoned logger license: fell trees twice as fast. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_04"
+      "for_key": "#LF-Foreman_LUMBERJACK_Next_04", "key_pin": "d4d4d8ea", "pin_key": "#LF-Unlock_Lumberjack_04"
     },
     "next_10": {
       "text": "Next up, level 10. First perk: pick Double yield or Swift hands at the labor office. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_10"
+      "for_key": "#LF-Foreman_LUMBERJACK_Next_10", "key_pin": "44014004", "pin_key": "#LF-Unlock_Lumberjack_10"
     },
     "next_20": {
       "text": "Next up, level 20. Second perk: Light touch and Good word join the choices at the labor office. Keep the blade sharp.",
-      "for_key": "#LF-Foreman_LUMBERJACK_Next_20"
+      "for_key": "#LF-Foreman_LUMBERJACK_Next_20", "key_pin": "4f0ac090", "pin_key": "#LF-Unlock_Lumberjack_20"
     }
   },
   "replies": {

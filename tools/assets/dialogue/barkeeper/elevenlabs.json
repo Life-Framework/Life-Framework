@@ -66,6 +66,32 @@
       "request_id": "XlPIfQp5oJvzzHMA2ehn",
       "seconds": 2.21,
       "mouth": "399996474225992183212444664876634320111121000"
+    },
+    "rumor_nothing_new": {
+      "hash": "900422ec65c56323",
+      "date": "2026-11-26",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "Nothing new. Ask me tomorrow.",
+      "chars": 29,
+      "chars_total": 12,
+      "request_id": "3loUT2ohpUum1phsRY6c",
+      "seconds": 1.59,
+      "mouth": "39929779976312364456857666542000"
+    },
+    "rumor_asked_today": {
+      "hash": "e2c83368624b38a5",
+      "date": "2026-11-26",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "I have told you what I know today. Ask again tomorrow.",
+      "chars": 54,
+      "chars_total": 22,
+      "request_id": "KjHJIxiJohO1YRHcxxcd",
+      "seconds": 3.56,
+      "mouth": "279429996486999868862278965443100000000158622115357533322655433332221000"
     }
   },
   "voice": {

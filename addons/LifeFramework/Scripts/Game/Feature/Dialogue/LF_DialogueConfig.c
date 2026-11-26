@@ -511,6 +511,7 @@ class LF_DialogueFlow
 		if (line && line.m_fSeconds > 0)
 			return line.m_fSeconds;
 
+		// lf-float: caption hold time, a character count times a seconds-per-char float; a few seconds at most.
 		return Math.Max(SILENT_SECONDS_MIN, captionLength * SILENT_SECONDS_PER_CHAR);
 	}
 

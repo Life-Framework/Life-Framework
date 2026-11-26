@@ -6,7 +6,9 @@
 //!               DELIVERY track's level is not reached in a proof); the board's level refusal is a
 //!               separate, real take.
 //!   give short  the server puts the held order's count minus one of its goods in the caller's pockets;
-//!   give rest   one more unit (overflow drops at the feet).
+//!   give rest   one more unit (overflow drops at the feet);
+//!   give truck  the held order's whole count into the storage of the nearest vehicle within 12 m, what a
+//!               player does with the inventory screen when loading the truck (the harness cannot drag).
 //------------------------------------------------------------------------------------------------
 modded class LF_AgentHarnessVerbs
 {
@@ -28,7 +30,7 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
-		controller.LF_AskExportHarness(cmd.Arg1, cmd.Arg2 == "short");
+		controller.LF_AskExportHarness(cmd.Arg1, cmd.Arg2);
 		LF_AgentHarness.Answer(cmd.Id, "ok", "asked " + cmd.Arg1 + " " + cmd.Arg2);
 		return true;
 	}
@@ -38,17 +40,17 @@ modded class LF_AgentHarnessVerbs
 modded class SCR_PlayerController
 {
 	//------------------------------------------------------------------------------------------------
-	void LF_AskExportHarness(string what, bool shortCount)
+	void LF_AskExportHarness(string what, string mode)
 	{
 		if (Replication.IsServer())
-			RpcAsk_LF_ExportHarness(what, shortCount);
+			RpcAsk_LF_ExportHarness(what, mode);
 		else
-			Rpc(RpcAsk_LF_ExportHarness, what, shortCount);
+			Rpc(RpcAsk_LF_ExportHarness, what, mode);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_ExportHarness(string what, bool shortCount)
+	protected void RpcAsk_LF_ExportHarness(string what, string mode)
 	{
 		int playerId = GetPlayerId();
 		bool allowed = LF_DevGate.HarnessBuild() || LF_DevGate.CheckPlayerRequest(playerId, LF_ExportOrderBook.FEATURE, "harness export order " + what);
@@ -92,11 +94,44 @@ modded class SCR_PlayerController
 			return;
 		}
 
+		if (mode == "truck")
+		{
+			GiveToTruck(user, held, uid);
+			return;
+		}
+
 		int count = 1;
-		if (shortCount)
+		if (mode == "short")
 			count = held.m_iCount - 1;
 
 		int given = LF_InventoryUtils.AddAmount(user, held.m_Goods, count, true);
 		LF_Debug.Info(LF_ExportOrderBook.FEATURE, string.Format("harness export give: %1 of %2 x %3 to %4", given, count, held.m_sGoodsName, uid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void GiveToTruck(IEntity user, LF_ExportOrder held, string uid)
+	{
+		IEntity truck;
+		float best = float.MAX;
+		array<IEntity> nearby = LF_Utils.GetNearbyVehicles(user.GetOrigin(), 12.0);
+		foreach (IEntity vehicle : nearby)
+		{
+			float distance = vector.Distance(vehicle.GetOrigin(), user.GetOrigin());
+			if (distance < best && LF_FeedFromVehicle.StorageOf(vehicle))
+			{
+				best = distance;
+				truck = vehicle;
+			}
+		}
+
+		InventoryStorageManagerComponent storage = LF_FeedFromVehicle.StorageOf(truck);
+		if (!storage)
+		{
+			LF_Debug.Warn(LF_ExportOrderBook.FEATURE, string.Format("harness export give truck refused: no vehicle with storage within 12 m of %1", uid));
+			return;
+		}
+
+		int given = LF_InventoryUtils.AddAmount(storage, held.m_Goods, held.m_iCount, false);
+		LF_Debug.Info(LF_ExportOrderBook.FEATURE, string.Format("harness export give truck: %1 of %2 x %3 into the vehicle's storage for %4", given, held.m_iCount, held.m_sGoodsName, uid));
 	}
 }

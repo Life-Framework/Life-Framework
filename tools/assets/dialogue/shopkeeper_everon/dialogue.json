@@ -14,6 +14,8 @@
   },
   "budget_chars": 1000,
   "lines": {
+    "rumor_nothing_new": { "for_key": "#LF-RumorTalk_NothingNew", "key_pin": "84f9176b", "text": "Nothing new. Ask me tomorrow." },
+    "rumor_asked_today": { "for_key": "#LF-RumorTalk_AskedToday", "key_pin": "f51510e9", "text": "I have told you what I know today. Ask again tomorrow." },
     "greet": { "text": "Good day. Take what you need from the shelves and pay at the till." },
     "how_to_pay": { "text": "Pick the goods up yourself, then pay at any till before you leave. You get a receipt. Walk out without paying and the alarm goes off." },
     "stock": { "text": "Food and household goods on the shelves, drinks in the chilled counter. What runs out comes back from the stockroom every few minutes." },
