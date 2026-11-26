@@ -4,3 +4,4 @@
 |---|---|
 | one | first |
 | two | second |
+| row-A | appended by A |
