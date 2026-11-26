@@ -56,7 +56,13 @@ tools\cli look place:<place>/<slot> --interior <row>  # at one kit row (Fit_ nam
 - A fitted vanilla building gets its destruction override (D15), or a fitted floor falls in.
 - Towns are checked by audit and pictures, never by layout tests.
 - A place waiting for its state stays `dark`: no spawn, interactable or NPC.
-- Use Workbench `look`, not sessions: two island sessions do not fit the pool's RAM.
+- Use Workbench `look`, not sessions: two island sessions do not fit the pool's RAM. The exceptions are sign text and
+  the 22:00 check, one session each (below). `look` draws sign faces blank (it prints a `NOTE`): not a defect.
+- **Every slot a player uses is graded at 22:00 too** (`polish` skill "Night"): a work site, counter, sign plate or door
+  that cannot be found in the dark is BELOW. A lamp mesh with no light gets `LF_LanternGlow` (stood on a `Stool_01` if it
+  lay in grass), a fire `LF_CampFlame`, a front or window `node tools/town/nightlights.mjs <place>`; a shop fascia lights itself.
+  Kit rows and layer change together, in that slot's own `town-draft-<place>-<slot>-night` worktree.
+- One slot per branch. Two PRs that both append `docs/features/<area>.md` go CONFLICTING on GitHub; `prs heal` merges them.
 - `validate` checks only your slot (layer and claim agree, footprint, branch guard). The other slots of the place being
   unfitted is fine; `town check <place>` lists them as "not fitted yet". `town check <place> --complete` (and
   `town ready`) is the completeness gate, for the lead, not for a card's PR.
