@@ -9,6 +9,7 @@
 // inside its budget" failed; with LF_VERBOSE=1 forced into the child environment, "validate stays
 // inside 14 lines" and "help stays inside 12 lines" failed. Both restored. With the RED-OK/RED PROOF OK
 // alternatives removed from KEEP_RE in quiet-run.mjs, "a passing --red run keeps its RED-OK lines" failed; restored.
+// red-proof 2026-11-27: on the old quiet-run.mjs (no verb-error bucket) the five proof checks failed ("failures=3" on a PASS proof).
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -36,6 +37,24 @@ check(manyFail.length <= 45, `a 300-failure transcript stays inside its budget (
 check(manyFail[0].startsWith("SUMMARY test fail exit=1 "), "a failing run says fail");
 check(manyFail.some((l) => l.includes("Scripts/Game/Foo.c:0: expected 1 got 2")), "the first failure keeps file:line and the exact error");
 check(manyFail.some((l) => /more failure line/.test(l)), "failures beyond the cap are counted, not dropped silently");
+
+// 2026-11-27: a passing proof whose harness transcript holds retried verb errors says failures=0 (the x6 dry run
+// printed failures=8 on a PASS); the verb errors get their own count, and a failed proof still names its FAIL step first.
+const verbLines = [
+  "client 1: s:8c10d90ad42d click WelcomeGuideDismissButton -> error widget_not_found",
+  "client 2: s:8c10d90ad42d click WelcomeGuideDismissButton -> error widget_not_found",
+  "client 2: s:8c10d90ad42d state -> error no_session",
+  ...Array.from({ length: 20 }, (_, i) => `PASS  step ${i}`),
+];
+const proofPass = sum("booking-desk-proof", 0, [...verbLines, "booking desk proof: PASS (22 steps)"]);
+check(/ failures=0 verb-errors=3 /.test(proofPass[0]), `a PASS proof counts retried verb errors apart, not as failures (got '${proofPass[0]}')`);
+check(!proofPass.some((l) => /widget_not_found/.test(l)), "a PASS proof does not print its verb errors");
+const proofFail = sum("booking-desk-proof", 1, [...verbLines, "FAIL  2e B takes the time: jail 0 -> 0", "booking desk proof: FAIL (1 of 22)"]);
+check(/ failures=1 verb-errors=3 /.test(proofFail[0]), `a FAIL proof counts only its failed step (got '${proofFail[0]}')`);
+check(proofFail[1]?.startsWith("FAIL  2e"), "a FAIL proof shows the failed step first");
+check(proofFail.some((l) => /verb: .*no_session/.test(l)), "a FAIL proof still shows the verb errors under the step");
+const noVerdict = sum("harness", 1, ["client 1: s:1 click X -> error widget_not_found"]);
+check(/ failures=1 /.test(noVerdict[0]), "without a proof verdict a verb error stays a failure");
 
 const timeout = sum("e2e", 1, ["boot", "TIMEOUT after 300s", "..."]);
 check(timeout.some((l) => l.includes("TIMEOUT after 300s")), "a timeout is shown");

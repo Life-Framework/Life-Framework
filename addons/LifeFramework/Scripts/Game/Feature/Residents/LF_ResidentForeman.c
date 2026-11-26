@@ -62,6 +62,7 @@ class LF_ResidentForeman
 //! The foreman's "What's next for me?" reply. Param is the trade id (MINER, LUMBERJACK). The server
 //! reads the level itself, so a client cannot ask for a line it has not earned; the key it picks is
 //! put in `spoken` and the dialogue plays the line recorded for it (`for_key`).
+// lf-spoken: LF-Foreman_{param}_Next_{unlock-level} LF-Foreman_{param}_Next_Top
 class LF_DialogueHook_ForemanNext : LF_DialogueHook
 {
 	//------------------------------------------------------------------------------------------------
