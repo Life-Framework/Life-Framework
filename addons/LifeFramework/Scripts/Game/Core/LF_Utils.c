@@ -6,6 +6,53 @@ enum LF_EIdentityFallback
 	SESSION_SLOT
 }
 
+//! One QueryEntitiesBySphere pass for LF_Utils.GetNearbyVehicles and GetNearbyCharacters. The hits go
+//! into the caller's array, so no static outlives the call.
+class LF_NearbyEntityCollector : Managed
+{
+	protected array<IEntity> m_aFound; // the caller owns it
+	protected string m_sRequiredComponent;
+
+	//------------------------------------------------------------------------------------------------
+	void LF_NearbyEntityCollector(array<IEntity> found, string requiredComponent = "")
+	{
+		m_aFound = found;
+		m_sRequiredComponent = requiredComponent;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool Insert(IEntity entity)
+	{
+		if (!entity)
+			return true;
+
+		m_aFound.Insert(entity);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool FilterVehicle(IEntity entity)
+	{
+		if (!entity || !entity.IsInherited(Vehicle))
+			return false;
+
+		if (m_sRequiredComponent.IsEmpty())
+			return true;
+
+		typename componentType = m_sRequiredComponent.ToType();
+		if (!componentType)
+			return true;
+
+		return entity.FindComponent(componentType) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool FilterCharacter(IEntity entity)
+	{
+		return !!SCR_ChimeraCharacter.Cast(entity);
+	}
+}
+
 class LF_Utils : Managed
 {
 	static const int MAX_PREFAB_ANCESTRY = 12; // lf-fixed: a loop guard on the ancestor walk, not a tunable
@@ -38,8 +85,6 @@ class LF_Utils : Managed
 		return value;
 	}
 
-	protected static ref array<IEntity> s_aNearbyEntities = {};
-	protected static string s_sRequiredComponent = "";
 	//! Tests only: the body (entity id as text) that stands in for a player, and its uid.
 	protected static string s_sTestUidBody;
 	protected static string s_sTestUid;
@@ -61,51 +106,19 @@ class LF_Utils : Managed
 	//------------------------------------------------------------------------------------------------
 	static array<IEntity> GetNearbyVehicles(vector center, float radius, string requiredComponent = "")
 	{
-		s_aNearbyEntities = new array<IEntity>();
-		s_sRequiredComponent = requiredComponent;
-		GetGame().GetWorld().QueryEntitiesBySphere(center, radius, InsertNearbyEntity, FilterVehicleEntity);
-		return s_aNearbyEntities;
+		array<IEntity> found = new array<IEntity>();
+		LF_NearbyEntityCollector collector = new LF_NearbyEntityCollector(found, requiredComponent);
+		GetGame().GetWorld().QueryEntitiesBySphere(center, radius, collector.Insert, collector.FilterVehicle);
+		return found;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static array<IEntity> GetNearbyCharacters(vector center, float radius)
 	{
-		s_aNearbyEntities = new array<IEntity>();
-		s_sRequiredComponent = "";
-		GetGame().GetWorld().QueryEntitiesBySphere(center, radius, InsertNearbyEntity, FilterCharacterEntity);
-		return s_aNearbyEntities;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static bool InsertNearbyEntity(IEntity entity)
-	{
-		if (!entity)
-			return true;
-
-		s_aNearbyEntities.Insert(entity);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static bool FilterVehicleEntity(IEntity entity)
-	{
-		if (!entity || !entity.IsInherited(Vehicle))
-			return false;
-
-		if (s_sRequiredComponent.IsEmpty())
-			return true;
-
-		typename componentType = s_sRequiredComponent.ToType();
-		if (!componentType)
-			return true;
-
-		return entity.FindComponent(componentType) != null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static bool FilterCharacterEntity(IEntity entity)
-	{
-		return !!SCR_ChimeraCharacter.Cast(entity);
+		array<IEntity> found = new array<IEntity>();
+		LF_NearbyEntityCollector collector = new LF_NearbyEntityCollector(found);
+		GetGame().GetWorld().QueryEntitiesBySphere(center, radius, collector.Insert, collector.FilterCharacter);
+		return found;
 	}
 
 	//------------------------------------------------------------------------------------------------

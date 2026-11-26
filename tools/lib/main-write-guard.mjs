@@ -172,6 +172,14 @@ function shellSegments(command) {
   return segs;
 }
 
+// The command word of a segment: past sudo/command, a VAR=value prefix and the shell keywords a loop or branch puts in front
+// (`for d in a b; do cd $d && git merge` splits into "do cd ..."; read as the command "do", the cd was missed and the git
+// write was judged from the starting cwd, 2026-11-27).
+const PREFIX_WORDS = new Set(["sudo", "&", "command", "do", "then", "else", "elif", "if", "while", "until", "time", "!", "{", "(", "exec", "nohup"]);
+function firstWord(names) {
+  return names.find((n) => n && !PREFIX_WORDS.has(n) && !/^[A-Za-z_][A-Za-z0-9_]*=/.test(n)) ?? "";
+}
+
 const unwrap = (t) => t.replace(/^[(@{]+/, "").replace(/[)}]+$/, "");
 const isFlag = (t) => /^-{1,2}[A-Za-z]/.test(t.text) && !t.quoted;
 const isPathLike = (t) => t.length > 0 && !/[$*?%<>|]/.test(t) && !t.startsWith("~");
@@ -183,7 +191,7 @@ export function shellWriteTargets(command, startCwd) {
   let cwd = startCwd ?? null;
   for (const seg of shellSegments(command)) {
     const names = seg.map((t) => (t.quoted ? "" : unwrap(t.text).replace(/^.*[\\/]/, "").toLowerCase().replace(/\.exe$/, "")));
-    const first = names.find((n) => n && n !== "sudo" && n !== "&" && n !== "command") ?? "";
+    const first = firstWord(names);
 
     if (CD.has(first)) {
       const arg = seg.slice(names.indexOf(first) + 1).find((t) => !isFlag(t));
@@ -212,6 +220,71 @@ export function shellWriteTargets(command, startCwd) {
       const dest = di >= 0 ? seg[di + 1] : args[args.length - 1];
       if (dest && isPathLike(unwrap(dest.text))) out.push({ path: unwrap(dest.text), cwd });
     }
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------- git in the main checkout
+
+// Three agents ran `git pull` in the main checkout before `wt new` in the week of 2026-11-24 (the 11-25 round report: "the
+// first thing I ran in the main checkout was a fast-forward git pull"). An agent never needs git there: `wt new` fetches
+// origin itself and branches from it, and the lead's view and the main guard fast-forward the checkout through node
+// (tools/lib/main-ff-heal.mjs), which no hook sees. So a shell git command that changes the checkout, its index or its
+// branches is refused for EVERY session whose git dir is the main checkout, including an agent that has not run `wt new`
+// yet, which is exactly the case the write guard above cannot tell apart from the lead. Reads (status, log, diff, show,
+// fetch, rev-parse, branch/worktree/stash listings) stay open. A human or lead who really means it prefixes the command with
+// LF_ALLOW_MAIN_GIT=1 or sets that variable in the session's environment.
+const GIT_WRITE = new Set([
+  "pull", "merge", "rebase", "reset", "checkout", "switch", "commit", "cherry-pick", "revert", "am", "apply", "clean",
+  "restore", "add", "rm", "mv", "push", "tag", "submodule", "update-index", "update-ref", "filter-branch", "notes",
+]);
+// Global options of `git` that take a separate value.
+const GIT_OPT_VALUE = new Set(["-C", "-c", "--git-dir", "--work-tree", "--namespace", "--exec-path", "--super-prefix", "--config-env"]);
+
+// Is this `git <sub> <args>` a write? `sub` is lower case, `rest` the argument texts after it.
+export function gitSubIsWrite(sub, rest) {
+  if (GIT_WRITE.has(sub)) return true;
+  const flags = rest.filter((a) => a.startsWith("-"));
+  const pos = rest.filter((a) => !a.startsWith("-"));
+  if (sub === "stash") return !["list", "show"].includes(pos[0] ?? "");
+  if (sub === "branch") return flags.some((f) => /^-(d|D|m|M|c|C|f)$|^--(delete|move|copy|force|set-upstream-to|unset-upstream|edit-description)/.test(f)) || (pos.length > 0 && !flags.some((f) => /^--(list|contains|merged|no-merged|points-at|show-current)/.test(f) || /^-[avlr]+$/.test(f)));
+  if (sub === "worktree") return ["remove", "prune", "move"].includes(pos[0] ?? "");
+  return false;
+}
+
+// The git commands in a shell line that write: [{ sub, dir }] where `dir` is the folder git runs in (the cwd followed
+// through cd, or a `-C <dir>`), null when a `cd $var` made it unknown.
+export function shellGitWrites(command, startCwd) {
+  const out = [];
+  // An inline LF_ALLOW_MAIN_GIT=1 (POSIX prefix or `$env:LF_ALLOW_MAIN_GIT=1` / `= "1"`) opens the whole line.
+  if (/(^|[\s;$:])LF_ALLOW_MAIN_GIT\s*=\s*["']?1/.test(String(command))) return out;
+  let cwd = startCwd ?? null;
+  for (const seg of shellSegments(command)) {
+    const texts = seg.map((t) => (t.quoted ? t.text : unwrap(t.text)));
+    const names = seg.map((t) => (t.quoted ? "" : unwrap(t.text).replace(/^.*[\\/]/, "").toLowerCase().replace(/\.exe$/, "")));
+    const first = firstWord(names);
+    if (CD.has(first)) {
+      const arg = seg.slice(names.indexOf(first) + 1).find((t) => !isFlag(t));
+      if (arg && isPathLike(unwrap(arg.text)) && arg.text !== "-") cwd = cwd ? norm(isAbsolute(arg.text) || /^\/[a-zA-Z]\//.test(arg.text) ? arg.text : resolve(cwd, unwrap(arg.text))) : /^([a-zA-Z]:|\/)/.test(arg.text) ? norm(arg.text) : null;
+      else cwd = null;
+      continue;
+    }
+    if (first !== "git") continue;
+    let i = names.indexOf("git") + 1;
+    let dir = cwd;
+    while (i < texts.length && texts[i].startsWith("-")) {
+      const opt = texts[i];
+      if (opt === "-C") {
+        const v = texts[i + 1];
+        if (v && isPathLike(v)) dir = isAbsolute(v) || /^\/[a-zA-Z]\//.test(v) ? norm(v) : dir ? norm(resolve(dir, v)) : null;
+        else dir = null;
+        i += 2;
+      } else if (GIT_OPT_VALUE.has(opt)) i += 2;
+      else i += 1;
+    }
+    const sub = (texts[i] ?? "").toLowerCase();
+    if (!sub) continue;
+    if (gitSubIsWrite(sub, texts.slice(i + 1))) out.push({ sub, dir });
   }
   return out;
 }
@@ -252,6 +325,20 @@ export function decideWrite(input, ctx = {}) {
   if (SHELL_TOOLS.has(tool)) {
     const command = input.tool_input?.command;
     if (typeof command !== "string" || !command) return { block: false };
+    if (env.LF_ALLOW_MAIN_GIT !== "1") {
+      for (const g of shellGitWrites(command, cwd)) {
+        if (!g.dir) continue;
+        const r = repoOf(g.dir);
+        if (!r || r.linked) continue; // a worktree (or no repo): git is fine there
+        const known = repoOf(cwd) ?? repoOf(ctx.projectDir);
+        if (!known || key(known.mainRoot) !== key(r.root)) continue; // some other repository
+        const reason =
+          `Refused: \`git ${g.sub}\` in the main checkout (${norm(r.root)}). Never run git there: it is the lead's and the maintainer's copy, ` +
+          `and the lead view and main guard fast-forward it themselves. Start with \`tools\\cli wt new <slug>\` (it fetches origin and branches from it), ` +
+          `then run git and every tools\\cli command inside that worktree. A human who really means it: prefix LF_ALLOW_MAIN_GIT=1.`;
+        return { block: true, reason, git: g.sub };
+      }
+    }
     const targets = shellWriteTargets(command, cwd);
     if (!targets.length) return { block: false }; // no write verb: no file system work at all
     const repo = repoOf(cwd) ?? repoOf(ctx.projectDir);

@@ -70,7 +70,7 @@ AudioClass {
  sounds {
   SoundClass {
    id 102409
-   name "SOUND_DLG_ROLE_MECHANIC_EVERON_GREET"
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_SHOW_GOODS_REPLY"
    version 5
    tl 680 0
    ins {
@@ -92,7 +92,7 @@ AudioClass {
   }
   SoundClass {
    id 103433
-   name "SOUND_DLG_ROLE_MECHANIC_EVERON_WHAT"
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_GREET"
    version 5
    tl 680 280
    ins {
@@ -114,7 +114,7 @@ AudioClass {
   }
   SoundClass {
    id 104457
-   name "SOUND_DLG_ROLE_MECHANIC_EVERON_WHERE"
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_WHAT"
    version 5
    tl 680 560
    ins {
@@ -136,7 +136,7 @@ AudioClass {
   }
   SoundClass {
    id 105481
-   name "SOUND_DLG_ROLE_MECHANIC_EVERON_RUMOUR"
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_WHERE"
    version 5
    tl 680 840
    ins {
@@ -158,7 +158,7 @@ AudioClass {
   }
   SoundClass {
    id 106505
-   name "SOUND_DLG_ROLE_MECHANIC_EVERON_BYE"
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_RUMOUR"
    version 5
    tl 680 1120
    ins {
@@ -167,6 +167,28 @@ AudioClass {
      links {
       ConnectionClass connection {
        id 208914
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 107529
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_BYE"
+   version 5
+   tl 680 1400
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 209938
        port 65
       }
      }
@@ -208,6 +230,10 @@ AudioClass {
       }
       ConnectionClass connection {
        id 106505
+       port 65
+      }
+      ConnectionClass connection {
+       id 107529
        port 65
       }
      }
@@ -252,7 +278,7 @@ AudioClass {
  shaders {
   ShaderClass {
    id 204818
-   name "SOUND_DLG_ROLE_MECHANIC_EVERON_GREET"
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_SHOW_GOODS_REPLY"
    version 5
    tl 432 0
    ins {
@@ -299,7 +325,7 @@ AudioClass {
   }
   ShaderClass {
    id 205842
-   name "SOUND_DLG_ROLE_MECHANIC_EVERON_WHAT"
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_GREET"
    version 5
    tl 432 280
    ins {
@@ -346,7 +372,7 @@ AudioClass {
   }
   ShaderClass {
    id 206866
-   name "SOUND_DLG_ROLE_MECHANIC_EVERON_WHERE"
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_WHAT"
    version 5
    tl 432 560
    ins {
@@ -393,7 +419,7 @@ AudioClass {
   }
   ShaderClass {
    id 207890
-   name "SOUND_DLG_ROLE_MECHANIC_EVERON_RUMOUR"
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_WHERE"
    version 5
    tl 432 840
    ins {
@@ -440,7 +466,7 @@ AudioClass {
   }
   ShaderClass {
    id 208914
-   name "SOUND_DLG_ROLE_MECHANIC_EVERON_BYE"
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_RUMOUR"
    version 5
    tl 432 1120
    ins {
@@ -485,6 +511,53 @@ AudioClass {
     23 0
    }
   }
+  ShaderClass {
+   id 209938
+   name "SOUND_DLG_ROLE_MECHANIC_EVERON_BYE"
+   version 5
+   tl 432 1400
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 312324
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
  }
  amplitudes {
   AmplitudeClass : "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf" {
@@ -519,9 +592,21 @@ AudioClass {
  banks_local {
   BankLocalClass {
    id 307204
-   name "DLG_ROLE_MECHANIC_EVERON_GREET"
+   name "DLG_ROLE_MECHANIC_EVERON_SHOW_GOODS_REPLY"
    version 7
    tl 150 0
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{9D6289A292E8DE8F}Sounds/Dialogue/role_mechanic_everon/role_mechanic_everon_show_goods_reply.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 308228
+   name "DLG_ROLE_MECHANIC_EVERON_GREET"
+   version 7
+   tl 150 280
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -530,10 +615,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 308228
+   id 309252
    name "DLG_ROLE_MECHANIC_EVERON_WHAT"
    version 7
-   tl 150 280
+   tl 150 560
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -542,10 +627,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 309252
+   id 310276
    name "DLG_ROLE_MECHANIC_EVERON_WHERE"
    version 7
-   tl 150 560
+   tl 150 840
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -554,10 +639,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 310276
+   id 311300
    name "DLG_ROLE_MECHANIC_EVERON_RUMOUR"
    version 7
-   tl 150 840
+   tl 150 1120
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -566,10 +651,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 311300
+   id 312324
    name "DLG_ROLE_MECHANIC_EVERON_BYE"
    version 7
-   tl 150 1120
+   tl 150 1400
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -633,6 +718,10 @@ AudioClass {
        id 106505
        port 5
       }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -688,6 +777,10 @@ AudioClass {
        id 106505
        port 5
       }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -741,6 +834,10 @@ AudioClass {
       }
       ConnectionClass connection {
        id 106505
+       port 5
+      }
+      ConnectionClass connection {
+       id 107529
        port 5
       }
      }
