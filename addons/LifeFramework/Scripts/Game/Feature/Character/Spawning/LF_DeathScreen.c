@@ -67,12 +67,13 @@ class LF_DeathScreen
 	//------------------------------------------------------------------------------------------------
 	protected bool OpenInternal(PlayerController playerController)
 	{
-		if (!GetGame().GetWorkspace())
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!workspace)
 			return false;
 
 		m_PlayerController = playerController;
 
-		m_wRoot = GetGame().GetWorkspace().CreateWidgets("{1CBC0B1329A8762C}UI/Layouts/DeathScreen.layout");
+		m_wRoot = workspace.CreateWidgets("{1CBC0B1329A8762C}UI/Layouts/DeathScreen.layout");
 		if (!m_wRoot)
 		{
 			LF_Debug.Error("Death", "failed to create the death screen layout");

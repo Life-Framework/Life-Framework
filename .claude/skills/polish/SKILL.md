@@ -57,13 +57,15 @@ Tick each line from the pictures. A line that cannot hold gets one sentence in t
 **Thing**
 - [ ] It is what it claims to be, at its real size beside its neighbours (the bounds are under
       each close-up). A stand-in is in `docs/asset-inventory.md` and named in the PR.
-- [ ] No white, magenta or mirror-chrome surface; no blank sign.
+- [ ] No white, magenta or mirror-chrome surface. (A blank sign FACE in a `look` picture is expected: look never
+      draws sign faces; read the text in a session, `docs/visual-testing.md` "What it does not show".)
 - [ ] Nothing debug-looking: no `*_Debug` entity or `/Debug/` prefab in a village layer.
 - [ ] It fits 1989 Everon: period, material, wear.
 
 **Sign or text**
 - [ ] The right sign type and paint for the job; capitals; two or three words.
-- [ ] Readable from where the player stands; not clipped by a roof, a wall or another sign.
+- [ ] Readable from where the player stands; not clipped by a roof, a wall or another sign. The text itself is
+      checked in a session shot (`harness stand` + `shot world`), never from `look`.
 - [ ] Every string is a key in the string table and reads like printed matter.
 
 **Sheet, HUD, face** (needs a session shot: Workbench captures no UI)

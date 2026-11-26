@@ -8,6 +8,8 @@
 //! LF_ReputationContracts.Begin, which refuses a dead or downed body, rate limits as a purchase,
 //! re-checks the gate, the one-at-a-time rule and the cooldown, takes the run's deposit and binds
 //! the contract. Every refusal is told to the player in words; nothing moves on a refusal.
+// lf-spoken: #LF-Contract_Started #LF-Contract_RunOpen #LF-Contract_Unknown #LF-Contract_Busy #LF-Contract_Cooldown #LF-Contract_NotAble
+// lf-not-spoken: #LF-Contract_NoRun
 class LF_DialogueHook_Contract : LF_DialogueHook
 {
 	static const string KEY_STARTED = "#LF-Contract_Started";
