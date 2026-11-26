@@ -376,7 +376,8 @@
       ],
       "yaw": 20,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.012
     },
     {
       "id": "lamp-barrel-flag",
@@ -408,7 +409,8 @@
       ],
       "yaw": 260,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.013
     },
     {
       "id": "farm-lamp-door",
