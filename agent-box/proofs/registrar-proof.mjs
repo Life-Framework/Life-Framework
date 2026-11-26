@@ -1,20 +1,32 @@
-import { arrive, clientBox, sessionDir } from "../session.mjs";
+import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 
 // #4457 follow-up: the registrar stands behind the registry desk of the Saint-Philippe cabin and the flag wall stands
 // outside it, one client on `up --mission island --profile full --sound`.
 //   1. The client stands at the registrar and talks: the scene opens (`LF_DialogueTalkAction`), the founding line plays.
 //   2. The client founds an organization at the registry desk, walks to the flag wall and picks flag 3: the registrar
 //      within 25 m says "That is your flag" (log `[LFDebug:Dialogue]` announce line) instead of the no-registrar line.
-//   node agent-box/session.mjs registrar-proof
+//   node agent-box/session.mjs registrar-proof            (--selftest runs the pure parts)
+// The founding fee is carried cash (LF_OrgConfig.DEFAULT_FOUNDING_FEE, 250). A character with less (after another proof,
+// or a fresh $0 to $199 newcomer) is topped up to the fee plus a margin with the harness `resetplayer <cash> keep` before the
+// desk; when the top-up is refused the proof SKIPs with that reason instead of failing at the founding.
 // The proof fails when the talk or the pick is refused; read the server log for the voice line afterwards:
 //   tools\cli logs "registrar|OrgFlagWall"
 const REGISTRAR = "Fit_saint_philippe_org_registrar";
 const DESK = "Fit_saint_philippe_org_registry_desk";
 const WALL = "Fit_saint_philippe_org_flag_wall";
-const ATM = "Fit_saint_philippe_atms_drop_b79";
+const FOUNDING_FEE = 250; // LF_OrgConfig.DEFAULT_FOUNDING_FEE
+const TOPUP_MARGIN = 50;
 const ORG_NAME = "AlleyKings"; // the name the org proofs use (the field caps the length)
 
-async function run() {
+// Pure: carried cash the character should hold before the founding, or null when it already holds the fee.
+export function topUpTarget(cash, fee = FOUNDING_FEE, margin = TOPUP_MARGIN) {
+  const have = Number(cash);
+  if (Number.isFinite(have) && have >= fee) return null;
+  return fee + margin;
+}
+
+async function run(args = []) {
+  if (args.includes("--selftest")) return selftest();
   const h = await import("../harness.mjs");
   const dir = sessionDir();
   const on = (spec, timeout) => {
@@ -49,15 +61,19 @@ async function run() {
   on({ verb: "input", action: "MenuSelect" });
   wait(2500);
 
-  // The founding fee is carried cash and a newcomer holds $200: withdraw $100 at the ATM (row 2 of its list).
-  for (const side of ["e", "w", "n", "s"]) {
-    on({ verb: "stand", entityName: ATM, side });
+  // The founding fee is carried cash: top the character up to it first (a newcomer holds $200, a proof before this one may have spent it).
+  const have = parseState(on({ verb: "state" }, 10000).detail).cash;
+  const target = topUpTarget(have);
+  if (target !== null) {
+    console.log(`carried cash ${have ?? "unknown"} is under the $${FOUNDING_FEE} founding fee: topping up to $${target}`);
+    const topped = on({ verb: "resetplayer", cash: target, keepInventory: true }, 15000);
     wait(2500);
-    if (String(on({ verb: "look" }).detail).includes("LF_ATMQuickAction")) break;
+    const now = Number(parseState(on({ verb: "state" }, 10000).detail).cash);
+    if (topped.status !== "ok" || !(now >= FOUNDING_FEE)) {
+      console.log(`SKIP  registrar-proof: the character holds $${Number.isFinite(now) ? now : "?"} and the harness top-up (resetplayer ${target} keep) answered ${topped.status} ${String(topped.detail).slice(0, 120)}; the $${FOUNDING_FEE} founding fee cannot be paid, so the founding is not tried`);
+      return 0;
+    }
   }
-  const withdraw = on({ verb: "use", className: "LF_ATMQuickAction__2" }, 10000);
-  if (withdraw.status !== "ok") fails.push(`the ATM withdraw returned ${withdraw.status} ${withdraw.detail}`);
-  wait(2000);
 
   // 2. Found an organization at the registry desk, then pick a flag at the wall.
   on({ verb: "stand", entityName: DESK }, 20000);
@@ -87,8 +103,15 @@ async function run() {
   return fails.length ? 1 : 0;
 }
 
+function selftest() {
+  const ok = topUpTarget(0) === 300 && topUpTarget(100) === 300 && topUpTarget(249) === 300
+    && topUpTarget(250) === null && topUpTarget("450") === null && topUpTarget(undefined) === 300 && topUpTarget("x") === 300;
+  console.log(ok ? "registrar-proof selftest: OK" : "registrar-proof selftest: FAIL");
+  return ok ? 0 : 1;
+}
+
 export default {
   name: "registrar-proof",
-  usage: "registrar-proof   (run in a --mission island --profile full --sound session)",
-  run,
+  usage: "registrar-proof   (run in a --mission island --profile full --sound session; --selftest runs the pure parts)",
+  run: (ctx) => run(ctx?.args ?? process.argv.slice(2)),
 };
