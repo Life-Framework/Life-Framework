@@ -5,6 +5,7 @@ class LF_UIQuantityRelay : ScriptedWidgetComponent
 	protected ref LF_UIScreen m_Screen;
 	protected string m_sName;
 	protected bool m_bWired;
+	protected LF_ThinSliderWidget m_Slider;
 
 	//------------------------------------------------------------------------------------------------
 	override void HandlerAttached(Widget w)
@@ -43,7 +44,19 @@ class LF_UIQuantityRelay : ScriptedWidgetComponent
 		}
 
 		slider.GetOnValueChanged().Insert(OnChanged);
+		m_Slider = slider;
 		m_bWired = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void HandlerDeattached(Widget w)
+	{
+		if (m_Slider && m_Slider.GetOnValueChanged())
+			m_Slider.GetOnValueChanged().Remove(OnChanged);
+
+		m_Slider = null;
+		m_bWired = false;
+		super.HandlerDeattached(w);
 	}
 
 	//------------------------------------------------------------------------------------------------

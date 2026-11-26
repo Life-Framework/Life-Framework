@@ -47,6 +47,7 @@ class LF_DialogueHook_RobBlocked : LF_DialogueHook
 //------------------------------------------------------------------------------------------------
 //! Action: start the held robbery. A refusal that came up between the offer and the pick is shown
 //! as its caption before the attendant's line.
+// lf-not-spoken: LF-RobHold_Refused_*: parenthetical captions that say why (system text), not the attendant's words
 class LF_DialogueHook_RobStart : LF_DialogueHook
 {
 	//------------------------------------------------------------------------------------------------
@@ -60,6 +61,7 @@ class LF_DialogueHook_RobStart : LF_DialogueHook
 
 //------------------------------------------------------------------------------------------------
 //! Action: say why the robbery cannot start (a caption; the attendant's "it is empty" follows).
+// lf-not-spoken: LF-RobHold_Refused_*: parenthetical captions that say why (system text), not the attendant's words
 class LF_DialogueHook_RobRefused : LF_DialogueHook
 {
 	//------------------------------------------------------------------------------------------------
