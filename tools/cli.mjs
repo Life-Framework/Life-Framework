@@ -4713,8 +4713,9 @@ function wtNewCmd(args) {
     console.log("");
     console.log(`  cd ${r.path}`);
     console.log(`  tools\\cli dev --tier fast        # iterate (no build)`);
-    console.log(`  tools\\cli wt gate ${r.slug}      # validate + build + test`);
-    console.log(`  tools\\cli wt ship ${r.slug}      # gate, PR, auto-merge`);
+    console.log(`  tools\\cli validate                # cheap checks, run it often`);
+    console.log(`  tools\\cli wt ship ${r.slug}      # PR + auto-merge (GitHub validate is the gate)`);
+    console.log(`  Run git and tools\\cli from this worktree only; git writes in the main checkout are refused.`);
     return 0;
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
