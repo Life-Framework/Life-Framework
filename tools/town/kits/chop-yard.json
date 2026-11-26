@@ -6,7 +6,10 @@
     "file": "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Street_ChopShop.layer",
     "group": "*",
     "origin": "Roadmap_ChopShop",
-    "frame": "origin-entity"
+    "frame": "origin-entity",
+    "also": [
+      "tools/town/kits/sources/chop-yard-night-props.txt"
+    ]
   },
   "scope": "room",
   "anchoring": {
@@ -371,6 +374,70 @@
         13.8
       ],
       "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chop-lamp-bench",
+      "name": "Chop_Lamp_Bench",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on workbench-01",
+      "offset": [
+        5.05,
+        1.08,
+        12.85
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chop-glow-bench",
+      "name": "Chop_Glow_Bench",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on chop-lamp-bench",
+      "offset": [
+        5.05,
+        1.36,
+        12.85
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chop-lamp-barrel",
+      "name": "Chop_Lamp_Barrel",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on barrel-metal-01-blue",
+      "offset": [
+        4.8,
+        1.185,
+        8.5
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chop-glow-barrel",
+      "name": "Chop_Glow_Barrel",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on chop-lamp-barrel",
+      "offset": [
+        4.8,
+        1.465,
+        8.5
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
       "wall": "free",
       "floor": "f0"
     }

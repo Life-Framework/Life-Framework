@@ -133,17 +133,17 @@
       "mouth": "236999873698710599623768445761175578986421000"
     },
     "shipment_ask": {
-      "hash": "f184e88eb503071b",
-      "date": "2026-11-19",
+      "hash": "cbfa8a7265f785ca",
+      "date": "2026-11-26",
       "voice_id": "LifjXiNLcYfyYJD8PCDT",
       "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
       "model": "eleven_multilingual_v2",
-      "text": "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?",
+      "text": "That red crate on the pallet weighs eleven kilos over the manifest. I signed for canned fish. Would you count it for me?",
       "chars": 120,
-      "chars_total": 48,
-      "request_id": "jmh8IhGpu4VCTHuZPCKk",
-      "seconds": 9.83,
-      "mouth": "15752569944525799964531066758604899992439999787303758987984568699752276799737778899346746612310000000000000000001756998899884468710679876334997756431000000000000000004545721899873674445887999521100"
+      "chars_total": 96,
+      "request_id": "9dTQNipInJPRHyzh6xRi",
+      "seconds": 11.11,
+      "mouth": "2397155998340579998254224675961389999352799987751100026889995988266658986414997997256678894459745663021000000001000000100100000076588887799753468940789774345786689753100000000000000000446746524799874678873453259977998621000"
     },
     "shipment_count": {
       "hash": "c95f9f5f2a3f9661",
@@ -159,17 +159,17 @@
       "mouth": "9841699996036532100000000000045788745367999324037965007599739997666513677662998520321000000000000000035445567742067997788434599888752100000000003269975888675579776411000"
     },
     "shipment_thanks_report": {
-      "hash": "691022ecc484e14e",
-      "date": "2026-11-19",
+      "hash": "07237741da698c24",
+      "date": "2026-11-26",
       "voice_id": "LifjXiNLcYfyYJD8PCDT",
       "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
       "model": "eleven_multilingual_v2",
-      "text": "You took it to the desk. Good. The town will sleep better, whatever the dockers say.",
-      "chars": 84,
-      "chars_total": 34,
-      "request_id": "hsxMcfLYTdDuMRw0Q1SQ",
-      "seconds": 7.07,
-      "mouth": "4589499258417878739999689723420000021001357999232210000000000000025516789988997785797002995469653100000000248627998994772599148878869996531000"
+      "text": "You took it to the desk. Good. The town will sleep better, whatever the dockworkers say.",
+      "chars": 88,
+      "chars_total": 69,
+      "request_id": "QpTlEBZWUKVG4YZOYPNS",
+      "seconds": 8.17,
+      "mouth": "23571689646814654762799968851621000000000000005589992333100000000100000000002143168898889867636871004992579853310000000033884489869973731895444997159767768997521000"
     },
     "shipment_thanks_sell": {
       "hash": "4fc4b71deb07734d",
@@ -183,6 +183,58 @@
       "request_id": "RWWLuYc84fW0s1SxekRG",
       "seconds": 10.42,
       "mouth": "67367568945119998795034105799998105824379996414211000000000000100000476899899151789857625332100000000000000100055305898635996210699999875321000005998578113667887432110000010100135585057744567862899998654542000"
+    },
+    "shipment_count_desc": {
+      "hash": "6447a0f11e27b87d",
+      "date": "2026-11-26",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "That red crate on the quay weighs too much. Open it and count what is inside.",
+      "chars": 77,
+      "chars_total": 31,
+      "request_id": "BKdBEkPwVoPBOoIDMMDM",
+      "seconds": 7.26,
+      "mouth": "33761437963206599981533005864730096779987998866066678985288742000000000000000000000000699615989816687600879998743379999330677642897788797654221000"
+    },
+    "contract_unknown": {
+      "hash": "673537b18f27c595",
+      "date": "2026-11-26",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "That contract is not on offer.",
+      "chars": 30,
+      "chars_total": 12,
+      "request_id": "siYqpfUPS1gDNctsl9DI",
+      "seconds": 2.18,
+      "mouth": "27614578856797245677894546986109984467531000"
+    },
+    "contract_not_able": {
+      "hash": "694f9e5cc38b7950",
+      "date": "2026-11-26",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "You are in no state to take on work.",
+      "chars": 36,
+      "chars_total": 14,
+      "request_id": "HHTO3nYSjrJaGk4MJUeh",
+      "seconds": 2.77,
+      "mouth": "36999999976778998776049986114533699545665679997321421000"
+    },
+    "shipment_sold_desc": {
+      "hash": "112ac60ce85e90c1",
+      "date": "2026-11-26",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "What was under the canned fish is worth money to the right person. Sell it to a buyer.",
+      "chars": 86,
+      "chars_total": 34,
+      "request_id": "KAE4IPQgYTUd382Knyvy",
+      "seconds": 9.35,
+      "mouth": "25853568997610799995999459306588875335799887652100000000130001446657999963346897998513544998689981105999877853210000000000000000000000000004676755997136421000156515667510488887777654311000"
     }
   },
   "voice": {

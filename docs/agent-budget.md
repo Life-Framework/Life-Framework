@@ -229,6 +229,10 @@ skipped 3 check(s): validate-scripts.ps1, ...
 <the command's own verdict lines: validate: 90 check(s), session: ready ..., the PR url, proof: PASS>
 ```
 
+- **A proof counts failed steps only.** In a run that prints a proof verdict (`<name> proof: PASS|FAIL`), the harness
+  verb answers it retries or expects (`client 1: ... click WelcomeGuideDismissButton -> error widget_not_found`) are counted
+  as `verb-errors=N`, not `failures=` (a PASS once said `failures=8`). A failed proof prints its `FAIL  <step>` lines first,
+  then the last verb errors as `verb:` lines.
 - **The full transcript is the log**, in `<worktree>\tmp\logs\<cmd>-<time>.log` (kept 3 days, never committed). Read it with
   `grep -n` or a line range when the summary names something you need to see.
 - **`--verbose`** (or `LF_VERBOSE=1`) prints the full output as before, nothing filtered. Use it for one run, not by habit.

@@ -73,27 +73,27 @@
       "say": "[shaky breath] Oh God. Oh God, thank you. [whispering] Just go. Please, just go."
     },
     "beg": {
-      "for_key": "#LF-RobHold_ClerkBeg",
+      "for_key": "#LF-RobHold_ClerkBeg", "key_pin": "1626b2f5",
       "text": "Please, I am not a hero. I will not call anyone, I swear it. Just take it.",
       "say": "[crying] Please, I am not a hero. [voice breaking] I will not call anyone, I swear it. Just take it."
     },
     "stammer": {
-      "for_key": "#LF-RobHold_ClerkStammer",
+      "for_key": "#LF-RobHold_ClerkStammer", "key_pin": "3c8f85a7",
       "text": "My hands, I cannot stop my hands. It is coming, it is almost open, please...",
       "say": "[stammering] My hands, I cannot stop my hands. [panicked] It is coming, it is almost open, please..."
     },
     "paid": {
-      "for_key": "#LF-RobHold_ClerkPaid",
+      "for_key": "#LF-RobHold_ClerkPaid", "key_pin": "0aae2d8b",
       "text": "There! That is all of it, all of it! Take it and go, please, just go!",
       "say": "[desperate] There! That is all of it, all of it! [begging] Take it and go, please, just go!"
     },
     "police": {
-      "for_key": "#LF-RobHold_ClerkPolice",
+      "for_key": "#LF-RobHold_ClerkPolice", "key_pin": "b8dc612e",
       "text": "Police! In here! He has a gun! Help me!",
       "say": "[shouting] Police! In here! He has a gun! [screaming] Help me!"
     },
     "gone": {
-      "for_key": "#LF-RobHold_ClerkGone",
+      "for_key": "#LF-RobHold_ClerkGone", "key_pin": "4fce216c",
       "text": "He is gone? Oh God. Somebody call the police!",
       "say": "[shaky breath] He is gone? [crying] Oh God. [shouting] Somebody call the police!"
     },

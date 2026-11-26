@@ -104,3 +104,15 @@ GenericEntity Fit_stillbarn_1_source_still_barn_lamp_e : "{FA81E4DDBA1189AF}Pref
  coords 5357.516 20.6 9894.464
  angleY 107
 }
+GenericEntity Fit_stillbarn_1_barn_fill_w : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 5362.069 22.1 9905.935
+ angleY 107
+}
+GenericEntity Fit_stillbarn_1_barn_fill_e : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 5357.662 22.1 9894.943
+ angleY 107
+}
+GenericEntity Fit_stillbarn_1_barn_fill_c : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 5359.866 23 9900.439
+ angleY 107
+}

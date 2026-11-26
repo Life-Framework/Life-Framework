@@ -33,6 +33,8 @@
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
+    "chairs": { "for_key": "#LF-Quest_AnniversaryChairs_Desc", "key_pin": "49e3e944", "text": "The anniversary is tomorrow and the square is short of seats. Bring four chairs for the trestles." },
+    "flowers": { "for_key": "#LF-Quest_AnniversaryFlowers_Desc", "key_pin": "1a351da5", "text": "The tables want flowers before dusk tomorrow. Bring three potted plants from the shops." },
     "greet": { "text": "Ah, a face I do not know yet. Bastien Girard, mayor. Forgive the mess, the whole town is busy with the day." },
     "day": { "text": "Three years since the first families walked in from the dark. We lay trestles in the square, we light candles, we say thank you. Everyone remembers that night a little differently, and the town must hold all of it." },
     "errand": { "text": "Then take what the square still lacks, and come back when it is done. I will not forget it." },

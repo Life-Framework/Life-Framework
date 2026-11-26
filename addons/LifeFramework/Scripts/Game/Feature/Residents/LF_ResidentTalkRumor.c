@@ -143,6 +143,7 @@ class LF_ResidentTalkRumor_StaticResetHook : LF_StaticResetHook
 //! as the param ("shop", "bar", "informant"). As an action it asks the rule above for the speaking
 //! character and, when a rumor is told, plays it through LF_RumorVoice.Deliver (map, clip, caption);
 //! a refusal is a spoken "nothing new" caption. Server only, no state of its own.
+// lf-spoken: #LF-RumorTalk_NothingNew #LF-RumorTalk_AskedToday
 class LF_DialogueHook_HeardAnything : LF_DialogueHook
 {
 	//------------------------------------------------------------------------------------------------

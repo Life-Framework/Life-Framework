@@ -127,11 +127,11 @@ GenericEntity Fit_highstone_mine_mine_timber_r : "{67B5336A6D63CCA4}Prefabs/Prop
  angleY 90
 }
 GenericEntity Fit_highstone_mine_mine_flood_l : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
- coords 4954.8 115.572 8471.4
+ coords 4954.8 116.092 8471.4
  angleY 180
 }
 GenericEntity Fit_highstone_mine_mine_flood_r : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
- coords 4965.8 115.278 8471.4
+ coords 4965.8 115.798 8471.4
  angleY 180
 }
 GenericEntity Fit_highstone_mine_mine_fence_w1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
@@ -178,4 +178,38 @@ GenericEntity Fit_highstone_mine_mine_ore_field {
   }
  }
  coords 4960.5 115.702 8474.2
+}
+GenericEntity Fit_highstone_mine_mine_stool_fl : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 4954.8 115.592 8471.4
+ angleY 20
+}
+GenericEntity Fit_highstone_mine_mine_glow_fl : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 4954.8 116.342 8471.4
+}
+GenericEntity Fit_highstone_mine_mine_stool_fr : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 4965.8 115.298 8471.4
+ angleY -30
+}
+GenericEntity Fit_highstone_mine_mine_glow_fr : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 4965.8 116.048 8471.4
+}
+GenericEntity Fit_highstone_mine_mine_stool_ore : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 4960.5 115.542 8471.4
+ angleY 70
+}
+GameEntity Fit_highstone_mine_mine_lamp_ore : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 4960.5 116.042 8471.4
+}
+GenericEntity Fit_highstone_mine_mine_glow_ore : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 4960.5 116.292 8471.4
+}
+GenericEntity Fit_highstone_mine_mine_stool_sign : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 4960.4 113.66 8458.6
+ angleY -40
+}
+GameEntity Fit_highstone_mine_mine_lamp_sign : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 4960.4 114.16 8458.6
+}
+GenericEntity Fit_highstone_mine_mine_glow_sign : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 4960.4 114.41 8458.6
 }
