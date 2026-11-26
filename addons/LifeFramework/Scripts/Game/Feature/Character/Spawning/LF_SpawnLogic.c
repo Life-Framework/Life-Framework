@@ -377,12 +377,8 @@ class LF_SpawnLogic : SCR_SpawnLogic
 			return;
 		}
 
-		EntitySpawnParams spawnParams();
-		spawnParams.TransformMode = ETransformMode.WORLD;
-		Math3D.AnglesToMatrix(yawPitchRoll, spawnParams.Transform);
-		spawnParams.Transform[3] = position + "0 0.1 0"; // Anti lethal terrain clipping
-
-		IEntity character = GetGame().SpawnEntityPrefab(Resource.Load(prefab), GetGame().GetWorld(), spawnParams);
+		// Anti lethal terrain clipping: spawn a little above the ground.
+		IEntity character = LF_Utils.SpawnEntityPrefab(prefab, position + "0 0.1 0", yawPitchRoll);
 		if (!character)
 		{
 			LF_Debug.Error("Spawn", "failed to spawn player character from prefab: " + prefab);
