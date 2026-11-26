@@ -417,7 +417,7 @@
       "verb": "on barrel-metal-01-blue",
       "offset": [
         4.8,
-        0.98,
+        1.185,
         8.5
       ],
       "yaw": 0,
@@ -433,7 +433,7 @@
       "verb": "on chop-lamp-barrel",
       "offset": [
         4.8,
-        1.26,
+        1.465,
         8.5
       ],
       "yaw": 0,

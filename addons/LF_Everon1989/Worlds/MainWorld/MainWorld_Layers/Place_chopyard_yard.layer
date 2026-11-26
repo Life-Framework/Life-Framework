@@ -141,10 +141,10 @@ GenericEntity Fit_chopyard_yard_chop_glow_bench : "{86D9B6CC9F81ADAF}Prefabs/Pro
  angleY -3
 }
 GameEntity Fit_chopyard_yard_chop_lamp_barrel : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
- coords 5368.025 21.532 9892.925
+ coords 5368.025 21.717 9892.925
  angleY -3
 }
 GenericEntity Fit_chopyard_yard_chop_glow_barrel : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
- coords 5368.025 21.812 9892.925
+ coords 5368.025 21.997 9892.925
  angleY -3
 }
