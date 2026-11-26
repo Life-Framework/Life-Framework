@@ -352,8 +352,18 @@ tools\cli prs heal [<n>...]              # do it (maintainer/lead)
 `prs status` lists number, state, auto-merge on/off, checks, age, and the
 worktree: `LIVE` when an edit, commit or session log landed in the last 15 minutes (directory and git-metadata touches from prune or fetch do not count)
 (modified or untracked files, the worktree's git index/HEAD/reflog, `tmp/`,
-server logs), `idle`, or `none`. An `UNKNOWN` state is re-read through the REST
+server logs), `done (ship)` / `done (heal)`, `idle`, or `none`. An `UNKNOWN` state is re-read through the REST
 API, which makes GitHub compute it.
+
+**Hand-off marker (2026-11-27).** On 2026-11-25 six night-light PRs that appended to `docs/features/*.md` sat
+CONFLICTING for about an hour. Each agent had shipped and stopped. The ship's own logs in `tmp/`, and then heal's own
+merge commit (a fresh reflog entry), read as `LIVE 7m`, so every pass skipped the PR it had just healed while main
+moved again. GitHub runs no custom merge driver, so a both-sides append to the same area file always goes CONFLICTING
+there. The fix is to heal it fast, not to wait. A successful `wt ship` and every heal push write
+`tmp/wt/handoff.json` with the head they left. While HEAD is still that commit and nothing outside `tmp/` is modified
+or untracked, the worktree reads as `done` and heal merges at once. A new edit or commit makes it LIVE again. A
+`gh pr merge --auto` that fails with a transient GitHub answer (GraphQL "Something went wrong", 502/503/504, timeout)
+is retried twice, 5 s apart (`autoMergeWithRetry`). `pr-keeper-selftest` covers both.
 
 `prs heal`, per PR:
 
