@@ -495,7 +495,7 @@
       "verb": "on pallet-1",
       "offset": [
         -9.5,
-        0.15,
+        0.137,
         -6.5
       ],
       "yaw": 0,
@@ -511,7 +511,7 @@
       "verb": "on depot-lamp-pallet",
       "offset": [
         -9.5,
-        0.43,
+        0.417,
         -6.5
       ],
       "yaw": 0,
