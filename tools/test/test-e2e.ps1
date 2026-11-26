@@ -678,6 +678,17 @@ if ($compileFailed) {
 if ($crashLines.Count -gt 0) {
   Write-Host "test-e2e: server crashed (crash.log / VM exception present):"
   foreach ($l in $crashLines) { Write-Host "  $($l.Trim())" }
+  # Which test was running when the engine died: the profile folder is overwritten by the next run, so two
+  # access-violation crashes on 2026-11-24 (same offset, both in the pack leg) left nothing to trace them by.
+  try {
+    $tests = @((Read-Console (Get-LogDir).FullName) -split "`n" | Where-Object { $_ -match '\[LFTEST\] (START|PASS|FAIL) ' })
+    $lastStart = @($tests | Where-Object { $_ -match '\[LFTEST\] START ' } | Select-Object -Last 1)
+    if ($lastStart.Count -gt 0) { Write-Host "test-e2e: the last test started before the crash: $($lastStart[0].Trim() -replace '^.*\[LFTEST\]\s*START\s*', '')" }
+    $prev = @($tests | Where-Object { $_ -match '\[LFTEST\] (PASS|FAIL) ' } | Select-Object -Last 2)
+    foreach ($p in $prev) { Write-Host "test-e2e:   before it: $($p.Trim() -replace '^.*\[LFTEST\]\s*', '')" }
+  } catch {
+    Write-Host "test-e2e: (could not read the console to name the last test: $($_.Exception.Message))"
+  }
   Write-Host "test-e2e: FAILED (crash) - log $((Get-LogDir).FullName)"
   exit 1
 }

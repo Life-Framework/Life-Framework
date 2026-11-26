@@ -82,9 +82,11 @@ class LF_Test_ContractTrackerResend : LF_Test
 		ctx.Equal(1800, left, "a first line has the full limit left");
 
 		// The client counts on from the time left: 600 of 1000 s left is soon, not plenty.
-		LF_ContractTracker.Receive(LF_ContractTracker.Encode("harbour", 1000, true, 400), 0);
-		ctx.Equal(LF_EContractTimeWord.SOON, LF_ContractTracker.ClientTimeWord(0), "a re-sent line with 400 of 1000 s left reads soon");
-		ctx.Equal(LF_EContractTimeWord.EXPIRED, LF_ContractTracker.ClientTimeWord(400000), "and its time runs out 400 s later");
+		// Counted from the real client tick, not 0: a tag built by Receive reads System.GetTickCount() (see LF_Test_ContractTracker).
+		int t0 = System.GetTickCount();
+		LF_ContractTracker.Receive(LF_ContractTracker.Encode("harbour", 1000, true, 400), t0);
+		ctx.Equal(LF_EContractTimeWord.SOON, LF_ContractTracker.ClientTimeWord(t0), "a re-sent line with 400 of 1000 s left reads soon");
+		ctx.Equal(LF_EContractTimeWord.EXPIRED, LF_ContractTracker.ClientTimeWord(t0 + 400000), "and its time runs out 400 s later");
 		LF_ContractTracker.ClearClient();
 		LF_ContractTrackerHud.Remove();
 

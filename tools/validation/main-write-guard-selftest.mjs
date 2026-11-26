@@ -86,7 +86,7 @@ writeFileSync(join(wtDir, ".git"), `gitdir: ${join(main, ".git", "worktrees", "L
 const hook = fileURLToPath(new URL("../hooks/main-write-guard.mjs", import.meta.url));
 const runHook = (payload, env = {}) => {
   const t = Date.now();
-  const r = spawnSync(process.execPath, [hook], { input: typeof payload === "string" ? payload : JSON.stringify(payload), encoding: "utf8", env: { ...process.env, LF_ALLOW_MAIN_WRITE: "", ...env } });
+  const r = spawnSync(process.execPath, [hook], { input: typeof payload === "string" ? payload : JSON.stringify(payload), encoding: "utf8", env: { ...process.env, LF_ALLOW_MAIN_WRITE: "", ...env }, timeout: 180000 }); // a real hang ends at 180 s and fails the deny/allow checks
   return { ms: Date.now() - t, code: r.status, out: r.stdout };
 };
 const blocked = runHook(w(inMain("addons/x.c")));
@@ -99,9 +99,10 @@ check(runHook("{not json").code === 0 && runHook("").out === "", "a malformed pa
 const times = [blocked.ms, allowed.ms, ...Array.from({ length: 5 }, () => runHook(w(inMain("addons/x.c"))).ms)];
 const avg = Math.round(times.reduce((a, b) => a + b, 0) / times.length);
 // A node start costs ~100 ms idle. On a PC running ~20 agents one call can take seconds (max 2647 ms on 2026-11-18, which the
-// main guard blamed on an unrelated merge, #3283), so the claim is the median, with a loose cap that only a real hang breaks.
+// main guard blamed on an unrelated merge, #3283; 41 s on 2026-11-23 on a frozen box), so the claim is the median alone: a real hang
+// is the 180 s spawn timeout above, which fails the deny and allow checks.
 const median = [...times].sort((a, b) => a - b)[Math.floor(times.length / 2)];
-check(median < 1500 && Math.max(...times) < 20000, `a hook call stays fast (median ${median} ms, max ${Math.max(...times)} ms)`);
+check(median < 1500, `a hook call stays fast (median ${median} ms, max ${Math.max(...times)} ms)`);
 
 // settings.json wires the hook for the write tools
 const settings = JSON.parse(readFileSync(fileURLToPath(new URL("../../.claude/settings.json", import.meta.url)), "utf8"));
