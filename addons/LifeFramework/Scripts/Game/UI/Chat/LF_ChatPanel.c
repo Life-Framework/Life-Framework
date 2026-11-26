@@ -42,8 +42,7 @@ modded class SCR_ChatPanel
 
 		if (n > 0)
 		{
-			string s = string.Format("[Chat] %1 chat channel styles are not configured.", n);
-			Print(s, LogLevel.ERROR);
+			LF_Debug.Error("Chat", string.Format("%1 chat channel styles are not configured.", n));
 		}
 	}
 
