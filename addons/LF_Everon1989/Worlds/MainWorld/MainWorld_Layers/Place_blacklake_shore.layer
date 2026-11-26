@@ -24,10 +24,10 @@ GenericEntity Fit_blacklake_shore_bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats
  angleY -57
 }
 GenericEntity Fit_blacklake_shore_lantern : "{57354E1D82BCF650}Prefabs/Props/Fishing/LF_LakeLantern.et" {
- coords 9521.9 208.905 2996.9
+ coords 9521.9 208.917 2996.9
 }
 GenericEntity Fit_blacklake_shore_lantern_glow : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
- coords 9521.9 209.532 2996.9
+ coords 9521.9 209.544 2996.9
 }
 GenericEntity Fit_blacklake_shore_sign :"{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
