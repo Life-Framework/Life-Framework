@@ -275,9 +275,9 @@
       "role": "dressing",
       "verb": "on source-sawmill-desk",
       "offset": [
-        6.9,
-        0.9,
-        9
+        6.529,
+        0.906,
+        7.6
       ],
       "yaw": 0,
       "class": "GameEntity",
@@ -291,9 +291,9 @@
       "role": "light",
       "verb": "on sawmill-lamp-desk",
       "offset": [
-        6.9,
-        1.18,
-        9
+        6.529,
+        1.186,
+        7.6
       ],
       "yaw": 0,
       "class": "GenericEntity",
