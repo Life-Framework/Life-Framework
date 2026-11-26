@@ -181,6 +181,24 @@ export function failLines(text, max = 12) {
   return out;
 }
 
+// The raw transcripts a compact run points at (`log=tmp\logs\test-<ts>.log` in its SUMMARY line): they hold each failing
+// test's assertion lines, and the worktree they sit in rotates them within hours, so a flake entry could not be traced
+// afterwards (2026-11-27 flake audit: 8 of 10 suite flakes had no assertion text left). -> unique relative paths.
+export function rawLogPaths(text) {
+  const out = new Set();
+  for (const m of String(text ?? "").matchAll(/\blog=(\S+?\.log)(?=\s|$)/g)) out.add(m[1]);
+  return [...out];
+}
+
+// One flake-log line: when, head, step, what failed, the failing run's transcript, and (after " | ") what it said.
+export function flakeLine({ at, h8, step, what, log, text = "", kept = [] }) {
+  const lines = failLines(text, 4);
+  let out = `${at} ${h8} ${step}: ${what} failed once, passed on recheck (${log})`;
+  if (kept.length) out += ` raw: ${kept.join(", ")}`;
+  if (lines.length) out += ` | ${lines.join(" ; ")}`;
+  return out;
+}
+
 // Which of the recorded failing tests `failed` (what one probe run failed) hits. A probe that fails other tests,
 // or fails with no parseable test line (a test that does not exist yet, a test-plan problem), hits nothing.
 export function setHits(set, failed) {
