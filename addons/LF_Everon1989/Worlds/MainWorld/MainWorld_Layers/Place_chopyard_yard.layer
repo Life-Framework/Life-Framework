@@ -132,3 +132,19 @@ GenericEntity Fit_chopyard_yard_m151_a2_wreck : "{EB084C400AABD1D3}Prefabs/Props
  coords 5375.842 20.339 9900.364
  angleY -73
 }
+GameEntity Fit_chopyard_yard_chop_lamp_bench : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 5372.07 21.698 9891.45
+ angleY -3
+}
+GenericEntity Fit_chopyard_yard_chop_glow_bench : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 5372.07 21.978 9891.45
+ angleY -3
+}
+GameEntity Fit_chopyard_yard_chop_lamp_barrel : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 5368.025 21.717 9892.925
+ angleY -3
+}
+GenericEntity Fit_chopyard_yard_chop_glow_barrel : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 5368.025 21.997 9892.925
+ angleY -3
+}
