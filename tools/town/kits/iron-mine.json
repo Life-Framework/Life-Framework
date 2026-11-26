@@ -1052,6 +1052,217 @@
       "yaw": 10,
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "mine-glow-lantern",
+      "name": "Mine_Glow_Lantern",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on mine-lantern",
+      "offset": [
+        -4,
+        0.3,
+        1.6
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-glow-flood",
+      "name": "Mine_Glow_Flood",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on mine-flood",
+      "offset": [
+        9,
+        0.3,
+        -8
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-glow-bench",
+      "name": "Mine_Glow_Bench",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on mine-bench-lamp",
+      "offset": [
+        6.63,
+        1.15,
+        -3.9
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-glow-barrel",
+      "name": "Mine_Glow_Barrel",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on mine-barrel-lamp",
+      "offset": [
+        -0.7,
+        1.4,
+        -6.6
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-stool-ore",
+      "name": "Mine_Stool_Ore",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.4,
+        0,
+        6.4
+      ],
+      "yaw": 30,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-lamp-ore",
+      "name": "Mine_Lamp_Ore",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "dressing",
+      "verb": "on mine-stool-ore",
+      "offset": [
+        4.4,
+        0.5,
+        6.4
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-glow-ore",
+      "name": "Mine_Glow_Ore",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on mine-lamp-ore",
+      "offset": [
+        4.4,
+        0.75,
+        6.4
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-stool-sign",
+      "name": "Mine_Stool_Sign",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13,
+        0,
+        6.6
+      ],
+      "yaw": -60,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-lamp-sign",
+      "name": "Mine_Lamp_Sign",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "dressing",
+      "verb": "on mine-stool-sign",
+      "offset": [
+        13,
+        0.5,
+        6.6
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-glow-sign",
+      "name": "Mine_Glow_Sign",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on mine-lamp-sign",
+      "offset": [
+        13,
+        0.75,
+        6.6
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-stool-shop",
+      "name": "Mine_Stool_Shop",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        8.6,
+        0,
+        3.4
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-lamp-shop",
+      "name": "Mine_Lamp_Shop",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "dressing",
+      "verb": "on mine-stool-shop",
+      "offset": [
+        8.6,
+        0.5,
+        3.4
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-glow-shop",
+      "name": "Mine_Glow_Shop",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on mine-lamp-shop",
+      "offset": [
+        8.6,
+        0.75,
+        3.4
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }
