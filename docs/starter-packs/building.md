@@ -29,8 +29,8 @@ tools\cli grid place <slug> --cell cXrY --span WxH     # fenced yard + claim fil
 1. **BUILD.** Host building as a whole-building kit in its claim. Every interactable is an existing system (read its
    `Feature.md` and `docs/features/<area>.md`; a shop is a `store` block in `spec.json`). Props: era-current 1989 vanilla
    first, then CC0, then Meshy. Look: `look grid:<slug>` plus `look --interior` per room, day and night. Grade it C.
-2. **POLISH 1 (C to B).** A light in every room, the facade lit at night, walls dressed, every surface stocked or used,
-   signage. Look again. (A sign plate is blank white in `look`: faces are painted at runtime. Read the text in a session.)
+2. **POLISH 1 (C to B).** A light in every room, the facade lit at night (`polish` "Night"), walls dressed, every shelf
+   stocked with single items (no piles, no empty runs), signage. Look again. (A sign plate is blank in `look`: read it in a session.)
 3. **POLISH 2 (B to A).** Lived-in detail, clutter with a story, night mood. Fix whatever the pictures show floating,
    clipping, empty or white. `tools\cli building check <slug>` (offline, every pass) and `tools\cli audit placement --grid --strict`
    (in the world, once per pass) clean.

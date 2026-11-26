@@ -205,7 +205,8 @@
       "yaw": 160,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.5
     },
     {
       "id": "smelter-flood-b",
@@ -221,7 +222,8 @@
       "yaw": -160,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": 0.5
     },
     {
       "id": "smelter-sign",
@@ -251,6 +253,129 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"
+    },
+    {
+      "id": "smelter-stool-a",
+      "name": "Smelter_Stool_A",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1,
+        0,
+        14.5
+      ],
+      "yaw": 20,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-glow-a",
+      "name": "Smelter_Glow_A",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -1,
+        0,
+        14.5
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.75
+    },
+    {
+      "id": "smelter-stool-b",
+      "name": "Smelter_Stool_B",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10,
+        0,
+        11
+      ],
+      "yaw": -30,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-glow-b",
+      "name": "Smelter_Glow_B",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        10,
+        0,
+        11
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.75
+    },
+    {
+      "id": "smelter-stool-sign",
+      "name": "Smelter_Stool_Sign",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.9,
+        0,
+        16.9
+      ],
+      "yaw": -40,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "smelter-lamp-sign",
+      "name": "Smelter_Lamp_Sign",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.9,
+        0,
+        16.9
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.5
+    },
+    {
+      "id": "smelter-glow-sign",
+      "name": "Smelter_Glow_Sign",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -4.9,
+        0,
+        16.9
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.75
     }
   ]
 }

@@ -20,7 +20,12 @@ prove it; `AGENTS.md` defines the ladder and the proof classes.
 5. For persistence, networking, or JIP changes add the matching proof class:
    a real save, restart, and load; a dedicated server rather than a host; a
    late joiner. In-session round trips prove nothing about restarts.
-6. Textures are verified visually only; the dedicated server has no renderer.
+6. Textures are verified visually only; the dedicated server has no renderer. Two things a Workbench `look` cannot
+   prove: a sign's text (blank plate) and a light at 22:00; both are a full-profile session (**polish**, "What
+   `look` cannot show" and "Night").
+7. Read a proof or flow by its `PASS`/`FAIL` verdict and `FAIL <step>` lines. `failures=` counts failed steps;
+   `verb-errors=` counts harness answers retried by design. Session discipline (`--hold 20`, `session down`
+   straight after, never a proof twice inside 5 minutes) is in **agent-scope** "Sessions".
 
 If automation cannot cover the path, write the exact manual actions and pass
 criteria into the PR description. Report what was proven and what was not.

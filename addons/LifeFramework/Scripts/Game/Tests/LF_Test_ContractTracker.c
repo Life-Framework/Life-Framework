@@ -107,23 +107,28 @@ class LF_Test_ContractTracker : LF_Test
 		LF_ContractTracker.ClearClient();
 		ctx.False(LF_ContractTracker.ClientHasLine(), "a client with no contract has no line");
 
-		LF_ContractTracker.Receive(LF_ContractTracker.Encode("harbour", 100, true), 0);
+		// The countdown starts at the real client tick, not at 0: when a workspace exists, Receive builds the tag and the
+		// tag's first Tick reads System.GetTickCount(); a line received at tick 0 is then 100 s old and the tag clears it
+		// (reputation/contract-tracker failed once on the main guard, 2026-11-24, every client assertion false).
+		int t0 = System.GetTickCount();
+
+		LF_ContractTracker.Receive(LF_ContractTracker.Encode("harbour", 100, true), t0);
 		ctx.True(LF_ContractTracker.ClientHasLine(), "the received line is held");
 		ctx.True(LF_ContractTracker.ClientHasCost(), "a stake shows the cost line, in words");
-		ctx.Equal(LF_EContractTimeWord.PLENTY, LF_ContractTracker.ClientTimeWord(1000), "a fresh line has plenty of time");
-		ctx.Equal(LF_EContractTimeWord.SOON, LF_ContractTracker.ClientTimeWord(60000), "after 60 of 100 s it is soon");
-		ctx.Equal(LF_EContractTimeWord.HURRY, LF_ContractTracker.ClientTimeWord(90000), "after 90 of 100 s it is hurry");
+		ctx.Equal(LF_EContractTimeWord.PLENTY, LF_ContractTracker.ClientTimeWord(t0 + 1000), "a fresh line has plenty of time");
+		ctx.Equal(LF_EContractTimeWord.SOON, LF_ContractTracker.ClientTimeWord(t0 + 60000), "after 60 of 100 s it is soon");
+		ctx.Equal(LF_EContractTimeWord.HURRY, LF_ContractTracker.ClientTimeWord(t0 + 90000), "after 90 of 100 s it is hurry");
 		ctx.True(LF_ContractTracker.ClientHasLine(), "the line stays while time is left");
-		ctx.Equal(LF_EContractTimeWord.EXPIRED, LF_ContractTracker.ClientTimeWord(100000), "at 100 s the time is gone");
+		ctx.Equal(LF_EContractTimeWord.EXPIRED, LF_ContractTracker.ClientTimeWord(t0 + 100000), "at 100 s the time is gone");
 		ctx.False(LF_ContractTracker.ClientHasLine(), "the line goes on expiry");
 
-		LF_ContractTracker.Receive(LF_ContractTracker.Encode("harbour", 100, false), 0);
+		LF_ContractTracker.Receive(LF_ContractTracker.Encode("harbour", 100, false), t0);
 		ctx.False(LF_ContractTracker.ClientHasCost(), "no stake shows no cost line");
-		LF_ContractTracker.Receive("", 5);
+		LF_ContractTracker.Receive("", t0 + 5);
 		ctx.False(LF_ContractTracker.ClientHasLine(), "an empty payload clears the line");
 
-		LF_ContractTracker.Receive(LF_ContractTracker.Encode("open", 0, false), 0);
-		ctx.Equal(LF_EContractTimeWord.NONE, LF_ContractTracker.ClientTimeWord(9999999), "a contract with no limit never runs out");
+		LF_ContractTracker.Receive(LF_ContractTracker.Encode("open", 0, false), t0);
+		ctx.Equal(LF_EContractTimeWord.NONE, LF_ContractTracker.ClientTimeWord(t0 + 9999999), "a contract with no limit never runs out");
 		ctx.True(LF_ContractTracker.ClientHasLine(), "and its line stays");
 
 		LF_ContractTracker.ClearClient();

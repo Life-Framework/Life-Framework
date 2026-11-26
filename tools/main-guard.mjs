@@ -23,7 +23,7 @@
 // One worker per repo (hub lock); state in <hub>/main-guard.json; log tmp/logs/main-guard.log.
 
 import { spawn, spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, openSync, closeSync, readdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, openSync, closeSync, readdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
@@ -201,6 +201,27 @@ function runCli(root, dir, args, tag, extraEnv = {}, dropRdb = false) {
     child.on("exit", done);
     child.on("error", () => done(1));
   });
+}
+
+// A flake leaves its evidence: the raw transcripts the failing run named (`log=...` in its SUMMARY line, in the guard's
+// worktree, rotated within hours) are copied to <main>/tmp/logs/flakes/ (newest 80 kept), so the failing assertion is
+// still there when someone audits the flake log days later. Returns the copied paths, relative to <main>.
+function keepFlakeEvidence(root, dir, h8, stepName, text) {
+  const kept = [];
+  try {
+    const out = join(mainRoot(root), "tmp", "logs", "flakes");
+    mkdirSync(out, { recursive: true });
+    for (const rel of mg.rawLogPaths(text)) {
+      const from = resolve(dir, rel);
+      if (!existsSync(from) || statSync(from).size > 20 * 1024 * 1024) continue;
+      const to = join(out, `${h8}-${stepName}-${rel.split(/[\\/]/).pop()}`);
+      copyFileSync(from, to);
+      kept.push(join("tmp", "logs", "flakes", to.split(/[\\/]/).pop()));
+    }
+    const all = readdirSync(out).map((n) => ({ n, t: statSync(join(out, n)).mtimeMs })).sort((a, b) => b.t - a.t);
+    for (const old of all.slice(80)) unlinkSync(join(out, old.n));
+  } catch {}
+  return kept;
 }
 
 // The merges since the last green head, oldest first, each marked beforeStart when it was on main when the guard started.

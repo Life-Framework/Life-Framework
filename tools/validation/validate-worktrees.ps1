@@ -60,6 +60,12 @@ try {
 }
 $cacheNext = @{}
 
+# Seconds this scan may spend on per-worktree `git status` calls (LF_VALIDATE_WORKTREES_GIT_BUDGET_S overrides).
+$gitBudgetSec = 240.0
+if ($env:LF_VALIDATE_WORKTREES_GIT_BUDGET_S -match '^\d+(\.\d+)?$') { $gitBudgetSec = [double]$env:LF_VALIDATE_WORKTREES_GIT_BUDGET_S }
+$gitClock = [System.Diagnostics.Stopwatch]::StartNew()
+$budgetSkipped = 0
+
 # Other agents prune worktrees while this runs (`lead prune-safe`, `wt prune`), and git can refuse a ref read
 # for a moment while another git rewrites packed-refs or a lock ("couldn't read .git/packed-refs: Permission
 # denied"). A git call here therefore never throws and never prints: it returns { Code; Out }, and a transient
@@ -217,6 +223,10 @@ foreach ($p in $state.worktrees.PSObject.Properties) {
       $warnings += "worktree '$slug' is merged into origin/$baseBranch and clean - prune it (cli wt prune $slug)"
       continue
     }
+    # Time cap: with hundreds of merged worktrees and a cold cache this loop ran one `git status` each and passed the
+    # runner's 600 s per-check budget three times (main guard 2026-11-24). The "merged and clean, prune it" warning is
+    # advice, so past the budget the rest are counted in one INFO line and read on a later run (the cache fills up).
+    if (-not $isCurrent -and $gitClock.Elapsed.TotalSeconds -ge $gitBudgetSec) { $budgetSkipped++; continue }
     $st = Invoke-Git @('-C', [string]$w.path, 'status', '--porcelain')
     if ($st.Code -ne 0) { continue }   # the worktree vanished or is locked right now; not a finding
     $dirty = @($st.Out | Where-Object { $_ }).Count
@@ -269,6 +279,10 @@ if ($commonDir -eq ".git") {
 
 if ($staleSkipped -gt 0) {
   Write-Host ("INFO  {0} worktree(s) with no change in 24 h not checked (index and HEAD older than that; cli wt list shows them)" -f $staleSkipped) -ForegroundColor DarkGray
+}
+
+if ($budgetSkipped -gt 0) {
+  Write-Host ("INFO  {0} merged worktree(s) not status-checked: the {1:N0} s git budget ran out (they are read on the next run)" -f $budgetSkipped, $gitBudgetSec) -ForegroundColor DarkGray
 }
 
 # Persist the clean-status cache for the next run (only worktrees visited and clean this run are kept).

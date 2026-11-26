@@ -672,6 +672,11 @@ const SLOW_CHECK_S = new Map([
   ["selftest-scratch-selftest.mjs", 1200],
   ["merge-drivers-selftest.mjs", 1200],
   ["promote-selftest.mjs", 1200],
+  // The same wall on 2026-11-22 for the other scratch-repo selftests: main-ff-heal (600 s, twice), main-guard-validate
+  // (602 s) and pool-selftest (486 s, reaping 30-minute-old leases) were red on 600 s with a green recheck.
+  ["main-ff-heal-selftest.mjs", 1200],
+  ["main-guard-validate-selftest.mjs", 1200],
+  ["pool-selftest.mjs", 1200],
 ]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
