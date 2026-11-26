@@ -5445,6 +5445,11 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
       return (await import("./lib/placement-gate.mjs")).runIslandGate(files, (a) => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "audit", "placement", ...a], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1);
     },
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
+    pullBranch: () => {
+      const f = wt.git(wtRoot, ["fetch", "origin", e.branch]);
+      if (f.status !== 0) throw new Error((f.stderr || f.stdout).trim());
+      shipMergeBase(wtRoot, e.branch, healMergeSync, (l) => console.log(l));
+    },
     findPr: () => wt.findOpenPrGh(wtRoot, e.branch),
     createPr: (o) => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base, draft: o?.draft === true }),
     autoMerge: (n) => gh(["pr", "merge", String(n), "--auto", "--merge"]),
