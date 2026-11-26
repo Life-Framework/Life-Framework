@@ -102,6 +102,7 @@ class LF_RobHoldRules
 			return 1;
 
 		float elapsed = elapsedMs;
+		// lf-float: a 0..1 progress fraction, elapsed / holdMs of a few seconds; both operands are float and small.
 		return Math.Clamp(elapsed / holdMs, 0, 1);
 	}
 
