@@ -7499,6 +7499,21 @@ StringTable {
      Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
      Comment "Lawless area sign card, What section."
     }
+    CustomStringTableItem "{8D3F52A7C16E04B9}" {
+     Id "LF-Sign_LeviePub_How"
+     Target_en_us "Walk in and talk to the barkeeper at the bar. Open every day."
+     Comment "How line of the Levie pub sign (villages sweep 2026-11-27)."
+    }
+    CustomStringTableItem "{4E91B07A2D5C63F8}" {
+     Id "LF-Sign_LeviePub_Title"
+     Target_en_us "Levie Pub"
+     Comment "Title painted on the Levie bar fascia on the street wall (villages sweep 2026-11-27). Shown in the prompt as Read: Levie Pub."
+    }
+    CustomStringTableItem "{C20A7E6B95F13D84}" {
+     Id "LF-Sign_LeviePub_What"
+     Target_en_us "The village pub: a bottle over the bar, and the barkeeper hears the talk of the road."
+     Comment "What line of the Levie pub sign (villages sweep 2026-11-27)."
+    }
     CustomStringTableItem "{7100C834F7E9CEAF}" {
      Id "LF-Sign_Livery_Ambulance_Title"
      Target_en_us "AMBULANCE"
