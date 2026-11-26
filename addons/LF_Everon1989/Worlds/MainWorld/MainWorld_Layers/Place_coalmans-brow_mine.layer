@@ -380,12 +380,12 @@ GameEntity Fit_coalmans_brow_mine_mine_lamp_sign : "{2CB0AA2A87842C18}Prefabs/Pr
 GenericEntity Fit_coalmans_brow_mine_mine_glow_sign : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
  coords 4343 34.7 10410.6
 }
-GenericEntity Fit_coalmans_brow_mine_mine_stool_counter : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+GenericEntity Fit_coalmans_brow_mine_mine_stool_shop : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
  coords 4338.6 34.195 10407.4
 }
-GameEntity Fit_coalmans_brow_mine_mine_lamp_counter : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+GameEntity Fit_coalmans_brow_mine_mine_lamp_shop : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
  coords 4338.6 34.695 10407.4
 }
-GenericEntity Fit_coalmans_brow_mine_mine_glow_counter : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+GenericEntity Fit_coalmans_brow_mine_mine_glow_shop : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
  coords 4338.6 34.945 10407.4
 }

@@ -1216,8 +1216,8 @@
       "floor": "f0"
     },
     {
-      "id": "mine-stool-counter",
-      "name": "Mine_Stool_Counter",
+      "id": "mine-stool-shop",
+      "name": "Mine_Stool_Shop",
       "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
       "role": "dressing",
       "verb": "on floor",
@@ -1233,11 +1233,11 @@
       "mount": "terrain"
     },
     {
-      "id": "mine-lamp-counter",
-      "name": "Mine_Lamp_Counter",
+      "id": "mine-lamp-shop",
+      "name": "Mine_Lamp_Shop",
       "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
       "role": "dressing",
-      "verb": "on mine-stool-counter",
+      "verb": "on mine-stool-shop",
       "offset": [
         8.6,
         0.5,
@@ -1249,11 +1249,11 @@
       "floor": "f0"
     },
     {
-      "id": "mine-glow-counter",
-      "name": "Mine_Glow_Counter",
+      "id": "mine-glow-shop",
+      "name": "Mine_Glow_Shop",
       "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
       "role": "light",
-      "verb": "on mine-lamp-counter",
+      "verb": "on mine-lamp-shop",
       "offset": [
         8.6,
         0.75,

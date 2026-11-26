@@ -264,12 +264,12 @@ GameEntity Mine_Lamp_Sign : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerose
 GenericEntity Mine_Glow_Sign : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
  coords 13 0.75 6.6
 }
-GameEntity Mine_Lamp_Counter : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+GameEntity Mine_Lamp_Shop : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
  coords 8.6 0.5 3.4
 }
-GenericEntity Mine_Glow_Counter : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+GenericEntity Mine_Glow_Shop : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
  coords 8.6 0.75 3.4
 }
-GenericEntity Mine_Stool_Counter : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+GenericEntity Mine_Stool_Shop : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
  coords 8.6 0 3.4
 }
