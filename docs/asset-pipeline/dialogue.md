@@ -201,3 +201,13 @@ records `"engine": "piper"`. Credit the voice in `docs/credits.md`. The clerk's 
 - It does not judge the performance. Listen; `--force <line>` buys another take.
 - It does not write hooks, put the component on the prefab, or write tests.
 - It does not translate. Captions go through the string table; the voice is English.
+
+## A spoken source needs a line (2026-11-27)
+
+`tools\cli validate` also runs `validate-npc-lines-voiced`. A hook that puts keys in `spoken` declares them above its class
+(`// lf-spoken: #LF-Key #LF-Other`; `// lf-not-spoken: #LF-Key` for a system caption; a trailing `*` or `{param}` matches
+a family). Every dialogue that names the hook as an `action`, every quest giver's description, hand-in and idle string, every
+rumor row and every `LF_Dialogue.Announce` key needs a line with that `for_key`. A `for_key` line also carries a `key_pin`,
+the hash of the string it paraphrases: when the string changes the check fails, so re-read the line, `--force <line>` it if
+the words moved, then `node tools/validation/validate-npc-lines-voiced.mjs --update`. A line that follows a different string
+than its key (the foremen follow the unlock rows) sets `"pin_key"`.

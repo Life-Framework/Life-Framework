@@ -200,14 +200,15 @@ modded class SCR_InventoryMenuUI
 				// so OnMenuUpdate does not rebuild this storage a second time.
 				storageUi.ConsumeRefreshRequest();
 				bool focusSet;
-				if (selectedEntity)
+				WorkspaceWidget workspace = GetGame().GetWorkspace();
+				if (selectedEntity && workspace)
 				{
 					foreach(SCR_InventorySlotUI slot : storageUi.GetUISlots())
 					{
 						InventoryItemComponent item = slot.GetInventoryItemComponent();
 						if (item && item.GetOwner() == selectedEntity)
 						{
-							GetGame().GetWorkspace().SetFocusedWidget(slot.GetButtonWidget());
+							workspace.SetFocusedWidget(slot.GetButtonWidget());
 							focusSet = true;
 							break;
 						}

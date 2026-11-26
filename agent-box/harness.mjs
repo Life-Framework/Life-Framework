@@ -353,9 +353,11 @@ export function buildLine(id, spec) {
   }
   if (spec.verb === "clean") return `${id} clean off`;
   if (spec.verb === "time") {
-    const hour = Number(spec.hour);
+    // `harness.mjs send time 23 [weather]` arrives as words (2026-11-26 round: "time hour must be 0-24: undefined").
+    if (spec.hour === undefined && Array.isArray(spec.words)) spec = { ...spec, hour: spec.words[0], weather: spec.weather ?? spec.words[1] };
+    const hour = spec.hour === undefined || spec.hour === "" ? NaN : Number(spec.hour);
     if (!(hour >= 0 && hour < 24)) throw new Error(`time hour must be 0-24: ${spec.hour}`);
-    return spec.weather ? `${id} time ${trimNum(hour)} ${token(spec.weather, "weather state")}` : `${id} time ${trimNum(hour)}`;
+    return spec.weather ?`${id} time ${trimNum(hour)} ${token(spec.weather, "weather state")}` : `${id} time ${trimNum(hour)}`;
   }
   if (spec.verb === "probe") {
     const nums = (list) => list.map((n) => { const v = Number(n); if (Number.isNaN(v)) throw new Error(`probe needs numbers: ${list}`); return trimNum(v); }).join(" ");
@@ -1798,6 +1800,14 @@ function townSelftest() {
   }
 }
 
+// The one-line answer to `harness.mjs <word> ...` when <word> is not a harness command: feature verbs go through send.
+export function unknownCommandHint(cmd, rest = []) {
+  const words = rest.filter((a) => !a.startsWith("--")).join(" ");
+  const send = `node agent-box/harness.mjs --client <n> send ${cmd}${words ? ` ${words}` : ""}`;
+  const cli = cmd === "checkpoint" ? ` (or: tools\\cli checkpoint ${words || "<hour>"} [--client <n>])` : "";
+  return `harness: '${cmd}' is not a harness command. A feature verb goes through send: ${send}${cli}. 'node agent-box/harness.mjs help' lists the commands.`;
+}
+
 function usage() {
   console.log(`agent-box harness
 
@@ -2118,6 +2128,12 @@ function main(argv) {
       const result = runScriptPillar(rest.includes("--run"));
       if (result.text) process.stdout.write(result.text.endsWith("\n") ? result.text : result.text + "\n");
       return result.code;
+    }
+    if (cmd && /^[a-z][a-z0-9]*$/.test(cmd)) {
+      // A feature verb typed as a command (`harness.mjs --client 1 checkpoint 5`) used to print the whole usage, whose last
+      // line "Play mode has to be running" sent agents looking for a dead session (2026-11-25 round, tooling note 1).
+      console.log(unknownCommandHint(cmd, rest));
+      return 1;
     }
     usage();
     return cmd ? 1 : 0;

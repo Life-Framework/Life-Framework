@@ -102,6 +102,7 @@ class LF_RobHoldRules
 			return 1;
 
 		float elapsed = elapsedMs;
+		// lf-float: a 0..1 progress fraction, elapsed / holdMs of a few seconds; both operands are float and small.
 		return Math.Clamp(elapsed / holdMs, 0, 1);
 	}
 
@@ -511,6 +512,7 @@ class LF_RobHold
 
 		string cry = LF_RobHoldRules.ClerkKey(end);
 		if (npc && !cry.IsEmpty())
+			// lf-spoken: #LF-RobHold_ClerkPaid #LF-RobHold_ClerkPolice #LF-RobHold_ClerkGone
 			LF_Dialogue.Announce(npc, cry);
 
 		SCR_PlayerController controller = SCR_PlayerController.Cast(players.GetPlayerController(session.m_iPlayerId));

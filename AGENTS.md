@@ -168,6 +168,10 @@ junctions into the Steam installs; on 2026-11-07 `git worktree remove --force`
 worktree with `tools\cli wt prune <slug>`; delete any other tree with
 `node tools/safe-rm.mjs <dir>` (`link-safety-selftest` proves both).
 
+- **Never run git in the main checkout.** `wt new` fetches origin and branches from it, so no `git pull` comes
+  first; the lead view and the main guard fast-forward that checkout themselves. The hook refuses `git pull`,
+  `merge`, `checkout`, `commit`, `stash`, `reset` and other git writes there for every session, before `wt new` too
+  (`LF_ALLOW_MAIN_GIT=1` is the human override). Reads (`status`, `log`, `diff`, `fetch`) stay open.
 - **Never write into the main checkout.** Use absolute paths under your worktree. A PreToolUse hook
   (`.claude/settings.json`) denies Write/Edit there once `wt new` ran in your session, and `lead` moves stray
   untracked files to `C:\LF\lead\stray` (`docs/worktrees.md` "Writes into the main checkout").
