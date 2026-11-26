@@ -31,9 +31,12 @@
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
+    "fee_short": { "for_key": "#LF-Dialogue_FeeShort", "key_pin": "4f5a4323", "text": "That is not enough. Come back with the full amount." },
+    "fee_held": { "for_key": "#LF-Dialogue_FeeHeld", "key_pin": "8d3bfd7b", "text": "You already have one. Keep your money." },
+    "fee_failed": { "for_key": "#LF-Dialogue_FeeFailed", "key_pin": "f5f53d91", "text": "Not now. Your pockets are full. Your money is still yours." },
     "greet": { "text": "Marcel, tally clerk. I count what comes off the ships and I write down what the customs man wants written. Funny thing. Container nine is short this week." },
     "offer": { "text": "Four hundred dollars, and it stays short on the books. You carry the key, you take what is in it, and in a while it fills up again. I never saw you." },
-    "key": { "for_key": "#LF-Dialogue_FeePaid", "text": "Here. Brass, on a red string. Container nine, back row, past the crane. Take what is in it, lock it up after. The books will say it never came." },
+    "key": { "for_key": "#LF-Dialogue_FeePaid", "key_pin": "c5725bb8", "text": "Here. Brass, on a red string. Container nine, back row, past the crane. Take what is in it, lock it up after. The books will say it never came." },
     "later": { "text": "Not while the customs man is here. Come back when your pockets are full and the yard is quiet." },
     "bye": { "text": "Mind the crane." }
   },

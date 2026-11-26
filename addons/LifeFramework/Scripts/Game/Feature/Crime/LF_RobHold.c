@@ -511,6 +511,7 @@ class LF_RobHold
 
 		string cry = LF_RobHoldRules.ClerkKey(end);
 		if (npc && !cry.IsEmpty())
+			// lf-spoken: #LF-RobHold_ClerkPaid #LF-RobHold_ClerkPolice #LF-RobHold_ClerkGone
 			LF_Dialogue.Announce(npc, cry);
 
 		SCR_PlayerController controller = SCR_PlayerController.Cast(players.GetPlayerController(session.m_iPlayerId));
