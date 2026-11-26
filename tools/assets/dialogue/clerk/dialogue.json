@@ -48,12 +48,12 @@
   ],
   "lines": {
     "greet": { "text": "Good day. This is the town clerk's desk. What can I do for you?" },
-    "register": { "for_key": "#LF-Quest_ArrivalRegister_TurnIn", "text": "There. Your name is in the register, and this is your identity card. Keep it on you. The police may ask to see it." },
-    "board": { "for_key": "#LF-Quest_ArrivalBoard_Desc", "text": "Now read the town board on the square, right beside me. It shows where everything in town is." },
-    "work_errand": { "for_key": "#LF-Quest_ArrivalWork_Desc", "text": "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run." },
-    "bank": { "for_key": "#LF-Quest_ArrivalBank_Desc", "text": "You were paid in cash. Cash in a pocket is lost if you die. Money in the bank is not. Deposit some at the cash machine on the bank wall, next to the post office." },
-    "done": { "for_key": "#LF-Quest_ArrivalDone_TurnIn", "text": "Welcome. Here is something to start you off. The town is yours now. The shops, the car lot, the police station and the organization office are all on the town board." },
-    "idle": { "for_key": "#LF-Quest_Clerk_Idle", "text": "You are settled in. The town board on the square shows the rest: the shops, the car lot, the police station and the organization office." },
+    "register": { "for_key": "#LF-Quest_ArrivalRegister_TurnIn", "key_pin": "dda22c79", "text": "There. Your name is in the register, and this is your identity card. Keep it on you. The police may ask to see it." },
+    "board": { "for_key": "#LF-Quest_ArrivalBoard_Desc", "key_pin": "0b95c334", "text": "Now read the town board on the square, right beside me. It shows where everything in town is." },
+    "work_errand": { "for_key": "#LF-Quest_ArrivalWork_Desc", "key_pin": "085e6ff3", "text": "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run." },
+    "bank": { "for_key": "#LF-Quest_ArrivalBank_Desc", "key_pin": "fa1210e7", "text": "You were paid in cash. Cash in a pocket is lost if you die. Money in the bank is not. Deposit some at the cash machine on the bank wall, next to the post office." },
+    "done": { "for_key": "#LF-Quest_ArrivalDone_TurnIn", "key_pin": "735575a5", "text": "Welcome. Here is something to start you off. The town is yours now. The shops, the car lot, the police station and the organization office are all on the town board." },
+    "idle": { "for_key": "#LF-Quest_Clerk_Idle", "key_pin": "f686e891", "text": "You are settled in. The town board on the square shows the rest: the shops, the car lot, the police station and the organization office." },
     "about_work": { "text": "The post office always needs couriers. For anything else, read the town board. It lists who is hiring." },
     "about_town": { "text": "It is a small town. People here know each other, and they remember faces. Stay honest and you will do well." },
     "bye": { "text": "Good day to you." }

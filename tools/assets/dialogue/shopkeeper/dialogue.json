@@ -55,7 +55,7 @@
       "text": "Food and household goods on the shelves, drinks in the chilled counter. What runs out comes back from the stockroom every few minutes."
     },
     "thief": {
-      "for_key": "#LF-Store_ClerkThief",
+      "for_key": "#LF-Store_ClerkThief", "key_pin": "8302b503",
       "text": "Stop! You did not pay for that! Come back here!"
     },
     "bye": {

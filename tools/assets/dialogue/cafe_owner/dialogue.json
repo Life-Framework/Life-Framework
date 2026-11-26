@@ -171,11 +171,11 @@
       "text": "Come back when you are hungry. Or lonely. It is the same to me."
     },
     "rumour_reported": {
-      "for_key": "#LF-Rumour_Shipment_CafeOwner_Reported",
+      "for_key": "#LF-Rumour_Shipment_CafeOwner_Reported", "key_pin": "96537af1",
       "text": "They say someone carried a crate off the quay straight to the gendarmes. The dockers have not touched a drink here all week. Whoever it was, keep your head down."
     },
     "rumour_sold": {
-      "for_key": "#LF-Rumour_Shipment_CafeOwner_Sold",
+      "for_key": "#LF-Rumour_Shipment_CafeOwner_Sold", "key_pin": "f4dca675",
       "text": "They say a crate went missing off the quay and somebody in town is richer for it. Nobody asks who. The man at the corner table has stopped counting his change."
     }
   },

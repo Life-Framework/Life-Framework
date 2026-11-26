@@ -352,8 +352,18 @@ tools\cli prs heal [<n>...]              # do it (maintainer/lead)
 `prs status` lists number, state, auto-merge on/off, checks, age, and the
 worktree: `LIVE` when an edit, commit or session log landed in the last 15 minutes (directory and git-metadata touches from prune or fetch do not count)
 (modified or untracked files, the worktree's git index/HEAD/reflog, `tmp/`,
-server logs), `idle`, or `none`. An `UNKNOWN` state is re-read through the REST
+server logs), `done (ship)` / `done (heal)`, `idle`, or `none`. An `UNKNOWN` state is re-read through the REST
 API, which makes GitHub compute it.
+
+**Hand-off marker (2026-11-27).** On 2026-11-25 six night-light PRs that appended to `docs/features/*.md` sat
+CONFLICTING for about an hour. Each agent had shipped and stopped. The ship's own logs in `tmp/`, and then heal's own
+merge commit (a fresh reflog entry), read as `LIVE 7m`, so every pass skipped the PR it had just healed while main
+moved again. GitHub runs no custom merge driver, so a both-sides append to the same area file always goes CONFLICTING
+there. The fix is to heal it fast, not to wait. A successful `wt ship` and every heal push write
+`tmp/wt/handoff.json` with the head they left. While HEAD is still that commit and nothing outside `tmp/` is modified
+or untracked, the worktree reads as `done` and heal merges at once. A new edit or commit makes it LIVE again. A
+`gh pr merge --auto` that fails with a transient GitHub answer (GraphQL "Something went wrong", 502/503/504, timeout)
+is retried twice, 5 s apart (`autoMergeWithRetry`). `pr-keeper-selftest` covers both.
 
 `prs heal`, per PR:
 
@@ -1106,7 +1116,7 @@ on the laptop's desktop. Everything that drives them follows the session there: 
 state`, `reset`, `join`, `roster`, `film` and every proof verb run in the run folder over ssh (`--local` keeps
 one on this PC), and a path of this worktree among a proof's arguments (an out dir) is mapped into the run folder
 and copied home afterwards. `asset states <slug> --shots` follows the session the same way; `--local` pins it here.
-`session pull` copies other evidence back. Filming there is #482.
+`session pull` copies other evidence back (a session on this PC: each client's newest `console.log` and `el-captures` and the server log into `tmp/session-pull/local-<time>/`). Filming there is #482.
 
 **A machine that goes away.** A remote test or e2e run whose slot holder drops, or whose ssh fails while the machine
 stops answering, is not a verdict: the machine is marked down for the health window and the run queues again
@@ -1721,6 +1731,8 @@ On 2026-11-17/18 three agents wrote a localization diff and several `LF_Test_*.c
 - **`tools\cli lead stray [--dry-run]`**, also run by the lead view (`STRAY` line; `LF_LEAD_STRAY=0` turns it off): in the main checkout on branch `main`, untracked files under those folders older than 2 minutes are moved to `C:\LF\lead\stray\<timestamp>\<same relative path>` (`LF_LEAD_STRAY_DIR` overrides; `tmp/stray` when there is no `C:\LF\lead`). Tracked files an agent modified are listed with the `git diff` hint, never reverted.
 
 **Shell writes (#3700).** The same hook now runs for Bash and PowerShell. `shellWriteTargets` reads the command line (quotes respected, `;` `&&` `|` split, `cd`/`Set-Location` followed) and denies a `>`/`>>` redirect, `tee`, `sed -i`/`perl -i`, `Set-Content`/`Add-Content`/`Out-File`/`New-Item`/`Remove-Item`/`Move-Item`, `rm`, `mv`, `touch` or a `cp` destination that lands in the guarded folders of the main checkout, from the same agent sessions and with the same exceptions (own worktree, main `tmp/`, `lf.local.json`, the lead, `LF_ALLOW_MAIN_WRITE=1`). Reads, a `cp` source and `/dev/null` are never denied. A script that writes by itself (`node x.mjs`) is still invisible to it; the stray pass and the stash below are the net.
+
+**Git writes (2026-11-27).** Three agents ran `git pull` in the main checkout before `wt new` in the week of 2026-11-24. The write guard could not catch it: before `wt new` an agent has no session claim and looks like the lead. Nobody needs a shell git write there (`wt new` fetches and branches from `origin`; the lead view and the main guard fast-forward through node, which the hook never sees), so `shellGitWrites` refuses `git pull`, `merge`, `rebase`, `reset`, `checkout`, `switch`, `commit`, `stash` (not `stash list`/`show`), `cherry-pick`, `revert`, `clean`, `restore`, `add`, `rm`, `mv`, `push`, `tag`, a branch delete or move and `worktree remove`/`prune`/`move` whose git dir is the main checkout (the cwd followed through `cd`, or `git -C <dir>`), for every session. Reads (`status`, `log`, `diff`, `show`, `fetch`, `branch --list`, `worktree list`) and any git in a worktree or another repository stay open. `LF_ALLOW_MAIN_GIT=1`, in the environment or as an inline prefix (`LF_ALLOW_MAIN_GIT=1 git pull`, `$env:LF_ALLOW_MAIN_GIT=1; git pull`), is the human override. `main-write-guard-selftest` section 7 proves it.
 
 **A blocked fast-forward heals itself (#3700).** On 2026-11-19 a stray tracked edit (`docs/features/sites.md`, then `tools/town/drops.mjs`) stalled the main guard ~2 h and left the checkout 173 commits behind. The guard's `freshenMainCheckout` and `lead` (when `origin/main` is ahead and a tracked file is modified) call `healBlockedFastForward` (`tools/lib/main-ff-heal.mjs`): when `merge --ff-only origin/main` fails because of tracked edits, every modified file that is not under a `Worlds/` folder goes to `git stash push` with a label naming the files (`lf-main-ff-heal <time>: stray tracked edits ...`; never discarded, `git stash pop` in the main checkout restores it), the fast-forward is retried, and one alert line goes to `tmp/logs/main-guard.log` (`ALERT ...`) and to `<hub>/main-ff-alert.json`, which the lead view prints as a `MAINFF` line for 12 h. A `Worlds/` file is the maintainer's hand work (see "Maintainer world edits"): it is never stashed, and the alert names it. An untracked file in the way is left to `lead stray`. `main-ff-heal-selftest` proves it on throwaway repos.
 
