@@ -157,6 +157,32 @@
       "request_id": "YoW6NzQENNBdnwWNKqQo",
       "seconds": 18.57,
       "mouth": "999979789931366566487633963644676676697310000000684434664699666563176653145576333333221111000000000001289769961196489993479567718889877743354555446766542110000000000000018649997999564999799766799993129985110001007866675456642136754128985100000005775876996774354431155432110000000000000034798313877935656765785788623331000000001665668966776655654211499998623479824333211000"
+    },
+    "letter_desc": {
+      "hash": "4dfe7b112f260c56",
+      "date": "2026-11-26",
+      "voice_id": "nTMUXLFSfbWmdKKy7nDC",
+      "voice_name": "Alder - Warm, Raspy and Comforting",
+      "model": "eleven_multilingual_v2",
+      "text": "The letter in the memorial's flowers is addressed to me. Bring it here, if you would.",
+      "chars": 85,
+      "chars_total": 34,
+      "request_id": "wzRFuIQkYQrg64H6Zisc",
+      "seconds": 5.7,
+      "mouth": "9986887467755755765456667769832478877668858974256978959544445543210000000000000003899799569999994436655456642421000"
+    },
+    "letter_turn_in": {
+      "hash": "2697de0d8a415898",
+      "date": "2026-11-26",
+      "voice_id": "nTMUXLFSfbWmdKKy7nDC",
+      "voice_name": "Alder - Warm, Raspy and Comforting",
+      "model": "eleven_multilingual_v2",
+      "text": "Let me read it twice. Then sit with me a while.",
+      "chars": 47,
+      "chars_total": 19,
+      "request_id": "XjQe0dZfog0hMXDmc72g",
+      "seconds": 3.27,
+      "mouth": "268758985779684195478759997246843665999933542267653478886321001000"
     }
   },
   "voice": {

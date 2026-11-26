@@ -1,0 +1,23 @@
+{
+  "about": "Every piece of text this slug's build script paints onto its texture; checked by tools/validation/validate-us-english.mjs. Regenerate: node tools/validation/validate-us-english.mjs --update",
+  "scripts": {
+    "build.py": [
+      "CABBAGE",
+      "SEEDS",
+      "NET WT 2 G",
+      "PLANTING GUIDE",
+      "SOW IN SPRING",
+      "OR LATE SUMMER",
+      "DEPTH 1/2 IN",
+      "ROWS 2 FT APART",
+      "WATER WELL",
+      "HARVEST IN",
+      "ABOUT 90 DAYS",
+      "SEASON 1989",
+      "SP_Print",
+      "seed_L%d",
+      "SeedPacket",
+      "seed-packet"
+    ]
+  }
+}

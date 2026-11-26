@@ -97,7 +97,7 @@ class LF_WelcomeGuideSheet
 		if (logic)
 			return logic.GetStartingBank();
 
-		return Math.Max(0, LF_CharacterConfig.StartingBank(0));
+		return LF_Utils.MaxInt(0, LF_CharacterConfig.StartingBank(0));
 	}
 
 	//------------------------------------------------------------------------------------------------

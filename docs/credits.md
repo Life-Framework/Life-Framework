@@ -108,7 +108,7 @@ A model under CC-BY would also need its author credited in this table.
 
 ## Library and purchased models
 
-Models taken from the open libraries through 3d-asset-server (CC0, CC-BY) or bought by a human on CGTrader and similar markets
+Models taken from the open libraries (CC0, CC-BY) or bought by a human on CGTrader and similar markets
 (Royalty Free), then run through `clean` and `import` (`docs/asset-pipeline/sources.md`). The source stage writes each row. A CC-BY
 model needs this credit before it ships; a purchased model also needs the store page and the seller. The raw files are not
 committed (`tmp/assets/<slug>/purchased/` is gitignored); only the compiled assets are.

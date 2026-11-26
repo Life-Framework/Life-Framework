@@ -38,6 +38,8 @@
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
+    "rumor_nothing_new": { "for_key": "#LF-RumorTalk_NothingNew", "key_pin": "84f9176b", "text": "Nothing new. Ask me tomorrow." },
+    "rumor_asked_today": { "for_key": "#LF-RumorTalk_AskedToday", "key_pin": "f51510e9", "text": "I have told you what I know today. Ask again tomorrow." },
     "greet": { "text": "Evening. Beer is on the board. If you carry cartons or bottles that never saw a tax stamp, you see me, not the bar. Keep your voice down." },
     "buy": { "text": "Cartons and vodka, yes. Use the counter, not your mouth. Two cartons a week, a few bottles. More than that and the owner notices." },
     "limit": { "text": "A bar that sells ten cartons a week is a shop, and a shop gets a visit. When my shelf is full, it is full. Come back next week." },
