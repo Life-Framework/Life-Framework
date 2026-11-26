@@ -33,6 +33,8 @@ const LOG_KEEP_MS = 3 * 24 * 3600 * 1000;
 
 // A line that is a failure. Upper-case words only: "failed=0" and "timeouts 0/100" are not.
 const FAIL_RE = /^(FAIL|ERROR)\b|\b(FAIL|FAILED|ERROR|TIMEOUT|FATAL)\b|SCRIPT \(E\)|VME:|Unable to find|timed out|Traceback|Unhandled|-> (error|timeout)\b|\bExit code [1-9]/;
+// A harness verb answer in a proof transcript: `client 1: s:<id> <verb> ... -> error <code>` (or `-> timeout`).
+const VERB_ERROR_RE = /^client \d+: .* -> (error|timeout)\b/;
 // A warning that changes a decision: validate WARN lines, a pool cap/reclaim, a stale or differing machine.
 const WARN_RE = /^WARN\b|^pool: .*(past its|warned|closes in|reclaimed|no server process)|\bSTALE\b|\(DIFFERS\)|\bDOWN\b|queued behind|is lowspec/;
 // validate prints the output of its self-tests too (pool and merge fixtures): only its own WARN lines count.
@@ -57,8 +59,14 @@ export function summarize({ label, code, text, logPath, seconds }) {
   const keeps = [];
   const skips = [];
   const cached = [];
+  const verbErrors = [];
   let inFailBlock = 0;
   let fixtureBlock = false; // the output of a passing *-selftest.mjs is fixtures (pool, merge), not this run
+  // A proof or flow prints its own verdict ("... proof: PASS (22 steps)", "FAIL  <step>"). The harness transcript lines
+  // under it ("client 1: ... click WelcomeGuideDismissButton -> error widget_not_found") are verb answers the proof
+  // retries or expects, not failed steps: a PASS run showed failures=8 (2026-11-25 x6 dry run). With a verdict line in
+  // the transcript they go in their own verb-errors count; without one they stay failures as before.
+  const hasVerdict = lines.some((l) => /\bproof: (PASS|FAIL)\b|^flow \S+: \d+ pass/.test(l));
   for (const raw of lines) {
     const line = raw.replace(/\r$/, "");
     const header = /^(PASS|FAIL)\b/.exec(line);
@@ -73,6 +81,15 @@ export function summarize({ label, code, text, logPath, seconds }) {
     }
     if (!fixtureBlock && (label === "validate" ? VALIDATE_WARN_RE : WARN_RE).test(line)) {
       warns.push(line);
+      continue;
+    }
+    if (hasVerdict && VERB_ERROR_RE.test(line)) {
+      verbErrors.push(line);
+      continue;
+    }
+    // "<name> proof: FAIL (1 of 22)" is the verdict over the FAIL steps already counted, not one more failure.
+    if (hasVerdict && /\bproof: (PASS|FAIL)\b/.test(line)) {
+      keeps.push(line);
       continue;
     }
     if (FAIL_RE.test(line)) {
@@ -91,7 +108,7 @@ export function summarize({ label, code, text, logPath, seconds }) {
   const failed = code !== 0;
   const out = [];
   const secs = seconds === undefined ? "" : ` ${seconds.toFixed(1)}s`;
-  out.push(`SUMMARY ${label} ${failed ? "fail" : "ok"} exit=${code}${secs} lines=${lines.length} failures=${failures.length} warnings=${warns.length} log=${logPath}`);
+  out.push(`SUMMARY ${label} ${failed ? "fail" : "ok"} exit=${code}${secs} lines=${lines.length} failures=${failures.length}${verbErrors.length ? ` verb-errors=${verbErrors.length}` : ""} warnings=${warns.length} log=${logPath}`);
   if (!failed && lines.length <= PASSTHROUGH) {
     // Already compact: the transcript itself is the report.
     return [out[0], ...lines.map((l) => clip(l))];
@@ -99,6 +116,11 @@ export function summarize({ label, code, text, logPath, seconds }) {
   const failShown = failures.slice(0, MAX_FAILURE_LINES);
   for (const l of failShown) out.push(clip(l));
   if (failures.length > failShown.length) out.push(`... ${failures.length - failShown.length} more failure line(s) in ${logPath}`);
+  if (failed && verbErrors.length) {
+    // On a failed proof the verb answers help find why; on a pass they are noise and stay in the log.
+    for (const l of verbErrors.slice(-MAX_WARN_LINES)) out.push(clip(`  verb: ${l}`));
+    if (verbErrors.length > MAX_WARN_LINES) out.push(`... ${verbErrors.length - MAX_WARN_LINES} more verb error(s) in ${logPath}`);
+  }
   const warnCap = label === "validate" ? 3 : MAX_WARN_LINES; // validate's advisory WARN lines are a backlog, not a decision
   const warnShown = warns.slice(0, warnCap);
   for (const l of warnShown) out.push(clip(l));
@@ -107,7 +129,7 @@ export function summarize({ label, code, text, logPath, seconds }) {
   for (const l of cached.slice(-4)) out.push(clip(l, 400));
   const keepShown = keeps.slice(-MAX_KEEP_LINES);
   for (const l of keepShown) out.push(clip(l));
-  if (failed && failures.length === 0) {
+  if (failed && failures.length === 0 && verbErrors.length === 0) {
     // A failure with no recognisable error line: show the end of the transcript, never nothing.
     out.push("(no error line recognised; the last lines of the transcript:)");
     for (const l of lines.slice(-12)) out.push(clip(l));

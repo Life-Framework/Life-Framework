@@ -326,7 +326,13 @@ files, never a typed coordinate (`tools/visual/look-place.mjs`):
 - **Front:** the first known entrance seen from the footprint centre, else the building's local +z (its yaw). The wide
   tries eye level on that side first, then look's usual fan.
 - **Ground:** the plugin's `GetSurfaceY` on the island terrain (`ty -`), so cameras stand on the street, not under it.
-- **Inside:** `--interior auto` stands on the ground floor (footprint centre, the dossier's floor height), four views.
+- **Inside:** `--interior auto` stands on the ground floor at the slot's own business row: the first counter, till, desk,
+  clerk or bar row of its kit within the footprint and on the dossier's floor height, moved up to 2 m toward the middle
+  of the ground-floor kit. With no business row it uses that middle, and with no ground-floor kit row the footprint
+  centre. The footprint centre put the 2026-11-25 sweep's cameras in the clinic stairwell, on roofs and in a neighbour's
+  flat. `--interior <row>` stands at one named row of the slot's layer, on its own floor: the full `Fit_...` name or a
+  unique suffix (`--interior lf_medic_duty_desk`, `--interior upstairs_bed`). An unknown name is refused with the row
+  list. `look` prints the pick: `look: interior camera at x,y,z r R (kit anchor Fit_..._counter)`. Four views.
 - **Close-ups:** the entities of the island's `Place_*` layers within the radius (the fitted kit rows).
 - `--world island` does the same for a bare `x,z`. A place: target and a town or grid area cannot share one run.
 
@@ -383,6 +389,13 @@ not load ...` and keeps no pictures. The asset verify/states clothing shots use 
 
 ### What it does not show
 
+- **Sign faces** (#4940). A sign's face is a render target that `LF_SignComponent` paints at runtime, and a
+  Workbench `look` never draws it: every sign plate shows blank white, and a blank plate in a `look` picture is NOT a
+  defect. The 2026-11-25 sweep first graded 21 working signs BELOW for it; a session then read 9 of 9. When the
+  area holds a sign prefab, `look` prints `NOTE <n> sign(s) here: sign faces are not drawn in look ...` under the
+  contact sheet path, tags the first tile `[SIGN FACES NOT DRAWN: check in a session]` and writes the note to
+  `index.json` `notes`. Grade sign text in a full-profile session: `node agent-box/harness.mjs --client 1 stand ...`
+  at eye height, then `shot world`. Placement, size and what blocks the sign are still judged from `look`.
 - **UI.** A Workbench play capture is the 3D view only.
 - **Anything a dedicated server does differently**, a second player, or late join.
 - **Red fans and lines on the ground.** A Workbench debug overlay that the game client does not

@@ -38,7 +38,7 @@
 import "../tools/lib/quiet-gate.mjs";
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
@@ -1371,10 +1371,56 @@ async function runWhereSession(rest) {
 // `pull [dest]`: copies the remote session's evidence here: the run folder's
 // agent-box/reports (journey.html, films), each client's newest el-captures and the server's console.log (server/console.log).
 // Lands in tmp/session-pull/<machine>-<time>/ unless dest is given.
+// The newest subfolder of `dir` by mtime, or null.
+function newestSubdir(dir) {
+  try {
+    const subs = readdirSync(dir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => join(dir, d.name));
+    subs.sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs);
+    return subs[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// A session on this PC: the same evidence the remote pull stages, copied from the local session dir (2026-11-25: "session
+// pull says no remote session recorded", and the round's pictures had to be dug out of each client's el-captures by hand).
+// Returns [{ what, to }] for what was copied. Exported for the selftest.
+export function pullLocalEvidence(sdir, dest) {
+  const got = [];
+  let clients = [];
+  try {
+    clients = readdirSync(sdir, { withFileTypes: true }).filter((d) => d.isDirectory() && /^client/.test(d.name)).map((d) => d.name);
+  } catch { /* no session dir */ }
+  for (const c of clients) {
+    const newest = newestSubdir(join(sdir, c, "logs"));
+    if (!newest) continue;
+    const to = join(dest, c);
+    mkdirSync(to, { recursive: true });
+    if (existsSync(join(newest, "console.log"))) { copyFileSync(join(newest, "console.log"), join(to, "console.log")); got.push({ what: `${c} console.log`, to }); }
+    if (existsSync(join(newest, "el-captures"))) { cpSync(join(newest, "el-captures"), join(to, "el-captures"), { recursive: true }); got.push({ what: `${c} el-captures`, to: join(to, "el-captures") }); }
+  }
+  const sn = newestSubdir(join(sdir, "server", "logs"));
+  if (sn && existsSync(join(sn, "console.log"))) {
+    mkdirSync(join(dest, "server"), { recursive: true });
+    copyFileSync(join(sn, "console.log"), join(dest, "server", "console.log"));
+    got.push({ what: "server console.log", to: join(dest, "server") });
+  }
+  return got;
+}
+
 async function pullFromSession(rest) {
   const ptr = readRemotePointer();
   if (!ptr) {
-    console.log("pull: no remote session recorded; the evidence is already on this PC");
+    const sdir = sessionDir();
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+    const dest = resolve(rest[0] || join(ROOT, "tmp", "session-pull", `local-${stamp}`));
+    const got = pullLocalEvidence(sdir, dest);
+    if (!got.length) {
+      console.log(`pull: the session is on this PC, but ${sdir} holds no client or server logs yet (was 'session up' run from this worktree?)`);
+      return 1;
+    }
+    for (const g of got) console.log(`pull: ${g.what} -> ${g.to}`);
+    console.log(`pull: local session evidence -> ${dest} (captures are numbered per client and restart after 'session restart')`);
     return 0;
   }
   const tb = await import("../tools/remote/testbox.mjs");
