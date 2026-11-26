@@ -334,6 +334,7 @@ class LF_TermBook
 			int close = text.IndexOfFrom(i, "}");
 			if (close < 0)
 			{
+				// lf-bounded: the tail of a localised term template after its last placeholder; a template is hundreds of chars (enforce-string-limits.md site 8).
 				result += text.Substring(i, length - i);
 				break;
 			}
@@ -382,6 +383,7 @@ class LF_TermBook
 		{
 			string head = name.Substring(0, 1);
 			head.ToLower();
+			// lf-bounded: lower-cases the first letter of a placeholder name (a term id of a few chars).
 			id = head + name.Substring(1, name.Length() - 1);
 		}
 
@@ -437,6 +439,7 @@ class LF_TermBook
 			return text;
 
 		first.ToUpper();
+		// lf-bounded: upper-cases the first letter of one term text, a phrase (enforce-string-limits.md site 8).
 		return first + text.Substring(1, text.Length() - 1);
 	}
 
