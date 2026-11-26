@@ -122,3 +122,12 @@ GenericEntity Fit_everon_sawmill_yard_bed_shift : "{A8568D2A6C46B864}Prefabs/Atm
  }
  coords 3091 119.3 5235.4
 }
+GameEntity Fit_everon_sawmill_yard_sawmill_lamp_desk : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 3092.003 119.4 5252.119
+}
+GenericEntity Fit_everon_sawmill_yard_sawmill_glow_desk : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 3092.003 119.68 5252.119
+}
+GenericEntity Fit_everon_sawmill_yard_sawmill_fill_desk : "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et" {
+ coords 3091.0 121.5 5252.119
+}

@@ -6,7 +6,10 @@
     "file": "tools/town/kits/sources/everon-sawmill.layer",
     "group": "*",
     "origin": "Source_Sawmill_Centre",
-    "frame": "origin-entity"
+    "frame": "origin-entity",
+    "also": [
+      "tools/town/kits/sources/everon-sawmill-night-props.txt"
+    ]
   },
   "scope": "room",
   "anchoring": {
@@ -263,6 +266,54 @@
       ],
       "yaw": 90,
       "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "sawmill-lamp-desk",
+      "name": "Sawmill_Lamp_Desk",
+      "prefab": "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et",
+      "role": "dressing",
+      "verb": "on source-sawmill-desk",
+      "offset": [
+        6.9,
+        0.9,
+        9
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "sawmill-glow-desk",
+      "name": "Sawmill_Glow_Desk",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on sawmill-lamp-desk",
+      "offset": [
+        6.9,
+        1.18,
+        9
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "sawmill-fill-desk",
+      "name": "Sawmill_Fill_Desk",
+      "prefab": "{48C71AB2F68AE20A}Prefabs/Props/Lights/LF_LightInteriorFill.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        5.9,
+        3,
+        9
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
       "floor": "f0"
     }
   ]
