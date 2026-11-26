@@ -62,11 +62,11 @@ GenericEntity Fit_eastcompound_smelter_smelter_truck : "{A2E23CB8DDCFE82E}Prefab
  angleY -111
 }
 GenericEntity Fit_eastcompound_smelter_smelter_flood_a : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
- coords 6443.74 162.271 6493.469
+ coords 6443.74 162.771 6493.469
  angleY 139
 }
 GenericEntity Fit_eastcompound_smelter_smelter_flood_b : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
- coords 6455.264 162.241 6494.143
+ coords 6455.264 162.741 6494.143
  angleY 179
 }
 GenericEntity Fit_eastcompound_smelter_smelter_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -80,4 +80,32 @@ GenericEntity Fit_eastcompound_smelter_smelter_sign : "{B7B489CA36A0E9F8}Prefabs
  }
  coords 6437.639 162.235 6495.411
  angleY 159
+}
+GenericEntity Fit_eastcompound_smelter_smelter_stool_a : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 6443.74 162.27 6493.469
+ angleY -1
+}
+GenericEntity Fit_eastcompound_smelter_smelter_glow_a : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6443.74 163.015 6493.469
+ angleY -21
+}
+GenericEntity Fit_eastcompound_smelter_smelter_stool_b : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 6455.264 162.243 6494.143
+ angleY -51
+}
+GenericEntity Fit_eastcompound_smelter_smelter_glow_b : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6455.264 162.985 6494.143
+ angleY -21
+}
+GenericEntity Fit_eastcompound_smelter_smelter_stool_sign : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 6439.239 162.248 6494.312
+ angleY -61
+}
+GameEntity Fit_eastcompound_smelter_smelter_lamp_sign : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 6439.239 162.748 6494.312
+ angleY -21
+}
+GenericEntity Fit_eastcompound_smelter_smelter_glow_sign : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6439.239 162.993 6494.312
+ angleY -21
 }
