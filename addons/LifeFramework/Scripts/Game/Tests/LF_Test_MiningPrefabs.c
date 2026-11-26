@@ -32,10 +32,7 @@ class LF_Test_MiningPrefabs : LF_Test
 		if (ctx.FailureCount() > 0)
 			return;
 
-		EntitySpawnParams params();
-		params.TransformMode = ETransformMode.LOCAL;
-
-		IEntity area = GetGame().SpawnEntityPrefab(Resource.Load(MINING_AREA), GetGame().GetWorld(), params);
+		IEntity area = LF_Utils.SpawnEntityPrefab(MINING_AREA, "0 0 0");
 		ctx.True(area != null, "mining area spawns");
 		if (ctx.FailureCount() > 0)
 			return;
@@ -53,7 +50,7 @@ class LF_Test_MiningPrefabs : LF_Test
 		if (miningArea.m_PrefabsToSpawn && miningArea.m_PrefabsToSpawn.Count() > 0)
 			ctx.True(LF_MiningArea.GetTotalWeight(miningArea.m_PrefabsToSpawn) > 0, "mining area weights sum above zero");
 
-		IEntity ore = GetGame().SpawnEntityPrefab(Resource.Load(COPPER_ORE), GetGame().GetWorld(), params);
+		IEntity ore = LF_Utils.SpawnEntityPrefab(COPPER_ORE, "0 0 0");
 		ctx.True(ore != null, "local copper ore spawns");
 		if (ctx.FailureCount() > 0)
 			return;
@@ -61,7 +58,7 @@ class LF_Test_MiningPrefabs : LF_Test
 		area.AddChild(ore, -1, EAddChildFlags.AUTO_TRANSFORM);
 		ctx.True(ore.GetParent() == area, "spawned ore parents to the mining area for respawn accounting");
 
-		IEntity minable = GetGame().SpawnEntityPrefab(Resource.Load(MINABLE_ORE), GetGame().GetWorld(), params);
+		IEntity minable = LF_Utils.SpawnEntityPrefab(MINABLE_ORE, "0 0 0");
 		ctx.True(minable != null, "minable ore spawns");
 		if (ctx.FailureCount() > 0)
 			return;
@@ -93,7 +90,7 @@ class LF_Test_MiningPrefabs : LF_Test
 		ctx.True(!settings.m_aDamagePhases || settings.m_aDamagePhases.Count() == 0, "minable ore has no damage phases: LF_OreNodeComponent counts the hits");
 		ctx.True(minable.FindComponent(LF_OreNodeComponent) != null, "minable ore carries LF_OreNodeComponent");
 
-		IEntity pickaxe = GetGame().SpawnEntityPrefab(Resource.Load(PICKAXE), GetGame().GetWorld(), params);
+		IEntity pickaxe = LF_Utils.SpawnEntityPrefab(PICKAXE, "0 0 0");
 		ctx.True(pickaxe != null, "pickaxe spawns");
 		if (ctx.FailureCount() > 0)
 			return;
