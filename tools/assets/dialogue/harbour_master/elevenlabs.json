@@ -133,17 +133,17 @@
       "mouth": "236999873698710599623768445761175578986421000"
     },
     "shipment_ask": {
-      "hash": "f184e88eb503071b",
-      "date": "2026-11-19",
+      "hash": "cbfa8a7265f785ca",
+      "date": "2026-11-26",
       "voice_id": "LifjXiNLcYfyYJD8PCDT",
       "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
       "model": "eleven_multilingual_v2",
-      "text": "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?",
+      "text": "That red crate on the pallet weighs eleven kilos over the manifest. I signed for canned fish. Would you count it for me?",
       "chars": 120,
-      "chars_total": 48,
-      "request_id": "jmh8IhGpu4VCTHuZPCKk",
-      "seconds": 9.83,
-      "mouth": "15752569944525799964531066758604899992439999787303758987984568699752276799737778899346746612310000000000000000001756998899884468710679876334997756431000000000000000004545721899873674445887999521100"
+      "chars_total": 96,
+      "request_id": "9dTQNipInJPRHyzh6xRi",
+      "seconds": 11.11,
+      "mouth": "2397155998340579998254224675961389999352799987751100026889995988266658986414997997256678894459745663021000000001000000100100000076588887799753468940789774345786689753100000000000000000446746524799874678873453259977998621000"
     },
     "shipment_count": {
       "hash": "c95f9f5f2a3f9661",
@@ -159,17 +159,17 @@
       "mouth": "9841699996036532100000000000045788745367999324037965007599739997666513677662998520321000000000000000035445567742067997788434599888752100000000003269975888675579776411000"
     },
     "shipment_thanks_report": {
-      "hash": "691022ecc484e14e",
-      "date": "2026-11-19",
+      "hash": "07237741da698c24",
+      "date": "2026-11-26",
       "voice_id": "LifjXiNLcYfyYJD8PCDT",
       "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
       "model": "eleven_multilingual_v2",
-      "text": "You took it to the desk. Good. The town will sleep better, whatever the dockers say.",
-      "chars": 84,
-      "chars_total": 34,
-      "request_id": "hsxMcfLYTdDuMRw0Q1SQ",
-      "seconds": 7.07,
-      "mouth": "4589499258417878739999689723420000021001357999232210000000000000025516789988997785797002995469653100000000248627998994772599148878869996531000"
+      "text": "You took it to the desk. Good. The town will sleep better, whatever the dockworkers say.",
+      "chars": 88,
+      "chars_total": 69,
+      "request_id": "QpTlEBZWUKVG4YZOYPNS",
+      "seconds": 8.17,
+      "mouth": "23571689646814654762799968851621000000000000005589992333100000000100000000002143168898889867636871004992579853310000000033884489869973731895444997159767768997521000"
     },
     "shipment_thanks_sell": {
       "hash": "4fc4b71deb07734d",

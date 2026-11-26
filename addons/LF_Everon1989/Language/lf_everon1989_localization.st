@@ -2031,7 +2031,7 @@ StringTable {
     }
     CustomStringTableItem "{126E2D08A174D4AD}" {
      Id "LF-Dialogue_HarbourMaster_ShipmentThanksReport"
-     Target_en_us "You took it to the desk. Good. The town will sleep better, whatever the dockers say."
+     Target_en_us "You took it to the desk. Good. The town will sleep better, whatever the dockworkers say."
      Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
     }
     CustomStringTableItem "{61996AD6C64B434C}" {
@@ -2611,7 +2611,7 @@ StringTable {
     }
     CustomStringTableItem "{17E4C7B8C8E760FF}" {
      Id "LF-Dialogue_ResidentStoreClerk_AboutWork"
-     Target_en_us "Tins, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass."
+     Target_en_us "Cans, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass."
      Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
     }
     CustomStringTableItem "{B713054422C71238}" {

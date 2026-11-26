@@ -63,9 +63,9 @@
     "contract_busy": { "for_key": "#LF-Contract_Busy", "text": "You already have a load on your back. Finish that one first." },
     "contract_cooldown": { "for_key": "#LF-Contract_Cooldown", "text": "Not now. Let your arms rest. Come back in a little while." },
     "contract_run_open": { "for_key": "#LF-Contract_RunOpen", "text": "You are carrying something already. Deliver it, then we talk." },
-    "shipment_ask": { "text": "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?" },
+    "shipment_ask": { "text": "That red crate on the pallet weighs eleven kilos over the manifest. I signed for canned fish. Would you count it for me?" },
     "shipment_count": { "text": "Open it, count what is in there and come back. If it is only fish, no harm done." },
-    "shipment_thanks_report": { "text": "You took it to the desk. Good. The town will sleep better, whatever the dockers say." },
+    "shipment_thanks_report": { "text": "You took it to the desk. Good. The town will sleep better, whatever the dockworkers say." },
     "shipment_thanks_sell": { "text": "I did not ask where it went. I will not ask. Keep your head down on the quay for a few days." },
     "bye": { "text": "Mind the edge of the quay." }
   },
