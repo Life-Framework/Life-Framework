@@ -422,7 +422,8 @@
         0,
         5.4
       ],
-      "yaw": 180
+      "yaw": 180,
+      "lift": 0.52
     },
     {
       "role": "light",
@@ -438,7 +439,8 @@
         0,
         5.4
       ],
-      "yaw": 180
+      "yaw": 180,
+      "lift": 0.52
     },
     {
       "role": "dressing",
@@ -591,6 +593,186 @@
           "guid": "7D3E2A91C05B48F6"
         }
       ]
+    },
+    {
+      "id": "mine-stool-fl",
+      "name": "Mine_Stool_FL",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.2,
+        0,
+        5.4
+      ],
+      "yaw": 20,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.02
+    },
+    {
+      "id": "mine-glow-fl",
+      "name": "Mine_Glow_FL",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -1.2,
+        0,
+        5.4
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.77
+    },
+    {
+      "id": "mine-stool-fr",
+      "name": "Mine_Stool_FR",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        9.8,
+        0,
+        5.4
+      ],
+      "yaw": -30,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.02
+    },
+    {
+      "id": "mine-glow-fr",
+      "name": "Mine_Glow_FR",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        9.8,
+        0,
+        5.4
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.77
+    },
+    {
+      "id": "mine-stool-ore",
+      "name": "Mine_Stool_Ore",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.5,
+        0,
+        5.4
+      ],
+      "yaw": 70,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.02
+    },
+    {
+      "id": "mine-lamp-ore",
+      "name": "Mine_Lamp_Ore",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.5,
+        0,
+        5.4
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.52
+    },
+    {
+      "id": "mine-glow-ore",
+      "name": "Mine_Glow_Ore",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        4.5,
+        0,
+        5.4
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.77
+    },
+    {
+      "id": "mine-stool-sign",
+      "name": "Mine_Stool_Sign",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.4,
+        0,
+        -7.4
+      ],
+      "yaw": -40,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.035
+    },
+    {
+      "id": "mine-lamp-sign",
+      "name": "Mine_Lamp_Sign",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.4,
+        0,
+        -7.4
+      ],
+      "yaw": 0,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.535
+    },
+    {
+      "id": "mine-glow-sign",
+      "name": "Mine_Glow_Sign",
+      "prefab": "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        4.4,
+        0,
+        -7.4
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.785
     }
   ]
 }
