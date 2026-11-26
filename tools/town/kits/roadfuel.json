@@ -20,7 +20,7 @@
     "footprint": {
       "source": "rows",
       "min": [
-        0.8,
+        -1.6,
         -4.6
       ],
       "max": [
@@ -106,7 +106,24 @@
       ],
       "yaw": 0,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "light-drop",
+      "name": "RoadFuel_Light_Drop",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -1.6,
+        0,
+        -3.9
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
     }
   ]
 }

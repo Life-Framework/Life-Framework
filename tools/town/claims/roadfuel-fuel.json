@@ -8,7 +8,7 @@
   "kinds": [
     "RoadFuel"
   ],
-  "rows": 4,
+  "rows": 5,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

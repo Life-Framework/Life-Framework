@@ -28,3 +28,7 @@ GenericEntity Source_RoadFuel_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_S
 GenericEntity Source_RoadFuel_Light : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
  coords 2.4 0 -4.6
 }
+// The hand-seated drop stands on the kiosk's other side from the kit's, so a second lamp stands by it.
+GenericEntity Source_RoadFuel_LightDrop : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords -1.6 0 -3.9
+}
