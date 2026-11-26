@@ -14,7 +14,7 @@
 //   5. A push made with GITHUB_TOKEN starts no workflow, so the PR's required `validate` check would never
 //      report on the new head. workflow_dispatch is the documented exception: dispatch validate on the branch.
 //
-// Env: GH_TOKEN, BASE (default main), HEAD_PREFIX (only heads starting with it; the scratch experiment),
+// Env: GH_TOKEN, BASE (default main), HEAD_PREFIX (only heads starting with it, drafts included; the scratch experiment),
 // DRY_RUN=1 (report, push nothing). A PR labeled `no-autoheal` is skipped.
 import { spawnSync } from "node:child_process";
 import { copyFileSync, mkdtempSync } from "node:fs";
@@ -48,9 +48,10 @@ export function withoutDriver(paths, checkAttrStdout) {
   return paths.filter((p) => !driven.has(p));
 }
 
-// Which PRs to look at.
+// Which PRs to look at. With a head prefix (the scratch experiment) drafts count too: `prs heal` skips drafts,
+// so a draft test PR is left for this script alone.
 export function candidates(prs, { headPrefix = "" } = {}) {
-  return prs.filter((p) => !p.isDraft && !p.isCrossRepository
+  return prs.filter((p) => (!p.isDraft || headPrefix) && !p.isCrossRepository
     && !(p.labels ?? []).some((l) => l.name === "no-autoheal")
     && (!headPrefix || p.headRefName.startsWith(headPrefix)));
 }
