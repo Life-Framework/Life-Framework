@@ -96,7 +96,7 @@ class LF_Test_ChargeSheetScreen : LF_Test
 		ctx.Equal(LF_EChargeRow.OVER_CAP, RowOf(capped, c.m_sCrimeId).m_eState, "the row past the cap is greyed");
 		string cappedStatus = LF_ChargeSheetScreen.RowStatus(RowOf(capped, c.m_sCrimeId), 400);
 		ctx.True(cappedStatus.Contains("150"), "the greyed row shows its own fine, not a bare 'Over cap' (got '" + cappedStatus + "')");
-		ctx.True(cappedStatus.Contains("capped"), "and says the cap cut it (got '" + cappedStatus + "')");
+		ctx.True(cappedStatus.Contains("above your rank's limit"), "and says it is above the rank's limit (got '" + cappedStatus + "')");
 
 		// Untick A: B now counts. Untick all: nothing to sign.
 		array<string> noA = {b.m_sCrimeId, c.m_sCrimeId};

@@ -341,7 +341,7 @@ until a real run says otherwise):
 | Replication bumps | under 0.5 per player per second in steady play (64/s server-wide) |
 | Money or crime event through the bus | under 200 microseconds, so 128 players doing 2 a minute cost under 1 ms per second |
 | Save write and read of the LF payloads | under 300 ms and 400 ms (in the test's JSON form) |
-| Save size per character, LF payloads only | under 1000 bytes with the shared logs empty; whole save under 6 MB with the logs at their caps |
+| Save size per character, LF payloads only | under 1000 bytes with the shared logs empty (ledger, incident log, the Courier's fact log and back issues: each is capped server-wide, not per player); whole save under 6 MB with the logs at their caps. The test prints `section-bytes-<name>` per save section, so a miss names the section that grew |
 
 The enforced limits are the thresholds in `LF_PerfBudget.conf`; the frame, bump and prop rows
 are targets for the multi-client run below, not yet gated.

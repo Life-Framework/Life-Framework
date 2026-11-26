@@ -1,29 +1,4 @@
 {
   "about": "Known non-US-English text that validate-us-english lets pass. Only shrinks: fix the text and drop the row.",
-  "entries": [
-    {
-      "file": "tools/assets/atm-wall/build.py",
-      "where": "texture text",
-      "word": "BANQUE",
-      "why": "ATM kiosk texture: another branch is re-authoring it in English (2026-11-22)"
-    },
-    {
-      "file": "tools/assets/atm-wall/build.py",
-      "where": "texture text",
-      "word": "BILLETS",
-      "why": "ATM kiosk texture: another branch is re-authoring it in English (2026-11-22)"
-    },
-    {
-      "file": "tools/assets/atm-wall/build.py",
-      "where": "texture text",
-      "word": "OUVERT",
-      "why": "ATM kiosk texture: another branch is re-authoring it in English (2026-11-22)"
-    },
-    {
-      "file": "tools/assets/atm-wall/build.py",
-      "where": "texture text",
-      "word": "DISTRIBUTEUR",
-      "why": "ATM kiosk texture: another branch is re-authoring it in English (2026-11-22)"
-    }
-  ]
+  "entries": []
 }
