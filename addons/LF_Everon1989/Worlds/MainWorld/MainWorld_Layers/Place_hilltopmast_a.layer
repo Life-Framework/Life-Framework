@@ -60,3 +60,19 @@ GenericEntity Fit_hilltopmast_a_barrel : "{7D52C517720EF2F5}Prefabs/Props/Indust
  coords 9950.3 315.183 2285.6
  angleY 90
 }
+GameEntity Fit_hilltopmast_a_mast_lamp_barrel : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 9950.3 316.083 2285.6
+ angleY 90
+}
+GenericEntity Fit_hilltopmast_a_mast_glow_barrel : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 9950.3 316.363 2285.6
+ angleY 90
+}
+GameEntity Fit_hilltopmast_a_mast_lamp_crate : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 9954.1 315.465 2280.3
+ angleY 90
+}
+GenericEntity Fit_hilltopmast_a_mast_glow_crate : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 9954.1 315.745 2280.3
+ angleY 90
+}

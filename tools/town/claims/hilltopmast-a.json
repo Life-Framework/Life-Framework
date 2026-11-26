@@ -8,11 +8,11 @@
   "kinds": [
     "HilltopMast"
   ],
-  "rows": 7,
+  "rows": 11,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_hilltopmast_a_Place"
   },
-  "date": "2026-11-19"
+  "date": "2026-11-26"
 }
