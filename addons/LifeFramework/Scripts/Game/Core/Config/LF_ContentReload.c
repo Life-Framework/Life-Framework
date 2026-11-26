@@ -34,6 +34,7 @@ class LF_ContentReloader : Managed
 		// The verb is lower case (`reload dialogue`); the class is LF_ContentReloader_Dialogue.
 		string head = name.Substring(0, 1);
 		head.ToUpper();
+		// lf-bounded: upper-cases the first letter of a reload verb (an ops command word of a few chars) and rejoins the rest.
 		string className = CLASS_PREFIX + head + name.Substring(1, name.Length() - 1);
 		typename type = className.ToType();
 		if (!type || !type.IsInherited(LF_ContentReloader))

@@ -12,9 +12,12 @@
 //   6. (#3700) a Bash or PowerShell command that redirects, tees, edits in place (sed -i), Set-Content/Out-File/rm/cp-destination into the
 //      main checkout is denied from a worktree session (absolute, Git Bash and backslash paths, a cd into main, a relative path with the
 //      cwd in main); reads, a cp source, main tmp/, the worktree itself, /dev/null and the lead (no claim) are never denied.
+//   7. (2026-11-27) a shell git write (pull, merge, checkout, commit, stash, reset, branch -D, worktree remove ...) whose git dir
+//      is the main checkout is denied for every session, a fresh agent with no claim included, and points at `wt new`; reads,
+//      fetch, git in the worktree or another repo, and LF_ALLOW_MAIN_GIT=1 (environment or inline) are allowed.
 // inputs: tools/lib/main-write-guard.mjs, tools/hooks/main-write-guard.mjs, .claude/settings.json
 // red-proof: 2026-11-18, with decideWrite's claim lookup (liveClaim) returning null the "main-launched agent with a claim" check
-// failed; 2026-11-19, with the shell branch of decideWrite removed 14 shell checks failed; with the repo.linked branch removed the "cwd is a worktree" checks failed; with GUARDED emptied every deny check failed; restored.
+// failed; 2026-11-19, with the shell branch of decideWrite removed 14 shell checks failed; with the repo.linked branch removed the "cwd is a worktree" checks failed; with GUARDED emptied every deny check failed; 2026-11-27, with gitSubIsWrite's GIT_WRITE lookup returning false the 12 git-guard deny checks failed; restored.
 import { mkdirSync, writeFileSync, existsSync, readFileSync, utimesSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -155,6 +158,51 @@ const shellHook = runHook(sh("Bash", `sed -i 's/a/b/' ${M}/docs/a.md`));
 check(JSON.parse(shellHook.out || "{}")?.hookSpecificOutput?.permissionDecision === "deny", "the hook script denies a blocked shell write");
 check(runHook(sh("Bash", "git status")).out === "", "the hook script allows an unrelated shell command");
 check(/Bash/.test(pre.matcher) && /PowerShell/.test(pre.matcher), ".claude/settings.json runs the hook for Bash and PowerShell too");
+
+// 7. git writes in the main checkout are refused for every session, the agent that has not run `wt new` yet included
+// (three agents ran `git pull` there in the week of 2026-11-24).
+const WT = wtDir.replace(/\\/g, "/");
+const gitDenied = [
+  ["Bash", "git pull", { cwd: main, session_id: "fresh-agent" }, "a bare git pull with cwd main and no claim"],
+  ["Bash", "git pull --ff-only origin main", { cwd: main, session_id: "fresh-agent" }, "git pull --ff-only in main"],
+  ["PowerShell", `git -C ${M} pull`, {}, "git -C <main> pull from a worktree"],
+  ["Bash", `git -C ${gitBash} merge origin/main`, {}, "git -C with a Git Bash main path"],
+  ["Bash", `cd ${M} && git checkout -b ws/x`, {}, "cd into main then git checkout"],
+  ["Bash", "git stash", { cwd: main }, "git stash in main"],
+  ["Bash", "git reset --hard origin/main", { cwd: main }, "git reset in main"],
+  ["Bash", "git -c core.autocrlf=false commit -m x", { cwd: main }, "git commit with a -c option in main"],
+  ["Bash", "git branch -D ws/old", { cwd: main }, "git branch -D in main"],
+  ["Bash", "git worktree remove --force ../x", { cwd: main }, "git worktree remove in main"],
+  ["PowerShell", "git switch main; tools\\cli wt new x", { cwd: main }, "git switch before wt new"],
+];
+for (const [tool, command, over, what] of gitDenied) {
+  const d = decideWrite(sh(tool, command, over), { env: ev });
+  check(d.block === true && /wt new/.test(d.reason) && /main checkout/.test(d.reason), `git guard: ${what} is denied and points at wt new`);
+}
+const gitAllowed = [
+  ["Bash", "git status", { cwd: main, session_id: "fresh-agent" }, "git status in main"],
+  ["Bash", "git log --oneline -5 origin/main", { cwd: main }, "git log in main"],
+  ["Bash", "git fetch origin --prune", { cwd: main }, "git fetch in main (touches no working tree)"],
+  ["Bash", "git diff --stat HEAD~1", { cwd: main }, "git diff in main"],
+  ["Bash", "git branch --list 'ws/*'", { cwd: main }, "git branch --list in main"],
+  ["Bash", "git branch", { cwd: main }, "a bare git branch in main"],
+  ["Bash", "git stash list", { cwd: main }, "git stash list in main"],
+  ["Bash", "git worktree list", { cwd: main }, "git worktree list in main"],
+  ["Bash", "git pull", {}, "git pull with cwd the worktree"],
+  ["Bash", `git -C ${WT} commit -m x`, { cwd: main }, "git -C <worktree> commit from main"],
+  ["Bash", `cd ${WT} && git merge origin/main`, { cwd: main }, "a cd into the worktree, then git merge"],
+  ["Bash", "LF_ALLOW_MAIN_GIT=1 git pull --ff-only", { cwd: main }, "an inline LF_ALLOW_MAIN_GIT=1"],
+  ["PowerShell", "$env:LF_ALLOW_MAIN_GIT=1; git pull", { cwd: main }, "a PowerShell $env:LF_ALLOW_MAIN_GIT=1"],
+  ["Bash", "echo 'git pull'", { cwd: main }, "git pull inside a quoted string"],
+];
+for (const [tool, command, over, what] of gitAllowed) {
+  check(decideWrite(sh(tool, command, over), { env: ev }).block === false, `git guard: ${what} is allowed`);
+}
+check(decideWrite(sh("Bash", "git pull", { cwd: main }), { env: { LF_ALLOW_MAIN_GIT: "1" } }).block === false, "git guard: LF_ALLOW_MAIN_GIT=1 in the environment opens it");
+const otherRepo = join(base, "elsewhere");
+mkdirSync(join(otherRepo, ".git"), { recursive: true });
+check(decideWrite(sh("Bash", `git -C ${otherRepo.replace(/\\/g, "/")} pull`, { cwd: main }), { env: ev }).block === false, "git guard: another repository is not this guard's business");
+check(JSON.parse(runHook(sh("Bash", "git pull", { cwd: main, session_id: "fresh-agent" })).out || "{}")?.hookSpecificOutput?.permissionDecision === "deny", "git guard: the hook script denies git pull in main");
 
 // 5. the lead's stray pass
 const st = parseStatus(["?? addons/LifeFramework/Scripts/Game/Tests/LF_Test_Stray.c", "?? addons/LifeFramework/new.st", " M tools/cli.mjs", "?? tmp/x.md", "?? lf.local.json.bak", "M  docs/a.md", ""].join("\0"));
