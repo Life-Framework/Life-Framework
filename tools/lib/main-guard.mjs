@@ -678,3 +678,70 @@ export function watchDecision({ off = false, alive = null, lease, host, now = Da
   if (h.state === "live" || h.state === "down") return { action: "restart", why: `worker dead (lease ${h.state}, ${h.minutes} min since renewal on ${h.host})` };
   return { action: "restart", why: h.state === "none" ? "no guard has ever held the lease" : "worker dead (lease unreadable, gh failed)" };
 }
+
+// ---- The stall watchdog (2026-11-27). On 2026-11-26 the worker sat 37 min on a stage-0 `validate --all` that wrote
+// nothing while origin/main moved 4 merges ahead ("main 527184fd: unchecked"); the heartbeat stayed fresh because the
+// worker's event loop and the silent step both looked alive, and only a stop/start moved it. Stage 0 now runs in the
+// background in its own worktree with its own budget (VALIDATE_BUDGET_MS), so the loop always reaches the compile, and
+// these rules notice when a head stays unchecked anyway: a fetch that keeps failing, a loop that stopped ticking, a
+// compile that never starts.
+export const STALL_MS = 30 * 60 * 1000; // origin/main unchecked this long with no compile started: stalled
+export const VALIDATE_BUDGET_MS = 30 * 60 * 1000; // a stage-0 validate past this is killed (no verdict, retried)
+export const LOOP_WEDGED_MS = 30 * 60 * 1000; // a worker loop that has not ticked this long is wedged
+export const STALL_RESTART_GAP_MS = 2 * 60 * 60 * 1000; // the worker restarts its own loop at most this often
+
+export function stallMsFrom(env = process.env) {
+  const m = Number(env.LF_MAIN_GUARD_STALL_MIN);
+  return Number.isFinite(m) && m > 0 ? m * 60000 : STALL_MS;
+}
+
+// A head is checked once stage 1 reached a verdict on it (compiled-ok or red); stage 2 follows on its own clock.
+export const headChecked = (state, head) => !!head && (head === state?.lastCompiled || head === state?.lastCompileRed);
+
+// Pure: the state patch that tracks since when origin/main has been unchecked (null when nothing changes). A burst of
+// merges keeps the first time: a guard that never catches up is as stalled as one that never starts.
+export function noteHead(state, head, now) {
+  if (!head) return null;
+  if (headChecked(state, head)) return state?.uncheckedSince ? { uncheckedSince: null, uncheckedHead: null } : null;
+  if (state?.uncheckedSince) return state.uncheckedHead === head ? null : { uncheckedHead: head };
+  return { uncheckedSince: new Date(now).toISOString(), uncheckedHead: head };
+}
+
+// Pure: is the guard stalled at this origin/main head? since = state.uncheckedSince, else headAt (the head's commit
+// time, for a reader such as `status` that sees a head the worker never noted). -> { stalled, minutes, why }.
+export function stallCheck(state, head, { now = Date.now(), headAt = null, stallMs = STALL_MS } = {}) {
+  const st = state ?? {};
+  const min = (t) => Math.max(0, Math.round((now - t) / 60000));
+  const fetchOk = Date.parse(st.fetchOkAt ?? "");
+  if (st.fetchErr && Number.isFinite(fetchOk) && now - fetchOk > stallMs) return { stalled: true, minutes: min(fetchOk), why: `git fetch has failed for ${min(fetchOk)} min (${String(st.fetchErr).slice(0, 120)}); origin/main is a stale ref` };
+  if (!head || headChecked(st, head)) return { stalled: false, minutes: 0, why: "main checked" };
+  let since = Date.parse(st.uncheckedSince ?? "");
+  if (!Number.isFinite(since)) since = Date.parse(headAt ?? "");
+  if (!Number.isFinite(since) || now - since <= stallMs) return { stalled: false, minutes: Number.isFinite(since) ? min(since) : 0, why: "within the stall window" };
+  const compileAt = Date.parse(st.lastCompileAt ?? "");
+  if (Number.isFinite(compileAt) && now - compileAt <= stallMs) return { stalled: false, minutes: min(since), why: `compiling (last compile started ${min(compileAt)} min ago)` };
+  const tick = Date.parse(st.tickAt ?? "");
+  const loop = Number.isFinite(tick) ? `loop ticked ${min(tick)} min ago` : "loop tick never recorded";
+  const v = st.validating ? `, validating ${String(st.validating.head ?? "").slice(0, 8)} since ${min(Date.parse(st.validating.at))} min` : "";
+  return { stalled: true, minutes: min(since), why: `origin/main ${head.slice(0, 8)} unchecked for ${min(since)} min and no compile started for ${Number.isFinite(compileAt) ? `${min(compileAt)} min` : "ever"} (${loop}${v})` };
+}
+
+// Pure: what the worker's own tick does about a stall. busy = { compiling, stage2 }. -> "none" | "kick" | "restart".
+// kick: log it loudly, fetch again, drop the batching clocks so stage 0 and 1 start this tick. restart: the loop breaks
+// and starts again (as for new guard code), at most once per STALL_RESTART_GAP_MS and never under a running stage 2.
+export function stallAction(stall, { now = Date.now(), stallMs = STALL_MS, stage2 = false, lastRestartAt = null } = {}) {
+  if (!stall?.stalled) return "none";
+  const last = Date.parse(lastRestartAt ?? "");
+  const mayRestart = !stage2 && (!Number.isFinite(last) || now - last > STALL_RESTART_GAP_MS);
+  return stall.minutes * 60000 > 2 * stallMs && mayRestart ? "restart" : "kick";
+}
+
+// Pure: the watchdog's (other process) view of a live worker whose loop stopped ticking while main is stalled: the
+// in-worker kick cannot run then, so the watchdog stops and starts it. Never under a running stage 2.
+export function stallRestart({ alive, state, stall, now = Date.now(), wedgedMs = LOOP_WEDGED_MS } = {}) {
+  if (!alive || !stall?.stalled) return null;
+  if (state?.running) return null;
+  const tick = Date.parse(state?.tickAt ?? "");
+  if (Number.isFinite(tick) && now - tick <= wedgedMs) return null;
+  return { action: "restart-stalled", why: `worker pid ${alive} is alive but main is stalled: ${stall.why}` };
+}

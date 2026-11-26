@@ -33,6 +33,7 @@ import { healBlockedFastForward, noteAlert } from "./lib/main-ff-heal.mjs";
 import * as rdbCache from "./lib/rdb-cache.mjs";
 import * as pin from "./lib/guard-pin.mjs";
 import { hostname } from "node:os";
+import { killTreeSync } from "./lib/wb-until.mjs";
 
 const HOST = pin.leaseHostName(process.env.LF_MACHINE_NAME || hostname());
 
@@ -41,6 +42,9 @@ const TICK_MS = 60 * 1000;
 const STEP_BUDGET_MS = 90 * 60 * 1000;
 const RUN_SLUG = "main-guard-run";
 const COMPILE_SLUG = "main-guard-compile";
+// Stage 0 has its own worktree so it runs beside the compile, never in front of it (the 2026-11-26 stall).
+const VALIDATE_SLUG = "main-guard-validate";
+const FETCH_TIMEOUT_MS = 2 * 60 * 1000;
 const now = () => new Date().toISOString();
 
 const hub = (root) => wt.ensureHub(root);
@@ -83,7 +87,7 @@ export function workerAlive(root) {
   }
 }
 
-const git = (cwd, args) => spawnSync("git", ["-C", cwd, ...args], { encoding: "utf8", windowsHide: true, maxBuffer: 64 * 1024 * 1024 });
+const git = (cwd, args, opts = {}) => spawnSync("git", ["-C", cwd, ...args], { encoding: "utf8", windowsHide: true, maxBuffer: 64 * 1024 * 1024, ...opts });
 const gh = (cwd, args) => {
   const bin = wt.ghBin();
   if (!bin) return { status: 1, stdout: "", stderr: "gh not found" };
@@ -181,7 +185,8 @@ function activityNow() {
   return new Date(newest || Date.now()).toISOString();
 }
 
-function runCli(root, dir, args, tag, extraEnv = {}, dropRdb = false) {
+// budgetMs: the step is killed (its whole tree: a check's git and PowerShell children too) past it; timedOut says so.
+function runCli(root, dir, args, tag, extraEnv = {}, dropRdb = false, budgetMs = STEP_BUDGET_MS) {
   if (dropRdb) rdbCache.dropAllRdbs(dir);
   const file = join(mainRoot(root), "tmp", "logs", `main-guard-${tag}-${Date.now()}.log`);
   mkdirSync(dirname(file), { recursive: true });
@@ -189,14 +194,15 @@ function runCli(root, dir, args, tag, extraEnv = {}, dropRdb = false) {
   return new Promise((res) => {
     const fd = openSync(file, "a");
     const child = spawn(process.execPath, [join(dir, "tools", "cli.mjs"), ...args], { cwd: dir, env: { ...process.env, LF_PRIORITY: "high", LF_MAIN_GUARD_JOB: "1", ...extraEnv }, stdio: ["ignore", fd, fd], windowsHide: true });
-    const timer = setTimeout(() => { try { child.kill(); } catch {} }, STEP_BUDGET_MS);
+    let timedOut = false;
+    const timer = setTimeout(() => { timedOut = true; killTreeSync(child.pid); try { child.kill(); } catch {} }, budgetMs);
     const done = (code) => {
       clearTimeout(timer);
       activeLogs.delete(file);
       try { closeSync(fd); } catch {}
       let text = "";
       try { text = readFileSync(file, "utf8"); } catch {}
-      res({ code: code ?? 1, text, log: file });
+      res({ code: code ?? 1, text, log: file, timedOut });
     };
     child.on("exit", done);
     child.on("error", () => done(1));
@@ -440,8 +446,12 @@ async function validateHead(root, vdir, head) {
     const state = readState(root);
     const run = async (sha, only) => {
       checkout(vdir, sha);
-      const x = await runCli(root, vdir, mg.VALIDATE, `${sha.slice(0, 8)}-validate${only ? "-probe" : ""}`, only ? { [mg.VALIDATE_ONLY_ENV]: only.join(",") } : {});
+      const x = await runCli(root, vdir, mg.VALIDATE, `${sha.slice(0, 8)}-validate${only ? "-probe" : ""}`, only ? { [mg.VALIDATE_ONLY_ENV]: only.join(",") } : {}, false, mg.VALIDATE_BUDGET_MS);
       lastLog = x.log;
+      if (x.timedOut) {
+        log(root, `  validate ${sha.slice(0, 8)} TIMED OUT after ${mg.VALIDATE_BUDGET_MS / 60000} min with ${x.text.trim() ? "partial" : "no"} output; killed, no verdict (${x.log})`);
+        return { verdict: "env", failed: [], why: "validate timed out", text: x.text, log: x.log };
+      }
       const failed = mg.failingChecks(x.text);
       const v = mg.classifyStep("validate", x.code, x.text, failed);
       if (only) log(root, `  validate ${sha.slice(0, 8)} ${x.code === 0 ? "green" : v.verdict === "red" ? `red (${failed.slice(0, 3).join(", ") || "no check named"})` : v.verdict.toUpperCase()} for ${only.slice(0, 3).join(", ")}`);
@@ -676,7 +686,12 @@ export async function runWorker(root) {
   log(root, `worker pid ${process.pid} starts`);
   const dir = ensureRunWorktree(root);
   const cdir = ensureRunWorktree(root, COMPILE_SLUG);
+  // Stage 0's worktree; without it validate shares the compile worktree and runs inline again (bounded by its budget).
+  let vdir = cdir;
+  try { vdir = ensureRunWorktree(root, VALIDATE_SLUG); } catch (e) { log(root, `validate worktree unavailable (${e?.message ?? e}); stage 0 runs inline in the compile worktree`); }
   let stage2 = null;
+  let stage0 = null;
+  let stallSaidAt = 0;
   git(dir, ["fetch", "origin", "--prune"]);
   const head0 = git(dir, ["rev-parse", "origin/main"]).stdout.trim();
   const st = readState(root);
@@ -727,12 +742,38 @@ export async function runWorker(root) {
     if (off()) { log(root, "LF_MAIN_GUARD=0: worker exits"); break; }
     if (readState(root).stop) { writeState(root, { stop: false }); log(root, "stop requested: worker exits"); break; }
     try {
-      git(dir, ["fetch", "origin", "--prune"]);
+      writeState(root, { tickAt: now() });
+      // A fetch that fails leaves origin/main a stale ref and every head looks checked: record it (stallCheck reads it).
+      const f = git(dir, ["fetch", "origin", "--prune"], { timeout: FETCH_TIMEOUT_MS });
+      if (f.status === 0) { if (readState(root).fetchErr) { log(root, "fetch ok again"); } writeState(root, { fetchOkAt: now(), fetchErr: null }); }
+      else {
+        const why = (f.error ? f.error.message : (f.stderr || "").trim().split(/\r?\n/).pop()) || `exit ${f.status}`;
+        if (!readState(root).fetchErr) log(root, `fetch FAILED: ${why}`);
+        writeState(root, { fetchErr: why });
+      }
       const head = git(dir, ["rev-parse", "origin/main"]).stdout.trim();
+      { const p = mg.noteHead(readState(root), head, Date.now()); if (p) writeState(root, p); }
+      // The stall watchdog: main unchecked too long with no compile started. Loud, then a re-fetch and the batching
+      // clocks dropped so stage 0 and 1 start now; past twice the window (and no stage 2 running) the loop restarts.
+      {
+        const sms = mg.stallMsFrom();
+        const sc = mg.stallCheck(readState(root), head, { now: Date.now(), stallMs: sms });
+        const act = mg.stallAction(sc, { now: Date.now(), stallMs: sms, stage2: !!stage2 || !!stage0, lastRestartAt: readState(root).stallRestartAt });
+        if (act !== "none" && Date.now() - stallSaidAt > 15 * 60 * 1000) {
+          stallSaidAt = Date.now();
+          log(root, `STALL: ${sc.why}; ${act === "restart" ? "restarting the worker loop" : "re-fetching and starting stage 0 and 1 now"}`);
+          await staffLine(root, `main guard STALL: ${sc.why}; ${act === "restart" ? "restarting its loop" : "kicked"}`);
+        }
+        if (act === "restart") { writeState(root, { stallRestartAt: now() }); restart = true; break; }
+        if (act === "kick") {
+          git(dir, ["fetch", "origin", "--prune"], { timeout: FETCH_TIMEOUT_MS });
+          writeState(root, { lastCompileAt: null, ...(stage0 ? {} : { lastValidateAt: null }) });
+        }
+      }
       // Stale code judges nothing: wait for a running stage 2 (it cannot revert), then restart on origin/main's code.
       const drift = codeDriftNow(dir);
       if (drift.length) {
-        const act = mg.staleAction({ drift, busy: !!stage2, checkoutFresh: !stage2 && freshenMainCheckout(root) });
+        const act = mg.staleAction({ drift, busy: !!stage2 || !!stage0, checkoutFresh: !stage2 && !stage0 && freshenMainCheckout(root) });
         if (act === "restart") { log(root, `guard code changed on origin/main (${drift.join(", ")}); restarting on ${head.slice(0, 8)}`); restart = true; break; }
         if (act === "stuck" && Date.now() - staleSaidAt > 30 * 60 * 1000) {
           staleSaidAt = Date.now();
@@ -758,8 +799,11 @@ export async function runWorker(root) {
         else { log(root, `${req.slice(0, 8)}: no compile verdict; request kept`); writeState(root, { request: req }); }
       }
       // Stage 0: validate the newest head (cheap, no Workbench); a failure here is flagged, it does not hold the compile.
-      if (mg.shouldValidate(readState(root), head, Date.now()).run) {
-        try { await validateHead(root, cdir, head); } catch (e) { log(root, `validate stage failed: ${e?.message ?? e}`); writeState(root, { validating: null }); }
+      // It runs in the background in its own worktree: awaited here, one silent validate held every later head (2026-11-26).
+      if (!stage0 && mg.shouldValidate(readState(root), head, Date.now()).run) {
+        const v0 = validateHead(root, vdir, head).catch((e) => { log(root, `validate stage failed: ${e?.message ?? e}`); writeState(root, { validating: null }); });
+        if (vdir === cdir) await v0;
+        else stage0 = v0.finally(() => { stage0 = null; });
       }
       // Stage 1 next: compile the newest head.
       const c = mg.shouldCompile(readState(root), head, Date.now());
@@ -803,7 +847,15 @@ export async function watch(root, dryRun = false) {
   const lease = pin.readLease(mr);
   const alive = workerAlive(root);
   const st = readState(root);
-  const d = mg.watchDecision({ off: off(), alive, lease, host: HOST, restarts: w.restarts ?? [], local: { beatAt: st.beatAt, activityAt: st.activityAt } });
+  let d = mg.watchDecision({ off: off(), alive, lease, host: HOST, restarts: w.restarts ?? [], local: { beatAt: st.beatAt, activityAt: st.activityAt } });
+  // A live worker whose loop stopped ticking while main sits unchecked: its own stall kick cannot run, so stop and start it.
+  if (d.action === "none" && alive) {
+    const head = wt.git(mr, ["rev-parse", "origin/main"]).stdout.trim();
+    const headAt = wt.git(mr, ["log", "-1", "--format=%cI", head]).stdout.trim() || null;
+    const sr = mg.stallRestart({ alive, state: st, stall: mg.stallCheck(st, head, { headAt, stallMs: mg.stallMsFrom() }) });
+    const recent = (w.restarts ?? []).filter((t) => Date.now() - Date.parse(t) < mg.RESTART_WINDOW_MS).length;
+    if (sr) d = recent >= mg.RESTART_CAP ? { action: "alert", why: `${sr.why}; ${recent} restarts in the last hour, not restarting` } : sr;
+  }
   console.log(`main-guard watch: ${d.action}: ${d.why}`);
   if (dryRun || d.action === "none") return 0;
   log(root, `watch: ${d.action}: ${d.why}`);
@@ -821,6 +873,7 @@ export async function watch(root, dryRun = false) {
   }
   w.restarts = [...(w.restarts ?? []), now()].slice(-10);
   save();
+  if (d.action === "restart-stalled") await main(["stop"], { root });
   const code = await main(["start"], { root });
   const up = workerAlive(root);
   log(root, `watch: restart ${up ? `ok (pid ${up})` : "FAILED"}`);
@@ -917,6 +970,12 @@ export async function main(args, { root }) {
       console.log(`  code: ${dr.length ? `STALE (${dr.join(", ")} differ from origin/main; the worker restarts itself when idle, or reverts nothing)` : "origin/main's"}`);
     }
     console.log(`  main ${head.slice(0, 8)}: ${hs ?? "unchecked"}; newest compiled-ok or better: ${ck ? `${ck.sha.slice(0, 8)} (${ck.status}, ${ck.behind} behind)` : "none"}`);
+    // The stall watchdog's view (2026-11-26: "watching", heartbeat fresh, main 4 merges unchecked for 40 min).
+    if (alive && !hs) {
+      const headAt = wt.git(mr, ["log", "-1", "--format=%cI", head]).stdout.trim() || null;
+      const sc = mg.stallCheck(readState(root), head, { headAt, stallMs: mg.stallMsFrom() });
+      if (sc.stalled) console.log(`  STALLED: ${sc.why}; the worker kicks itself and the watchdog restarts a wedged loop (by hand: main-guard stop, then start)`);
+    }
     console.log(`  log ${logPath(root)}; flakes ${flakeLog(root)}`);
     return 0;
   }
