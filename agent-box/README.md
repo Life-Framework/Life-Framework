@@ -854,3 +854,4 @@ is read from the host's console.log:
 
 The client needs Steam, which runs on the box (`lf-testbox`), not on every PC: run it there (the pool's
 `syncAndRun`) when the local `client1/.../console.log` says `SteamAPI_Init failed`.
+- `perfstress lights <on|noshadow|off> [r]` (client) turns the shadows (`noshadow`) or the whole light (`off`) off for every `LightEntity` within r m (default 80) of the character and remembers the old state; `on` restores them. `session.mjs perf-night-audit` interleaves the three states per spot and hour (`docs/perf/night-audit-2026-11-27.md`). Only meaningful on a box nothing else is loading: the pool's other sessions and Workbench jobs can pin the client at the 100 ms frame floor whatever the lights do.
