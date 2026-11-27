@@ -58,6 +58,7 @@ tools\cli look place:<place>/<slot> --interior <row>  # at one kit row (Fit_ nam
 - A place waiting for its state stays `dark`: no spawn, interactable or NPC.
 - Use Workbench `look`, not sessions: two island sessions do not fit the pool's RAM. The exceptions are sign text and
   the 22:00 check, one session each (below). `look` draws sign faces blank (it prints a `NOTE`): not a defect.
+  `session down` deletes the client screenshots: `session.mjs pull <dir>` (or `evidence`) before it.
 - **Every slot a player uses is graded at 22:00 too** (`polish` skill "Night"): a work site, counter, sign plate or door
   that cannot be found in the dark is BELOW. A lamp mesh with no light gets `LF_LanternGlow` (stood on a `Stool_01` if it
   lay in grass), a fire `LF_CampFlame`, a front or window `node tools/town/nightlights.mjs <place>`; a shop fascia lights itself.

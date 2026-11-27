@@ -8411,7 +8411,7 @@ StringTable {
     }
     CustomStringTableItem "{6E5F48464D10A0E0}" {
      Id "LF-Sign_VehicleLot_Needs"
-     Target_en_us "S105 $1000|UAZ $2500|UAZ 452 $3500|Van $4000|Cargo truck $8000|Anything over $500 is paid from your bank account"
+     Target_en_us "S105 $1,000|UAZ $2,500|UAZ 452 $3,500|Van $4,000|Cargo truck $8,000|Anything over $500 is paid from your bank account"
      Comment "Sign card for the vehicle lot counter, Needs section."
     }
     CustomStringTableItem "{3F61541B4C366743}" {
@@ -8631,7 +8631,7 @@ StringTable {
     }
     CustomStringTableItem "{96AE648CE800B877}" {
      Id "LF-TownCard_Cars_Detail"
-     Target_en_us "*Buy vehicle* at the counter; it waits for you on the lot|S105 $1000, UAZ $2500, van $4000|Anything over $500 is paid from your bank account|Keep it at the garage so it is still yours after a restart"
+     Target_en_us "*Buy vehicle* at the counter; it waits for you on the lot|S105 $1,000, UAZ $2,500, van $4,000|Anything over $500 is paid from your bank account|Keep it at the garage so it is still yours after a restart"
      Comment "Town board card (cars): detail sheet text."
     }
     CustomStringTableItem "{80A4EACE013653FB}" {

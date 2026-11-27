@@ -65,15 +65,36 @@ class LF_ExportCraneHandIn
 			return LF_ExportOrderBook.REFUSE_NONE_HELD;
 		}
 
-		string refusal = LF_ExportOrderCraneComponent.HandIn(user, crane, paid);
+		int missing;
+		string refusal = LF_ExportOrderCraneComponent.HandInCounted(user, crane, paid, missing);
 		if (!refusal.IsEmpty())
 		{
-			LF_Utils.NotifyEntity(user, refusal, "", 4.0);
+			LF_Utils.NotifyEntity(user, ToastKey(refusal, missing), "", 4.0, ToastArg(refusal, missing));
 			return refusal;
 		}
 
-		LF_Debug.Info(LF_ExportOrderBook.FEATURE, string.Format("export order handed in by %1: $%2", LF_Utils.GetPlayerUid(user), paid));
-		LF_Utils.NotifyEntity(user, "#LF-ExportCrane_Paid", "", 5.0, paid.ToString());
+		LF_Debug.Info(LF_ExportOrderBook.FEATURE, string.Format("export order handed in by %1: %2", LF_Utils.GetPlayerUid(user), LF_MoneyFormat.FormatMoney(paid)));
+		LF_Utils.NotifyEntity(user, "#LF-ExportCrane_Paid", "", 5.0, paid.ToString());	// the row writes {currency:sym}%1: LF_Terms.Text groups the amount (LF_MoneyFormat)
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The toast key of a refusal: a short count names the units still missing.
+	static string ToastKey(string refusal, int missing)
+	{
+		if (refusal == LF_ExportOrderBook.REFUSE_SHORT && missing > 0)
+			return LF_ExportOrderBook.REFUSE_SHORT_COUNT;
+
+		return refusal;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The %1 of that toast: the missing units for the count row, nothing for any other.
+	static string ToastArg(string refusal, int missing)
+	{
+		if (refusal == LF_ExportOrderBook.REFUSE_SHORT && missing > 0)
+			return missing.ToString();
+
 		return string.Empty;
 	}
 }

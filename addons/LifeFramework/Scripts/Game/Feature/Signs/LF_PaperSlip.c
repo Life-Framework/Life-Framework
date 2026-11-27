@@ -164,7 +164,7 @@ class LF_PaperSlip
 			itemText = WidgetManager.Translate(item);
 
 		outLines.Insert(WidgetManager.Translate(def.m_sTitle));
-		outLines.Insert(LF_Terms.Expand(WidgetManager.Translate(def.m_sLine, itemText, amount.ToString(), price.ToString())));
+		outLines.Insert(LF_Terms.Text(def.m_sLine, itemText, amount.ToString(), price.ToString()));
 		outLines.Insert(WidgetManager.Translate("#LF-Paper_DateLine", date));
 	}
 

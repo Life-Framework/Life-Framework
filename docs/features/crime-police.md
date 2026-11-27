@@ -589,7 +589,9 @@
   fascia sign must not replace the town); with no settlement the sign alone, then the
   nearest site label, then a 100 m grid square. The place is stored as a
   localization key and localized where each board and radio line is built; the
-  core holds no place names. In town the hospital till's alarm stands on `Hospital_AlarmBox` (an alarm mount on the hospital front wall, `Street_Hospital.layer`) and the pack names the town "Saint Philippe" (`Place_SaintPhilippe`, town pass #1947).
+  core holds no place names. The evidence bag's read line (`LF_EvidenceBagComponent.ReadLine`) and the
+  evidence locker's read card (`LF_EvidenceLocker.DescribeAll`) go through `ResolvePlace` too; before the
+  pre-RC review (part 4) they printed the stored `<site>^<town>` as is (test `investigation/evidence-place-text`). In town the hospital till's alarm stands on `Hospital_AlarmBox` (an alarm mount on the hospital front wall, `Street_Hospital.layer`) and the pack names the town "Saint Philippe" (`Place_SaintPhilippe`, town pass #1947).
   An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
   catches it in the act and the report is identified at once. Showing your own
   ID card to an on-duty officer (`LF_ShowIDAction`) identifies every open

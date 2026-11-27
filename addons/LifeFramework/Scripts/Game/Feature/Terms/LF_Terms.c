@@ -251,7 +251,25 @@ class LF_Terms
 		if (p1.IsEmpty() && p2.IsEmpty() && p3.IsEmpty() && p4.IsEmpty())
 			return expanded;
 
-		return string.Format(expanded, p1, p2, p3, p4);
+		return string.Format(expanded, MoneyArg(raw, 1, p1), MoneyArg(raw, 2, p2), MoneyArg(raw, 3, p3), MoneyArg(raw, 4, p4));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The argument of slot `slot` (1..4) as the row shows it: a slot the row writes after the currency
+	//! symbol (`{currency:sym}%1`, `$%1`) is an amount of money, so a plain integer there gets its
+	//! thousands commas from the shared money formatter (LF_MoneyFormat). Any other slot is untouched.
+	//! A caller can keep passing `paid.ToString()`: "1040" reads "$1,040" like the HUD.
+	protected static string MoneyArg(string raw, int slot, string value)
+	{
+		if (value.IsEmpty())
+			return value;
+
+		string marker = "%" + slot.ToString();
+		string literal = "$" + marker;	// lf-money-format-ok: the search pattern for a literal-dollar slot, not an amount
+		if (raw.Contains("{currency:sym}" + marker) || raw.Contains("{currency:sym} " + marker) || raw.Contains(literal))
+			return LF_MoneyFormat.GroupAmountText(value);
+
+		return value;
 	}
 
 	//------------------------------------------------------------------------------------------------
