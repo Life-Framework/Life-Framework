@@ -6575,6 +6575,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "That is not the full order. Bring every unit, then hand it in."
      Comment "Export order crane: fewer goods than the order asks for; nothing is taken."
     }
+    CustomStringTableItem "{6A1F0C3D9B7E4285}" {
+     Id "LF-ExportOrder_RefuseShortCount"
+     Target_en_us "That is not the full order: %1 more unit(s) needed. Bring every unit, then hand it in."
+     Comment "Export order crane: fewer goods than the order asks for; nothing is taken. %1 = how many units are still missing."
+    }
     CustomStringTableItem "{1BA87EB81FC07ECF}" {
      Id "LF-ExportOrder_RefuseTaken"
      Target_en_us "Another hauler already took that order."

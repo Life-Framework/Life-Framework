@@ -55,7 +55,7 @@ class LF_CounterOutletAction : ScriptedUserAction
 		LF_ECounterOutletSale result = LF_CounterOutlet.ServerSell(pUserEntity, pOwnerEntity, outlet.m_sBuyerId, outlet.m_fReach, outlet.m_iMinActionMs, police, System.GetUnixTime(), now, paid, wait);
 		if (result == LF_ECounterOutletSale.OK)
 		{
-			LF_Utils.NotifyEntity(pUserEntity, "#LF-CounterOutlet_Sold", "#LF-CounterOutlet_Title", 4.0, paid.ToString());
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-CounterOutlet_Sold", "#LF-CounterOutlet_Title", 4.0, LF_MoneyFormat.FormatMoney(paid));
 			return;
 		}
 

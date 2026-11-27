@@ -1209,7 +1209,7 @@ class LF_ReceiptComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	string Describe()
 	{
-		return string.Format("no. %1: %2 item(s), $%3", m_iNumber, m_iItems, m_iTotal);
+		return string.Format("no. %1: %2 item(s), %3", m_iNumber, m_iItems, LF_MoneyFormat.FormatMoney(m_iTotal));
 	}
 }
 
