@@ -116,6 +116,22 @@ class LF_ItemSearch
 	//------------------------------------------------------------------------------------------------
 	//! The officer's toast text for a search: "Seized from <suspect>: A, B, C and 2 more". Three kinds
 	//! are named, the rest fold into the count. Empty when nothing was seized.
+	//! Server: the suspect as the officer knows them (#5145). The character name once the suspect
+	//! introduced themselves to the officer (LF_Introductions), else "an unknown person". Never the
+	//! account name: a stranger's identity does not leak through a search toast.
+	static string SuspectNameFor(string officerUid, string suspectUid)
+	{
+		if (!officerUid.IsEmpty() && !suspectUid.IsEmpty() && LF_Introductions.Knows(officerUid, suspectUid))
+		{
+			string name = LF_PlayerInteraction.DisplayName(suspectUid);
+			if (!name.IsEmpty())
+				return name;
+		}
+
+		return WidgetManager.Translate("#LF-Search_UnknownSuspect");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string SeizedText(string suspectName, notnull array<string> lines)
 	{
 		if (lines.IsEmpty())
