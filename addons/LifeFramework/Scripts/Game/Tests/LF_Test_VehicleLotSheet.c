@@ -26,6 +26,10 @@ class LF_Test_VehicleLotSheet : LF_Test
 		ctx.Equal(-1, LF_VehicleLotSheet.RowIndex("CarX"), "a row name without a number is no offer");
 		ctx.Equal(-1, LF_VehicleLotSheet.RowIndex("LotClose"), "the close button is no offer");
 
+		// A lot with no id, or an id with no title row, keeps the default sheet title.
+		ctx.EqualStr(LF_VehicleLot.DEFAULT_TITLE, LF_VehicleLot.TitleKeyFor(""), "a lot with no id keeps the default title");
+		ctx.EqualStr(LF_VehicleLot.DEFAULT_TITLE, LF_VehicleLot.TitleKeyFor("no-such-lot"), "a lot id with no title row keeps the default title");
+
 		LF_SpawnLogic spawnLogic = LF_SpawnLogic.GetInstance();
 		if (spawnLogic)
 			ctx.True(spawnLogic.GetStartingBank() >= 1000, "a new character's bank covers the cheapest car (the S105, $1,000)");

@@ -4834,6 +4834,11 @@ StringTable {
      Target_en_us "Not without a driver's license. The town hall desk issues it for %1."
      Comment "Overrides the core row: the flagship's car lot refusal names the town hall licence desk (#3151). %1 is the fee."
     }
+    CustomStringTableItem "{C4C2B7C381699E46}" {
+     Id "LF-Lot_Title_truck_yard"
+     Target_en_us "Truck yard - price list"
+     Comment "Price sheet title of the lot whose id is truck-yard (LF_VehicleLot.TitleKeyFor); other lots keep LF-Lot_Title."
+    }
     CustomStringTableItem "{38CCD9128665A6C3}" {
      Id "LF-MapPoi_Atm"
      Target_en_us "ATM"
