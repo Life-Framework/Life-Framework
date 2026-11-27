@@ -3,6 +3,7 @@
 // pushes again and retries; a human conflict or a red validate pushes nothing; and the cli wiring calls
 // shipDirect, never the queue.
 // inputs: tools/lib/ship-direct.mjs, tools/lib/ship-queue.mjs, tools/cli.mjs, tools/commands/wait.mjs
+// red-proof 2026-11-27 (test advice): with the touchedTests call removed from shipDirect it printed "FAIL  advice: the touched-tests lines are logged".
 // red-proof 2026-11-19 (driver overlap): before shipDirect merged main on a both-sides driver-merged edit it printed "FAIL driver overlap: main merged before validate and push".
 // red-proof 2026-11-16: before tools/lib/ship-direct.mjs existed this printed "FAIL cannot load
 // tools/lib/ship-direct.mjs"; with the BEHIND retry removed (break on any auto-merge result) it printed "FAIL behind:
@@ -115,6 +116,20 @@ function fakes(over = {}) {
   check(!/shipViaQueue|ensureWorker|withQueue/.test(cli), "cli: no ship queue in the ship flow");
   check(/driverOverlap:/.test(cli.slice(cli.indexOf("async function shipDirectCmd"))), "cli: ship passes driverOverlap");
   check(/--auto", "--merge"/.test(cli.slice(cli.indexOf("async function shipDirectCmd"))), "cli: auto-merge --merge");
+}
+
+// 6b. The revert audit's test advice (tools/lib/touched-tests.mjs): the lines are logged before validate, and a
+// throwing or missing advice dependency never fails or reorders a ship.
+{
+  const logged = [];
+  const d = fakes({ log: (l) => logged.push(l), touchedTests: () => ["ship: run these", "  tools\\cli test --no-build --only LF_Test_X"] });
+  const r = await lib.shipDirect(d, { slug: "x" });
+  check(r.code === 0 && logged.includes("  tools\\cli test --no-build --only LF_Test_X"), "advice: the touched-tests lines are logged");
+  check(d.calls.join(",") === "mergeTree,validate,push,findPr,createPr,autoMerge", `advice: the ship order is unchanged, was ${d.calls.join(",")}`);
+  const t = fakes({ touchedTests: () => { throw new Error("boom"); } });
+  check((await lib.shipDirect(t, { slug: "x" })).code === 0, "advice: a throwing touchedTests does not fail the ship");
+  const cli = readFileSync(new URL("../cli.mjs", import.meta.url), "utf8");
+  check(/touchedTests:/.test(cli.slice(cli.indexOf("async function shipDirectCmd"))), "cli: ship passes touchedTests");
 }
 
 // 7. shipMergeBase: a generated-only conflict is healed, a human conflict throws with the files named.

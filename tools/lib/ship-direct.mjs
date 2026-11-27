@@ -36,7 +36,7 @@ export const isBehindRefusal = (text) => BEHIND.test(String(text ?? ""));
 export const REMOTE_AHEAD = /non-fast-forward|fetch first|\[rejected\]|updates were rejected/i;
 export const isRemoteAhead = (text) => REMOTE_AHEAD.test(String(text ?? ""));
 
-// deps: driverOverlap() (optional) -> driver-merged files both sides changed; mergeTree() -> {status, stdout, stderr}; mergeBase() -> throws on failure; validate() -> exit code;
+// deps: touchedTests() (optional) -> lines naming the `test --only` runs the diff needs (advice, never fails); driverOverlap() (optional) -> driver-merged files both sides changed; mergeTree() -> {status, stdout, stderr}; mergeBase() -> throws on failure; validate() -> exit code;
 // push() -> {status, stdout, stderr}; findPr() -> pr|null; createPr() -> pr; autoMerge(n) -> {status, stdout, stderr};
 // mergeState(n) -> "BEHIND"|"DIRTY"|...; pullBranch() (optional) merges origin/<branch> into HEAD, throws on a conflict; regenSchema() (optional) rebuilds and commits docs/config/ when the branch needs it; log(line).
 // draft: the PR is opened as a draft and auto-merge is never planned (town-draft and maintainer-review PRs).
@@ -63,6 +63,8 @@ export async function shipDirect(deps, { base = "main", slug = "?", preflight = 
     try { deps.mergeBase(); } catch (e) { return fail(`merge origin/${base}: ${e.message}. Nothing was pushed.`); }
     return null;
   };
+  // Advice only (tools/lib/touched-tests.mjs): the tests this diff can break, which GitHub's validate does not run.
+  try { for (const l of deps.touchedTests?.() ?? []) log(l); } catch (e) { log(`ship: test advice threw (${e.message})`); }
   if (preflight) {
     const mt = deps.mergeTree();
     if (mt.status === 1) {
