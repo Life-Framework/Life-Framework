@@ -13,6 +13,12 @@
 //!   chop=P                                        the chop shop's replicated percent, -2 with no yard in range
 //!   toast=last toast shown, dispatches=N and lastdispatch=radio calls this client heard
 //!   clock=<game hour>/<day seconds>               this client's in-game clock and the day length it was told (day-rate proof, #1303)
+//!   (veh entries end :plate=<text>: the registration this client's plates show, "-" when none)
+//!   doors=<prefab>:d=M:state=S                   one entry per door (BaseDoorComponent) within the radius, nearest first: its door state here (0 shut, +-1 open)
+//!   housesign=<house id>:sold=S                   the nearest house sale sign's replicated owned flag
+//!   house=<id>:owned=O:locked=L                   the nearest house's replicated owner (set or not) and lock
+//!   siteflag=<hideout>:holder=<name>:flag=N       the nearest site flag's replicated holder name and flag number
+//!   hideout=<id>:owner=<name>                     the nearest hideout door's replicated owning organisation name
 //! A value is what this client's copy of the entity says; a broken RplProp or a missed BumpMe shows here.
 class LF_HarnessSeen
 {
@@ -37,6 +43,18 @@ class LF_HarnessSeen
 	protected static ref array<string> s_aEvidenceText;
 	protected static int s_iBags;
 	protected static int s_iChop;
+	// Late-joiner sweep reads (2026-11-27): every vanilla door's open state, and the nearest house sign,
+	// house, site flag and hideout door as this client's copy holds them.
+	protected static ref array<float> s_aOpenDoorDist;
+	protected static ref array<string> s_aOpenDoorText;
+	protected static float s_fHouseSignAt;
+	protected static string s_sHouseSign;
+	protected static float s_fHouseAt;
+	protected static string s_sHouse;
+	protected static float s_fSiteFlagAt;
+	protected static string s_sSiteFlag;
+	protected static float s_fHideoutAt;
+	protected static string s_sHideout;
 
 	//------------------------------------------------------------------------------------------------
 	//! The query lists are created on the first read and emptied on the later ones: a static `= {}` initializer
@@ -57,8 +75,15 @@ class LF_HarnessSeen
 			s_aBreachAt = {};
 			s_aEvidenceDist = {};
 			s_aEvidenceText = {};
+			s_aOpenDoorDist = {};
+			s_aOpenDoorText = {};
+			ResetNearest();
 			return;
 		}
+
+		s_aOpenDoorDist.Clear();
+		s_aOpenDoorText.Clear();
+		ResetNearest();
 
 		s_aVehicleDist.Clear();
 		s_aVehicleText.Clear();
@@ -72,6 +97,100 @@ class LF_HarnessSeen
 		s_aBreachAt.Clear();
 		s_aEvidenceDist.Clear();
 		s_aEvidenceText.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void ResetNearest()
+	{
+		s_fHouseSignAt = float.MAX;
+		s_sHouseSign = "none";
+		s_fHouseAt = float.MAX;
+		s_sHouse = "none";
+		s_fSiteFlagAt = float.MAX;
+		s_sSiteFlag = "none";
+		s_fHideoutAt = float.MAX;
+		s_sHideout = "none";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A replicated name as one token: spaces become "_", empty is "-".
+	protected static string Word(string text)
+	{
+		if (text.IsEmpty())
+			return "-";
+
+		string word = text;
+		word.Replace(" ", "_");
+		return word;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The registration this client's plates show (the text the plate apply wrote), "-" when none shows.
+	protected static string PlateShown(IEntity vehicle)
+	{
+		LF_LicensePlateManagerComponent plates = LF_Component<LF_LicensePlateManagerComponent>.Find(vehicle);
+		if (!plates || !plates.m_Plates)
+			return "-";
+
+		foreach (LF_LicensePlatePointInfo plate : plates.m_Plates)
+		{
+			if (plate && !plate.GetAppliedText().IsEmpty())
+				return Word(plate.GetAppliedText());
+		}
+
+		return "-";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest house sign, house, site flag and hideout door, as this client's copy reads them.
+	protected static void CollectNearest(IEntity entity, float at)
+	{
+		LF_HouseSaleComponent sign = LF_Component<LF_HouseSaleComponent>.Find(entity);
+		if (sign && at < s_fHouseSignAt)
+		{
+			int sold = 0;
+			if (sign.IsOwned())
+				sold = 1;
+
+			s_fHouseSignAt = at;
+			s_sHouseSign = string.Format("%1:sold=%2", Word(sign.GetHouseId()), sold);
+		}
+
+		LF_HouseManagerComponent house = LF_Component<LF_HouseManagerComponent>.Find(entity);
+		if (house && at < s_fHouseAt)
+		{
+			int hasOwner = 0;
+			if (!house.GetOwnerKey().IsEmpty())
+				hasOwner = 1;
+
+			int houseLocked = 0;
+			if (house.IsHouseLocked())
+				houseLocked = 1;
+
+			s_fHouseAt = at;
+			s_sHouse = string.Format("%1:owned=%2:locked=%3", Word(house.GetHouseIdentifier()), hasOwner, houseLocked);
+		}
+
+		LF_SiteFlagComponent flag = LF_Component<LF_SiteFlagComponent>.Find(entity);
+		if (flag && at < s_fSiteFlagAt)
+		{
+			s_fSiteFlagAt = at;
+			s_sSiteFlag = string.Format("%1:holder=%2:flag=%3", Word(flag.GetHideoutId()), Word(flag.GetHolderName()), flag.GetFlag());
+		}
+
+		LF_HideoutDoorComponent hideout = LF_Component<LF_HideoutDoorComponent>.Find(entity);
+		if (hideout && at < s_fHideoutAt)
+		{
+			s_fHideoutAt = at;
+			s_sHideout = string.Format("%1:owner=%2", Word(hideout.GetHideoutId()), Word(hideout.GetOwnerName()));
+		}
+
+		BaseDoorComponent door = LF_Component<BaseDoorComponent>.Find(entity);
+		if (door)
+		{
+			float state = Math.Round(door.GetDoorState() * 100) / 100;
+			InsertSorted(s_aOpenDoorDist, s_aOpenDoorText, at, string.Format("%1:d=%2:state=%3", Short(LF_Utils.GetPrefabName(entity)), Math.Round(at * 10) / 10, state));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -197,6 +316,7 @@ class LF_HarnessSeen
 
 		float at = vector.Distance(s_vOrigin, entity.GetOrigin());
 		float rounded = Math.Round(at * 10) / 10;
+		CollectNearest(entity, at);
 		LF_LockComponent doorLock = LF_Component<LF_LockComponent>.Find(entity);
 		if (doorLock)
 		{
@@ -229,7 +349,7 @@ class LF_HarnessSeen
 				stolen = 1;
 		}
 
-		InsertSorted(s_aVehicleDist, s_aVehicleText, at, string.Format("%1:d=%2:eng=%3:lock=%4:ign=%5:stolen=%6", Short(prefab), rounded, engineOn, vehicleLocked, ignition, stolen));
+		InsertSorted(s_aVehicleDist, s_aVehicleText, at, string.Format("%1:d=%2:eng=%3:lock=%4:ign=%5:stolen=%6:plate=%7", Short(prefab), rounded, engineOn, vehicleLocked, ignition, stolen, PlateShown(entity)));
 		return true;
 	}
 
@@ -281,7 +401,21 @@ class LF_HarnessSeen
 		string dispatch = SCR_PlayerController.LF_GetLastDispatch();
 		dispatch.Replace(" ", "_");
 		string seen = string.Format("%1 veh=%2 door=%3 bags=%4 chop=%5 toast=%6 dispatches=%7 lastdispatch=%8 posters=%9", line, Join(s_aVehicleText), Join(s_aDoorText), s_iBags, s_iChop, toast, SCR_PlayerController.LF_GetDispatchCount(), dispatch, LF_WantedPosterBoardComponent.DescribeNearest(s_vOrigin));
-		return seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " townboard=" + LF_TownBoardComponent.DescribeNearest(s_vOrigin) + " waypoint=" + LF_Waypoint.Describe(s_vOrigin) + " breach=" + Join(s_aBreachText) + " npc=" + Join(s_aNpcText) + " evidence=" + Join(s_aEvidenceText) + " clock=" + ClockToken() + " jailclock=" + LF_JailClock.Describe();
+		seen = seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " townboard=" + LF_TownBoardComponent.DescribeNearest(s_vOrigin) + " waypoint=" + LF_Waypoint.Describe(s_vOrigin) + " breach=" + Join(s_aBreachText);
+		seen = seen + " npc=" + Join(s_aNpcText) + " evidence=" + Join(s_aEvidenceText) + " clock=" + ClockToken() + " jailclock=" + LF_JailClock.Describe();
+		return seen + LateJoinTokens();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The late-joiner sweep tokens (2026-11-27), one statement each: a single long `+` chain is "Formula too complex".
+	protected static string LateJoinTokens()
+	{
+		string tokens = " doors=" + Join(s_aOpenDoorText);
+		tokens += " housesign=" + s_sHouseSign;
+		tokens += " house=" + s_sHouse;
+		tokens += " siteflag=" + s_sSiteFlag;
+		tokens += " hideout=" + s_sHideout;
+		return tokens;
 	}
 
 	//------------------------------------------------------------------------------------------------
