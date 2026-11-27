@@ -98,6 +98,10 @@ class LF_NotificationManagerComponent : ScriptComponent
 	//! replaces the last one, so only the current step shows (first-2h review B4).
 	static const string SLOT_STEP = "step";
 
+	//! The slot of the cards about the player's car coming out of the garage ("waiting on the pad", then the
+	//! hand-over with the plate and the hazard lights). The second replaces the first: one car card, not two.
+	static const string SLOT_VEHICLE = "vehicle";
+
 	//! Client: slot -> the toast showing in it.
 	protected ref map<string, Widget> m_mSlotToasts = new map<string, Widget>();
 	
