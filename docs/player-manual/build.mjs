@@ -27,7 +27,7 @@ const img = (key, alt) => `![${alt}](${IMG_REL}/${key}.png)`;
 
 function mapBlock(key) {
   if (key === "town") {
-    return `${img("saint-philippe", "Saint-Philippe: every place")}\n\nCloser in, the centre of town:\n\n${img("saint-philippe-centre", "Saint-Philippe centre")}\n\n` +
+    return `${img("saint-philippe", "Saint-Philippe: every place")}\n\nCloser in, the center of town:\n\n${img("saint-philippe-centre", "Saint-Philippe center")}\n\n` +
       legendTable(byN(data.town), [["#", (r) => r.n], ["Place (in-game name)", (r) => r.name], ["Kind", (r) => GROUPS[r.group].name], ["What you do here", (r) => r.what]]);
   }
   if (key === "island") {
@@ -248,7 +248,7 @@ const html = `<!doctype html>
 <title>Everon 1989 Player Manual</title>
 <style>${CSS}</style></head>
 <body><main>
-<div class="cover"><div class="tag">Life Framework alpha 0.2.0</div><h1 style="border:0">Everon 1989: player manual</h1><p>Maps, jobs, money, police and crime for Saint-Philippe and the island. Open it on a phone or print it.</p></div>
+<div class="cover"><div class="tag">Life Framework alpha 0.3.0</div><h1 style="border:0">Everon 1989: player manual</h1><p>Maps, jobs, money, police and crime for Saint-Philippe and the island. Open it on a phone or print it.</p></div>
 ${toc}
 ${sections}
 </main></body></html>
