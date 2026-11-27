@@ -23,20 +23,56 @@ class LF_HarnessSeen
 	// Query state only: strings and numbers, never an entity.
 	protected static vector s_vOrigin;
 	protected static EntityID s_SelfId;
-	protected static ref array<float> s_aVehicleDist = {};
-	protected static ref array<string> s_aVehicleText = {};
-	protected static ref array<float> s_aDoorDist = {};
-	protected static ref array<string> s_aDoorText = {};
-	protected static ref array<float> s_aNpcDist = {};
-	protected static ref array<string> s_aNpcText = {};
-	protected static ref array<float> s_aBreachDist = {};
-	protected static ref array<string> s_aBreachText = {};
-	protected static ref array<EntityID> s_aBreaches = {};
-	protected static ref array<float> s_aBreachAt = {};
-	protected static ref array<float> s_aEvidenceDist = {};
-	protected static ref array<string> s_aEvidenceText = {};
+	protected static ref array<float> s_aVehicleDist;
+	protected static ref array<string> s_aVehicleText;
+	protected static ref array<float> s_aDoorDist;
+	protected static ref array<string> s_aDoorText;
+	protected static ref array<float> s_aNpcDist;
+	protected static ref array<string> s_aNpcText;
+	protected static ref array<float> s_aBreachDist;
+	protected static ref array<string> s_aBreachText;
+	protected static ref array<EntityID> s_aBreaches;
+	protected static ref array<float> s_aBreachAt;
+	protected static ref array<float> s_aEvidenceDist;
+	protected static ref array<string> s_aEvidenceText;
 	protected static int s_iBags;
 	protected static int s_iChop;
+
+	//------------------------------------------------------------------------------------------------
+	//! The query lists are created on the first read and emptied on the later ones: a static `= {}` initializer
+	//! here would add twelve to the module's one shared static-init function (AGENTS.md rule 10, #2755).
+	protected static void ResetLists()
+	{
+		if (!s_aVehicleDist)
+		{
+			s_aVehicleDist = {};
+			s_aVehicleText = {};
+			s_aDoorDist = {};
+			s_aDoorText = {};
+			s_aNpcDist = {};
+			s_aNpcText = {};
+			s_aBreachDist = {};
+			s_aBreachText = {};
+			s_aBreaches = {};
+			s_aBreachAt = {};
+			s_aEvidenceDist = {};
+			s_aEvidenceText = {};
+			return;
+		}
+
+		s_aVehicleDist.Clear();
+		s_aVehicleText.Clear();
+		s_aDoorDist.Clear();
+		s_aDoorText.Clear();
+		s_aNpcDist.Clear();
+		s_aNpcText.Clear();
+		s_aBreachDist.Clear();
+		s_aBreachText.Clear();
+		s_aBreaches.Clear();
+		s_aBreachAt.Clear();
+		s_aEvidenceDist.Clear();
+		s_aEvidenceText.Clear();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static string Short(string prefab)
@@ -227,18 +263,7 @@ class LF_HarnessSeen
 
 		s_vOrigin = me.GetOrigin();
 		s_SelfId = me.GetID();
-		s_aVehicleDist.Clear();
-		s_aVehicleText.Clear();
-		s_aDoorDist.Clear();
-		s_aDoorText.Clear();
-		s_aNpcDist.Clear();
-		s_aNpcText.Clear();
-		s_aBreachDist.Clear();
-		s_aBreachText.Clear();
-		s_aBreaches.Clear();
-		s_aBreachAt.Clear();
-		s_aEvidenceDist.Clear();
-		s_aEvidenceText.Clear();
+		ResetLists();
 		s_iBags = 0;
 		s_iChop = -2;
 		GetGame().GetWorld().QueryEntitiesBySphere(s_vOrigin, radius, CollectEntity, null, EQueryEntitiesFlags.ALL);
