@@ -5464,7 +5464,7 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
   // waiting out the 15-minute LIVE window the ship's own logs would start. A later edit or commit here ends it.
   if (r.code === 0 && !draft) markHandoff(wtRoot, head, "ship");
   if (r.code === 0 && draft) console.log(`ship: draft PR left open for review. Prune after it merges: 'cli wt prune ${slug}'`);
-  else if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
+  else if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. A CONFLICTING state from driver-merged files heals itself (pr-autoheal workflow); for any other conflict re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
   return r.code;
 }
 

@@ -1,6 +1,6 @@
 // pr-autoheal-selftest: the pure parts of tools/pr-autoheal.mjs (which PRs it looks at, which conflicts it may
-// heal, which parked runs it approves) and the workflow's wiring. The end-to-end proof ran on GitHub with scratch
-// PRs (#5035, #5038, 2026-11-27); this pins the rules that proof depended on.
+// heal, which parked runs it approves: every parked pull_request run on a head it pushed) and the workflow's
+// wiring. The end-to-end proof ran on GitHub with scratch PRs (#5035, #5040, 2026-11-27); this pins its rules.
 import { readFileSync } from "node:fs";
 import { conflictedPaths, withoutDriver, candidates, parkedRuns } from "../pr-autoheal.mjs";
 

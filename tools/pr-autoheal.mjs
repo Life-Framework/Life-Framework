@@ -19,9 +19,9 @@
 // Env: GH_TOKEN, BASE (default main), HEAD_PREFIX (only heads starting with it, drafts included; the scratch experiment),
 // DRY_RUN=1 (report, push nothing). A PR labeled `no-autoheal` is skipped.
 import { spawnSync } from "node:child_process";
-import { copyFileSync, mkdtempSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { copyFileSync } from "node:fs";
 import { join } from "node:path";
+import { scratchDir } from "./lib/scratch.mjs";
 
 const run = (cmd, args, opts = {}) => {
   const r = spawnSync(cmd, args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, ...opts });
@@ -117,7 +117,7 @@ function main() {
   const headPrefix = process.env.HEAD_PREFIX || "";
   const dryRun = process.env.DRY_RUN === "1";
   // A copy: the checkout moves to each PR head, which may carry an older drivers file or none.
-  const drivers = join(mkdtempSync(join(tmpdir(), "lf-autoheal-")), "drivers.gitconfig");
+  const drivers = join(scratchDir("lf-autoheal-"), "drivers.gitconfig");
   copyFileSync("tools/merge/drivers.gitconfig", drivers);
   const home = git(["rev-parse", "HEAD"]).stdout.trim();
   git(["config", "user.name", "github-actions[bot]"]);
