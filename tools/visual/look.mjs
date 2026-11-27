@@ -22,7 +22,7 @@
 // no client, no session lane. tools/visual/wb/LF_VisualShotsPlugin.c does the engine side;
 // docs/visual-testing.md says what this does and does not prove.
 
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { freemem, tmpdir } from "node:os";
@@ -631,6 +631,19 @@ export function skipOutcome(code, { elapsedMs = 0, waitS = 1200 } = {}) {
 // as for the rdb refresh. On 2026-11-18 the hub-wide lock ran every look on the PC one at a time: 51 of 90 looks
 // queued on it, 44 of them beside a free slot, 7 gave up after 20 min (agent-efficiency pass 2). A request to
 // the shared look server keeps the `build` lock, which still serializes the requests that server takes.
+// Moves a shot out of the raw folder. The look server's folder sits in the viewer beside the main checkout (C:) and
+// worktrees now live on D:, where a rename fails with EXDEV: every served look from a D: worktree came back with all
+// its shots missing (the 2026-11-27 villages sweep, 70 of 70). Across drives it copies, then deletes the source.
+export function moveFile(from, to, { rename = renameSync } = {}) {
+  try {
+    rename(from, to);
+  } catch (e) {
+    if (e?.code !== "EXDEV") throw e;
+    copyFileSync(from, to);
+    rmSync(from, { force: true });
+  }
+}
+
 export function lookLockName(root, { server = false } = {}) {
   if (server) return "build";
   return `look-${String(root).replace(/\\/g, "/").split("/").pop().replace(/[^A-Za-z0-9._-]/g, "_")}`;
@@ -932,7 +945,7 @@ async function run(args) {
     for (const f of readdirSync(dir)) if (/\.(png|jpg|json)$/.test(f)) rmSync(join(dir, f), { force: true });
     // tools\cli scout: the plugin's entity rows for this area stay beside its pictures.
     const dumpRaw = join(raw, `dump-${safe(area.name)}.txt`);
-    if (opts.dump && existsSync(dumpRaw)) renameSync(dumpRaw, join(dir, "dump.txt"));
+    if (opts.dump && existsSync(dumpRaw)) moveFile(dumpRaw, join(dir, "dump.txt"));
     const rows = [];
     for (const shot of list) {
       const st = status.shots[shot.name] ?? null;
@@ -940,7 +953,7 @@ async function run(args) {
       let px = null;
       if (st) {
         try {
-          renameSync(join(raw, st.file), file);
+          moveFile(join(raw, st.file), file);
           const bytes = readFileSync(file);
           frameHashes.push(createHash("md5").update(bytes).digest("hex"));
           px = pixelStats(decodePng(bytes));
@@ -969,8 +982,11 @@ async function run(args) {
     const { cols } = sheetLayout(overview.length);
     image({ op: "sheet", tiles: overview, out: join(outRoot, "overview.jpg"), cols, maxWidth: cols * 480, quality: 74 });
   }
-  // A server's raw folder also holds serve.txt and alive.txt, which are the server's; only request files go.
-  if (!args.flags.keep) for (const f of readdirSync(raw)) if (served === "fresh" || serve.REQUEST_FILES.test(f)) rmSync(join(raw, f), { force: true });
+  // A served answer is a folder of its own request (serve.claimAnswer), so it goes whole.
+  if (!args.flags.keep) {
+    if (served === "fresh") for (const f of readdirSync(raw)) rmSync(join(raw, f), { force: true });
+    else rmSync(raw, { recursive: true, force: true });
+  }
 
   const stale = renderProblem({ expected: askedTree, rendered: renderedTree });
   if (stale) {

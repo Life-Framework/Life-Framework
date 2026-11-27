@@ -226,6 +226,16 @@ the server last showed and this one decides how:
 | any file under `addons/` (a `.layer`, an `.et`, a `.c`, a `.meta`, an asset, an added, deleted or renamed file), or the look plugin | `server-restart`: the server Workbench is stopped, the viewer checked out, a new one started |
 | no server up, or it is dead, hung or crashed | `fresh`: a Workbench of the caller's own, as before |
 
+Requests from every worktree on the box take the hub's `build` lock one at a time. While a request still holds
+the lock, its answer (the PNGs, `status.txt`, the dumps) moves out of the server's shared `lf-visual` folder
+into a folder of its own, `lf-visual-answers/<request id>` (`claimAnswer`). `look` then collects from there
+after it drops the lock. Before 2026-11-27 it collected from the shared folder after dropping the lock, so the
+next worktree's request cleared it or restarted the server mid-collect, and the villages sweep got 70 of 70
+shots missing twice. The full 70 of 70 came from a second cause: the viewer sits on `C:` and worktrees on `D:`,
+where the collect's `rename` fails with EXDEV. Every served look from a `D:` worktree lost all its shots (5 of 5
+on 2026-11-26/27), so collect now copies across drives (`moveFile`). Answer folders that nobody collected are
+removed after 6 h. The proof is `look-serve-overlap-selftest`.
+
 No addon file is on the fast path. A probe on 2026-11-14 reopened fine after editing a `.layer` or an
 `.et` in place, but through the viewer, where git checkout rewrites the file, reopening after a moved
 entity in a `.layer` crashed the server Workbench (access violation in `SetOpenedResource`) 4 of 4
