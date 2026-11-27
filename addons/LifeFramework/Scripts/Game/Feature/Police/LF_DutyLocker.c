@@ -31,6 +31,46 @@ class LF_DutyLocker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Cash the stored civilian inventory holds for this character (#5148): what clock-in put in the
+	//! duty locker and what clock-out hands back. Legacy cash prefabs count; marked notes do not
+	//! (the money HUD shows cash only).
+	static int LockerCash(string characterId)
+	{
+		return CashIn(LF_StorageSnapshot.Get(characterId, SLOT_CIVILIAN));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the cash in a stored inventory tree, or 0 for none.
+	static int CashIn(LF_StorageSnapshotRecord record)
+	{
+		if (!record || !record.m_aItems)
+			return 0;
+
+		int total;
+		ResourceName cash = LF_MoneyUtils.CashPrefab();
+		if (!cash.IsEmpty())
+			total = record.CountPrefab(cash);
+
+		array<ResourceName> legacy = LF_MoneyUtils.LegacyCashPrefabs();
+		foreach (ResourceName prefab : legacy)
+			total += record.CountPrefab(prefab);
+
+		return total;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the clock-out toast that says the locker cash came back (#5148), on its own line beside
+	//! the pay toast, or "" when the locker held no cash. Clock-in needs none: the clock-in toast
+	//! (#5157) already says the cash waits in the locker.
+	static string LockerCashReturnedKey(int cash)
+	{
+		if (cash <= 0)
+			return string.Empty;
+
+		return "#LF-Duty_LockerCashReturned";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static string RoleName(LF_Faction role)
 	{
 		if (role == LF_Faction.MEDIC)

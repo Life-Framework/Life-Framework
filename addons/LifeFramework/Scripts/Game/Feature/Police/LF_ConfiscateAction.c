@@ -161,7 +161,9 @@ class LF_ConfiscateAction : ScriptedUserAction
 	//! "the police took what you may not carry" one for the suspect.
 	protected static void NotifySeized(IEntity officer, IEntity suspect, notnull array<string> seizedLines)
 	{
-		string text = LF_ItemSearch.SeizedText(LF_Utils.GetPlayerName(suspect), seizedLines);
+		// The name the officer was told, never the account name (#5145).
+		string suspectName = LF_ItemSearch.SuspectNameFor(LF_Utils.GetPlayerUID(officer), LF_Utils.GetPlayerUID(suspect));
+		string text = LF_ItemSearch.SeizedText(suspectName, seizedLines);
 		if (text.IsEmpty())
 			text = "#LF-Search_Found";
 
