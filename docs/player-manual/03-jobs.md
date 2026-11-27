@@ -126,8 +126,8 @@ A game day is 2 real hours and the night passes twice as fast, so the window las
 * **Where:** the **post office counter** (map name *Parcel depot*) on the main street, west of the hostel. The drops are
   **mailboxes on house walls** in the east districts and along the dock.
 * **How to start:** press **F** at the counter, pick **Take courier work** (once), then **Pick up parcel**. The pickup asks for a small
-  **refundable cash deposit** for the cargo.
-* **What you do:** carry the parcel to a mailbox **at least 300 m** from the counter. A waypoint marks the stop. At the box pick
+  **refundable cash deposit** for the cargo. The note that follows names the amount and says it comes back on delivery.
+* **What you do:** carry the parcel to a mailbox **at least 300 m** from the counter. The pickup note sends you to "the delivery stop marked on your map" and a waypoint marks it. At the box pick
   **Complete the run**. You cannot deliver instantly: a drop that is too close, or reached too fast, pays nothing and keeps your run.
   **Abandon the run** at the counter if you give up; you get no pay and lose the deposit.
 * **Pay:** **$40 a run** ($50 at night). About 6 minutes a run is **$400 an hour**. A harbor contract run pays more
