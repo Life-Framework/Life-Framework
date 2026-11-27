@@ -319,7 +319,7 @@ class LF_UIScreen
 				textButton.SetText(action);
 		}
 
-		FitStatusRow(row, status);
+		FitStatusRow(row, status, label);
 		return true;
 	}
 
@@ -1343,30 +1343,36 @@ class LF_UIScreen
 		if (part.GetAction().IsEmpty())
 			ShowAction(button, false);
 
-		FitStatusRow(widget, part.GetStatus());
+		FitStatusRow(widget, part.GetStatus(), part.GetText());
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A status row with no status hides that column and gives its share to the label (LF_UIRowFit): a long title or place
 	//! name is no longer cut at a third of the row. A compact row sizes itself and is left alone.
-	protected void FitStatusRow(Widget row, string status)
+	protected void FitStatusRow(Widget row, string status, string label)
 	{
 		if (!row || row.FindAnyWidget("RowBadge"))
 			return;
 
-		TextWidget label = TextWidget.Cast(row.FindAnyWidget("RowLabel"));
+		TextWidget labelText = TextWidget.Cast(row.FindAnyWidget("RowLabel"));
 		TextWidget statusText = TextWidget.Cast(row.FindAnyWidget("RowStatus"));
-		if (!label || !statusText)
+		if (!labelText || !statusText)
 			return;
 
 		bool hasStatus = !status.IsEmpty();
 		statusText.SetVisible(hasStatus);
 
 		float weightLabel, weightStatus, weightAction;
-		LF_UIRowFit.Weights(hasStatus, weightLabel, weightStatus, weightAction);
-		LayoutSlot.SetFillWeight(label, weightLabel);
-		if (hasStatus)
-			LayoutSlot.SetFillWeight(statusText, weightStatus);
+		LF_UIRowFit.WeightsFor(hasStatus, LF_Terms.Shown(label).Length(), weightLabel, weightStatus, weightAction);
+		LayoutSlot.SetFillWeight(labelText, weightLabel);
+		if (!hasStatus)
+			return;
+
+		LayoutSlot.SetFillWeight(statusText, weightStatus);
+		// A long label borrows width from the action column (#5147), so it fits beside the status.
+		Widget action = row.FindAnyWidget("ActionButton");
+		if (action)
+			LayoutSlot.SetFillWeight(action, weightAction);
 	}
 
 	//------------------------------------------------------------------------------------------------

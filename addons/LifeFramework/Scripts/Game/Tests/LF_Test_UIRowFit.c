@@ -1,4 +1,4 @@
-// red-proof: `toolscli test --no-build --red LF_Test_UIRowFit` skips the fit (the old fixed 1.5 : 1 : 1.5 shares) so the empty-status label keeps 1.5 and the
+// red-proof: (#5147) `--red LF_Test_UIRowFit` also falls back to the fixed weights for a 26-character label, so "a long label ... takes more than the default share" fails. Earlier: `toolscli test --no-build --red LF_Test_UIRowFit` skips the fit (the old fixed 1.5 : 1 : 1.5 shares) so the empty-status label keeps 1.5 and the
 // assertions fail.
 //! 2026-11-27 UI sweep part 2: a status row with no status gives that column's share to its label. The handbook title "How to read this handbook" and the
 //! map result "Bank, Saint-Philippe" were cut at 37.5% of the row because the empty status held a quarter of it for nothing. A row with a status keeps the
@@ -45,6 +45,22 @@ class LF_Test_UIRowFit : LF_Test
 		float before = 1.5 / (1.5 + 1 + 1.5);
 		float after = wa / (wl + wa);
 		ctx.EqualFloat(before, after, 0.001, "the action column keeps its place in the row");
+
+		// #5147: a long label beside a status ("Carrying without a license", 26 characters) takes width from the action
+		// column; the status keeps its share, and a short label keeps the defaults.
+		LF_UIRowFit.WeightsFor(true, 26, wl, ws, wa);
+		if (RedProof())
+			LF_UIRowFit.Weights(true, wl, ws, wa);
+
+		ctx.True(wl > LF_UIRowFit.WEIGHT_LABEL, "a long label beside a status takes more than the default share");
+		ctx.EqualFloat(1, ws, 0.001, "the status keeps its share beside a long label");
+		ctx.EqualFloat(4, wl + ws + wa, 0.001, "the row total stays the same");
+		ctx.True(wa >= 1, "the action column keeps at least one share");
+		LF_UIRowFit.WeightsFor(true, 60, wl, ws, wa);
+		ctx.EqualFloat(2, wl, 0.001, "the label share stops at the cap");
+		LF_UIRowFit.WeightsFor(true, 12, wl, ws, wa);
+		ctx.EqualFloat(1.5, wl, 0.001, "a short label keeps the default share");
+		ctx.EqualFloat(1.5, wa, 0.001, "a short label leaves the action column alone");
 
 		// On a real list a row with no status and a long title is added, and a later change refits it.
 		array<ref LF_UIPart> parts = {};

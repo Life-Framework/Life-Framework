@@ -318,9 +318,18 @@ class LF_WantedBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A place is a sign title (key or text) or "<grid key> 002-001".
+	//! A place is a sign title (key or text), a map town, "<site>^<town>" (a sign inside a town, "Fuel Station, Saint
+	//! Philippe"; #5147) or "<grid key> 002-001".
 	static string ResolvePlace(string place)
 	{
+		int join = place.IndexOf(LF_WantedReports.PLACE_JOIN);
+		if (join > 0)
+		{
+			string site = place.Substring(0, join);
+			string town = place.Substring(join + 1, place.Length() - join - 1);
+			return WidgetManager.Translate(LF_WantedReports.PLACE_AT_KEY, ResolveKey(site), ResolveKey(town));
+		}
+
 		if (place.StartsWith(LF_WantedReports.PLACE_GRID_KEY + " "))
 			return WidgetManager.Translate(LF_WantedReports.PLACE_GRID_KEY, place.Substring(LF_WantedReports.PLACE_GRID_KEY.Length() + 1, place.Length() - LF_WantedReports.PLACE_GRID_KEY.Length() - 1));
 
