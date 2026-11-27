@@ -934,7 +934,7 @@ class LF_Systems
 	//! Writes every system's effective on or off into the config stream: run-time offs, parents and
 	//! requirements included, so the client needs no layers of its own.
 	//! \param[in] ctx A save context with this section's object open.
-	static void WriteStream(notnull SCR_JsonSaveContext ctx)
+	static void WriteStream(notnull JsonSaveContext ctx)
 	{
 		EnsureResolved();
 		ctx.StartObject(KEY_SWITCHES);

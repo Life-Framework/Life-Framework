@@ -147,8 +147,8 @@ class LF_Test_Terms : LF_Test
 		ctx.True(payload.Contains("\"terms\""), "an owner's terms ride in the stream");
 		ctx.False(LF_ConfigStream.BuildPayload(null, false, null, null, null, null, null, false, CoreBook()).Contains("\"terms\""), "a server with no owner text sends no terms section");
 
-		SCR_JsonLoadContext ctxJson = new SCR_JsonLoadContext(false);
-		ctx.True(ctxJson.ImportFromString(payload), "the payload parses");
+		JsonLoadContext ctxJson = new JsonLoadContext(false);
+		ctx.True(ctxJson.LoadFromString(payload), "the payload parses");
 		LF_TermBook client = CoreBook();
 		client.ApplyOwner(new LF_ConfigReader(ctxJson, "terms"), "stream");
 		ctx.EqualStr("Sheriff", client.Expand("{police}", EN), "the client reads the server's every-language text");

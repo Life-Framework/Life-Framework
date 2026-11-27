@@ -10,7 +10,7 @@ class LF_Test_EveronSmokehouse : LF_Test
 {
 	//! The firewood bundle's sell price under the core `Prefabs/Resources/WoodCutting/` rule of ShopPrices.conf.
 	protected static const int FIREWOOD_SELL = 5;
-	protected static const ResourceName SMOKEHOUSE = "Prefabs/Props/Fishing/LF_Smokehouse.et";
+	protected static const ResourceName SMOKEHOUSE = "{584A1875C182C9A4}Prefabs/Props/Fishing/LF_Smokehouse.et";
 	protected static const ResourceName FIREWOOD = "{F96D821A8E47FBBA}Prefabs/Resources/WoodCutting/FirewoodBundle.et";
 
 	//------------------------------------------------------------------------------------------------

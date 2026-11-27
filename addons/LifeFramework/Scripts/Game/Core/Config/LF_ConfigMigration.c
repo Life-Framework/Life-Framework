@@ -63,8 +63,8 @@ class LF_ConfigMigrator
 	//! document does not parse. Uses only calls that never crash (KindOf first).
 	static int PeekVersion(string json)
 	{
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
-		if (!ctx.ImportFromString(json))
+		JsonLoadContext ctx = new JsonLoadContext(false);
+		if (!ctx.LoadFromString(json))
 			return -1;
 		if (LF_ConfigReader.KindOf(ctx, "schemaVersion") != LF_EConfigJsonKind.NUMBER)
 			return -1;

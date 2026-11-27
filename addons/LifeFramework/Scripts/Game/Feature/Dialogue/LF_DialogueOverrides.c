@@ -86,7 +86,7 @@ class LF_DialogueOverrides
 	//! \param[in] source Where the text came from, for log lines.
 	//! \param[out] into The key to text pairs read.
 	//! \return Pairs read.
-	static int ReadCaptions(notnull SCR_JsonLoadContext ctx, string source, notnull map<string, string> into)
+	static int ReadCaptions(notnull JsonLoadContext ctx, string source, notnull map<string, string> into)
 	{
 		LF_EConfigJsonKind kind = LF_ConfigReader.KindOf(ctx, KEY_CAPTIONS);
 		if (kind == LF_EConfigJsonKind.ABSENT)
@@ -131,8 +131,8 @@ class LF_DialogueOverrides
 	static bool Parse(string json, string source, notnull map<string, string> into)
 	{
 		into.Clear();
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
-		if (!ctx.ImportFromString(json))
+		JsonLoadContext ctx = new JsonLoadContext(false);
+		if (!ctx.LoadFromString(json))
 		{
 			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("%1 is not valid JSON; the overrides stay as they were", source));
 			return false;
@@ -221,7 +221,7 @@ class LF_DialogueOverrides
 	//------------------------------------------------------------------------------------------------
 	//! Writes the stream section's content: the `captions` object.
 	//! \param[in] ctx A save context with the `devDialogue` object open.
-	static void WriteStream(notnull SCR_JsonSaveContext ctx, notnull map<string, string> captions)
+	static void WriteStream(notnull JsonSaveContext ctx, notnull map<string, string> captions)
 	{
 		ctx.StartObject(KEY_CAPTIONS);
 		foreach (string captionKey, string captionText : captions)
@@ -251,8 +251,8 @@ class LF_DialogueOverrides
 		map<string, string> next = new map<string, string>();
 		if (!payload.IsEmpty())
 		{
-			SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
-			if (ctx.ImportFromString(payload) && LF_ConfigReader.KindOf(ctx, SECTION) == LF_EConfigJsonKind.OBJECT && ctx.StartObject(SECTION))
+			JsonLoadContext ctx = new JsonLoadContext(false);
+			if (ctx.LoadFromString(payload) && LF_ConfigReader.KindOf(ctx, SECTION) == LF_EConfigJsonKind.OBJECT && ctx.StartObject(SECTION))
 			{
 				ReadCaptions(ctx, "stream", next);
 				ctx.EndObject();

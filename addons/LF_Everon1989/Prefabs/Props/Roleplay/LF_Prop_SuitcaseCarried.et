@@ -1,6 +1,8 @@
 GenericEntity : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
  ID "2DB42E16E389E5DA"
  components {
+  Hierarchy "{5624A88D86EFE8C1}" {
+  }
   RigidBody "{5872F0EB7DFB5A9D}" {
    Enabled 0
   }

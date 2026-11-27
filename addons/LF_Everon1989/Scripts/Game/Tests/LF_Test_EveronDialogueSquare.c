@@ -88,10 +88,12 @@ class LF_Test_EveronDialogueSquare : LF_Test
 			ctx.True(!line.m_sEvent.IsEmpty(), where + ": has a sound event");
 			ctx.True(line.m_fSeconds > 0, where + ": has a length");
 
-			// The recording on disk: the engine finds the clip the audio project's event plays.
-			string clip = "$LF_Everon1989:Sounds/Dialogue/" + id + "/" + id + "_" + line.m_sId + ".wav";
-			Resource wav = Resource.Load(clip);
-			ctx.True(wav && wav.IsValid(), where + ": has its clip on disk");
+			// The clip is a wav the audio project names by {GUID}path (validate-guid-paths checks each one); loading it
+			// by a bare path logged "Wrong GUID/name" for every line, so the project is what loads here.
+			Resource project;
+			if (!config.m_sSoundProject.IsEmpty())
+				project = Resource.Load(config.m_sSoundProject);
+			ctx.True(project && project.IsValid(), where + ": its audio project loads");
 
 			ctx.True(HasText(line.m_sTextKey), where + ": has its caption");
 			string caption = Plain(WidgetManager.Translate(line.m_sTextKey));

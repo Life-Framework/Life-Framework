@@ -58,7 +58,6 @@ class LF_Test_SaveIdsPrefabSources : LF_Test
 		bool missingOtherPrefab = true;
 		ResourceName emptySaved = ResourceName.Empty;
 		bool emptySavedMissing = true;
-		string kinds = "-";
 		if (!RedProof())
 		{
 			LF_SaveIds.ResetStatics();

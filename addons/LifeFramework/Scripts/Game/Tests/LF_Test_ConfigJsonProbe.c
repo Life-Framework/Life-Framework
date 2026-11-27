@@ -12,7 +12,7 @@ class LF_Test_ConfigProbeRule
 };
 
 //------------------------------------------------------------------------------------------------
-//! Pins how SCR_JsonLoadContext treats the four inputs the config service depends on (#278):
+//! Pins how JsonLoadContext treats the four inputs the config service depends on (#278):
 //! a wrong type, an unknown key, a missing key, and a list of keyed records. The answers decide
 //! that the engine parses and LF_ConfigReader reads key by key (ReadValue, DoesKeyExist, KindOf)
 //! instead of handing a section to the engine's class reader, and that records are an object
@@ -28,8 +28,8 @@ class LF_Test_ConfigJsonProbe : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		// Wrong type: ReadValue refuses, leaves the target untouched, and the context stays usable.
-		SCR_JsonLoadContext wrong = new SCR_JsonLoadContext(false);
-		ctx.True(wrong.ImportFromString("{\"price\":\"abc\",\"name\":42,\"flag\":\"yes\",\"after\":9,\"num\":\"12\",\"half\":12.5,\"whole\":12.0}"), "wrong-type document parses");
+		JsonLoadContext wrong = new JsonLoadContext(false);
+		ctx.True(wrong.LoadFromString("{\"price\":\"abc\",\"name\":42,\"flag\":\"yes\",\"after\":9,\"num\":\"12\",\"half\":12.5,\"whole\":12.0}"), "wrong-type document parses");
 		int price = 7;
 		ctx.False(wrong.ReadValue("price", price), "string into int is refused");
 		ctx.Equal(7, price, "a refused int keeps its value");
@@ -49,8 +49,8 @@ class LF_Test_ConfigJsonProbe : LF_Test
 		ctx.False(wrong.ReadValue("whole", whole), "12.0 into int is refused too");
 
 		// Unknown key: ignored by ReadValue, visible to DoesKeyExist, enumerable through StartMap.
-		SCR_JsonLoadContext unknown = new SCR_JsonLoadContext(false);
-		ctx.True(unknown.ImportFromString("{\"price\":5,\"bogus\":1,\"shops\":{\"a\":1,\"b\":\"x\",\"c\":{\"d\":2}}}"), "unknown-key document parses");
+		JsonLoadContext unknown = new JsonLoadContext(false);
+		ctx.True(unknown.LoadFromString("{\"price\":5,\"bogus\":1,\"shops\":{\"a\":1,\"b\":\"x\",\"c\":{\"d\":2}}}"), "unknown-key document parses");
 		price = 7;
 		ctx.True(unknown.ReadValue("price", price), "a known key reads beside an unknown one");
 		ctx.Equal(5, price, "the known key has its value");
@@ -74,8 +74,8 @@ class LF_Test_ConfigJsonProbe : LF_Test
 		ctx.True(unknown.ReadValue("price", price), "EndObject returns to the root");
 
 		// Missing key: refused, value untouched, DoesKeyExist false; a missing object does not move the cursor.
-		SCR_JsonLoadContext missing = new SCR_JsonLoadContext(false);
-		ctx.True(missing.ImportFromString("{\"price\":5}"), "missing-key document parses");
+		JsonLoadContext missing = new JsonLoadContext(false);
+		ctx.True(missing.LoadFromString("{\"price\":5}"), "missing-key document parses");
 		int miss = 7;
 		ctx.False(missing.ReadValue("missing", miss), "a missing key is refused");
 		ctx.Equal(7, miss, "a missing key keeps the value");
@@ -89,8 +89,8 @@ class LF_Test_ConfigJsonProbe : LF_Test
 
 		// A list of keyed records, read by hand: one record per StartObject, each field independent.
 		string rulesJson = "{\"rules\":[{\"find\":\"Food\",\"buy\":10},{\"find\":\"Seeds\",\"sell\":3,\"extra\":1},{\"find\":\"Bad\",\"buy\":\"oops\",\"sell\":4}]}";
-		SCR_JsonLoadContext manual = new SCR_JsonLoadContext(false);
-		ctx.True(manual.ImportFromString(rulesJson), "records document parses");
+		JsonLoadContext manual = new JsonLoadContext(false);
+		ctx.True(manual.LoadFromString(rulesJson), "records document parses");
 		int count = -1;
 		ctx.True(manual.StartArray("rules", count), "a list opens");
 		ctx.Equal(3, count, "the list counts its records");
@@ -120,8 +120,8 @@ class LF_Test_ConfigJsonProbe : LF_Test
 
 		// The engine class reader: it cannot tell missing from default, and it silently drops a
 		// wrong-type field while reporting success. That is why the service reads by hand.
-		SCR_JsonLoadContext engine = new SCR_JsonLoadContext(false);
-		engine.ImportFromString(rulesJson);
+		JsonLoadContext engine = new JsonLoadContext(false);
+		engine.LoadFromString(rulesJson);
 		array<ref LF_Test_ConfigProbeRule> rules = {};
 		ctx.True(engine.ReadValue("rules", rules), "the class reader reports success");
 		ctx.Equal(3, rules.Count(), "the class reader builds every record");
@@ -133,8 +133,8 @@ class LF_Test_ConfigJsonProbe : LF_Test
 		// Not asserted because it kills the process: StartObject() on a number element, and the
 		// class reader on a list holding a string, both end in "ENGINE (F): Crashed". So records
 		// are an object keyed by their stable key, never a list.
-		SCR_JsonLoadContext anon = new SCR_JsonLoadContext(false);
-		anon.ImportFromString("{\"scalars\":[5,7],\"recs\":[\"x\",{\"find\":\"F\",\"z\":1}]}");
+		JsonLoadContext anon = new JsonLoadContext(false);
+		anon.LoadFromString("{\"scalars\":[5,7],\"recs\":[\"x\",{\"find\":\"F\",\"z\":1}]}");
 		int anonCount;
 		anon.StartArray("scalars", anonCount);
 		int element = -1;
@@ -150,8 +150,8 @@ class LF_Test_ConfigJsonProbe : LF_Test
 		anon.EndArray();
 
 		// Named values can be classified with calls that never crash (LF_ConfigReader.KindOf).
-		SCR_JsonLoadContext kinds = new SCR_JsonLoadContext(false);
-		kinds.ImportFromString("{\"str\":\"s\",\"t\":true,\"nul\":null,\"arr\":[1],\"obj\":{\"a\":1},\"num\":5}");
+		JsonLoadContext kinds = new JsonLoadContext(false);
+		kinds.LoadFromString("{\"str\":\"s\",\"t\":true,\"nul\":null,\"arr\":[1],\"obj\":{\"a\":1},\"num\":5}");
 		ctx.True(kinds.StartObject("str"), "StartObject opens a string");
 		kinds.EndObject();
 		ctx.True(kinds.StartObject("t"), "StartObject opens a bool");
@@ -181,8 +181,8 @@ class LF_Test_ConfigJsonProbe : LF_Test
 		ctx.Equal(1, afterKinds, "the object reads after KindOf");
 
 		// Records keyed by their stable key: the keys list in file order and each record opens by name.
-		SCR_JsonLoadContext keyed = new SCR_JsonLoadContext(false);
-		keyed.ImportFromString("{\"rules\":{\"Prefabs/Items/Food/\":{\"buy\":10},\"type:64,mode:2\":{\"buy\":3}}}");
+		JsonLoadContext keyed = new JsonLoadContext(false);
+		keyed.LoadFromString("{\"rules\":{\"Prefabs/Items/Food/\":{\"buy\":10},\"type:64,mode:2\":{\"buy\":3}}}");
 		int keyCount = -1;
 		ctx.True(keyed.StartMap("rules", keyCount), "a records object lists its keys");
 		string key0;
@@ -202,8 +202,8 @@ class LF_Test_ConfigJsonProbe : LF_Test
 		ctx.Equal(10, keyedBuy, "a record opens and reads by its key");
 
 		// String lists: the class reader is safe on these but partial, and null replaces the target.
-		SCR_JsonLoadContext lists = new SCR_JsonLoadContext(false);
-		lists.ImportFromString("{\"good\":[\"a\",\"b\"],\"mixed\":[\"a\",5],\"objs\":[{\"a\":1}],\"nul\":null}");
+		JsonLoadContext lists = new JsonLoadContext(false);
+		lists.LoadFromString("{\"good\":[\"a\",\"b\"],\"mixed\":[\"a\",5],\"objs\":[{\"a\":1}],\"nul\":null}");
 		array<string> good = {};
 		ctx.True(lists.ReadValue("good", good), "a string list reads");
 		ctx.Equal(2, good.Count(), "a string list has every element");
@@ -217,7 +217,7 @@ class LF_Test_ConfigJsonProbe : LF_Test
 		ctx.True(nulled == null, "and replaces the target with null");
 
 		// Malformed document.
-		SCR_JsonLoadContext broken = new SCR_JsonLoadContext(false);
-		ctx.False(broken.ImportFromString("{\"price\":5,"), "a malformed document is refused at import");
+		JsonLoadContext broken = new JsonLoadContext(false);
+		ctx.False(broken.LoadFromString("{\"price\":5,"), "a malformed document is refused at import");
 	}
 };

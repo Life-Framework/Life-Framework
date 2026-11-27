@@ -42,7 +42,7 @@ class LF_Test_MapPois : LF_Test
 	{
 		RunCoreTable(ctx);
 
-		SCR_JsonLoadContext table = LoadTable(ctx);
+		JsonLoadContext table = LoadTable(ctx);
 		if (!table)
 			return;
 
@@ -78,10 +78,10 @@ class LF_Test_MapPois : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected SCR_JsonLoadContext LoadTable(LF_TestContext ctx)
+	protected JsonLoadContext LoadTable(LF_TestContext ctx)
 	{
-		SCR_JsonLoadContext json = new SCR_JsonLoadContext(false);
-		bool parsed = json.ImportFromString(LF_MapPoiCasesData.Json());
+		JsonLoadContext json = new JsonLoadContext(false);
+		bool parsed = json.LoadFromString(LF_MapPoiCasesData.Json());
 		ctx.True(parsed, "the shared case table is valid JSON");
 		if (!parsed)
 			return null;
@@ -92,7 +92,7 @@ class LF_Test_MapPois : LF_Test
 	//------------------------------------------------------------------------------------------------
 	//! Each case: one visibility, one place state, one player. The cases are the loader format of
 	//! tools/map/rules/index.mjs: [{ name, input, expect }].
-	protected void RunCases(LF_TestContext ctx, SCR_JsonLoadContext json)
+	protected void RunCases(LF_TestContext ctx, JsonLoadContext json)
 	{
 		array<ref LF_Test_MapPoiCase> cases = {};
 		ctx.True(json.ReadValue("cases", cases), "the table's cases read");
@@ -117,7 +117,7 @@ class LF_Test_MapPois : LF_Test
 	//------------------------------------------------------------------------------------------------
 	//! The visible list for fixture places of three kinds, for a fresh player, one who heard of a
 	//! place, and a police player (LF_MapPois.Collect over the table's own kinds and places).
-	protected void RunScenarios(LF_TestContext ctx, SCR_JsonLoadContext json)
+	protected void RunScenarios(LF_TestContext ctx, JsonLoadContext json)
 	{
 		json.StartObject("lists");
 
