@@ -65,10 +65,6 @@
       "text": "Next up, level 2. Coal face permit. The East Rise coal seam opens at Mining 4. Keep swinging.",
       "for_key": "#LF-Foreman_MINER_Next_02", "key_pin": "8bd2ffb6", "pin_key": "#LF-Unlock_Miner_02"
     },
-    "next_03": {
-      "text": "Next up, level 3. Copper seam permit: cut copper ore. Keep swinging.",
-      "for_key": "#LF-Foreman_MINER_Next_03", "key_pin": "3921f911", "pin_key": "#LF-Unlock_Miner_03"
-    },
     "next_04": {
       "text": "Next up, level 4. Iron seam permit: mine iron. Keep swinging.",
       "for_key": "#LF-Foreman_MINER_Next_04", "key_pin": "4c95a444", "pin_key": "#LF-Unlock_Miner_04"
@@ -76,10 +72,6 @@
     "next_05": {
       "text": "Next up, level 5. Seasoned miner license: cut any ore twice as fast. Keep swinging.",
       "for_key": "#LF-Foreman_MINER_Next_05", "key_pin": "28c7e045", "pin_key": "#LF-Unlock_Miner_05"
-    },
-    "next_06": {
-      "text": "Next up, level 6. Gold seam permit: cut gold ore. Keep swinging.",
-      "for_key": "#LF-Foreman_MINER_Next_06", "key_pin": "ca2bee34", "pin_key": "#LF-Unlock_Miner_06"
     },
     "next_10": {
       "text": "Next up, level 10. First perk: pick Double yield or Swift hands at the labor office. Keep swinging.",
