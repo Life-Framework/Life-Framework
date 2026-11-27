@@ -267,6 +267,24 @@ bug, still to fix; **VANILLA** = base-game behavior/noise, do not touch;
 | `[LFDebug:Ops] restart due: wrote $profile:lf-host-restart, closing the game` then the 0grind service stays `stopped` | BY DESIGN / FIXED | The clean close is not a crash, so 0grind's Restart on Failure does not relaunch it; the panel Workflow `Scheduled restart start` does (Start the server). 2026-11-16 it was stored at 05:02 and 17:02 UTC (entered as local 06:02 and 18:02), an hour before the close, so the box stayed down about 6 h. The server clock and log timestamps are UTC. Now 06:02, 06:07, 18:02, 18:07 UTC. Check: `host remote 0grind status` shows `running` at 06:03 and 18:03; see `docs/ops/rented-box.md` "0grind: the scheduled restart". |
 | `Client uses unsupported protocol version` (server log), then `session up` ends `server not ready` after ~5 min | FIXED | The Reforger client updated through Steam and the dedicated server (app 1874900) did not: Steam suspends a server update while any `ArmaReforgerServer.exe` runs, and agents retrying `session up` kept one running (2026-11-27, client 26639613 against server 26257316). `session up` now compares the client and server game versions first and fails in seconds with `GAME UPDATE PENDING: client <v> (build N) vs server <v> (build M)`; `status` and `pool status` print the same line. Do not retry: run `tools\cli game-update` (docs/worktrees.md "Game update guard"). |
 
+## Game mode components vanilla reads
+
+`GameMode_Roleplay.et` is built from scratch, so it has only the components it lists, where `GameMode_Base.et` carries about thirty.
+After #5154 (the possessing manager) every component of Base, Plain, Editor and Campaign that ours lacks was checked
+against the vanilla scripts of build 26639613 (2026-11-27): each `FindComponent(X)` / `X.GetInstance()` site was read for
+a null check and for whether our game reaches it. Only `SCR_PossessingManagerComponent` is a real gap; it is fixed, and
+`validate-gamemode-components` (list in `tools/lib/gamemode-components.mjs`) fails a game mode prefab without it. A
+component joins that list only with the vanilla file and line that dereferences it.
+
+| Missing component | Verdict | Why |
+|---|---|---|
+| `SCR_PossessingManagerComponent` | ADDED (#5162), checked | `SCR_CharacterHelper.GetCharacterControlType` has no null check; runs for every player killer. |
+| `SCR_AdditionalGameModeSettings`, `SCR_PerceivedFactionManager`, `SCR_GameModeHealthSettings`, `SCR_PlayerListedAdminManager`, `SCR_NotificationSender`, `SCR_ReconnectComponent`, `SCR_IdentityManager`, `SCR_NightMode`, `SCR_ArsenalManager`, `SCR_VotingManager` | DISMISSED | Every vanilla site that runs in our game (`SCR_InstigatorContextData`, `SCR_CharacterFactionAffiliationComponent`, `SCR_CharacterDamageManagerComponent`, `SCR_BaseGameMode`, `game.c`, `SCR_CharacterHelper`) null-checks; the rest are editor attributes and inventory identity items our game does not have. Adding them would also turn on features (disguise punishment, voting, reconnect handling). |
+| `SCR_GroupsManagerComponent` | DISMISSED | Unchecked sites are group-UI actions (`SCR_PlayerControllerGroupComponent` invite and diag calls), the tutorial, the deploy menu and campaign feedback; the VON menu, commanding and task code check it. Adding it creates playable groups and assigns players to them: a new player feature, frozen for 0.3.0. |
+| `SCR_CallsignManagerComponent` | DISMISSED, open risk | Only `SCR_CallsignBaseComponentSerializer.Deserialize` (a saved `SCR_AIGroup`) calls it unchecked. The manager needs the groups manager (`EOnInit` logs an error without one). If a restart with a live event-walker group ever shows a VME there, the fix is to keep AI groups out of the world save, not this component. |
+| `SCR_TaskFinishHistoryManager`, `SCR_TaskManagerUI`, `SCR_TextsTaskManager`, `SCR_XPHandler`, `SCR_CampaignBuildingManager`, `SCR_RewindComponent` | DISMISSED | Campaign debrief, faction commander, campaign base or editor code only; none of those classes is in our prefabs. |
+| `SCR_EntityCatalogManagerComponent` | PRESENT | `LF_EntityCatalogManagerComponent` extends it, so `GetInstance()` finds it. |
+
 ## How to add a row
 
 When a new message appears:
