@@ -1,0 +1,97 @@
+# Shop list sheets on the island (UI sweep 2026-11-27): how many rows show at once, at five counters.
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow ui-shop-lists
+#   node agent-box/session.mjs down
+# Each counter: the list as it opens (`<shop>_list`), then a picked line so the slip and its preview are on the sheet (`<shop>_picked`).
+
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+
+step 1 hardware store
+stand Fit_saint_philippe_hardware_hardware_shop_counter
+wait 2000
+use LF_ShopAction Fit_saint_philippe_hardware_hardware_shop_till
+wait 2000
+shot ui hardware_list
+click Item1Row_Action
+wait 800
+shot ui hardware_picked
+click CloseButton
+wait 800
+
+step 2 supermarket
+stand Fit_saint_philippe_supermarket_supermarket_till
+wait 2000
+use LF_ShopAction Fit_saint_philippe_supermarket_supermarket_till
+wait 2000
+shot ui supermarket_list
+click Item1Row_Action
+wait 800
+shot ui supermarket_picked
+click CloseButton
+wait 800
+
+step 3 gun store
+stand Fit_saint_philippe_gun_counter_gun_counter_clerk
+wait 2000
+use LF_ShopAction Fit_saint_philippe_gun_counter_lf_gun_counter
+wait 2000
+shot ui gun_list
+click Item2Row_Action
+wait 800
+shot ui gun_picked
+click CloseButton
+wait 800
+
+step 4 pharmacy
+stand Fit_saint_philippe_pharmacy_pharmacy_till
+wait 2000
+use LF_ShopAction Fit_saint_philippe_pharmacy_pharmacy_till
+wait 2000
+shot ui pharmacy_list
+type Search auze
+wait 800
+shot ui pharmacy_gauze
+type Search ourniquet
+wait 800
+shot ui pharmacy_tourniquet
+click CloseButton
+wait 800
+
+step 5 car lot
+stand Fit_saint_philippe_carlot_vehicle_lot
+wait 2000
+use LF_VehicleBuyAction Fit_saint_philippe_carlot_vehicle_lot
+wait 2500
+shot ui carlot_list
+click LotClose
+wait 800
