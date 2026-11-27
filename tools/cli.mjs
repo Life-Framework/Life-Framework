@@ -1777,7 +1777,7 @@ async function cmdUiImage(flags) {
   const sizeIdx = (flags ?? []).indexOf("--size");
   const size = sizeIdx >= 0 ? Number(flags[sizeIdx + 1]) : 0;
   if (!src || !name || !/^[A-Za-z0-9_]+$/.test(name)) {
-    console.log("usage: tools\cli ui-image <file.svg|file.png> <name> [--size N] [--no-imageset]");
+    console.log("usage: tools\\cli ui-image <file.svg|file.png> <name> [--size N] [--no-imageset]");
     return 2;
   }
   if (wt.isMainCheckout(root)) { console.log("FAIL  ui-image runs only in a worktree"); return 1; }
@@ -3265,7 +3265,7 @@ function cmdSession(args) {
     console.log(SESSION_USAGE);
     return 0;
   }
-  // `toolscli session up` goes through the router (agent-box/session.mjs), which picks the machine:
+  // `tools\cli session up` goes through the router (agent-box/session.mjs), which picks the machine:
   // this PC or a pool machine with a lane and the RAM. The router's own local leg sets LF_SESSION_ROUTED.
   if (list[0] === "up" && process.env.LF_SESSION_ROUTED !== "1") {
     const r = spawnSync(process.execPath, [join(ROOT, "agent-box", "session.mjs"), "up", ...list.slice(1)], { windowsHide: true, stdio: "inherit", cwd: ROOT, env: { ...process.env, LF_CALLER_PID: process.env.LF_CALLER_PID || String(process.ppid) } });
@@ -4966,7 +4966,7 @@ function runE2ePass(root, tier, opts = {}) {
     console.log("e2e: resource database still stale after the refresh; retrying the refresh once");
     rdbStale = ensureResourceDatabase(root);
     if (rdbStale) {
-      console.log("FAIL  e2e: the resource database is still stale after two refreshes, so the server cannot load the pre-move tree. This is the machine (Workbench could not register the resources), not the saved build; rerun when its Workbench is free (tools\cli pool status).");
+      console.log("FAIL  e2e: the resource database is still stale after two refreshes, so the server cannot load the pre-move tree. This is the machine (Workbench could not register the resources), not the saved build; rerun when its Workbench is free (tools\\cli pool status).");
       return 1;
     }
   }

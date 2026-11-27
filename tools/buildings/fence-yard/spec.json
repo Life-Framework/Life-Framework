@@ -112,7 +112,7 @@
     "decor_entities": 150,
     "physics_props": 0,
     "per_frame_scripts": 0,
-    "check": "toolscli perf building FenceYard --size small"
+    "check": "tools\\cli perf building FenceYard --size small"
   },
   "scripts": {
     "shell": "node tools/buildings/fence-yard/prune.mjs",

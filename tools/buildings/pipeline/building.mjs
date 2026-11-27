@@ -605,7 +605,7 @@ export async function main(flags, { workbench } = {}) {
   if (sub === "adopt") return rest[0] ? cmdAdopt(root, rest[0], rest[1]) : say("usage: tools\\cli building adopt <slug> [<file.blend>]", 2);
   if (sub === "review") {
     const slug = rest.find((f) => !f.startsWith("--"));
-    if (!slug || !rest.includes("--shots")) return say("usage: tools\cli building review <slug> --shots     Blender review renders and a contact sheet (polish.md \"Review shots\")", 2);
+    if (!slug || !rest.includes("--shots")) return say("usage: tools\\cli building review <slug> --shots     Blender review renders and a contact sheet (polish.md \"Review shots\")", 2);
     const wt = await import("../../wt.mjs");
     if (wt.isMainCheckout(root)) return say("FAIL  building review runs only in a worktree", 1);
     return (await import("./review-shots.mjs")).reviewShots(root, slug);

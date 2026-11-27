@@ -112,5 +112,5 @@ anything past 256 KB.
 None can reach the measured size, so no fix slice is filed. `LF_ConfigStream.WARN_BYTES` (32 KB) is a log
 threshold below what is now proven and stays as it is.
 
-Rerun: `toolscli session up --clients 1`, then `node agent-box/session.mjs rpc-string-proof`
+Rerun: `tools\cli session up --clients 1`, then `node agent-box/session.mjs rpc-string-proof`
 (`--sizes 1024,65536` for a subset), then `session down`.

@@ -135,7 +135,7 @@ tools\cli asset dialogue clerk_everon               write Configs/Dialogue/LF_Di
 
 - A line is a `patch` when the core has its id and an `add` when it does not (`"op": "remove"` removes). A
   node takes `"op"` the same way and a node with `options` replaces its reply list (a reply has no id).
-- A pack made with `toolscli pack new <Name>` is taken by `--addon LF_<Name>` (its `.gproj` is read; no list to edit). Its string table may still be the empty one `pack new` wrote.
+- A pack made with `tools\cli pack new <Name>` is taken by `--addon LF_<Name>` (its `.gproj` is read; no list to edit). Its string table may still be the empty one `pack new` wrote.
 - A node with `options` replaces the core node's list, so write every reply the node should keep, and give each a text in `replies` (a reply the patch does not list is refused). `"options_from"` may name a core node.
 - Without a `voice` every patched line is text only: no ElevenLabs call, no budget, no wav. The core's
   recording (if it has one) keeps playing for the lines the patch does not touch; a reworded line shows its
@@ -182,7 +182,7 @@ It is reached by id only once the pack's index overlay lists it and the NPC pref
 ## A line with a Piper voice (free)
 
 A line may carry its own `"voice": {"engine": "piper", "id": "en_US-ljspeech-high"}`. The stage then makes it with Piper
-(MIT, offline, `toolscli film-make --setup` installs it into `tools/film/.tts`): no key, no characters, no budget.
+(MIT, offline, `tools\cli film-make --setup` installs it into `tools/film/.tts`): no key, no characters, no budget.
 The same block as the dialogue's top-level `voice` gives every line Piper (the Everon clerk, #1959: one voice per character); a single-line voice is for a mixed dialogue, which sounds like two people, so avoid it for one NPC. Only licence-safe voices are accepted
 (`tools/assets/pipeline/piper.mjs`: `en_US-ljspeech-high` and `-medium`, trained on public-domain LJ Speech); `lessac`, `libritts_r`
 and any voice fine-tuned from them are refused (docs/credits.md "Voice-over"). Each line's provenance in `elevenlabs.json`

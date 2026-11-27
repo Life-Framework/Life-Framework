@@ -17,7 +17,7 @@ export function websiteContent(root, run = spawnSync) {
   const site = join(root, "website");
   if (!existsSync(join(site, "scripts", "build-content.mjs"))) return { skipped: "no website/scripts/build-content.mjs" };
   if (!existsSync(join(site, "node_modules"))) {
-    return { skipped: "website/node_modules is missing; run `npm ci` in website/ and then `tools\cli validate --all` to check it" };
+    return { skipped: "website/node_modules is missing; run `npm ci` in website/ and then `tools\\cli validate --all` to check it" };
   }
   // A per-run output dir: the step rmSyncs and rewrites src/generated/data, so two runs in one worktree
   // (this check and its selftest under a parallel gate) used the same dir and failed with ENOTEMPTY.

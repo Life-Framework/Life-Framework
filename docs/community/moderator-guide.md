@@ -219,7 +219,7 @@ channel is staff-only. Never paste a row with account uids into a public channel
   different staff member than the one who banned.
 - **The ban record (#1285)** is written by `#ban` and `#unban` with the reason,
   the staff uid and the target's recent incident numbers. An administrator reads
-  it with `#banrecord <uid>`; on the host, `toolscli host bans` lists it. Keep
+  it with `#banrecord <uid>`; on the host, `tools\cli host bans` lists it. Keep
   the ticket too: it holds the player's account of events.
 - **Appeals (#315):** the player fills the template in [appeals.md](appeals.md) in
   the appeals channel. The channel is created by the maintainer before opening;

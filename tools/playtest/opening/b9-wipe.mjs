@@ -10,7 +10,7 @@
 // the copy (LF_ANNOUNCE_SESSIONS), so website/content/sessions.json is never touched. The copy is
 // removed at the end unless --keep.
 //
-// One `BEAT B9 <id> PASS|BLOCKED|FAIL <detail>` line per step (the form `toolscli opening` reads), then
+// One `BEAT B9 <id> PASS|BLOCKED|FAIL <detail>` line per step (the form `tools\cli opening` reads), then
 // `SUMMARY b9-wipe ok|blocked|fail pass=N blocked=N fail=N`. BLOCKED always names the open issue:
 // #1413 is the wipe notice gate (`host wipe` refuses without a notice 24 h old). While it is not
 // on main, `host wipe` wipes a stopped host with no notice, so the script probes that on a second

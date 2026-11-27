@@ -1024,7 +1024,7 @@ async function serveMain(args) {
   const wt = await import("../wt.mjs");
   const serve = await import("./look-serve.mjs");
   if (!args.flags.status && wt.isMainCheckout(ROOT)) {
-    console.log("REFUSE  'look serve' runs from a worktree (the server shows that worktree's state): tools\cli wt new <feature>");
+    console.log("REFUSE  'look serve' runs from a worktree (the server shows that worktree's state): tools\\cli wt new <feature>");
     return 2;
   }
   const exe = workbenchExe();

@@ -38,7 +38,7 @@ try {
   put("docs/features.md", `${renderIndex(root)}\n### \`LF_Hand\` — row\n- hand\n`);
   const errs = checkIndex(root);
   if (!errs.length) fail("hand-added row in the index was accepted");
-  else if (!errs[0].includes("regen-features")) fail("the error does not name tools\cli regen-features");
+  else if (!errs[0].includes("regen-features")) fail("the error does not name tools\\cli regen-features");
 
   const s = splitSections("# T\n\npre\n## A (x)\n\nbody\n## B\nb\n");
   if (s.length !== 2 || s[0].slug !== "a" || s[0].body !== "# A (x)\n\nbody\n" || s[1].body !== "# B\nb\n") fail(`splitSections: ${JSON.stringify(s)}`);

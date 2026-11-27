@@ -947,7 +947,7 @@ export async function main(args, { root }) {
   }
   if (sub === "check") {
     const want = args[1];
-    if (!want) { console.log("usage: tools\cli main-guard check <sha>   compile, then the full check, on exactly that main commit"); return 1; }
+    if (!want) { console.log("usage: tools\\cli main-guard check <sha>   compile, then the full check, on exactly that main commit"); return 1; }
     wt.git(mainRoot(root), ["fetch", "origin", "--prune"]);
     const sha = wt.git(mainRoot(root), ["rev-parse", `${want}^{commit}`]).stdout.trim();
     if (!sha || wt.git(mainRoot(root), ["merge-base", "--is-ancestor", sha, "origin/main"]).status !== 0) { console.log(`FAIL  ${want} is not a commit on origin/main`); return 1; }

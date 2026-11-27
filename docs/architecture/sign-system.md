@@ -129,7 +129,7 @@ defect (`docs/features/ui-layouts-localization.md`, #3075).
 
 ## Slices
 
-Epic #3286; cards are its sub-issues (`toolscli slice list 3286 --ready`). `weekend` marks what players see on
+Epic #3286; cards are its sub-issues (`tools\cli slice list 3286 --ready`). `weekend` marks what players see on
 Saint-Philippe this weekend.
 
 | Key | Issue | Card | Depends |

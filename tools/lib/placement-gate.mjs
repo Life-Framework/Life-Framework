@@ -128,7 +128,7 @@ export function readBaseline(text) {
 
 export function baselineText(rows) {
   return JSON.stringify({
-    note: "Island placement findings that existed when the gate went on (#3888). May only shrink: `tools\cli audit placement --world MainWorld --baseline-shrink` drops fixed rows; placement-gate-selftest fails a branch that adds one.",
+    note: "Island placement findings that existed when the gate went on (#3888). May only shrink: `tools\\cli audit placement --world MainWorld --baseline-shrink` drops fixed rows; placement-gate-selftest fails a branch that adds one.",
     rows: [...new Set(rows)].sort(),
   }, null, 2) + "\n";
 }

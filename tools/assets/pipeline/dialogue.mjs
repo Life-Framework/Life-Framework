@@ -366,7 +366,7 @@ export function staleLines(root, spec, prov) {
 // into the addon that owns the voice: wav + meta per line, the provenance file, lines that left the spec removed,
 // the audio project's meta. The caller writes the audio project and the conf from the returned provenance.
 function piperCheck(root) {
-  if (!piper.piperPath(root)) throw new Error("this dialogue has Piper lines and Piper is not installed. Run: tools\cli film-make --setup");
+  if (!piper.piperPath(root)) throw new Error("this dialogue has Piper lines and Piper is not installed. Run: tools\\cli film-make --setup");
 }
 
 async function voiceStage(root, id, spec, { dryRun, force, fetchImpl, ffmpeg, convert, log, piperRun }) {

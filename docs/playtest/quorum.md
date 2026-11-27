@@ -2,7 +2,7 @@
 
 Status: **off.** The maintainer switched it on on 2026-11-11 and off again on
 2026-11-18: "skip the quorum rule until we actually have playtesters". With
-`"enabled": false` in `quorum.json`, `toolscli promote --confirm` needs the
+`"enabled": false` in `quorum.json`, `tools\cli promote --confirm` needs the
 main guard's green and no confirmations file. Turn it back on (`"enabled":
 true`) once the roster has active playtesters.
 

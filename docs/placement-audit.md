@@ -135,7 +135,7 @@ largest side, in metres, per kind of prop:
 - A flag reads `size 1.4 m outside 0.3-0.8 m for money-bag (why)`. Either the entity is wrong (fix the
   layer or its scale) or the range is: widen it only with a reason in `why` a reviewer can check.
 - Entries are first-match, so a real outlier gets its own entry ahead of the general one: `fence-8m` (7-9 m, the 8 m wooden and net fence modules; the 3-6 m `fence` entry is the 4 m modules) and `grain-sack` (0.6-1.5 m: `SackUniversal_01` is a tall burlap sack, 0.79 x 1.36 x 0.54 m, not a cement bag). Both came from the wheat field baseline pass, 2026-11-21 (12 `size` rows).
-- Seed or check a range with `toolscli place bounds <prefab>`, which prints the mesh size at the prefab's scale.
+- Seed or check a range with `tools\cli place bounds <prefab>`, which prints the mesh size at the prefab's scale.
 - The mesh box can include parts you do not see (a booth's roof, a pot's flowers), so check a surprising
   flag in a shot before widening.
 - Fixtures: `audit selftest` flags a 1.4 m money bag, passes a 0.55 m one and ignores a prefab outside the table.

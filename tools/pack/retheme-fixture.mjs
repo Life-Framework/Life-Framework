@@ -29,7 +29,7 @@ export function applyRetheme(addonsDir) {
   const fx = loadFixture();
   const dir = join(addonsDir, `LF_${fx.pack}`);
   const header = join(dir, "Missions", `LF_${fx.pack}.conf`);
-  if (!existsSync(header)) throw new Error(`${dir} is not a scaffolded pack (run \`tools\cli pack new ${fx.pack}\` first)`);
+  if (!existsSync(header)) throw new Error(`${dir} is not a scaffolded pack (run \`tools\\cli pack new ${fx.pack}\` first)`);
 
   for (const rel of fx.overlays) {
     mkdirSync(dirname(join(dir, rel)), { recursive: true });

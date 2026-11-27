@@ -152,7 +152,7 @@
     }
   ],
   "looks": {
-    "about": "node tools/buildings/bank/looks.mjs [--set exterior|rooms|all] [--hour 14|22] [--only names] [--run] turns these building-space centres into toolscli look calls (grid:bank, or --interior x,y,z in world space)",
+    "about": "node tools/buildings/bank/looks.mjs [--set exterior|rooms|all] [--hour 14|22] [--only names] [--run] turns these building-space centres into tools\\cli look calls (grid:bank, or --interior x,y,z in world space)",
     "exterior": true,
     "rooms": [
       {

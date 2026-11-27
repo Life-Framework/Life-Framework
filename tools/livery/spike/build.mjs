@@ -3,7 +3,7 @@
 //
 //   node tools/livery/spike/build.mjs          write the spike materials and prefabs
 //   node tools/livery/spike/build.mjs --mask <spec.json>  also build our UAZ469 mask from the vanilla
-//        CIV mask (mask.py in Blender) and import it through Workbench (toolscli ui-image --batch)
+//        CIV mask (mask.py in Blender) and import it through Workbench (tools\cli ui-image --batch)
 //   node tools/livery/spike/build.mjs --clean  remove them (run before ship: they are never committed)
 //
 // Method (docs/architecture/livery-spike.md): vanilla vehicle bodies and garments are MatPBRMulti
