@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { ROOT, arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
+import { ensureCuffs } from "./_preconditions.mjs";
 
 // The police booking desk walked end to end on the real island (#4699, #4629 pay now, #4662 licence seizure),
 // two players on a dedicated server under the flagship owner config:
@@ -157,7 +158,10 @@ async function runBookingDeskProof() {
     wait(1000);
     on(2, { verb: "handsup", words: ["choose", "1"] }, 10000);
     wait(1500);
-    const held = on(1, { verb: "hold", item: "Handcuffs" }, 10000);
+    // The duty kit is issued once per account: an officer who clocks in again after a reset has no cuffs (NO_CUFFS), so
+    // the proof holds them, grants a pair through the harness when the pack has none, and only then cuffs (rc-proof-order).
+    const cuffs = ensureCuffs(on, wait, 1);
+    const held = { status: cuffs.ok ? "ok" : "error", detail: `cuffs ${cuffs.moves.join(",")}: ${cuffs.last.detail}` };
     wait(2500);
     on(1, { verb: "cuffing", playerId: Number(b), kind: "cuff", mode: "pin" }, 10000);
     wait(2000);
