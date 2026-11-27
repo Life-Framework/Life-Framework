@@ -1,6 +1,7 @@
 {
   "schema": 1,
   "kit": "outpost-north",
+  "reach": 240,
   "system": "outpost",
   "source": {
     "file": "tools/town/kits/sources/outpost-north.layer",
@@ -835,6 +836,76 @@
       "class": "ParticleEffectEntity",
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "approach-lamp-1",
+      "name": "Approach_Lamp_1",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -201,
+        0,
+        -93
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "approach-fire-1",
+      "name": "Approach_Fire_1",
+      "prefab": "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -205,
+        0,
+        -89
+      ],
+      "yaw": 0,
+      "class": "ParticleEffectEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.15
+    },
+    {
+      "id": "approach-lamp-2",
+      "name": "Approach_Lamp_2",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -107,
+        0,
+        -41
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "approach-fire-2",
+      "name": "Approach_Fire_2",
+      "prefab": "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -111,
+        0,
+        -37
+      ],
+      "yaw": 0,
+      "class": "ParticleEffectEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.15
     }
   ],
   "clear": [

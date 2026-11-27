@@ -231,3 +231,15 @@ GenericEntity Outpost_Glow_GateN : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_La
 ParticleEffectEntity Outpost_Flame_Fire : "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et" {
  coords 356.945 0.34 80.92
 }
+GenericEntity Approach_Lamp_1 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 161.465 0 -22.725
+}
+ParticleEffectEntity Approach_Fire_1 : "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et" {
+ coords 157.465 0 -18.725
+}
+GenericEntity Approach_Lamp_2 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 255.465 0 29.275
+}
+ParticleEffectEntity Approach_Fire_2 : "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et" {
+ coords 251.465 0 33.275
+}

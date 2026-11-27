@@ -362,7 +362,9 @@ export function checkKit(kit, { root = ROOT } = {}) {
   if (kit.source?.frame === "origin-entity" || kit.source?.file?.endsWith(".layer")) {
     // no absolute coordinate left: no row sits farther from the origin than a building can be, and config scalars hold no world vector
     const farthest = Math.max(0, ...(kit.rows || []).map((r) => Math.hypot(r.offset?.[0] || 0, r.offset?.[2] || 0)));
-    if (farthest > 80) bad(`a row is ${r3(farthest)} m from the origin: an absolute coordinate was left in`);
+    // A kit with rows that really stand far out (a night beacon along a track, #5089) names its own `reach` in metres.
+    const reach = Number.isFinite(kit.reach) ? kit.reach : 80;
+    if (farthest > reach) bad(`a row is ${r3(farthest)} m from the origin: an absolute coordinate was left in`);
   }
   return errs;
 }
