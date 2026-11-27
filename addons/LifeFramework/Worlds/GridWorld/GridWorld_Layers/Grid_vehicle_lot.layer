@@ -192,9 +192,9 @@ GenericEntity Annex_Garage {
     UserActionContext "{A1C1080A00000003}" {
      ContextName "default"
      Position PointInfo "{A1C1080A00000004}" {
-      Offset 0 1.0 2.0
+      Offset 0 1 0.597
      }
-     Radius 3.5
+     Radius 1.5
     }
    }
    additionalActions {
