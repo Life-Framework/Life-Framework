@@ -353,6 +353,9 @@ class LF_CasualtyCalls
 		if (!RplComponent.Cast(body.FindComponent(RplComponent)))
 			LF_Debug.Error(FEATURE, "casualty prefab has no RplComponent; clients will not see it: " + prefab);
 
+		// A casualty call is session state: a restart closes it, so a saved body would lie there for good.
+		LF_WorldSaveHold.Hold(body);
+
 		// The medic's downed state, so revive, carry and the bed take the patient, the inventory is locked
 		// while downed and the bleed-out runs: an untreated casualty dies. LF_IsDowned is an RplProp and the
 		// unconscious life state is vanilla's, so a late joiner sees the body lying down.

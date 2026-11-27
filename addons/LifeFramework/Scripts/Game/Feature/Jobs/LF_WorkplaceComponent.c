@@ -209,6 +209,8 @@ class LF_WorkplaceComponent : ScriptComponent
 			return;
 		}
 
+		// Session state: the workplace places its hand again at each boot; a saved copy would stand beside it.
+		LF_WorldSaveHold.Hold(npc);
 		LF_NpcSpots.Claim(npc);
 		m_NpcId = npc.GetID();
 		LF_Debug.Log(LF_Workplace.FEATURE, string.Format("workplace %1 (%2): NPC placed", GetPlaceId(), m_sJob));

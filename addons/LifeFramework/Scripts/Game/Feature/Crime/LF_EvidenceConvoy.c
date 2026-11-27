@@ -200,6 +200,9 @@ class LF_EvidenceConvoy
 			return false;
 		}
 
+		// The convoy is session state: neither the escort car nor its driver may come back from the world save.
+		LF_VehicleWorldSave.Hold(escort);
+		LF_WorldSaveHold.Hold(driver);
 		m_EscortId = escort.GetID();
 		// The escort's driver is part of the scene's crew from here on, so the despawn waits for the sight line to clear.
 		m_Crew.m_aPeople.Insert(driver.GetID());
