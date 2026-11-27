@@ -131,14 +131,22 @@ class LF_ChessBoard
 	LF_ChessBoard Copy()
 	{
 		LF_ChessBoard copy = new LF_ChessBoard();
-		for (int i = 0; i < 64; i++)
-			copy.m_aSquares[i] = m_aSquares[i];
-		copy.m_bWhiteToMove = m_bWhiteToMove;
-		copy.m_iCastling = m_iCastling;
-		copy.m_iEnPassant = m_iEnPassant;
-		copy.m_iHalfmove = m_iHalfmove;
-		copy.m_iFullmove = m_iFullmove;
+		copy.CopyFrom(this);
 		return copy;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Overwrites this board with `other` (squares and state), so a move generator can reuse one scratch
+	//! board for every trial move instead of allocating a board per move (the perft test did 100k+ of them).
+	void CopyFrom(LF_ChessBoard other)
+	{
+		// One native copy of the 64 squares instead of 64 script assignments: it is the cost of every trial move.
+		m_aSquares.Copy(other.m_aSquares);
+		m_bWhiteToMove = other.m_bWhiteToMove;
+		m_iCastling = other.m_iCastling;
+		m_iEnPassant = other.m_iEnPassant;
+		m_iHalfmove = other.m_iHalfmove;
+		m_iFullmove = other.m_iFullmove;
 	}
 
 	//------------------------------------------------------------------------------------------------

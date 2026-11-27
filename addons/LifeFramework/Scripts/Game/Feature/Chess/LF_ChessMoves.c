@@ -158,7 +158,16 @@ class LF_ChessMoves
 	//! from GenerateLegal / FindMove.
 	static LF_ChessBoard Apply(LF_ChessBoard board, int move)
 	{
-		LF_ChessBoard next = board.Copy();
+		LF_ChessBoard next = new LF_ChessBoard();
+		ApplyOnto(board, move, next);
+		return next;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Apply into an existing board: `next` becomes `board` with `move` played (it must not be `board`).
+	protected static void ApplyOnto(LF_ChessBoard board, int move, LF_ChessBoard next)
+	{
+		next.CopyFrom(board);
 		int fromSq = From(move);
 		int toSq = To(move);
 		int flags = Flags(move);
@@ -209,7 +218,6 @@ class LF_ChessMoves
 		if (!white)
 			next.m_iFullmove++;
 		next.m_bWhiteToMove = !white;
-		return next;
 	}
 
 	protected static int RightsLostOn(int sq)
@@ -238,12 +246,15 @@ class LF_ChessMoves
 			sign = -1;
 
 		// Pawns: a white pawn attacks up the board, so it sits one rank below the square.
+		// Direct reads of the square array (the rank * 8 + file index Square() gives, bounds already checked here):
+		// this runs for every trial move of every perft node, and a Get(Square()) pair per read cost a third of it.
+		array<int> squares = board.m_aSquares;
 		int pawnRank = rank - sign;
 		if (pawnRank >= 0 && pawnRank <= 7)
 		{
-			if (file > 0 && board.Get(LF_ChessBoard.Square(file - 1, pawnRank)) == sign * LF_ChessBoard.PAWN)
+			if (file > 0 && squares[pawnRank * 8 + file - 1] == sign * LF_ChessBoard.PAWN)
 				return true;
-			if (file < 7 && board.Get(LF_ChessBoard.Square(file + 1, pawnRank)) == sign * LF_ChessBoard.PAWN)
+			if (file < 7 && squares[pawnRank * 8 + file + 1] == sign * LF_ChessBoard.PAWN)
 				return true;
 		}
 
@@ -262,7 +273,7 @@ class LF_ChessMoves
 			int nr = rank + dr;
 			if (nf < 0 || nf > 7 || nr < 0 || nr > 7)
 				continue;
-			if (board.Get(LF_ChessBoard.Square(nf, nr)) == sign * LF_ChessBoard.KNIGHT)
+			if (squares[nr * 8 + nf] == sign * LF_ChessBoard.KNIGHT)
 				return true;
 		}
 
@@ -279,12 +290,14 @@ class LF_ChessMoves
 			bool first = true;
 			while (cf >= 0 && cf <= 7 && cr >= 0 && cr <= 7)
 			{
-				int piece = board.Get(LF_ChessBoard.Square(cf, cr));
+				int piece = squares[cr * 8 + cf];
 				if (piece != LF_ChessBoard.EMPTY)
 				{
 					if (piece * sign > 0)
 					{
-						int type = LF_ChessBoard.TypeOf(piece);
+						int type = piece;
+						if (type < 0)
+							type = -type;
 						if (type == LF_ChessBoard.QUEEN)
 							return true;
 						if (first && type == LF_ChessBoard.KING)
@@ -314,9 +327,11 @@ class LF_ChessMoves
 		array<int> pseudo = {};
 		GeneratePseudo(board, pseudo);
 		bool white = board.m_bWhiteToMove;
+		// One scratch board for every trial move: only the check test reads it, nothing keeps it.
+		LF_ChessBoard next = new LF_ChessBoard();
 		foreach (int move : pseudo)
 		{
-			LF_ChessBoard next = Apply(board, move);
+			ApplyOnto(board, move, next);
 			if (!SideInCheck(next, white))
 				moves.Insert(move);
 		}

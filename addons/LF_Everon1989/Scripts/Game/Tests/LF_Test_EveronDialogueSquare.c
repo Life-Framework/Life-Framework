@@ -79,6 +79,19 @@ class LF_Test_EveronDialogueSquare : LF_Test
 
 		ctx.True(config.m_aLines.Count() >= MIN_LINES, string.Format("%1: has at least %2 lines (%3)", id, MIN_LINES, config.m_aLines.Count()));
 
+		// The clip is a wav the audio project names by {GUID}path (validate-guid-paths checks each one); loading it
+		// by a bare path logged "Wrong GUID/name" for every line, so the project is what loads here. One load per
+		// conversation: every line of it names the same project, and the check still runs once per line.
+		Resource project;
+		if (!config.m_sSoundProject.IsEmpty())
+			project = Resource.Load(config.m_sSoundProject);
+		bool projectLoads = project && project.IsValid();
+
+		// Each whole-word needle, padded, built once instead of once per line and word.
+		array<string> needles = {};
+		foreach (string frenchWord : french)
+			needles.Insert(" " + frenchWord + " ");
+
 		foreach (LF_DialogueLine line : config.m_aLines)
 		{
 			if (!line)
@@ -87,18 +100,12 @@ class LF_Test_EveronDialogueSquare : LF_Test
 			string where = id + "/" + line.m_sId;
 			ctx.True(!line.m_sEvent.IsEmpty(), where + ": has a sound event");
 			ctx.True(line.m_fSeconds > 0, where + ": has a length");
-
-			// The clip is a wav the audio project names by {GUID}path (validate-guid-paths checks each one); loading it
-			// by a bare path logged "Wrong GUID/name" for every line, so the project is what loads here.
-			Resource project;
-			if (!config.m_sSoundProject.IsEmpty())
-				project = Resource.Load(config.m_sSoundProject);
-			ctx.True(project && project.IsValid(), where + ": its audio project loads");
+			ctx.True(projectLoads, where + ": its audio project loads");
 
 			ctx.True(HasText(line.m_sTextKey), where + ": has its caption");
 			string caption = Plain(WidgetManager.Translate(line.m_sTextKey));
-			foreach (string word : french)
-				ctx.False(caption.Contains(" " + word + " "), where + ": no French word (" + word + ")");
+			foreach (int w, string word : french)
+				ctx.False(caption.Contains(needles[w]), where + ": no French word (" + word + ")");
 		}
 
 		foreach (LF_DialogueNode node : config.m_aNodes)
@@ -110,8 +117,8 @@ class LF_Test_EveronDialogueSquare : LF_Test
 			{
 				ctx.True(HasText(option.m_sTextKey), id + ": reply " + option.m_sTextKey + " has its text");
 				string reply = Plain(WidgetManager.Translate(option.m_sTextKey));
-				foreach (string word : french)
-					ctx.False(reply.Contains(" " + word + " "), id + ": reply " + option.m_sTextKey + " has no French word (" + word + ")");
+				foreach (int w, string word : french)
+					ctx.False(reply.Contains(needles[w]), id + ": reply " + option.m_sTextKey + " has no French word (" + word + ")");
 			}
 		}
 	}
