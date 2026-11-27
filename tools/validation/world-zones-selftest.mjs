@@ -25,7 +25,7 @@ import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
 import { main as gridMain, yardLayer } from "../commands/grid.mjs";
-import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, claimCellIds as claimCellIdsOf, gapSide, inGrid, layerOfSlug, lookArea, mainClaimBlobs, mainClaims as mainClaimsOf, openPrClaims, rowLine, worktreeClaims, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
+import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, claimCellIds as claimCellIdsOf, gapSide, inGrid, layerOfSlug, lookArea, mainClaimBlobs, mainClaims as mainClaimsOf, openPrClaims, parseCatFileBatch, rowLine, worktreeClaims, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
 import { carriedFiles, checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
@@ -156,6 +156,11 @@ try {
   const realLogMain = console.log;
   const mc = mainClaimsOf(root2, { fetch: false });
   ok(mc.claims.length === 1 && mc.claims[0].cell === natural.id, `origin/main's claims are read from git (got ${JSON.stringify(mc.claims.map((c) => c.cell))})`);
+  const sha = "a".repeat(40);
+  const batch = Buffer.from(`${sha} blob 3\nabc\nrefs/x:gone.json missing\n${sha} blob 3\nhé\n`, "utf8");
+  const parsed = parseCatFileBatch(batch, 3);
+  ok(parsed && parsed[0] === "abc" && parsed[1] === null && parsed[2] === "hé",`cat-file --batch output parses: contents in order, a missing object is null (got ${JSON.stringify(parsed)})`);
+  ok(parseCatFileBatch(Buffer.from(`${sha} blob 9\nabc\n`), 1) === null, "a truncated cat-file --batch stream parses as null, so the caller falls back to git show");
   let g = await run("place", "clash-probe", "--dry", "--no-fetch");
   ok(g.code === 0 && !g.out.some((l) => l.includes(`-> cell ${natural.id} `)), `grid place avoids a cell origin/main already claims (${natural.id}); got ${g.out[0]}`);
   g = await run("place", "clash-probe", "--dry", "--no-fetch", "--cell", natural.id);

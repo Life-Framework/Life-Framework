@@ -50,6 +50,14 @@ const cases = [
     expect: /references pack path Prefabs\/Signs\/Sign_Pub_Everon\.et/,
   },
   {
+    name: "core config references a short pack path (under the lookup key length)",
+    plant: (r) => {
+      put(r, `${PACK}/Cfg/x.conf`, `X {\n}\n`);
+      put(r, `${CORE}/Configs/y.conf`, `Y {\n m_sRef "Cfg/x.conf"\n}\n`);
+    },
+    expect: /references pack path Cfg\/x\.conf/,
+  },
+  {
     name: "core gproj depends on the pack project",
     plant: (r) => put(r, `${CORE}/${CORE}.gproj`, `GameProject {\n ID "${CORE}"\n GUID "${CORE_PROJECT_GUID}"\n Dependencies {\n  "58D0FB3206B6F859" "${PACK_PROJECT_GUID}"\n }\n}\n`),
     expect: /depends on the pack project B1E84D5687E11724/,
