@@ -104,6 +104,33 @@ All eleven carry a `RedProof()` hook; the batched run failed all eleven (`RED PR
   target (an id one hop from the middle of a chain is not a source of the middle). Callers count a kind of item by its
   final id, so that is right, and the test pins it.
 
+## Round 4: 7 tests, 1 bug found
+
+Round 4 (`ws/coverage-round-4`) went back to the class-level scan, this time counting a class as covered only when its name
+appears in a test as a whole word, and ranked what was left by risk: money, shops, jobs, jail, vehicles, saves. Most of the
+130 untested files are harness verbs, world actions, UI sheets and Workbench plugins. The pure rules left were these.
+
+| Test | Feature | What it pins |
+|---|---|---|
+| `LF_Test_MiningForgeHeat` | Mining | Forge heat: 1 nugget for 1 bar after 5 s, a held nugget starts it, a second start is refused, the nugget stays until the delay is up, a negative step never rewinds, a zero delay finishes inside Start, a heat that lost its nugget makes no bar |
+| `LF_Test_PhotoIdCardConfigClamp` | Identity (money) | Replacement card fee: the config value, 0 is free (not the default), a negative or huge fee is held to the schema, show time held to 2..60 s, no config means the default fee and time |
+| `LF_Test_ATMLiveFigures` | ATM (money) | The cash machine screen: figures unknown until the server answers, an answer (done or refused) carries the new balance and cash, a balance line, zero, negative or over-limit amount is never sent and never leaves the screen "working", the world-end reset forgets it all |
+| `LF_Test_DutySecondsToNextRank` | Police, Medic (jobs) | `SecondsToNextRank`: rung total minus the clock, the second rung counts the total served, an already-due rung, the top rung and a civilian read `int.MAX`, medics use the medic clock and ignore police time |
+| `LF_Test_VehiclePriceGuidKey` | Vehicles (money) | `ParseGuidKey`: 16 hex digits with or without braces, any case, blanks ignored, upper-cased; short, long, non-hex, empty, braces-only, a path and an unclosed brace refused. **Found a bug** (below) |
+| `LF_Test_VehicleOwnsAny` | Vehicles (saves) | The starter-car gate: an owner with any record owns a car, an empty owner or another uid (also one that merely starts with it) does not, scrapping the last car makes the owner car-less again |
+| `LF_Test_GarageMaxBuyable` | Vehicles (money) | Slots for sale are max minus base and never negative; a base above the max leaves the cap at the max and no next price |
+
+All seven carry a `RedProof()` hook; the batched run failed all seven (`RED PROOF OK (all 7 listed test(s) fail with the hook on)`).
+
+**Bug found and fixed:** `LF_VehiclePriceModel.ParseGuidKey` called `text.Trim();` and threw the result away (`Trim` returns the
+trimmed string), so an owner's vehicle price key with a blank around it (`" {54C3CC22DEBD57BE} "`) was read as "not a GUID"
+and the price was silently not applied. Now `text = text.Trim();`.
+
+Looked at and left alone: `LF_QuizController` (`LF_QuizFlow` talks to live controllers; the pure part is `LF_Quiz`, tested),
+`LF_LicenceGrant.ServerRun` (needs a connected player; its parse is `ParseLicence`, tested in round 2),
+`LF_DisconnectRules.RejoinReason` (a log sentence), `LF_ReputationOverlay` (a merge over pack files, covered by the pack
+overlay tests), `LF_VehicleHandover` and `LF_PlacementAim` (world and camera).
+
 ## Checked and already covered (no test added)
 
 `LF_DutyPay` (rank-change carry), `LF_FineTicket` (deadlines, late amount, desk payment), `LF_TreatmentBills` (issue, debt,
