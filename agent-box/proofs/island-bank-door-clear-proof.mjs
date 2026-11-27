@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
+import { graceOff } from "./_grace.mjs";
 
 // The Saint-Philippe bank's own interior door behind the vault door is hidden by the kit's boxed clear entry
 // (`Fit_saint_philippe_bank_clear_box1`), and nothing else of that prefab is: the other bank doors stay.
@@ -40,6 +41,7 @@ async function runIslandBankDoorClearProof() {
   }
 
   for (const n of [1, 2]) arrive(on, n, wait);
+  graceOff(on, dir, wait); // a fresh account is in its robbery grace: the vault rob would be refused
   wait(6000);
 
   // 2. a trace from inside the vault room through the doorway on its centre line, 1 m above the floor. The vanilla door's leaf stood
@@ -73,7 +75,14 @@ async function runIslandBankDoorClearProof() {
   on(1, { verb: "capture", mode: "ui", name: "bank_door_clear_before_c1" }, 25000);
   const give = on(1, { verb: "drill" }, 10000);
   check("drill given", give.status === "ok", give.status);
-  on(1, { verb: "hold", item: "LF_Drill" }, 10000);
+  wait(1500);
+  // The rob row wants the drill in the hands: a quick-slot press, repeated until `held=1` (a press toggles, so one that
+  // finds it held leaves it be).
+  for (let slotTry = 0; slotTry < 3; slotTry++) {
+    if (/held=1/.test(String(on(1, { verb: "quickslot", words: ["drill"] }, 10000).detail))) break;
+    on(1, { verb: "quickslot", words: ["drill", "press"] }, 10000);
+    wait(3000);
+  }
   wait(1500);
   const rob = on(1, { verb: "use", className: "LF_BankRobAction", entityName: VAULT }, 10000);
   check("vault drill action ok", rob.status === "ok", rob.status);

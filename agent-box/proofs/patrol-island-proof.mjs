@@ -72,7 +72,14 @@ async function runPatrolIslandProof() {
   check("the vault prompt reads on a remote client at the island bank", offer.status === "ok" && /server=0 /.test(offer.detail), offer.detail.slice(0, 160));
   on(1, { verb: "drill" }, 10000);
   wait(1000);
-  on(1, { verb: "hold", item: "LF_Drill" }, 10000);
+  wait(1500);
+  // The rob row wants the drill in the hands: a quick-slot press, repeated until `held=1` (a press toggles, so one that
+  // finds it held leaves it be).
+  for (let slotTry = 0; slotTry < 3; slotTry++) {
+    if (/held=1/.test(String(on(1, { verb: "quickslot", words: ["drill"] }, 10000).detail))) break;
+    on(1, { verb: "quickslot", words: ["drill", "press"] }, 10000);
+    wait(3000);
+  }
   wait(1500);
   const drill = on(1, { verb: "use", className: "LF_BankRobAction", entityName: VAULT }, 10000);
   check("client 1 starts drilling the Saint-Philippe vault", drill.status === "ok", `${drill.status} ${drill.detail.slice(0, 160)}`);

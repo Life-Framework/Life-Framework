@@ -8,7 +8,7 @@ import { ROOT, arrive, clientBox, newestLog, parseState, sessionDir, sessionPath
 // Client 1 (A) signs up at the Saint-Philippe duty desk (police.alphaInstantApproval approves on submit), clocks in,
 // unlocks a police UAZ outside the station (#3875, on-duty police only) while client 2 (B) is refused one. B tries the
 // fuel till inside the 30 minute grace (refused), the grace is set to 0 and B robs it (wanted). A asks for hands up,
-// B raises them, A cuffs, searches and arrests B (jail). A clocks out and is paid. Every step prints PASS or FAIL.
+// B raises them, A cuffs, searches and detains B for escort (the cell is the booking desk step). A clocks out and is paid. Every step prints PASS or FAIL.
 async function runIslandCopProof() {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
@@ -58,16 +58,24 @@ async function runIslandCopProof() {
   // 1. A joins the police at the desk and goes on duty.
   on(1, { verb: "stand", entityName: DESK });
   wait(2500);
-  on(1, { verb: "look" });
-  const open = on(1, { verb: "use", className: "LF_PoliceApplyAction", entityName: DESK }, 10000);
-  wait(1500);
-  on(1, { verb: "type", widget: "PolAppName", text: "Ada_Newcomer" });
-  on(1, { verb: "type", widget: "PolAppWhy", text: "Keep_Saint_Philippe_safe" });
-  on(1, { verb: "type", widget: "PolAppAvailability", text: "Evenings" });
-  on(1, { verb: "click", widget: "PolAppSubmit" });
-  wait(3000);
-  const approved = /approved on submit: police.alphaInstantApproval is on/.test(serverLog()) && /approved, added to the police roster/.test(serverLog());
-  step("1a A signs up at the desk, approved on submit (alpha switch)", open.status === "ok" && approved, `apply=${open.status} ${open.detail}; approval line in the server log: ${approved}`);
+  // The desk shows the Apply row only to an account that is not on the police roster (LF_PoliceApplyAction.CanBeShownScript).
+  // A session that seeds the roster (the whitelist seed, --roster) shows the Clock in row alone: then there is nothing to
+  // apply for, and the clock-in below is the proof.
+  const deskRows = String(on(1, { verb: "look" }).detail);
+  const onRoster = !/LF_PoliceApplyAction/.test(deskRows) && /LF_DutyAction/.test(deskRows);
+  if (onRoster) {
+    step("1a A is on the police roster already: the desk offers Clock in and hides Apply", true, "no application form to fill");
+  } else {
+    const open = on(1, { verb: "use", className: "LF_PoliceApplyAction", entityName: DESK }, 10000);
+    wait(1500);
+    on(1, { verb: "type", widget: "PolAppName", text: "Ada_Newcomer" });
+    on(1, { verb: "type", widget: "PolAppWhy", text: "Keep_Saint_Philippe_safe" });
+    on(1, { verb: "type", widget: "PolAppAvailability", text: "Evenings" });
+    on(1, { verb: "click", widget: "PolAppSubmit" });
+    wait(3000);
+    const approved = /approved on submit: police.alphaInstantApproval is on/.test(serverLog()) && /approved, added to the police roster/.test(serverLog());
+    step("1a A signs up at the desk, approved on submit (alpha switch)", open.status === "ok" && approved, `apply=${open.status} ${open.detail}; approval line in the server log: ${approved}`);
+  }
   const before = state(1);
   on(1, { verb: "look" });
   on(1, { verb: "use", className: "LF_DutyAction", entityName: DESK }, 10000);
@@ -153,20 +161,21 @@ async function runIslandCopProof() {
   wait(2500);
   step("4c A searches B", search.status === "ok", `${search.status} ${search.detail}`);
   shot(1, "4_search");
+  // The island's police take a cuffed suspect to the cell through the booking desk (booking-desk-proof, X-6 hour 8) or by
+  // escort: LF_JailArrestAction, the instant arrest, is not offered on the island any more (the look list shows
+  // LF_JailEscortArrestAction, which detains for escort and starts no sentence).
   let arrest;
   for (let i = 0; i < 4; i++) {
     on(1, { verb: "look" });
-    arrest = on(1, { verb: "use", className: "LF_JailArrestAction", entityName: suspect }, 10000);
+    arrest = on(1, { verb: "use", className: "LF_JailEscortArrestAction", entityName: suspect }, 10000);
     if (arrest.status === "ok") break;
     wait(2000);
   }
   wait(5000);
 
-  // 5. B is in jail and the sentence runs.
-  const j1 = Number(state(2).jail) || 0;
-  wait(12000);
-  const j2 = Number(state(2).jail) || 0;
-  step("5 B is jailed and the sentence counts down", j1 > 0 && j2 < j1, `arrest=${arrest.status} ${arrest.detail}; jail ${j1} -> ${j2}`);
+  // 5. B is detained for escort: still cuffed, no sentence yet (the cell is the booking desk's step).
+  const detained = state(2);
+  step("5 B is detained for escort: still cuffed, the sentence waits for the booking", arrest.status === "ok" && String(detained.cuffed) === "1" && (Number(detained.jail) || 0) === 0, `escort=${arrest.status} ${arrest.detail}; cuffed=${detained.cuffed} jail=${detained.jail}`);
   shot(2, "5_cell");
 
   // 6. A clocks out at the desk and is paid.
