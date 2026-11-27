@@ -140,7 +140,7 @@ class LF_VehiclePriceModel
 	static bool ParseGuidKey(string key, out string guid)
 	{
 		string text = key;
-		text.Trim();
+		text = text.Trim();
 		if (text.StartsWith("{") && text.EndsWith("}"))
 			text = text.Substring(1, text.Length() - 2);
 
