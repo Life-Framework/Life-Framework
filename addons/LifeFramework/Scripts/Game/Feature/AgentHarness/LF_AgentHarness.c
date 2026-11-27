@@ -336,6 +336,9 @@ class LF_AgentCommand
 		{
 			if (parts.Count() > 2)
 				cmd.PosX = parts[2].ToFloat();
+			// seen <radius> <item>: also count the loose copies of that prefab file name (the shelf read).
+			if (parts.Count() > 3)
+				cmd.Arg1 = parts[3];
 			return true;
 		}
 		if (cmd.Verb == "perf")
@@ -1640,7 +1643,7 @@ class LF_AgentHarness
 		}
 		if (cmd.Verb == "seen")
 		{
-			WriteResult(cmd.Id, "ok", LF_HarnessSeen.Read(cmd.PosX));
+			WriteResult(cmd.Id, "ok", LF_HarnessSeen.Read(cmd.PosX, cmd.Arg1));
 			return;
 		}
 		if (cmd.Verb == "perf")
