@@ -10,6 +10,7 @@
 // This counts the initializers under addons/ (`static T s_x = ...;`, not `static const`) and
 //   - warns at WARN (200), prints the headroom to FAIL,
 //   - fails above CAP (250), naming the files that gained the most since origin/main.
+// Test fixtures under Scripts/Game/Tests count too: they compile into the same module (a selftest scratch tree is never scanned).
 // Fix: initialize lazily in the accessor (`if (!s_x) s_x = new ...;`), or use an LF_StaticResetHook (no initializer).
 //
 //   node tools/validation/validate-static-init-budget.mjs
