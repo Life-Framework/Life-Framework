@@ -133,8 +133,13 @@ class LF_SignComponent : ScriptComponent
 	[Attribute(ResourceName.Empty, UIWidgets.ResourcePickerThumbnail, "Price board: the lot offer's vehicle prefab (LF_VehicleOffer.m_sPrefab) whose price is shown", "et")]
 	protected ResourceName m_PriceVehicle;
 
+	[Attribute("", UIWidgets.EditComboBox, "Sale signs: the sign id the face and the Read card switch to once the house or plot this prop sells is owned (LF_HouseSaleComponent, LF_PlotComponent on the same prop). Empty: the face never changes. The m_sSignId stays the place and quest id either way")]
+	protected string m_sSoldSignId;
+
 	protected ref LF_SignDef m_Sign;
 	protected bool m_bResolved;
+	//! Whether m_Sign was resolved for the sold state; a change of state resolves again.
+	protected bool m_bResolvedSold;
 
 	protected ref LF_SignStyledFace m_StyledFace;
 	protected ref LF_SignStyledFace m_BackFace;
@@ -171,11 +176,24 @@ class LF_SignComponent : ScriptComponent
 	//! The configured sign, or null. Resolved once; a miss logs once and the Read action hides.
 	LF_SignDef GetSign()
 	{
-		if (m_bResolved)
+		bool sold = IsSold();
+		if (m_bResolved && sold == m_bResolvedSold)
 			return m_Sign;
 
 		m_bResolved = true;
-		LF_SignDef sign = LF_SignCatalog.Find(m_sSignId);
+		m_bResolvedSold = sold;
+		m_Sign = null;
+		LF_SignDef sign;
+		if (sold)
+		{
+			sign = LF_SignCatalog.Find(m_sSoldSignId);
+			if (!LF_SignCatalog.IsUsable(sign))
+				LF_Debug.Error("Signs", string.Format("sold sign id '%1' has no titled entry in LF_Signs.conf; the for-sale face stays on %2", m_sSoldSignId, GetOwner().GetOrigin()));
+		}
+
+		if (!LF_SignCatalog.IsUsable(sign))
+			sign = LF_SignCatalog.Find(m_sSignId);
+
 		if (!LF_SignCatalog.IsUsable(sign))
 		{
 			LF_Debug.Error("Signs", string.Format("sign id '%1' has no titled entry in LF_Signs.conf; Read hidden at %2", m_sSignId, GetOwner().GetOrigin()));
@@ -191,6 +209,50 @@ class LF_SignComponent : ScriptComponent
 
 		m_Sign = sign;
 		return m_Sign;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when the house or plot a sale component on this prop sells has an owner (the
+	//! replicated flag, so a client reads it too). False for a prop with no sale component.
+	static bool OwnerSold(IEntity owner)
+	{
+		if (!owner)
+			return false;
+
+		LF_HouseSaleComponent house = LF_Component<LF_HouseSaleComponent>.Find(owner);
+		if (house)
+			return house.IsOwned();
+
+		LF_PlotComponent plot = LF_Component<LF_PlotComponent>.Find(owner);
+		return plot && plot.IsOwned();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when this sign is a sale sign (m_sSoldSignId) whose house or plot is owned: it then
+	//! prints and reads as the sold sign.
+	bool IsSold()
+	{
+		return !m_sSoldSignId.IsEmpty() && OwnerSold(GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sale component's owned flag changed (the server's sale, a client's replicated copy): the face
+	//! prints again with the sign it is now. Before the first print nothing is drawn, and the print that
+	//! follows reads the new state.
+	void OnSaleChanged()
+	{
+		if (m_sSoldSignId.IsEmpty())
+			return;
+
+		bool sold = IsSold();
+		if (m_bResolved && sold != m_bResolvedSold)
+			m_bResolved = false;
+
+		if (!m_wFaceRoot && !m_StyledFace)
+			return;
+
+		ClearFace();
+		BuildFace();
 	}
 
 	//------------------------------------------------------------------------------------------------
