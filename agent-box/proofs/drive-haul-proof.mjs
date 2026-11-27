@@ -8,8 +8,12 @@ import { driveAndFollow, kv, yes } from "./drive-proof.mjs";
 // The truck haul on the hardwood stand with the truck DRIVEN (#5044's `vehicle` and `drive`), not set down by `parkat`.
 // Straight after `truck-check-proof` (it buys the first truck row at the truck yard; one client on `up --mission island
 // --profile full --hold 20`):
-//   node agent-box/session.mjs truck-check-proof
+//   node agent-box/session.mjs truck-check-proof --truck Ural
 //   node agent-box/session.mjs drive-haul-proof [--trees N] [--no-merchant]
+// The truck must be the Ural: `truck-check-proof` buys the first row the account can pay, which is the M923A1 for an
+// account with checkpoint-10 money (the RC order) and the Ural for a fresh one. The driven M923A1 leaves the yard and
+// reaches the woodlot but sticks among the woodlot sheds on the way to a tree (rc dry runs 4 to 6, 2026-11-27), so the
+// proof says which truck it drives and fails with that hint rather than passing a truck it was not built for.
 //   0 the truck is driven from the truck yard to the woodlot by road (the first leg, not part of a cycle)
 //   1 the truck is driven off the road to a standing hardwood tree, the tree is felled, each log is hoisted and loaded
 //   2 the full truck is driven back to the saw by road, unloaded, every log sawn, the boards sold at the woodlot
@@ -32,6 +36,12 @@ const MERCHANT_PARK = [4519, 10640];
 // and the point just inside the yard gate the one clear line from it reaches.
 const TRUCK_PAD = [5064, 10849];
 const YARD_GATE_OUT = [5019, 10849];
+// `parkat` this far ahead of the lot sets a truck down at 5064.6, 10844.3: 5 m from the pad a bought truck stands on.
+const YARD_LOT = "Fit_ne_compound_truckyard_lot";
+const YARD_PARK_METRES = "22";
+// A truck within this of the saw pad (4352, 10640) is one this proof drove there by road; farther off in the woodlot it was placed.
+const ON_PAD_M = 12;
+const WOODLOT_M = 150;
 const JOG_MPS = 4.5;
 const LOADED_MPS = 4.5 * 0.5;
 const BED_UNITS = 12;
@@ -48,6 +58,13 @@ export function parseEconomy(text) {
   return m ? { steady: Number(m[1]), first: Number(m[2]) } : null;
 }
 
+// True for a truck inside the woodlot but not on the saw pad: set down there by `parkat`, not driven in by road.
+export function restageNeeded(at) {
+  if (!at) return false;
+  const d = Math.hypot(at[0] - SAW_PARK[0], at[2] - SAW_PARK[1]);
+  return d < WOODLOT_M && d > ON_PAD_M;
+}
+
 export function posOf(detail) {
   const m = /pos=(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/.exec(String(detail));
   return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : null;
@@ -58,6 +75,7 @@ function selftest() {
   if (dollarsPerHour(100, 15) !== 400 || dollarsPerHour(5, 0) !== 0) f.push("dollars per hour");
   if (parseEconomy("  LOOP truck hardwood -> boards, firewood: ~45.6 logs/h, steady $742/h, first hour $786/h; duty")?.steady !== 742) f.push("economy row");
   if (posOf("seat=pilot pos=1.5,2,-3 speed=0")?.join() !== "1.5,2,-3") f.push("posOf");
+  if (!restageNeeded([4333, 14, 10632]) || restageNeeded([4352, 14, 10640]) || restageNeeded([4356, 14, 10644]) || restageNeeded([5064, 27, 10849]) || restageNeeded(null)) f.push("restageNeeded: parkat pose yes, saw pad no, yard no");
   const t = stuckTally([{ status: "arrived" }, { status: "close" }, { status: "stuck" }, { status: "timeout" }]);
   if (t.arrived !== 1 || t.close !== 1 || t.stuck !== 2 || !reached({ status: "close" }) || reached({ status: "stuck" })) f.push("stuck tally");
   for (const x of f) console.log(`FAIL  ${x}`);
@@ -174,11 +192,25 @@ async function run(args) {
     on({ verb: "stand", entityName: "Fit_ne_compound_truckyard_lot" });
     wait(1500);
   }
-  const spawn = truckAt();
+  let spawn = truckAt();
+  // A truck that `truck-haul-proof` set down beside the saw (`parkat`, the RC order) stands in the woodlot's wood piles
+  // and sheds, off the road: `drive road` finds no path from there and the straight drive stalls on the pile (rc dry runs
+  // 4 to 6, and the Ural in the RC order, 2026-11-27). A player's truck gets to the saw by the road, so the proof puts
+  // it back on the yard pad and drives leg 0 as it does after `truck-check-proof` alone. Only a truck standing within
+  // `ON_PAD_M` of the saw pad (one this proof drove there) is left where it is.
+  if (restageNeeded(spawn)) {
+    const re = on({ verb: "parkat", words: [YARD_LOT, YARD_PARK_METRES] }, 15000);
+    wait(2500);
+    spawn = truckAt() ?? spawn;
+    console.log(`RESTAGE the truck stood at the woodlot off the pad: parkat ${YARD_LOT} -> ${re.status}, now at ${spawn.map((v) => v.toFixed(0)).join(",")}`);
+    world("drive_haul_yard", spawn[0], spawn[1], spawn[2], 4, 0.4, 0);
+    wait(1500);
+  }
   const enter0 = on({ verb: "vehicle", words: ["enter", "driver", `at=${spawn[0]},${spawn[2]}`, "r=15"] }, 15000);
   wait(1500);
   const seat0 = kv(on({ verb: "vehicle", words: ["state"] }).detail);
   step("0a the character sits at the wheel of the bought truck and owns it", enter0.status === "ok" && seat0.seat === "pilot" && yes(seat0.owner), `${enter0.status} seat=${seat0.seat} owner=${seat0.owner} veh=${seat0.veh} pos=${seat0.pos}`);
+  if (/M923A1/.test(String(seat0.veh))) console.log("NOTE  the truck is the M923A1 (a rich account's first yard row): the driven legs are known to stick among the woodlot sheds with it; buy the Ural with `truck-check-proof --truck Ural`");
   // The key row: unlock it from the seat if the lock row is there (the cargo bed follows the vehicle lock).
   const lockUse = on({ verb: "use", className: "LF_VehicleLockAction" }, 10000);
   wait(1500);
