@@ -14,6 +14,9 @@ class LF_NamedPlaces
 	//! How far from a position a location still names it, metres on the ground plane.
 	static const float DEFAULT_RADIUS = 600;
 
+	//! How far a settlement label still names a place, metres: a town is wider than one building.
+	static const float SETTLEMENT_RADIUS = 1500;
+
 	//------------------------------------------------------------------------------------------------
 	//! \param pos World position to name
 	//! \param maxRadius Farthest a location may be from pos and still count, metres
@@ -29,8 +32,55 @@ class LF_NamedPlaces
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The editable location entity nearest to pos within maxRadius, or null.
-	protected static SCR_EditableEntityComponent FindNearest(vector pos, float maxRadius)
+	//! The name of the nearest settlement (city, town, village or settlement label), skipping the
+	//! labels of a factory, farm, harbour or other single site. A place's town on the map reads from
+	//! this, so a clerk beside a factory still sits in its settlement.
+	//! \param pos World position to name
+	//! \param maxRadius Farthest a settlement may be from pos, metres on the ground plane
+	//! \return The settlement's display name (usually a `#` key), or empty when none is that close.
+	static string NearestSettlement(vector pos, float maxRadius = SETTLEMENT_RADIUS)
+	{
+		SCR_EditableEntityComponent location = FindNearest(pos, maxRadius, true);
+		if (!location)
+			return "";
+
+		return location.GetDisplayName();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True for the descriptor types that name a settlement: not a generic site label, not a local one.
+	static bool IsSettlementType(int type)
+	{
+		switch (type)
+		{
+			case EMapDescriptorType.MDT_NAME_CITY:
+			case EMapDescriptorType.MDT_NAME_VILLAGE:
+			case EMapDescriptorType.MDT_NAME_TOWN:
+			case EMapDescriptorType.MDT_NAME_SETTLEMENT:
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsSettlementLabel(SCR_EditableEntityComponent location)
+	{
+		IEntity owner = location.GetOwner();
+		if (!owner)
+			return false;
+
+		MapDescriptorComponent descriptor = MapDescriptorComponent.Cast(owner.FindComponent(MapDescriptorComponent));
+		if (!descriptor)
+			return false;
+
+		return IsSettlementType(descriptor.GetBaseType());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The editable location entity nearest to pos within maxRadius, or null. settlementOnly
+	//! keeps only the labels whose map descriptor is a settlement type.
+	protected static SCR_EditableEntityComponent FindNearest(vector pos, float maxRadius, bool settlementOnly = false)
 	{
 		SCR_EditableEntityCore core = SCR_EditableEntityCore.Cast(SCR_EditableEntityCore.GetInstance(SCR_EditableEntityCore));
 		if (!core)
@@ -51,6 +101,9 @@ class LF_NamedPlaces
 		foreach (SCR_EditableEntityComponent entity : entities)
 		{
 			if (!entity || entity.GetEntityType() != EEditableEntityType.COMMENT || !entity.HasEntityFlag(EEditableEntityFlag.LOCAL))
+				continue;
+
+			if (settlementOnly && !IsSettlementLabel(entity))
 				continue;
 
 			vector at;
