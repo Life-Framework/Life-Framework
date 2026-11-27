@@ -76,6 +76,14 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
     LF_ReviveAction "{F6F19446ACCE7688}" {
      ParentContextList {
       "LF_ID"
+      "default"
+      "Head"
+      "Chest"
+      "LowerTorso"
+      "LeftLeg"
+      "RightLeg"
+      "LeftArm"
+      "RightArm"
      }
      UIInfo UIInfo "{F065AB922FA3605C}" {
       Name "#LF-Revive_Action"
@@ -86,6 +94,14 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
     LF_LoadPatientAction "{6D1C0A1E7B3F4A04}" {
      ParentContextList {
       "LF_ID"
+      "default"
+      "Head"
+      "Chest"
+      "LowerTorso"
+      "LeftLeg"
+      "RightLeg"
+      "LeftArm"
+      "RightArm"
      }
      UIInfo UIInfo "{6D1C0A1E7B3F4A14}" {
       Name "#LF-Carry_Load"
