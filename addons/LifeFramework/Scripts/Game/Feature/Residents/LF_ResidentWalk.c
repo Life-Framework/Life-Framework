@@ -68,6 +68,9 @@ class LF_ResidentMover
 			return false;
 		}
 
+		// Session state: a saved group VMEs on load (SCR_AIGroupSerializer, no faction manager).
+		LF_WorldSaveHold.Hold(group);
+		LF_WorldSaveHold.Hold(waypoint);
 		walk.m_Group = group.GetID();
 		walk.m_Waypoint = waypoint.GetID();
 		waypoint.SetCompletionRadius(LF_ResidentWalk.WAYPOINT_RADIUS_M);

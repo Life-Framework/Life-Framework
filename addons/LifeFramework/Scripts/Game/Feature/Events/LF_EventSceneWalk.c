@@ -160,6 +160,8 @@ class LF_EventSceneWalk
 			return;
 		}
 
+		// A walk is session state: a saved group VMEs on load (SCR_AIGroupSerializer, no faction manager).
+		LF_WorldSaveHold.Hold(group);
 		m_GroupId = group.GetID();
 		foreach (vector point : m_aRoute)
 		{
@@ -170,6 +172,7 @@ class LF_EventSceneWalk
 				continue;
 			}
 
+			LF_WorldSaveHold.Hold(waypoint);
 			waypoint.SetCompletionRadius(ARRIVE_M);
 			m_aAiWaypoints.Insert(waypoint.GetID());
 		}
