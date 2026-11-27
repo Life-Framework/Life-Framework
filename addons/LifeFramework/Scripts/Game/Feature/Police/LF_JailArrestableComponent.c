@@ -31,6 +31,7 @@ class LF_JailArrestableComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 class LF_JailArrestableComponent : ScriptComponent
 {
+	// lf-fixed: poll cadence of a loop, not a balance value
 	protected static const int TICK_MS = 1000;
 
 	//! LF_JailEscort.Tick is process-global: one live arrestable hosts it. When the host is

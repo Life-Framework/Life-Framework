@@ -573,7 +573,7 @@ class LF_TermBook
 
 	//------------------------------------------------------------------------------------------------
 	//! Writes the owner text for the client stream, in the shape ApplyOwner reads back.
-	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	void WriteStream(notnull JsonSaveContext ctx)
 	{
 		foreach (string id, map<string, string> forms : m_mOwner)
 		{

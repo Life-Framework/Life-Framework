@@ -6,7 +6,7 @@
 //! section, and asks the pack source which `.conf` overlays sit on a core resource. Each feature
 //! applies the layers to its own config instance (shops: LF_ShopPricesConfig.ApplyLayers).
 //!
-//! The engine parses the JSON (SCR_JsonLoadContext); LF_ConfigReader reads it key by key. The
+//! The engine parses the JSON (JsonLoadContext); LF_ConfigReader reads it key by key. The
 //! engine's class reader is not used: it cannot tell a missing field from a default, silently
 //! drops a value of the wrong type, and crashes on a list element that is not an object
 //! (LF_Test_ConfigJsonProbe and Core/Config/Feature.md).
@@ -130,8 +130,8 @@ class LF_ConfigService
 		s_eSchemaStatus = LF_EConfigSchemaStatus.NONE;
 		s_bLoaded = true;
 
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
-		if (!ctx.ImportFromString(json))
+		JsonLoadContext ctx = new JsonLoadContext(false);
+		if (!ctx.LoadFromString(json))
 		{
 			LF_Debug.Error(FEATURE, string.Format("%1 is not valid JSON; every section uses the shipped defaults", source));
 			return false;
@@ -241,8 +241,8 @@ class LF_ConfigService
 	//! \param[in] json The whole owner document.
 	static int WarnUnknownSections(string json, string source)
 	{
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
-		if (!ctx.ImportFromString("{\"doc\":" + json + "}"))
+		JsonLoadContext ctx = new JsonLoadContext(false);
+		if (!ctx.LoadFromString("{\"doc\":" + json + "}"))
 			return 0;
 
 		array<string> keys = {};
@@ -295,8 +295,8 @@ class LF_ConfigService
 		if (s_sOwnerJson.IsEmpty())
 			return null;
 
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
-		if (!ctx.ImportFromString(s_sOwnerJson))
+		JsonLoadContext ctx = new JsonLoadContext(false);
+		if (!ctx.LoadFromString(s_sOwnerJson))
 			return null;
 
 		LF_EConfigJsonKind kind = LF_ConfigReader.KindOf(ctx, section);
@@ -459,7 +459,7 @@ enum LF_EConfigJsonKind
 //------------------------------------------------------------------------------------------------
 class LF_ConfigReader
 {
-	protected ref SCR_JsonLoadContext m_Ctx;
+	protected ref JsonLoadContext m_Ctx;
 	protected ref array<string> m_aPath = {};
 	protected ref array<string> m_aRecordKeys = {};
 	//! The keys of each open object, innermost last, listed before it was entered.
@@ -471,7 +471,7 @@ class LF_ConfigReader
 	//------------------------------------------------------------------------------------------------
 	//! Opens the named section of a document whose cursor is at the root. The caller has checked
 	//! with KindOf that it is an object.
-	void LF_ConfigReader(SCR_JsonLoadContext ctx, string section)
+	void LF_ConfigReader(JsonLoadContext ctx, string section)
 	{
 		m_Ctx = ctx;
 		m_aPath.Insert(section);
@@ -483,7 +483,7 @@ class LF_ConfigReader
 	//! Lists the keys of an object in file order without entering it; an empty name lists the root.
 	//! Call it only on an object (KindOf says OBJECT): the engine crashes on some other kinds.
 	//! \return True when the engine listed them.
-	static bool ListKeys(notnull SCR_JsonLoadContext ctx, string name, notnull array<string> keys)
+	static bool ListKeys(notnull JsonLoadContext ctx, string name, notnull array<string> keys)
 	{
 		keys.Clear();
 		int count;
@@ -567,7 +567,7 @@ class LF_ConfigReader
 
 	//------------------------------------------------------------------------------------------------
 	//! Classifies one key of the open object without moving the cursor.
-	static LF_EConfigJsonKind KindOf(notnull SCR_JsonLoadContext ctx, string key)
+	static LF_EConfigJsonKind KindOf(notnull JsonLoadContext ctx, string key)
 	{
 		if (!ctx.DoesKeyExist(key))
 			return LF_EConfigJsonKind.ABSENT;

@@ -173,6 +173,7 @@ class LF_FineTickets
 {
 	static const string FEATURE = "Ticket";
 	static const string OFFENCE_UNPAID = "#LF-Offence_UnpaidFine";
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int TICK_MS = 1000;
 
 	protected static ref array<ref LF_FineTicketRecord> s_aTickets;

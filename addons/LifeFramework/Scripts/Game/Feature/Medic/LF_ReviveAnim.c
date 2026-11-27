@@ -35,6 +35,7 @@ class LF_ReviveAnim
 	static const string FEATURE = "Medic";
 	static const float HOLD_SECONDS = 4;
 	static const float MAX_SECONDS = 7;
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int WATCH_MS = 400;
 
 	protected static ref array<ref LF_ReviveAnimSession> s_aSessions = {};
@@ -294,6 +295,7 @@ class LF_ReviveAnimPlayer
 	//! The value of Gestures that enters the CPR state of LF_ReviveCPR.agf.
 	static const int CONTROL_VALUE = 560;
 	//! How long a machine waits before it checks what it shows.
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int CHECK_MS = 1500;
 	//! Model-space head height under which the medic counts as kneeling (standing is about 1.6 m).
 	static const float KNEEL_HEAD_MAX = 1.3;

@@ -150,7 +150,7 @@ ordering. Steps that read the document must keep the `KindOf`-first rule above.
 
 ## Why the engine parses and the reader is hand-written (the #278 probe)
 
-`LF_Test_ConfigJsonProbe` pins what `SCR_JsonLoadContext` does:
+`LF_Test_ConfigJsonProbe` pins what `JsonLoadContext` does:
 
 - **Wrong type:** `ReadValue` returns false and leaves the target untouched;
   the context stays usable. No coercion (`"12"` and `12.0` do not read as int).

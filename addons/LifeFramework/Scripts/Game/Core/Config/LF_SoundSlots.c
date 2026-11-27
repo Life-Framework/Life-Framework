@@ -338,7 +338,7 @@ class LF_SoundSlots
 		foreach (LF_SoundSlot extra : layered.m_aSlots)
 		{
 			if (extra && !core.Find(extra.m_sSlot))
-				LF_Debug.Warn(FEATURE, string.Format("slot '%1' is not a core slot; nothing asks for it, ignored", extra.m_sSlot));
+				LF_Debug.Info(FEATURE, string.Format("slot '%1' is pack-only (not a core slot); only an entity or config that names it reads it (the radio props name atmo_*_radio)", extra.m_sSlot));
 		}
 	}
 }

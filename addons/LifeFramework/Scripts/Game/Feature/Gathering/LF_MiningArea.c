@@ -30,6 +30,7 @@ class LF_MiningArea : GenericEntity
 	static const string SYSTEM = "Mining";
 
 	protected WorldTimestamp m_NextRespawn;
+	// lf-fixed: unit conversion, minutes to milliseconds
 	private const int MIN_TO_MS = 60000;
 
 	//------------------------------------------------------------------------------------------------

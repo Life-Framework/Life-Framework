@@ -54,8 +54,10 @@ class LF_Stores
 	{
 		return LF_PrefabSlots.Get(SLOT_RECEIPT);
 	}
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int TICK_MS = 500;
 	//! A fresh shelf is filled this long after the store appears, once the world has settled.
+	// lf-fixed: UI sequencing delay (let the engine settle before the next step), not a balance value
 	static const int FILL_DELAY_MS = 2000;
 
 	protected static ref array<ref LF_StoreUnpaidItem> s_aUnpaid;

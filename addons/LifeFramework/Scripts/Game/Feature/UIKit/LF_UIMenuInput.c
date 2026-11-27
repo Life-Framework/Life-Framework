@@ -17,6 +17,7 @@ enum LF_EUIMenuInput
 
 class LF_UIMenuInput
 {
+	// lf-fixed: input debounce, an interaction-feel constant, not a balance value
 	static const float DEBOUNCE_MS = 150;
 
 	protected ref map<string, float> m_mStampMs = new map<string, float>();

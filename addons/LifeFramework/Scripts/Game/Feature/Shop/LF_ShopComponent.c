@@ -924,7 +924,15 @@ class LF_ShopComponent : ScriptComponent
 
 		LF_ShopCatalogItem source = manager.GetItem(prefab);
 		if (source)
+		{
+			// The catalog built this row's name without the pack-key probe; the first row shown pays for it.
+			if (!source.m_bNameResolved)
+			{
+				source.m_sDisplayName = LF_ShopManagerComponent.ResolveDisplayName(prefab);
+				source.m_bNameResolved = true;
+			}
 			return source;
+		}
 
 		LF_ShopCatalogItem item = new LF_ShopCatalogItem();
 		item.m_ItemPrefab = prefab;

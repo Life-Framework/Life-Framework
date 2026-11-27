@@ -37,8 +37,8 @@ class LF_Test_MapPlacesLayout : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
-		SCR_JsonLoadContext table = new SCR_JsonLoadContext(false);
-		bool parsed = table.ImportFromString(LF_MapClusterCasesData.Json());
+		JsonLoadContext table = new JsonLoadContext(false);
+		bool parsed = table.LoadFromString(LF_MapClusterCasesData.Json());
 		ctx.True(parsed, "the shared case table is valid JSON");
 		if (parsed)
 			RunCases(ctx, table);
@@ -50,7 +50,7 @@ class LF_Test_MapPlacesLayout : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void RunCases(LF_TestContext ctx, SCR_JsonLoadContext json)
+	protected void RunCases(LF_TestContext ctx, JsonLoadContext json)
 	{
 		array<ref LF_Test_MapClusterCase> cases = {};
 		ctx.True(json.ReadValue("cases", cases), "the table's cases read");

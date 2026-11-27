@@ -24,6 +24,7 @@ class LF_Downed
 	static const int ABSORB = 2;
 
 	//! Smallest damage a lethal hit still deals (health points).
+	// lf-fixed: numeric epsilon so a lethal hit always cuts health, not a balance value
 	static const float MIN_LETHAL_CUT = 0.01;
 
 	//! Shortest gap between two absorbed-hit log lines for one body (ms).

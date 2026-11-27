@@ -16,6 +16,7 @@
 class LF_FilmPacer : Managed
 {
 	//! A frame slower than this counts as a stall.
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int STALL_MS = 100;
 
 	protected int m_iIntervalMs;

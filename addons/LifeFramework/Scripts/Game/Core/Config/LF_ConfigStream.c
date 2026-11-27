@@ -65,7 +65,7 @@ class LF_ConfigStream
 	//! \return The payload text.
 	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null, LF_PoliceConfig police = null, LF_OrgConfig organizations = null, map<string, string> devCaptions = null, LF_ItemCatalogueConfig catalogue = null, bool systems = false, LF_TermBook terms = null, LF_HousesConfig houses = null)
 	{
-		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext(false);
+		JsonSaveContext ctx = new JsonSaveContext(false);
 		ctx.WriteValue(KEY_FORMAT, FORMAT_VERSION);
 		ctx.WriteValue(KEY_SCHEMA, LF_ConfigService.SCHEMA_VERSION);
 		ctx.WriteValue(KEY_OWNER, ownerLayer);
@@ -123,7 +123,7 @@ class LF_ConfigStream
 			houses.WriteStream(ctx);
 			ctx.EndObject();
 		}
-		return ctx.ExportToString();
+		return ctx.SaveToString();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -220,8 +220,8 @@ class LF_ConfigStream
 			return LF_EConfigStreamStatus.BAD_HASH;
 		}
 
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
-		if (!ctx.ImportFromString(payload))
+		JsonLoadContext ctx = new JsonLoadContext(false);
+		if (!ctx.LoadFromString(payload))
 		{
 			LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("stream: %1 bytes from the server are not valid JSON; keeping the current config values", payload.Length()));
 			return LF_EConfigStreamStatus.BAD_JSON;
@@ -356,8 +356,8 @@ class LF_ConfigStream
 		if (!s_bReceived)
 			return null;
 
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
-		if (!ctx.ImportFromString(s_sReceived))
+		JsonLoadContext ctx = new JsonLoadContext(false);
+		if (!ctx.LoadFromString(s_sReceived))
 			return null;
 
 		LF_EConfigJsonKind kind = LF_ConfigReader.KindOf(ctx, section);

@@ -173,6 +173,7 @@ class LF_Lockpick
 {
 	static const string FEATURE = "Lockpick";
 	static const ResourceName PICK_PREFAB = "{6B1D3F5A92C47E08}Prefabs/Items/Fence/LF_Lockpick.et";
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const float TICK_SECONDS = 0.5;
 	//! The user must stay this close to the door (metres) or the attempt is dropped.
 	static const float MAX_DISTANCE = 4;

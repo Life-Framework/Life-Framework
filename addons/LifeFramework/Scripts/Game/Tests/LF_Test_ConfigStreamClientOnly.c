@@ -26,8 +26,8 @@ class LF_Test_ConfigStreamClientOnly : LF_Test
 		ctx.Equal(61, config.m_iDefaultBuyPrice, "the owner value applies on the server");
 
 		string payload = LF_ConfigStream.BuildPayload(config, LF_ConfigService.HasOwnerLayer());
-		SCR_JsonLoadContext doc = new SCR_JsonLoadContext(false);
-		ctx.True(doc.ImportFromString("{\"doc\":" + payload + "}"), "the payload parses");
+		JsonLoadContext doc = new JsonLoadContext(false);
+		ctx.True(doc.LoadFromString("{\"doc\":" + payload + "}"), "the payload parses");
 
 		array<string> keys = {};
 		LF_ConfigReader.ListKeys(doc, "doc", keys);

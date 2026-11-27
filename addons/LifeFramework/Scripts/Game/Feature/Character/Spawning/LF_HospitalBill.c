@@ -276,6 +276,7 @@ class LF_HospitalBill
 //! What the holder sees on the bill. Client-only, on LF_UIScreen.
 class LF_HospitalBillCard
 {
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float CLOSE_DISTANCE = 4;
 
 	protected static ref LF_UIScreen s_Screen;

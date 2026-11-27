@@ -143,6 +143,7 @@ class LF_CharacterCreationManager : Managed
 	//! Strong ref: the singleton owns itself (the game mode keeps no field for it).
 	protected static ref LF_CharacterCreationManager s_Instance;
 
+	// lf-fixed: poll cadence of a loop, not a balance value
 	protected const int FLOW_POLL_DELAY_MS = 100;
 	// lf-fixed: Workbench fast play waits this long for the control hand-over before the ID card
 	protected const int FAST_PLAY_CARD_DELAY_MS = 1000;

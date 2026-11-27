@@ -72,7 +72,7 @@ class LF_ShopPricesConfig
 	//! visible (the price list shows it). Rules are keyed "0".."n-1", not by RuleKey: prefab rules
 	//! share a key, and ApplyStream replaces the list instead of merging it.
 	//! \param[in] ctx A save context with this section's object open.
-	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	void WriteStream(notnull JsonSaveContext ctx)
 	{
 		ctx.WriteValue("defaultBuyPrice", m_iDefaultBuyPrice);
 		ctx.WriteValue("defaultSellPrice", m_iDefaultSellPrice);

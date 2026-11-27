@@ -124,8 +124,11 @@ class LF_Jail
 	static const string PLACE_ID = "cell";
 
 	static const int RELEASE_DOOR_OPEN_MS = 5000;
+	// lf-fixed: UI sequencing delay (let the engine settle before the next step), not a balance value
 	static const int RELEASE_TOAST_DELAY_MS = 1500;
+	// lf-fixed: retry bound or retry delay of an engine-readiness wait, not a balance value
 	static const int DISMOUNT_RETRY_MS = 250;
+	// lf-fixed: retry bound or retry delay of an engine-readiness wait, not a balance value
 	static const int DISMOUNT_MAX_TRIES = 20;
 	//! Metres past the cell zone a body still counts as in the cell when the cells are blown.
 	static const float FREE_MARGIN_M = 2.0; // lf-fixed: the blast reaches a prisoner at the bars

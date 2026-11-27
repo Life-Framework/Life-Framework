@@ -42,6 +42,7 @@ class LF_WorkAnim
 	static const float MAX_RANGE = 5;
 	static const float SLACK_SECONDS = 2;
 	static const float DRILL_SECONDS = 6;
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int WATCH_MS = 400;
 
 	protected static ref array<ref LF_WorkAnimSession> s_aSessions = {};
@@ -262,6 +263,7 @@ class LF_WorkAnimPlayer
 	static const ResourceName CARRY_POSE = "{C890BDCEDBF3E5FD}Anims/LF/Work/LF_WorkCarry.asi";
 	static const ResourceName SWEEP_POSE = "{C257681AE3F241E1}Anims/LF/Work/LF_WorkSweep.asi";
 	//! How long a machine waits before it checks what it shows.
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int CHECK_MS = 1500;
 
 	//------------------------------------------------------------------------------------------------

@@ -16,6 +16,7 @@ class LF_DevGameMaster
 
 	// BASE is rewritten by the core right after it raises Event_OnEditorManagerCreatedServer, so the
 	// grant waits a short moment and re-resolves the manager by player id.
+	// lf-fixed: UI sequencing delay (let the engine settle before the next step), not a balance value
 	static const int GRANT_DELAY_MS = 500;
 
 	protected static bool s_bInstalled;

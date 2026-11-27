@@ -535,6 +535,7 @@ class LF_FilmDirector
 	protected static const string PLACE_KIND_TILL = "FilmTill";
 	protected static const ResourceName CHARACTER = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
 	protected static const ResourceName CAR = "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et";
+	// lf-fixed: poll cadence of a loop, not a balance value
 	protected static const float TICK_MS = 100;
 	protected static const float MAX_SECONDS = 90;
 

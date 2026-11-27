@@ -20,8 +20,8 @@ class LF_Test_MapAreas : LF_Test
 	{
 		string text = ReadCases();
 		ctx.True(!text.IsEmpty(), "the shared case table is in the script");
-		SCR_JsonLoadContext json = new SCR_JsonLoadContext(false);
-		ctx.True(json.ImportFromString(text), "the shared case table parses");
+		JsonLoadContext json = new JsonLoadContext(false);
+		ctx.True(json.LoadFromString(text), "the shared case table parses");
 
 		float tolerance = 0.011;
 		json.ReadValue("tolerance", tolerance);
@@ -61,7 +61,7 @@ class LF_Test_MapAreas : LF_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! The reader is inside "input"; this closes it and "expect", and leaves the reader in the case object.
-	protected void RunOutlineCase(LF_TestContext ctx, SCR_JsonLoadContext json, string name, float tolerance)
+	protected void RunOutlineCase(LF_TestContext ctx, JsonLoadContext json, string name, float tolerance)
 	{
 		string shape = string.Empty;
 		string pointsText = string.Empty;
@@ -143,7 +143,7 @@ class LF_Test_MapAreas : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void RunStyleCase(LF_TestContext ctx, SCR_JsonLoadContext json, string name)
+	protected void RunStyleCase(LF_TestContext ctx, JsonLoadContext json, string name)
 	{
 		string kind = string.Empty;
 		json.ReadValue("kind", kind);
@@ -181,7 +181,7 @@ class LF_Test_MapAreas : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void RunRuleCase(LF_TestContext ctx, SCR_JsonLoadContext json, string name)
+	protected void RunRuleCase(LF_TestContext ctx, JsonLoadContext json, string name)
 	{
 		string ruleName = string.Empty;
 		json.ReadValue("rule", ruleName);

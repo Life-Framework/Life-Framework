@@ -1,7 +1,4 @@
 {
- "addons/LifeFramework/Scripts/Game/Tests/LF_Test_ArrivalChain.c": [
-  "coord:134,243"
- ],
  "addons/LifeFramework/Scripts/Game/Tests/LF_Test_DialogueClerk.c": [
   "coord:134,243",
   "coord:135,243"
@@ -70,7 +67,6 @@
  "agent-box/proofs/bed-proof.mjs": [
   "coord:269,261",
   "name:Hospital_Bed_2",
-  "name:Roadmap_Hospital_Ambulance",
   "name:Roadmap_Hospital_Duty_Desk"
  ],
  "agent-box/proofs/bill-proof.mjs": [
@@ -129,7 +125,6 @@
  "agent-box/proofs/downed-patient-proof.mjs": [
   "coord:267,250",
   "name:Hospital_Bed_2",
-  "name:Roadmap_Hospital_Ambulance",
   "name:Roadmap_Hospital_Duty_Desk"
  ],
  "agent-box/proofs/downed-proof.mjs": [
@@ -238,7 +233,6 @@
   "name:Roadmap_Org_Desk"
  ],
  "agent-box/proofs/paper-ground-proof.mjs": [
-  "name:Roadmap_Fuel_Counter",
   "name:Roadmap_Police_Desk"
  ],
  "agent-box/proofs/parcel-drop-proof.mjs": [
@@ -293,9 +287,6 @@
  ],
  "agent-box/proofs/restore-roundtrip-proof.mjs": [
   "name:Bank_Teller"
- ],
- "agent-box/proofs/retheme-proof.mjs": [
-  "name:Roadmap_Police_Desk"
  ],
  "agent-box/proofs/revive-anim-proof.mjs": [
   "name:Roadmap_Hospital_Duty_Desk"
@@ -389,11 +380,6 @@
   "name:Roadmap_Police_EvidenceLocker",
   "name:Roadmap_Police_WantedBoard"
  ],
- "agent-box/proofs/wanted-posters-proof.mjs": [
-  "coord:235,243",
-  "name:Roadmap_Police_EvidenceLocker",
-  "name:Roadmap_Police_WantedBoard"
- ],
  "agent-box/proofs/witness-proof.mjs": [
   "name:Roadmap_Fuel_Clerk",
   "name:Roadmap_Police_Desk",
@@ -407,21 +393,21 @@
   "name:Roadmap_Lockpick_Door"
  ],
  "agent-box/flows/arrival-chain.txt": [
-  "name:Town_ATM_Bank",
   "name:Quest_Clerk",
   "name:Roadmap_Job_Depot",
   "name:Roadmap_Job_Drop",
-  "name:Sign_TownMap"
+  "name:Sign_TownMap",
+  "name:Town_ATM_Bank"
  ],
  "agent-box/flows/chain-apple.txt": [
   "name:AppleGatherTree",
   "name:AppleTradeContainer"
  ],
  "agent-box/flows/film-debugworld.txt": [
-  "name:Town_ATM_Bank",
   "name:AppleGatherTree",
   "name:Roadmap_Bank_Vault",
-  "name:Roadmap_Police_Desk"
+  "name:Roadmap_Police_Desk",
+  "name:Town_ATM_Bank"
  ],
  "agent-box/flows/roadmap-resources.txt": [
   "name:AppleProcessor",
@@ -429,14 +415,13 @@
   "name:Sawmill_Debug"
  ],
  "agent-box/flows/ui-paper.txt": [
-  "name:Town_ATM_Bank",
-  "name:LF_MiningSign_Debug"
+  "name:LF_MiningSign_Debug",
+  "name:Town_ATM_Bank"
  ],
  "agent-box/flows/world-atm.txt": [
   "name:Town_ATM_Bank"
  ],
  "agent-box/town.mjs": [
-  "name:Town_ATM_Bank",
   "name:FarmPlot_1",
   "name:Furnace",
   "name:Quest_Clerk",
@@ -464,11 +449,11 @@
   "name:Roadmap_Police_EvidenceLocker",
   "name:Roadmap_Police_WantedBoard",
   "name:Roadmap_Vehicle_Lot",
+  "name:Town_ATM_Bank",
   "name:TraderChainCounter"
  ],
  "agent-box/harness.mjs": [
   "coord:466,331",
-  "name:Town_ATM_Bank",
   "name:AppleTradeContainer",
   "name:CementPile_Debug",
   "name:Hospital_Bed_1",
@@ -484,6 +469,7 @@
   "name:Roadmap_Police_Desk",
   "name:Roadmap_Vehicle_Lot",
   "name:Sawmill_Debug",
+  "name:Town_ATM_Bank",
   "name:TraderChainCounter"
  ]
 }

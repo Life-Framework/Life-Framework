@@ -228,7 +228,7 @@ class LF_OrgConfig
 	//! section's own keys so the client applies them with ApplyOwner. The rank defaults stay on the
 	//! server: a new organization's ranks are built there and replicated as the organization's own.
 	//! \param[in] ctx A save context with this section's object open.
-	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	void WriteStream(notnull JsonSaveContext ctx)
 	{
 		ctx.WriteValue("foundingFee", m_iFoundingFee);
 		ctx.WriteValue("nameMin", m_iNameMin);

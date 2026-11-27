@@ -834,6 +834,7 @@ enum LF_ESirenRequest
 class LF_SirenRules
 {
 	//! Shortest time between two accepted changes on one vehicle.
+	// lf-fixed: input debounce, an interaction-feel constant, not a balance value
 	static const int MIN_TOGGLE_MS = 300;
 
 	//------------------------------------------------------------------------------------------------

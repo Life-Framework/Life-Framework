@@ -4,6 +4,7 @@
 
 class LF_SignCard
 {
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float CLOSE_DISTANCE = 4;
 
 	protected static ref LF_UIScreen s_Screen;

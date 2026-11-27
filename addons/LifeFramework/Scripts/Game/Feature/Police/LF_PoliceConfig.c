@@ -470,7 +470,7 @@ class LF_PoliceConfig
 	//! section's own keys so the client applies them with ApplyOwner. Left out: the alarm prefabs
 	//! (the server spawns them) and each rank's kit (the armory draws on the server).
 	//! \param[in] ctx A save context with this section's object open.
-	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	void WriteStream(notnull JsonSaveContext ctx)
 	{
 		ctx.WriteValue("arrestMinRank", m_iArrestMinRank);
 		ctx.WriteValue("escortMinRank", m_iEscortMinRank);

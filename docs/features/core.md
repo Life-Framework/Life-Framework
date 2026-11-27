@@ -419,7 +419,7 @@
   nothing crashes the server. Pack overlays come through `LF_ConfigPackSource`;
   the default, `LF_MissionConfigPackSource`, reads the mission header's
   `m_aLF_ConfigOverlays` list (D4 option b; `config/pack-header`). Detail and the
-  `SCR_JsonLoadContext` probe results: `Core/Config/Feature.md`. Tests
+  `JsonLoadContext` probe results: `Core/Config/Feature.md`. Tests
   `config/json-probe`, `config/merge-fields`, `config/merge-keyed`,
   `config/merge-reject`, `config/merge-no-owner`, `config/owner-file`,
   `config/pack-overlay`.
