@@ -28,7 +28,7 @@ class LF_PoliceApplications
 	static const int ROW_FIELDS = 8;
 
 	protected static ref array<ref LF_PoliceApplication> s_aApplications;
-	protected static string s_sPath = "";
+	protected static string s_sPath;
 	protected static int s_iLastSecondsLeft;
 
 	//------------------------------------------------------------------------------------------------

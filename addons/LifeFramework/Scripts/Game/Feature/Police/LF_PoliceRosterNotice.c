@@ -56,7 +56,7 @@ class LF_PoliceRosterNotice
 	protected static ref LF_PoliceRosterNoticeSubscriber s_Subscriber;
 	protected static ref set<string> s_mTold;
 	protected static ref array<string> s_aSent;
-	protected static string s_sPath = "";
+	protected static string s_sPath;
 	protected static bool s_bQuiet;
 
 	//------------------------------------------------------------------------------------------------

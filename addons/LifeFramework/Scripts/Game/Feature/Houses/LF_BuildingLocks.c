@@ -23,13 +23,37 @@ class LF_BuildingLocks
 	static const string KEY_CLOSED = "#LF-BuildingLock_Closed";
 
 	//! Lock marker -> the building it locks.
-	protected static ref map<EntityID, EntityID> s_mMarkerBuilding = new map<EntityID, EntityID>();
+	protected static ref map<EntityID, EntityID> s_mMarkerBuilding;
+	protected static map<EntityID, EntityID> LzMarkerBuilding()
+	{
+		if (!s_mMarkerBuilding)
+			s_mMarkerBuilding = new map<EntityID, EntityID>();
+		return s_mMarkerBuilding;
+	}
 	//! Building -> the sign key of the lock marker that locked it last.
-	protected static ref map<EntityID, string> s_mBuildingKey = new map<EntityID, string>();
+	protected static ref map<EntityID, string> s_mBuildingKey;
+	protected static map<EntityID, string> LzBuildingKey()
+	{
+		if (!s_mBuildingKey)
+			s_mBuildingKey = new map<EntityID, string>();
+		return s_mBuildingKey;
+	}
 	//! Building -> the house marker (an LF_HouseManagerComponent on the lock marker) whose owner and key holders pass (#3584).
-	protected static ref map<EntityID, EntityID> s_mBuildingHouse = new map<EntityID, EntityID>();
+	protected static ref map<EntityID, EntityID> s_mBuildingHouse;
+	protected static map<EntityID, EntityID> LzBuildingHouse()
+	{
+		if (!s_mBuildingHouse)
+			s_mBuildingHouse = new map<EntityID, EntityID>();
+		return s_mBuildingHouse;
+	}
 	//! Building -> the sign key its door shows a stranger once its house has an owner.
-	protected static ref map<EntityID, string> s_mBuildingOwnedKey = new map<EntityID, string>();
+	protected static ref map<EntityID, string> s_mBuildingOwnedKey;
+	protected static map<EntityID, string> LzBuildingOwnedKey()
+	{
+		if (!s_mBuildingOwnedKey)
+			s_mBuildingOwnedKey = new map<EntityID, string>();
+		return s_mBuildingOwnedKey;
+	}
 	//! Open marker id (a fitted place's position) -> the building it keeps open.
 	protected static ref map<string, EntityID> s_mOpen = new map<string, EntityID>();
 
@@ -43,6 +67,7 @@ class LF_BuildingLocks
 		if (!marker)
 			return false;
 
+		LzMarkerBuilding();
 		if (s_mMarkerBuilding.Contains(marker.GetID()))
 			return true;
 
@@ -53,11 +78,15 @@ class LF_BuildingLocks
 			return false;
 		}
 
+		LzMarkerBuilding();
 		s_mMarkerBuilding.Set(marker.GetID(), building.GetID());
+		LzBuildingKey();
 		s_mBuildingKey.Set(building.GetID(), signKey);
 		if (LF_Component<LF_HouseManagerComponent>.Find(marker))
 		{
+			LzBuildingHouse();
 			s_mBuildingHouse.Set(building.GetID(), marker.GetID());
+			LzBuildingOwnedKey();
 			s_mBuildingOwnedKey.Set(building.GetID(), ownedSignKey);
 		}
 
@@ -73,18 +102,23 @@ class LF_BuildingLocks
 			return;
 
 		EntityID building;
+		LzMarkerBuilding();
 		if (!s_mMarkerBuilding.Find(marker.GetID(), building))
 			return;
 
+		LzMarkerBuilding();
 		s_mMarkerBuilding.Remove(marker.GetID());
-		foreach (EntityID other, EntityID otherBuilding : s_mMarkerBuilding)
+		foreach (EntityID other, EntityID otherBuilding : LzMarkerBuilding())
 		{
 			if (otherBuilding == building)
 				return;
 		}
 
+		LzBuildingKey();
 		s_mBuildingKey.Remove(building);
+		LzBuildingHouse();
 		s_mBuildingHouse.Remove(building);
+		LzBuildingOwnedKey();
 		s_mBuildingOwnedKey.Remove(building);
 		LF_Debug.Info(FEATURE, string.Format("lock marker %1 removed: its building opens again", marker.GetName()));
 	}
@@ -118,6 +152,7 @@ class LF_BuildingLocks
 	//! own the house or hold its key; with no user it stays locked.
 	static string ReasonFor(IEntity door, IEntity user = null)
 	{
+		LzBuildingKey();
 		if (s_mBuildingKey.IsEmpty())
 			return "";
 
@@ -129,6 +164,7 @@ class LF_BuildingLocks
 		while (node)
 		{
 			string key;
+			LzBuildingKey();
 			if (s_mBuildingKey.Find(node.GetID(), key))
 			{
 				if (IsKeptOpen(node.GetID()))
@@ -150,6 +186,7 @@ class LF_BuildingLocks
 	protected static string HouseReason(EntityID building, string key, IEntity user)
 	{
 		EntityID markerId;
+		LzBuildingHouse();
 		if (!s_mBuildingHouse.Find(building, markerId))
 			return key;
 
@@ -176,6 +213,7 @@ class LF_BuildingLocks
 			return "";
 
 		string ownedKey;
+		LzBuildingOwnedKey();
 		s_mBuildingOwnedKey.Find(building, ownedKey);
 		if (ownedKey.IsEmpty())
 			return key;
@@ -186,15 +224,20 @@ class LF_BuildingLocks
 	//------------------------------------------------------------------------------------------------
 	static int Count()
 	{
+		LzBuildingKey();
 		return s_mBuildingKey.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LzMarkerBuilding();
 		s_mMarkerBuilding.Clear();
+		LzBuildingKey();
 		s_mBuildingKey.Clear();
+		LzBuildingHouse();
 		s_mBuildingHouse.Clear();
+		LzBuildingOwnedKey();
 		s_mBuildingOwnedKey.Clear();
 		s_mOpen.Clear();
 	}

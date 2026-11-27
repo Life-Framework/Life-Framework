@@ -24,7 +24,7 @@ class LF_Commendations
 	static const int MAX_ROWS = 200;	// lf-fixed: memory and file bound for the ledger, not a rule
 
 	protected static ref array<ref LF_CommendationRow> s_aRows;
-	protected static string s_sPath = "";
+	protected static string s_sPath;
 	protected static bool s_bMemoryOnly;
 
 	//------------------------------------------------------------------------------------------------

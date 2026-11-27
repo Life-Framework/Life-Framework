@@ -45,7 +45,13 @@ class LF_ReaperCutTick
 	//! How far from the bar the world is searched for a field's middle.
 	static const float FIELD_SEARCH_M = 120; // lf-fixed: a field is at most about 100 m across
 
-	protected static ref array<ref LF_ReaperCutState> s_aStates = {};
+	protected static ref array<ref LF_ReaperCutState> s_aStates;
+	protected static array<ref LF_ReaperCutState> LzStates()
+	{
+		if (!s_aStates)
+			s_aStates = new array<ref LF_ReaperCutState>();
+		return s_aStates;
+	}
 	protected static bool s_bRunning;
 
 	//------------------------------------------------------------------------------------------------
@@ -55,7 +61,7 @@ class LF_ReaperCutTick
 		if (!reaper || !Replication.IsServer())
 			return;
 
-		foreach (LF_ReaperCutState known : s_aStates)
+		foreach (LF_ReaperCutState known : LzStates())
 		{
 			if (known.m_Reaper == reaper.GetID())
 				return;
@@ -63,6 +69,7 @@ class LF_ReaperCutTick
 
 		LF_ReaperCutState state = new LF_ReaperCutState();
 		state.m_Reaper = reaper.GetID();
+		LzStates();
 		s_aStates.Insert(state);
 		if (!s_bRunning)
 		{
@@ -75,6 +82,7 @@ class LF_ReaperCutTick
 	static void ResetStatics()
 	{
 		GetGame().GetCallqueue().Remove(TickNow);
+		LzStates();
 		s_aStates.Clear();
 		s_bRunning = false;
 	}
@@ -82,6 +90,7 @@ class LF_ReaperCutTick
 	//------------------------------------------------------------------------------------------------
 	static int RegisteredCount()
 	{
+		LzStates();
 		return s_aStates.Count();
 	}
 
@@ -89,12 +98,14 @@ class LF_ReaperCutTick
 	//! One pass over every registered reaper. The loop calls it every TICK_MS; a test calls it by hand.
 	static void TickNow()
 	{
+		LzStates();
 		for (int i = s_aStates.Count() - 1; i >= 0; i--)
 		{
-			LF_ReaperCutState state = s_aStates[i];
+			LF_ReaperCutState state = LzStates()[i];
 			IEntity reaper = GetGame().GetWorld().FindEntityByID(state.m_Reaper);
 			if (!reaper)
 			{
+				LzStates();
 				s_aStates.Remove(i);
 				continue;
 			}
@@ -102,6 +113,7 @@ class LF_ReaperCutTick
 			TickOne(state, reaper);
 		}
 
+		LzStates();
 		if (s_aStates.IsEmpty() && s_bRunning)
 		{
 			GetGame().GetCallqueue().Remove(TickNow);

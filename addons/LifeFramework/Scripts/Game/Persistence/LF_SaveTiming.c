@@ -15,8 +15,20 @@ class LF_SaveTiming
 	//! At most this many parts are named.
 	static const int REPORT_TOP = 6;
 
-	protected static ref array<string> s_aNames = {};
-	protected static ref array<int> s_aMs = {};
+	protected static ref array<string> s_aNames;
+	protected static array<string> LzNames()
+	{
+		if (!s_aNames)
+			s_aNames = new array<string>();
+		return s_aNames;
+	}
+	protected static ref array<int> s_aMs;
+	protected static array<int> LzMs()
+	{
+		if (!s_aMs)
+			s_aMs = new array<int>();
+		return s_aMs;
+	}
 	protected static int s_iStoreStart;
 	protected static int s_iStoreMs;
 	protected static int s_iEngineStart;
@@ -33,7 +45,9 @@ class LF_SaveTiming
 			GetGame().GetCallqueue().Remove(Tick);
 
 		s_bEngineRunning = false;
+		LzNames();
 		s_aNames.Clear();
+		LzMs();
 		s_aMs.Clear();
 		s_iStoreMs = 0;
 		s_iLongestFrame = 0;
@@ -43,7 +57,9 @@ class LF_SaveTiming
 	//------------------------------------------------------------------------------------------------
 	static void BeginStore()
 	{
+		LzNames();
 		s_aNames.Clear();
+		LzMs();
 		s_aMs.Clear();
 		s_iStoreStart = System.GetTickCount();
 	}
@@ -66,7 +82,9 @@ class LF_SaveTiming
 	//! Records one part that took ms.
 	static void Record(string name, int ms)
 	{
+		LzNames();
 		s_aNames.Insert(name);
+		LzMs();
 		s_aMs.Insert(ms);
 	}
 
@@ -89,12 +107,14 @@ class LF_SaveTiming
 	static string Slowest()
 	{
 		array<int> order = {};
+		LzMs();
 		for (int i = 0; i < s_aMs.Count(); i++)
 		{
-			if (s_aMs[i] < REPORT_MS)
+			if (LzMs()[i] < REPORT_MS)
 				continue;
 
 			int at = 0;
+			LzMs();
 			while (at < order.Count() && s_aMs[order[at]] >= s_aMs[i])
 				at++;
 
@@ -108,6 +128,8 @@ class LF_SaveTiming
 			if (j > 0)
 				text += " ";
 
+			LzNames();
+			LzMs();
 			text += s_aNames[order[j]] + "=" + s_aMs[order[j]].ToString();
 		}
 

@@ -240,8 +240,20 @@ class LF_PerfStressCount : Managed
 class LF_PerfStressLights : Managed
 {
 	protected static ref array<EntityID> s_aIds = {};
-	protected static ref array<bool> s_aWasEnabled = {};
-	protected static ref array<bool> s_aHadShadow = {};
+	protected static ref array<bool> s_aWasEnabled;
+	protected static array<bool> LzWasEnabled()
+	{
+		if (!s_aWasEnabled)
+			s_aWasEnabled = new array<bool>();
+		return s_aWasEnabled;
+	}
+	protected static ref array<bool> s_aHadShadow;
+	protected static array<bool> LzHadShadow()
+	{
+		if (!s_aHadShadow)
+			s_aHadShadow = new array<bool>();
+		return s_aHadShadow;
+	}
 	protected vector m_vCentre;
 	protected float m_fRadiusSq;
 	protected string m_sMode;
@@ -279,12 +291,16 @@ class LF_PerfStressLights : Managed
 			LightEntity light = LightEntity.Cast(world.FindEntityByID(s_aIds[i]));
 			if (!light)
 				continue;
+			LzWasEnabled();
 			light.SetEnabled(s_aWasEnabled[i]);
+			LzHadShadow();
 			light.SetCastShadow(s_aHadShadow[i]);
 			done++;
 		}
 		s_aIds.Clear();
+		LzWasEnabled();
 		s_aWasEnabled.Clear();
+		LzHadShadow();
 		s_aHadShadow.Clear();
 		return done;
 	}
@@ -306,7 +322,9 @@ class LF_PerfStressLights : Managed
 		if (light && vector.DistanceSq(e.GetOrigin(), m_vCentre) <= m_fRadiusSq && s_aIds.Find(e.GetID()) == -1)
 		{
 			s_aIds.Insert(e.GetID());
+			LzWasEnabled();
 			s_aWasEnabled.Insert(light.IsEnabled());
+			LzHadShadow();
 			s_aHadShadow.Insert(light.IsCastShadow());
 			light.SetCastShadow(false);
 			if (m_sMode == "off")

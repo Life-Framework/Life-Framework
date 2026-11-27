@@ -17,7 +17,13 @@ class LF_StunBuzz
 	// lf-fixed: a safety cap on a leaked loop, far above any stun; the stun time is the weapon's m_fStunSeconds
 	static const int MAX_MS = 30000;
 
-	protected static ref map<EntityID, ref SCR_AudioSource> s_mPlaying = new map<EntityID, ref SCR_AudioSource>();
+	protected static ref map<EntityID, ref SCR_AudioSource> s_mPlaying;
+	protected static map<EntityID, ref SCR_AudioSource> LzPlaying()
+	{
+		if (!s_mPlaying)
+			s_mPlaying = new map<EntityID, ref SCR_AudioSource>();
+		return s_mPlaying;
+	}
 	protected static int s_iStarted;
 	protected static int s_iStopped;
 
@@ -26,6 +32,7 @@ class LF_StunBuzz
 	//! die with the world, so there is nothing to terminate.
 	static void ResetStatics()
 	{
+		LzPlaying();
 		s_mPlaying.Clear();
 		s_iStarted = 0;
 		s_iStopped = 0;
@@ -35,6 +42,7 @@ class LF_StunBuzz
 	//! Tests: record a buzz as playing on a character without a sound manager.
 	static void MarkPlayingForTest(EntityID id)
 	{
+		LzPlaying();
 		s_mPlaying.Set(id, null);
 		s_iStarted++;
 	}
@@ -62,6 +70,7 @@ class LF_StunBuzz
 			return;
 
 		EntityID id = character.GetID();
+		LzPlaying();
 		int decision = Decide(character.LF_HasStunFlag(), s_mPlaying.Contains(id));
 		if (decision > 0)
 			Start(character, id);
@@ -94,6 +103,7 @@ class LF_StunBuzz
 		}
 
 		sound.PlayAudioSource(audio);
+		LzPlaying();
 		s_mPlaying.Set(id, audio);
 		s_iStarted++;
 		if (GetGame().GetCallqueue())
@@ -105,11 +115,13 @@ class LF_StunBuzz
 	//------------------------------------------------------------------------------------------------
 	protected static void Stop(EntityID id, string why)
 	{
+		LzPlaying();
 		SCR_AudioSource audio = s_mPlaying.Get(id);
 		if (!audio)
 			return;
 
 		audio.Terminate();
+		LzPlaying();
 		s_mPlaying.Remove(id);
 		s_iStopped++;
 		LF_Debug.Info(FEATURE, string.Format("stun buzz stopped: %1", why));
@@ -123,7 +135,7 @@ class LF_StunBuzz
 		if (!audio)
 			return;
 
-		foreach (EntityID id, SCR_AudioSource playing : s_mPlaying)
+		foreach (EntityID id, SCR_AudioSource playing : LzPlaying())
 		{
 			if (playing != audio)
 				continue;
@@ -136,6 +148,7 @@ class LF_StunBuzz
 	//------------------------------------------------------------------------------------------------
 	static int GetPlayingCount()
 	{
+		LzPlaying();
 		return s_mPlaying.Count();
 	}
 

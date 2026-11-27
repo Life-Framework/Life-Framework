@@ -33,8 +33,8 @@ class LF_ScreenshotCapture : Managed
 
 	protected static ref LF_ScreenshotShot s_ActiveShot;
 	protected static bool s_bBusy;
-	protected static string s_sResult = "";
-	protected static string s_sLastPath = "";
+	protected static string s_sResult;
+	protected static string s_sLastPath;
 	protected static vector s_vOriginalPos;
 	protected static bool s_bCameraMoved;
 	protected static EntityID s_SpawnedEntityId = EntityID.INVALID;

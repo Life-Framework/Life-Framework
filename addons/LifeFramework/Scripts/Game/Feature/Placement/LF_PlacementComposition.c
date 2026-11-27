@@ -159,7 +159,13 @@ class LF_PlacementCompositions
 	//! How far from a piece a player may be to pick the set up.
 	static const float PICKUP_REACH = 4; // lf-fixed: arm's length plus latency slack, not a gameplay knob
 
-	protected static ref array<ref LF_PlacedComposition> s_aPlaced = {};
+	protected static ref array<ref LF_PlacedComposition> s_aPlaced;
+	protected static array<ref LF_PlacedComposition> LzPlaced()
+	{
+		if (!s_aPlaced)
+			s_aPlaced = new array<ref LF_PlacedComposition>();
+		return s_aPlaced;
+	}
 	protected static string s_sLastRefusal;
 
 	//------------------------------------------------------------------------------------------------
@@ -172,12 +178,14 @@ class LF_PlacementCompositions
 	//! How many placed sets this machine remembers.
 	static int Count()
 	{
+		LzPlaced();
 		return s_aPlaced.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LzPlaced();
 		s_aPlaced.Clear();
 		s_sLastRefusal = "";
 	}
@@ -399,6 +407,7 @@ class LF_PlacementCompositions
 		}
 
 		LF_PlacementCost.Keep(charge, placed.m_aIds);
+		LzPlaced();
 		s_aPlaced.Insert(placed);
 		LF_Debug.Info(LF_PlacementRules.FEATURE, string.Format("placed composition %1 (%2 pieces) for %3 at %4", composition.m_sName, placed.m_aIds.Count(), LF_PoliceRanks.ResolveUid(player), proposal[3]));
 		return placed;
@@ -437,6 +446,7 @@ class LF_PlacementCompositions
 
 		EntityID pieceId = piece.GetID();
 		int removed = Remove(placed);
+		LzPlaced();
 		s_aPlaced.RemoveItem(placed);
 		LF_PlacementCost.OnPickedUp(player, pieceId);
 		LF_Debug.Info(LF_PlacementRules.FEATURE, string.Format("picked up composition %1: %2 pieces removed", placed.m_sName, removed));
@@ -451,7 +461,7 @@ class LF_PlacementCompositions
 			return null;
 
 		EntityID id = piece.GetID();
-		foreach (LF_PlacedComposition placed : s_aPlaced)
+		foreach (LF_PlacedComposition placed : LzPlaced())
 		{
 			if (placed.m_aIds.Find(id) != -1)
 				return placed;
@@ -522,7 +532,13 @@ class LF_PlacementCompositions
 //! transforms, green when the plan is VALID and red when not. Never replicated.
 class LF_PlacementCompositionGhost
 {
-	protected static ref array<EntityID> s_aGhosts = {};
+	protected static ref array<EntityID> s_aGhosts;
+	protected static array<EntityID> LzGhosts()
+	{
+		if (!s_aGhosts)
+			s_aGhosts = new array<EntityID>();
+		return s_aGhosts;
+	}
 	protected static string s_sName;
 	protected static bool s_bValidShown;
 
@@ -592,7 +608,7 @@ class LF_PlacementCompositionGhost
 		if (!world)
 			return ghosts;
 
-		foreach (EntityID id : s_aGhosts)
+		foreach (EntityID id : LzGhosts())
 		{
 			IEntity ghost = world.FindEntityByID(id);
 			if (ghost)
@@ -608,6 +624,7 @@ class LF_PlacementCompositionGhost
 		foreach (IEntity ghost : Ghosts())
 			SCR_EntityHelper.DeleteEntityAndChildren(ghost);
 
+		LzGhosts();
 		s_aGhosts.Clear();
 		s_sName = "";
 	}
@@ -650,6 +667,7 @@ class LF_PlacementCompositionGhost
 			}
 
 			ghost.SetObject(mesh.GetResource().ToVObject(), "");
+			LzGhosts();
 			s_aGhosts.Insert(ghost.GetID());
 		}
 

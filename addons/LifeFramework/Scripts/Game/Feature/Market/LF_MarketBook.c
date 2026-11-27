@@ -34,7 +34,13 @@ class LF_MarketBook
 {
 	static const string FEATURE = "Market";
 
-	protected static ref map<ResourceName, ref LF_MarketPrice> s_mPrices = new map<ResourceName, ref LF_MarketPrice>();
+	protected static ref map<ResourceName, ref LF_MarketPrice> s_mPrices;
+	protected static map<ResourceName, ref LF_MarketPrice> LzPrices()
+	{
+		if (!s_mPrices)
+			s_mPrices = new map<ResourceName, ref LF_MarketPrice>();
+		return s_mPrices;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The good's curve when the market is on and lists it, else null (fixed price).
@@ -142,6 +148,7 @@ class LF_MarketBook
 
 		int oldFine = RecoveredPrice(def, nowUnix);
 		int newFine = def.PriceAfterSale(oldFine, ClampUnits(lots));
+		LzPrices();
 		s_mPrices.Set(good, LF_MarketPrice.Make(newFine, StampAfterSale(good, nowUnix)));
 		oldPrice = LF_PriceCurve.ToCash(oldFine);
 		int newPrice = LF_PriceCurve.ToCash(newFine);
@@ -154,6 +161,7 @@ class LF_MarketBook
 	//! A sale snapshots it before moving the price so a rollback can put it back exactly.
 	static LF_MarketPrice Snapshot(ResourceName good)
 	{
+		LzPrices();
 		LF_MarketPrice p = s_mPrices.Get(good);
 		if (!p)
 			return null;
@@ -167,10 +175,12 @@ class LF_MarketBook
 	{
 		if (!snapshot)
 		{
+			LzPrices();
 			s_mPrices.Remove(good);
 			return;
 		}
 
+		LzPrices();
 		s_mPrices.Set(good, LF_MarketPrice.Make(snapshot.m_iFine, snapshot.m_iLastSaleUnix));
 	}
 
@@ -179,6 +189,7 @@ class LF_MarketBook
 	//! the stamp only moves on a sale, so a quote never changes what the next quote says.
 	protected static int RecoveredPrice(LF_MarketGoodDef def, int nowUnix)
 	{
+		LzPrices();
 		LF_MarketPrice p = s_mPrices.Get(def.m_sGood);
 		if (!p)
 			return def.NextPrice(def.BaseFine());
@@ -199,6 +210,7 @@ class LF_MarketBook
 	//! a clock moved back, or a gap past the recovery cap stamps `nowUnix` (IsClamped).
 	protected static int StampAfterSale(ResourceName good, int nowUnix)
 	{
+		LzPrices();
 		LF_MarketPrice p = s_mPrices.Get(good);
 		if (!p)
 			return nowUnix;
@@ -227,7 +239,7 @@ class LF_MarketBook
 	//! The live book, good to state (#2846: LF_MarketSavePayload writes and replaces it). Never cache it.
 	static map<ResourceName, ref LF_MarketPrice> Entries()
 	{
-		return s_mPrices;
+		return LzPrices();
 	}
 
 	//------------------------------------------------------------------------------------------------

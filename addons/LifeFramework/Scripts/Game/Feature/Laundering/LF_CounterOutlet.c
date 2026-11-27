@@ -34,7 +34,13 @@ class LF_CounterOutlet
 	static const string REASON_TRADED = "traded";
 
 	//! Server: world seconds of each seller's last attempt, for the rate limit.
-	protected static ref map<string, float> s_mLastSale = new map<string, float>();
+	protected static ref map<string, float> s_mLastSale;
+	protected static map<string, float> LzLastSale()
+	{
+		if (!s_mLastSale)
+			s_mLastSale = new map<string, float>();
+		return s_mLastSale;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Goods `user` carries that `buyer` has a demand row for: `goods[i]` x `counts[i]`.
@@ -116,12 +122,14 @@ class LF_CounterOutlet
 			return LF_ECounterOutletSale.TOO_FAR;
 
 		float last;
+		LzLastSale();
 		if (s_mLastSale.Find(key, last) && (nowSeconds - last) * 1000 < minActionMs)
 		{
 			LF_Debug.Warn(FEATURE, string.Format("counter sale by %1 refused: asked again faster than %2 ms", key, minActionMs));
 			return LF_ECounterOutletSale.TOO_FAST;
 		}
 
+		LzLastSale();
 		s_mLastSale.Set(key, nowSeconds);
 
 		array<ResourceName> goods = {};
@@ -255,6 +263,7 @@ class LF_CounterOutlet
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LzLastSale();
 		s_mLastSale.Clear();
 	}
 }
