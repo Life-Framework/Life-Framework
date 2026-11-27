@@ -100,11 +100,11 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     }
     LF_TraderItem "{59693C53B6A5E101}" {
      m_ItemPrefab "{ACCC8B6FEB32034C}Prefabs/Items/Fishing/LF_FishTrout.et"
-     m_ValuePerItem 8
+     m_ValuePerItem 12
     }
     LF_TraderItem "{59693C53B6A5E102}" {
      m_ItemPrefab "{368CD7CE4669CC29}Prefabs/Items/Fishing/LF_FishTroutLarge.et"
-     m_ValuePerItem 16
+     m_ValuePerItem 22
     }
     LF_TraderItem "{59693C53B6A5E103}" {
      m_ItemPrefab "{B893DF5794082223}Prefabs/Items/Fishing/LF_FishMackerelSmall.et"
@@ -148,11 +148,11 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     }
     LF_TraderItem "{59693C53B6A5E10D}" {
      m_ItemPrefab "{10AC1C974EEB714B}Prefabs/Items/Fishing/LF_FishPerch.et"
-     m_ValuePerItem 7
+     m_ValuePerItem 11
     }
     LF_TraderItem "{59693C53B6A5E10E}" {
      m_ItemPrefab "{CFE6CAD82A45830C}Prefabs/Items/Fishing/LF_FishPerchLarge.et"
-     m_ValuePerItem 13
+     m_ValuePerItem 19
     }
     LF_TraderItem "{59693C53B6A5E10F}" {
      m_ItemPrefab "{E29A8872F6CA0CB3}Prefabs/Items/Fishing/LF_FishCarpSmall.et"
@@ -160,11 +160,11 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     }
     LF_TraderItem "{59693C53B6A5E110}" {
      m_ItemPrefab "{978A71CB3CBE87F7}Prefabs/Items/Fishing/LF_FishCarp.et"
-     m_ValuePerItem 9
+     m_ValuePerItem 13
     }
     LF_TraderItem "{59693C53B6A5E111}" {
      m_ItemPrefab "{E2CBEFBA321D8574}Prefabs/Items/Fishing/LF_FishCarpLarge.et"
-     m_ValuePerItem 18
+     m_ValuePerItem 24
     }
     LF_TraderItem "{59693C53B6A5E112}" {
      m_ItemPrefab "{164E31A9B6CD9249}Prefabs/Items/Fishing/LF_SmokedMackerel.et"

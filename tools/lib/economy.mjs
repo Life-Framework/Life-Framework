@@ -17,6 +17,7 @@ import { findBuySellLoops } from "../economy/buy-sell-loops.mjs";
 import { buildLumber, lumberFlags, renderLumber } from "./economy-lumber.mjs";
 import { buildWheat, renderWheat, wheatFlags } from "./economy-wheat.mjs";
 import { buildMining, miningFlags, renderMining } from "./economy-mining.mjs";
+import { buildGather, renderGather } from "./economy-gather.mjs";
 import { SECTIONS, loadOwner, loadPackOverlays, mergeList, metaIndex, sectionLayers } from "../pack/layers.mjs";
 
 /** Minutes a courier, fuel, taxi or postal van run (Saint-Philippe to Meaux and back, sacks both ends) takes on the real map (an assumption; `--run-minutes` overrides). */
@@ -275,9 +276,12 @@ export function buildReport(root, opts = {}) {
   // The mining loops (#3240): recipes, curves and hardware premium rows from config, haul and gather rates from tools/economy/mining-assumptions.json.
   const mining = buildMining({ root, addonsDir, packLayers, owner, opts, duty: { police: duty.police.rank0, medic: duty.medic.rank0 } });
   flags.push(...miningFlags(mining));
+  // The on-foot gathering loops (pay audit 2026-11-27): each placed fishing spot and the orchard juice.
+  const gather = buildGather({ addonsDir, pack, overlays: loaded.overlays, duty: { police: duty.police.rank0, medic: duty.medic.rank0 } });
+  flags.push(...gather.flags);
 
   return {
-    lumber, wheat, mining, mission, pack, overlays: loaded.overlays.map((o) => o.file), problems: loaded.problems.map((p) => p.msg), ownerFile: owner ? ownerFile : null,
+    lumber, wheat, mining, gather, mission, pack, overlays: loaded.overlays.map((o) => o.file), problems: loaded.problems.map((p) => p.msg), ownerFile: owner ? ownerFile : null,
     start: { bank: startBank, cash: startCash }, runs, contracts, benefit, duty, sinks, ladder, flags, assumptions: { runMinutes, taxiMetres },
   };
 }
@@ -315,6 +319,7 @@ export function renderReport(r) {
   if (r.lumber) L.push(...renderLumber(r.lumber));
   if (r.wheat) L.push(...renderWheat(r.wheat));
   if (r.mining) L.push(...renderMining(r.mining));
+  if (r.gather) L.push(...renderGather(r.gather));
   if (r.flags.length === 0) L.push("flags: none");
   else {
     L.push("flags:");
