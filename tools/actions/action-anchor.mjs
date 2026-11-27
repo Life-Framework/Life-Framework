@@ -27,6 +27,7 @@ import {
 const HERE = dirname(fileURLToPath(import.meta.url));
 const CONFIG = join(HERE, "anchors.json");
 const STAND = 0.5; // a player stops about this far off the mesh
+const MIN_RADIUS = 0.1; // a smaller sphere is not hit by an aim ray (the ATM, 0.17, is the smallest proven in play)
 const CHEST = 1.0; // and the context reaches the point from about this height
 
 // ---- geometry ---------------------------------------------------------------
@@ -213,6 +214,16 @@ export function isCharacterMesh(mesh) {
   return /(^|\/)Characters\/|(^|\/)Basebody_/i.test(String(mesh ?? ""));
 }
 
+// Contexts that sit off their mesh on purpose, with the reason.
+const OFF_MESH_OK = {
+  // The wall's six flag slots are the sample flags it stands 1.5 m in front of the cork board (LF_OrgFlagWall.StandSamples,
+  // SampleOffset); the context points are on those flags, not on the board mesh.
+  "Prefabs/Organizations/LF_OrgFlagWall.et#(root)": "context points sit on the spawned sample flags",
+  // The DebugWorld annex is frozen (validate-world-zones, three-worlds.md); its garage counter keeps the point 2 m out front that
+  // the tests were written against. The grid copy (Grid_vehicle_lot) is on the counter's front face.
+  "Worlds/DebugWorld/DebugWorld_Layers/Annex.layer#Annex_Garage": "frozen annex entity",
+};
+
 // ---- check mode -------------------------------------------------------------
 
 export function checkContexts(root = ROOT, opts = {}) {
@@ -235,8 +246,9 @@ export function checkContexts(root = ROOT, opts = {}) {
       if (!resolved.mesh) { skipped++; continue; }
       const bounds = boundsOf(root, resolved.mesh);
       if (!bounds) { skipped++; continue; }
-      checked++;
       const label = `${rel}#${nameOf(span.text) ?? "(root)"}`;
+      if (OFF_MESH_OK[label]) continue;
+      checked++;
       const point = resolved.offset;
       const gap = gapToBounds(point, bounds.min, bounds.max);
       const mesh = resolved.mesh.split("/").pop();
@@ -248,10 +260,14 @@ export function checkContexts(root = ROOT, opts = {}) {
         warnings.push(`${label}: context point ${fmt(point)} is ${num(gap)} m outside ${mesh} bounds (${fmt(bounds.min)} .. ${fmt(bounds.max)}); try --anchor front`);
         continue;
       }
+      // The engine picks a context by the aim ray hitting its sphere, not by how near the player stands
+      // (`session.mjs prop-reach-proof`: signs, ATM, crate, farm plot offer their action from 1 m on the front). So the
+      // sphere only has to be big enough to be hit and to touch the mesh the player looks at.
       if (resolved.radius != null && !isCharacterMesh(resolved.mesh)) {
-        const reach = reachDistance(point, bounds.min, bounds.max, resolved.height ?? 0);
-        if (reach > resolved.radius) {
-          warnings.push(`${label}: radius ${num(resolved.radius)} does not reach a player standing ${STAND} m off ${mesh} (needs ${num(reach)} m)`);
+        if (resolved.radius < MIN_RADIUS) {
+          warnings.push(`${label}: radius ${num(resolved.radius)} is too small for an aim ray to hit (under ${MIN_RADIUS} m)`);
+        } else if (gap > resolved.radius) {
+          warnings.push(`${label}: radius ${num(resolved.radius)} does not touch ${mesh} (the point is ${num(gap)} m off its bounds)`);
         }
       }
     }
