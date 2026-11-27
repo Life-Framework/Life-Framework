@@ -1,6 +1,18 @@
 Vehicle : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
  ID "E1A452BE1A000002"
  components {
+  LF_LicensePlateManagerComponent "{5984C85FA25812F2}" {
+   m_Plates {
+    LF_LicensePlatePointInfo "{D4F095C08195262F}" {
+     Offset 0 0.72 -2.35
+     Angles 0 0 0
+    }
+    LF_LicensePlatePointInfo "{279843DB1AC0CAAE}" {
+     Offset 0 0.66 2.20
+     Angles 180 0 0
+    }
+   }
+  }
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
   }
   LF_VehicleStorageAccessControl "{E1A452BE1A000004}" {

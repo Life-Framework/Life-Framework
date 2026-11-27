@@ -1,6 +1,18 @@
 Vehicle : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
  ID "E1A2101BE1A00002"
  components {
+  LF_LicensePlateManagerComponent "{5984C85FA25812F2}" {
+   m_Plates {
+    LF_LicensePlatePointInfo "{5A4A430BA0D38665}" {
+     Offset -0.04 0.60 -2.14
+     Angles 0 0 0
+    }
+    LF_LicensePlatePointInfo "{3D84846536F5E46B}" {
+     Offset -0.04 0.52 2.14
+     Angles 180 0 0
+    }
+   }
+  }
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
   }
   LF_VehicleStorageAccessControl "{E1A2101BE1A00004}" {
