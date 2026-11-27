@@ -10,6 +10,10 @@
 class LF_VehicleLot
 {
 	static const string FEATURE = "Vehicle";
+	//! The sheet title of a lot with no title row of its own.
+	static const string DEFAULT_TITLE = "#LF-Lot_Title";
+	//! A lot's own title row is this prefix plus its lot id (dashes as underscores), no "#".
+	static const string TITLE_ID_PREFIX = "LF-Lot_Title_";
 
 	//------------------------------------------------------------------------------------------------
 	//! "" when the offer can be bought now, else the line printed instead of Buy. Prices at or
@@ -28,6 +32,23 @@ class LF_VehicleLot
 			return string.Empty;
 
 		return WidgetManager.Translate("#LF-Lot_NeedsBank", LF_MoneyFormat.FormatMoney(price));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sheet title's own key for a lot id: TITLE_ID_PREFIX plus the id with its dashes as
+	//! underscores. The row lives in a string table, so a pack titles its lot by adding a row;
+	//! no row (or no lot id) is the default title.
+	static string TitleKeyFor(string lotId)
+	{
+		if (lotId.IsEmpty())
+			return DEFAULT_TITLE;
+
+		lotId.Replace("-", "_");
+		string key = "#" + TITLE_ID_PREFIX + lotId;
+		if (LF_DialogueAudit.IsUntranslated(key))
+			return DEFAULT_TITLE;
+
+		return key;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -198,8 +219,15 @@ class LF_VehicleLotSheet
 		Close();
 		s_LotId = lotId;
 
+		// The lot's entity is layer data, present on the client; its id picks the title.
+		IEntity lot = LF_NetworkUtils.FindEntityByRplId(lotId);
+		string lotKey;
+		LF_VehicleLotComponent lotComponent = LF_Component<LF_VehicleLotComponent>.Find(lot);
+		if (lotComponent)
+			lotKey = lotComponent.GetLotId();
+
 		array<ref LF_UIPart> parts = {};
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "LotTitle", "#LF-Lot_Title"));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "LotTitle", LF_VehicleLot.TitleKeyFor(lotKey)));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LotMoney", WidgetManager.Translate("#LF-Lot_Money", LF_MoneyFormat.FormatMoney(bank), LF_MoneyFormat.FormatMoney(cash))));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LotRule", WidgetManager.Translate("#LF-Lot_Rule", LF_MoneyFormat.FormatMoney(cashCeiling))));
 		parts.Insert(LF_UIPart.CreateList(LIST).Compact());
@@ -215,7 +243,6 @@ class LF_VehicleLotSheet
 		s_Screen.SetListHeight(LIST, LIST_HEIGHT);
 		s_Screen.CloseOnDeath();
 		s_Screen.CloseWhenUncontrolled();
-		IEntity lot = LF_NetworkUtils.FindEntityByRplId(lotId);
 		if (lot)
 			s_Screen.CloseBeyond(4, lot.GetID());
 
