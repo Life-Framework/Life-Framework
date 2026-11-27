@@ -250,13 +250,6 @@ class LF_JailBreak
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Tests: the cooldown clock.
-	static void SetLastBreakAtForTest(int at)
-	{
-		s_iLastBreakAt = at;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Tests: the clock and any scheduled reseal, leaving the placed cell's offer ids alone.
 	static void ResetForTest()
 	{

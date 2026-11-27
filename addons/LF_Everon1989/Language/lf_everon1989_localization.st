@@ -5084,11 +5084,6 @@ StringTable {
      Target_en_us "Timber yard"
      Comment "Map POI name (rc-map-places): the Saint-Philippe timber yard job site, a slot row of Workplace."
     }
-    CustomStringTableItem "{5A7C1E04B93D6F0A}" {
-     Id "LF-MapPoi_TownHall"
-     Target_en_us "Town hall"
-     Comment "Map POI kind name (#2247): the town hall, where the clerk sits."
-    }
     CustomStringTableItem "{6BC39EAB78BC4239}" {
      Id "LF-MapPoi_TruckLot"
      Target_en_us "Truck Sales"
@@ -8809,11 +8804,6 @@ StringTable {
      Target_en_us "Odilon Marchand"
      Comment "Townsfolk (The relocated, #1961): the café owner's name, the speaker line of her dialogue."
     }
-    CustomStringTableItem "{6784DBE972ED4ECD}" {
-     Id "LF-Townsfolk_CafeOwner_Role"
-     Target_en_us "Cafe owner"
-     Comment "Townsfolk (The relocated, #1960): what Odilon Marchand does, the role line under the name."
-    }
     CustomStringTableItem "{7C2B4E90A13D5F68}" {
      Id "LF-Townsfolk_CoalYardClerk_Name"
      Target_en_us "Gaston Roux"
@@ -8834,20 +8824,10 @@ StringTable {
      Target_en_us "Rémi Duval"
      Comment "Townsfolk (The relocated, #1963): the night-shift worker's name over his dialogue captions."
     }
-    CustomStringTableItem "{B0FC17DD51416582}" {
-     Id "LF-Townsfolk_NightShift_Role"
-     Target_en_us "Night-shift worker"
-     Comment "Townsfolk (The relocated, #1960): what Rémi Duval does, the role line under the name."
-    }
     CustomStringTableItem "{6D2E8B41F07A93C5}" {
      Id "LF-Townsfolk_OldMan_Name"
      Target_en_us "Gaspard Lenoir"
      Comment "Townsfolk (The relocated, #1962): the speaker name over the old man's dialogue."
-    }
-    CustomStringTableItem "{1F9CFB4C2CC31B69}" {
-     Id "LF-Townsfolk_OldMan_Role"
-     Target_en_us "Retired fisherman"
-     Comment "Townsfolk (The relocated, #1960): what Gaspard Lenoir does, the role line under the name."
     }
     CustomStringTableItem "{4457A00000000001}" {
      Id "LF-Townsfolk_Registrar_Name"

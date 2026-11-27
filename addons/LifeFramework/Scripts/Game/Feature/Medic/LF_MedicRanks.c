@@ -39,12 +39,6 @@ class LF_MedicRanks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int GetKitRefusalCount()
-	{
-		return s_iKitRefusals;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The configured ladder, or the built-in three rungs when the config gives none.
 	static void Ranks(notnull array<ref LF_MedicRank> outRanks)
 	{

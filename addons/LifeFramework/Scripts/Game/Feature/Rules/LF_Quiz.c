@@ -337,13 +337,6 @@ class LF_Quiz
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Staff: the counts since the world started, one line.
-	static string StatsLine()
-	{
-		return string.Format("rules quiz: %1 attempt(s), %2 passed, %3 failed, %4 kicked", s_iAttempts, s_iPasses, s_iFails, s_iKicks);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static int GetAttempts()
 	{
 		return s_iAttempts;

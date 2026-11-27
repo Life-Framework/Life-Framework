@@ -164,12 +164,6 @@ class LF_SiteAlerts
 		return told;
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! Alerts delivered since the last reset (tests and debug read it).
-	static int Sent()
-	{
-		return s_iSent;
-	}
 }
 
 //------------------------------------------------------------------------------------------------

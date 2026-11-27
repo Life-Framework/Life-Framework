@@ -44,12 +44,6 @@ class LF_JailBooking
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static vector CellOrigin()
-	{
-		return s_vCell;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! True when `position` is close enough to the cell to book a suspect.
 	static bool IsAtBooking(vector position)
 	{

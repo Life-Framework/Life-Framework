@@ -55,20 +55,6 @@ export function formatTable(rows) {
   return lines.join("\n");
 }
 
-// The per-profile reserve this implies: server MB, and MB per extra client (the 2-client total minus
-// the 1-client total when both were measured, else the mean client working set).
-export function reserveFrom(rows, variant) {
-  const mine = rows.filter((r) => r.variant === variant);
-  const one = mine.find((r) => r.clients === 1);
-  const two = mine.find((r) => r.clients === 2);
-  const any = one ?? two;
-  if (!any) return null;
-  const serverMb = any.serverWs;
-  const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
-  const clientMb = one && two ? two.totalWs - one.totalWs : Math.round(mean(any.clientWs));
-  return { serverMb, clientMb };
-}
-
 export function saveJson(path, rows) {
   writeFileSync(path, JSON.stringify({ at: new Date().toISOString(), rows }, null, 1));
 }

@@ -64,23 +64,6 @@ class LF_NotificationConfig
 		}
 	}
 	
-	//------------------------------------------------------------------------------------------------
-	void SetCustomColor(int r, int g, int b, int a = 255)
-	{
-		m_Color = Color.FromSRGBA(r, g, b, a);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void SetIcon(string iconPath)
-	{
-		m_sIconPath = iconPath;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	void SetSound(bool playSound)
-	{
-		m_bShowSound = playSound;
-	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -210,59 +193,6 @@ class LF_NotificationManagerComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Send notification to all players with specific job (only if they are on duty)
-	//! \param jobType Target job type
-	//! \param config Notification configuration
-	//! \param onDutyOnly If true, only send to players who are on duty
-	void SendToJob(LF_EJobType jobType, LF_NotificationConfig config, bool onDutyOnly = true)
-	{
-		if (!Replication.IsServer())
-			return;
-			
-		PlayerManager playerManager = GetGame().GetPlayerManager();
-		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
-		if (!playerManager)
-			return;
-
-		// Off-duty filtering needs the accounts: without them nobody can be shown to be on duty.
-		if (onDutyOnly && !accountManager)
-		{
-			LF_Debug.Warn("Notify", "job notification not sent: the account manager is not up, so duty cannot be read");
-			return;
-		}
-
-		array<int> playerIds = {};
-		playerManager.GetPlayers(playerIds);
-
-		foreach (int playerId : playerIds)
-		{
-			IEntity playerEntity = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-			if (!playerEntity)
-				continue;
-				
-			LF_PlayerJobComponent jobComp = LF_Component<LF_PlayerJobComponent>.Find(playerEntity);
-			if (!jobComp)
-				continue;
-				
-			// Check if player has the target job
-			if (jobComp.GetJob() != jobType)
-				continue;
-				
-			// Duty lives on the account, not the job component: a police officer can be off duty
-			// while holding the POLICE job. The old UNEMPLOYED check was a tautology (the job
-			// already matched) and let off-duty officers receive alerts.
-			if (onDutyOnly)
-			{
-				LF_PlayerAccount account = accountManager.GetAccount(LF_Utils.GetPlayerUID(playerEntity));
-				if (!account || !account.IsOnDuty())
-					continue;
-			}
-				
-			SendToPlayer(playerId, config);
-		}
-	}
-	
-	//------------------------------------------------------------------------------------------------
 	//! Send notification to all players
 	//! \param config Notification configuration
 	void SendToAll(LF_NotificationConfig config)
@@ -294,19 +224,6 @@ class LF_NotificationManagerComponent : ScriptComponent
 		config.m_sMessageArg = messageArg;
 		config.m_sSlot = slot;
 		manager.SendToPlayer(playerId, config);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Send notification to all players with specific job (static)
-	static void NotifyJob(LF_EJobType jobType, string title, string message, float duration = 5.0, LF_ENotificationType type = LF_ENotificationType.INFO, bool onDutyOnly = true, string messageArg = "")
-	{
-		LF_NotificationManagerComponent manager = GetInstance();
-		if (!manager)
-			return;
-			
-		LF_NotificationConfig config = new LF_NotificationConfig(title, message, duration, type);
-		config.m_sMessageArg = messageArg;
-		manager.SendToJob(jobType, config, onDutyOnly);
 	}
 	
 	//------------------------------------------------------------------------------------------------

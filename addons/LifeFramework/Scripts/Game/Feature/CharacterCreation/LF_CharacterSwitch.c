@@ -346,12 +346,6 @@ class LF_CharacterSwitch
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int GetSwitchCount()
-	{
-		return s_iSwitches;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Server: stores the active character as a disconnect does and removes its body, so the player
 	//! controls nothing and the arrival flow can spawn another character. Call only after Refuse said "".
 	//! \return False (logged) when the player has no living body to put away.

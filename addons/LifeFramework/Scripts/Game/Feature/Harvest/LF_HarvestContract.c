@@ -257,12 +257,6 @@ class LF_HarvestContract
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int ContractCount()
-	{
-		return Rows().Count();
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Server: the board posts the field's contract. One per field; a field already cut to the line has nothing to harvest.
 	static LF_EHarvestContract Post(LF_WheatField field)
 	{

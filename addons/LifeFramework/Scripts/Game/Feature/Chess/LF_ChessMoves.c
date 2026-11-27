@@ -91,16 +91,6 @@ class LF_ChessMoves
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool IsLegal(LF_ChessBoard board, int move)
-	{
-		if (!board)
-			return false;
-		array<int> moves = {};
-		GenerateLegal(board, moves);
-		return moves.Find(move) != -1;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The side to move is in check.
 	static bool InCheck(LF_ChessBoard board)
 	{

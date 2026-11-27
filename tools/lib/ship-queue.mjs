@@ -228,15 +228,6 @@ export function statusLines(q, { now = Date.now(), waits = null } = {}) {
 
 // ---------------------------------------------------------------- async ship (wt ship returns once queued)
 
-// Does `wt ship` block until the gate ends? No by default: an agent's Bash call is capped at 10 min and a
-// gate takes 15-90, so `wt ship` returns once the PR is queued and the gate runs in the worker. `--wait`
-// (or LF_SHIP_WAIT=1) keeps the old blocking behaviour; `--async` / `--no-wait` say the default out loud.
-export function shipWaits(flags = [], env = {}) {
-  if (flags.includes("--async") || flags.includes("--no-wait")) return false;
-  if (flags.includes("--wait")) return true;
-  return env.LF_SHIP_WAIT === "1";
-}
-
 // The four words an agent reads: queued | running | passed | failed (cancelled counts as failed).
 export function phaseOf(e) {
   if (!e) return "unknown";

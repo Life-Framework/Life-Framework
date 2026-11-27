@@ -301,13 +301,6 @@ class LF_PhoneLineComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Rings heard on this machine since the line came up, for the harness and the proofs.
-	int GetRings()
-	{
-		return m_iRings;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Every line on this machine as "key:STATE:talker:rings:offer", for the harness `phone` verb.
 	static string DescribeAll()
 	{

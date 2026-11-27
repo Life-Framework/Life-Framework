@@ -540,12 +540,6 @@ class LF_SpikeStripComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	string GetDeployer()
-	{
-		return m_sDeployer;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	ResourceName GetItemPrefab()
 	{
 		return m_sItemPrefab;

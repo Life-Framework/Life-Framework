@@ -278,18 +278,6 @@ class LF_PlayerJobComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void AskSetJob(LF_EJobType jobType)
-	{
-		if (Replication.IsServer())
-		{
-			RequestJobFromClient(jobType);
-			return;
-		}
-
-		Rpc(RpcAsk_SetJob, jobType);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_SetJob(LF_EJobType jobType)
 	{
@@ -379,24 +367,10 @@ class LF_PlayerJobComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Get current job config
-	LF_JobConfig GetCurrentJobConfig()
-	{
-		return m_CurrentJobConfig;
-	}
-	
-	//------------------------------------------------------------------------------------------------
 	//! Get current job level
 	int GetJobLevel()
 	{
 		return m_iJobLevel;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Get current job experience
-	float GetJobExperience()
-	{
-		return m_fJobExperience;
 	}
 	
 	//------------------------------------------------------------------------------------------------
@@ -474,24 +448,6 @@ class LF_PlayerJobComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Get gathering speed multiplier for current job
-	float GetGatheringSpeedMultiplier()
-	{
-		// DEPRECATED: Gathering speed is now handled by player level
-		return 1.0;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Check if current job can gather resources
-	bool CanGatherResources()
-	{
-		if (!m_CurrentJobConfig)
-			return false;
-		
-		return m_CurrentJobConfig.m_bCanGatherResources;
-	}
-	
-	//------------------------------------------------------------------------------------------------
 	//! Give equipment for current job
 	protected void GiveJobEquipment()
 	{
@@ -541,77 +497,6 @@ class LF_PlayerJobComponent : ScriptComponent
 			if (!inventory.TryInsertItem(equipment))
 				LF_Debug.Warn("Jobs", string.Format("job equipment %1 did not fit the inventory; left at the player's feet", prefab));
 		}
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Get map of all job levels (para persistencia)
-	map<LF_EJobType, int> GetAllJobLevels()
-	{
-		// Guardar el nivel actual primero
-		if (m_eCurrentJob != LF_EJobType.UNEMPLOYED)
-			m_mJobLevels.Set(m_eCurrentJob, m_iJobLevel);
-		
-		return m_mJobLevels;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Get map of all job experience (para persistencia)
-	map<LF_EJobType, float> GetAllJobExperience()
-	{
-		// Guardar la XP actual primero
-		if (m_eCurrentJob != LF_EJobType.UNEMPLOYED)
-			m_mJobExperience.Set(m_eCurrentJob, m_fJobExperience);
-		
-		return m_mJobExperience;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Set all job levels (para persistencia)
-	void SetAllJobLevels(map<LF_EJobType, int> levels)
-	{
-		m_mJobLevels = levels;
-		
-		// Si el trabajo actual está en el mapa, actualizar
-		if (m_mJobLevels.Contains(m_eCurrentJob))
-			m_iJobLevel = m_mJobLevels.Get(m_eCurrentJob);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	//! Set all job experience (para persistencia)
-	void SetAllJobExperience(map<LF_EJobType, float> experience)
-	{
-		m_mJobExperience = experience;
-		
-		// Si el trabajo actual está en el mapa, actualizar
-		if (m_mJobExperience.Contains(m_eCurrentJob))
-			m_fJobExperience = m_mJobExperience.Get(m_eCurrentJob);
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	ScriptInvoker GetOnJobChanged()
-	{
-		if (!m_OnJobChanged)
-			m_OnJobChanged = new ScriptInvoker();
-		
-		return m_OnJobChanged;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	ScriptInvoker GetOnLevelUp()
-	{
-		if (!m_OnLevelUp)
-			m_OnLevelUp = new ScriptInvoker();
-		
-		return m_OnLevelUp;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	ScriptInvoker GetOnJobExperienceGained()
-	{
-		if (!m_OnJobExperienceGained)
-			m_OnJobExperienceGained = new ScriptInvoker();
-		
-		return m_OnJobExperienceGained;
 	}
 	
 	//------------------------------------------------------------------------------------------------

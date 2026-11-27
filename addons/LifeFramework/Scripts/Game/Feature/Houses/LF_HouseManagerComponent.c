@@ -237,24 +237,6 @@ class LF_HouseManagerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void UnlockAllDoors()
-	{
-		if (LF_Systems.Refuses(LF_LockComponent.SYSTEM, "unlock all doors"))
-			return;
-
-		SetHouseLocked(false);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void ToggleHouseLocked()
-	{
-		if (LF_Systems.Refuses(LF_LockComponent.SYSTEM, "toggle house lock"))
-			return;
-
-		SetHouseLocked(!m_bHouseLocked);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Server-authoritative: only the server changes the house lock state.
 	//! \param locked The new house-wide lock state.
 	void SetHouseLocked(bool locked)

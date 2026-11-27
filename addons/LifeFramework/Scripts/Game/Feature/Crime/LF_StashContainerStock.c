@@ -44,12 +44,6 @@ class LF_StashContainerStock
 	}
 
 	//------------------------------------------------------------------------------------------------
-	ResourceName GetKeyPrefab()
-	{
-		return m_sKeyPrefab;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	void SetRefillSeconds(float seconds)
 	{
 		if (seconds < 1)

@@ -178,12 +178,6 @@ class LF_AssetAnimComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	int GetSoundCount()
-	{
-		return m_aSounds.Count();
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Effects and sounds running on this machine right now.
 	int GetLiveEffectCount()
 	{

@@ -48,8 +48,3 @@ export function releaseScratch(dir) {
     return false;
   }
 }
-
-// The scratch folders still waiting for the exit hook (for the guard selftest).
-export function liveScratch() {
-  return [...live];
-}

@@ -178,17 +178,6 @@ class LF_QuestTrackerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Recompute every collect objective from the player's actual inventory
-	//! (server-generated, authoritative) and push the log if anything changed.
-	//! Called on menu open (live display) and before turn-in (completion gate).
-	void RecountCollect()
-	{
-		if (!Replication.IsServer())
-			return;
-		LF_QuestManager.GetInstance().ReportCollect(GetOwner());
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Server-side accept: prerequisite snapshot, fail-safe guards, notification.
 	//! \param chained True for a chain step accepted on its own: the player hears the next
 	//! errand (the step's description) instead of the generic "accepted" hint.

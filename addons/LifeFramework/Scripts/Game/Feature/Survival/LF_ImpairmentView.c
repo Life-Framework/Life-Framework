@@ -179,13 +179,6 @@ modded class LF_CharacterSurvivalComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True while this body runs the sway frame.
-	bool IsViewFrameArmed()
-	{
-		return m_bViewFrameArmed;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	protected void SetViewFrame(IEntity owner, bool on)
 	{
 		if (on == m_bViewFrameArmed)

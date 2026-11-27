@@ -88,13 +88,6 @@ class LF_ReaperCutTick
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int RegisteredCount()
-	{
-		LzStates();
-		return s_aStates.Count();
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! One pass over every registered reaper. The loop calls it every TICK_MS; a test calls it by hand.
 	static void TickNow()
 	{

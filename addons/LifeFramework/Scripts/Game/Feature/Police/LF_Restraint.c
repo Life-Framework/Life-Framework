@@ -253,15 +253,6 @@ class LF_Restraint
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int HoldCount()
-	{
-		if (!s_mHolds)
-			return 0;
-
-		return s_mHolds.Count();
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Server: may this officer cuff this target right now, with what they hold? No side effects: the
 	//! cuffing hold asks it when it starts and on every watch pass.
 	static LF_ERestrain CheckRestrain(IEntity officer, IEntity target)

@@ -470,12 +470,6 @@ class LF_OreNodeComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	float GetBaseScale()
-	{
-		return m_fBaseScale;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
 		super.OnPostInit(owner);

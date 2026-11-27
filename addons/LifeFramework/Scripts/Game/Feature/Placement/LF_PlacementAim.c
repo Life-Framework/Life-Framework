@@ -133,15 +133,6 @@ class LF_PlacementAim
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Sets the yaw outright (the harness, and the mode's own start).
-	static void SetYaw(float yaw)
-	{
-		s_fYaw = LF_PlacementGeometry.WrapYaw(yaw);
-		if (s_bRunning)
-			Tick();
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Place: sends the ghost's spot to the server and leaves the mode. A red ghost is not sent: the
 	//! hint names why and the mode keeps running so the player can move it.
 	//! \return true when a proposal went out.

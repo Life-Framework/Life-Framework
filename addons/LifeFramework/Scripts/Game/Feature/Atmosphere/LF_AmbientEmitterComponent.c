@@ -135,13 +135,6 @@ class LF_AmbientEmitterComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The sound project this emitter plays (empty when the slot has none), for tests and proofs.
-	ResourceName GetProject()
-	{
-		return m_sProject;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static array<LF_AmbientEmitterComponent> GetAll()
 	{
 		return s_aAll;

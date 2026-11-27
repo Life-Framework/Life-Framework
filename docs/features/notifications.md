@@ -2,7 +2,7 @@
 
 ### `LF_NotificationManagerComponent` — `Feature/Notifications/`
 - ✅ Server→client notification broadcast with toast renderer; `SendToPlayer`/
-  `SendToJob`/`SendToAll` + static `NotifyPlayer`/`NotifyJob`/`NotifyAll`.
+  `SendToAll` + static `NotifyPlayer`/`NotifyAll`.
   Before 2026-11-07 the toast layout
   `{4C38FD68D45325D2}UI/Layouts/Notifications/EL_NotificationToast.layout` did not
   exist, so every toast (fines, arrests, rank denials, lot, lock, jail) failed silently. It

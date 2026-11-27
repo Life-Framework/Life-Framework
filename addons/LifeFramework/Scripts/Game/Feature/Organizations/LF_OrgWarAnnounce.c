@@ -68,13 +68,6 @@ class LF_OrgWarAnnounce
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Member notices sent (one per online member per event).
-	static int GetMemberNoticeCount()
-	{
-		return s_iMemberNotices;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static string GetLastKey()
 	{
 		return s_sLastKey;

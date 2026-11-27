@@ -80,18 +80,6 @@ class LF_Introductions
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \param[out] result Every uid the knower has been introduced to.
-	static void GetKnownBy(string knowerUid, notnull array<string> result)
-	{
-		result.Clear();
-		array<string> known = Known().Get(knowerUid);
-		if (!known)
-			return;
-
-		result.Copy(known);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! \param[out] result Every uid that knows knownUid.
 	static void GetKnowersOf(string knownUid, notnull array<string> result)
 	{

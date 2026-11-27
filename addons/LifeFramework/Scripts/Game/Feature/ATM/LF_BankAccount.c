@@ -44,14 +44,6 @@ class LF_BankAccount : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return True while the balance is below zero. Deposits pay the debt off first (they add to
-	//!         the balance); withdrawals are refused until the balance covers them.
-	bool IsInDebt()
-	{
-		return m_iBalance < 0;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Server-decided charge that may go into debt (the hospital bill). Withdraw stays the player
 	//! path and never goes below zero.
 	//! \param amount Amount to charge; zero or less charges nothing.

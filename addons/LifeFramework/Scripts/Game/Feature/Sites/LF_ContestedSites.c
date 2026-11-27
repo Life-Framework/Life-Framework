@@ -165,26 +165,6 @@ class LF_ContestedSites
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Marks a character active now (an action on or near a site counts like movement).
-	static void NoteAction(string characterId, int nowUnix)
-	{
-		if (characterId.IsEmpty())
-			return;
-
-		if (!s_mActivity)
-			s_mActivity = new map<string, ref LF_SiteActivity>();
-
-		LF_SiteActivity activity = s_mActivity.Get(characterId);
-		if (!activity)
-		{
-			activity = new LF_SiteActivity();
-			s_mActivity.Set(characterId, activity);
-		}
-
-		activity.m_iLastActive = LF_Utils.MaxInt(activity.m_iLastActive, nowUnix);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! True when the character moved ACTIVE_MOVE_M since its last sample or acted within the window.
 	//! A character seen for the first time counts as active.
 	protected static bool IsActive(notnull LF_SiteSighting row, int nowUnix, int windowSeconds)

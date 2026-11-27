@@ -312,13 +312,6 @@ modded class LF_WheatField
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Cells queued for the clients and not yet sent; 0 on a client.
-	int PendingCuts()
-	{
-		return CutBatch().Pending();
-	}
-
-	//------------------------------------------------------------------------------------------------
 	override int CutCells(array<int> cells)
 	{
 		if (!cells || !Replication.IsServer())

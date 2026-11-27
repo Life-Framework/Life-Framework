@@ -190,16 +190,6 @@ class LF_ChargeSheetScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The sheet now on screen, for tests and the harness; null when none.
-	static LF_ChargeSheetModel CurrentModel()
-	{
-		if (!s_Sheet)
-			return null;
-
-		return s_Sheet.m_Model;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static LF_UISkin Skin()
 	{
 		LF_UISkin skin = LF_UISkin.Paper();

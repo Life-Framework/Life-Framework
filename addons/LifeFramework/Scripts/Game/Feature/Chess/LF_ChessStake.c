@@ -150,15 +150,6 @@ class LF_ChessStake : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The stake a table with `holdOfSeat` in escrow at one seat still asks of the other (the hold).
-	int HoldOf(int seat)
-	{
-		if (seat < 0 || seat > 1)
-			return 0;
-		return m_aHold[seat];
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Cash in escrow at the table (both holds).
 	int Total()
 	{

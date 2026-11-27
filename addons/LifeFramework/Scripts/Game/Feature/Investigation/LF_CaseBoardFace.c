@@ -359,13 +359,6 @@ class LF_CaseBoardView
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Lists received since the client started. Proofs read it.
-	static int ReceivedCount()
-	{
-		return s_iReceived;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Client: the server sent the list (only to an on-duty officer). Every built face redraws.
 	static void Receive(array<string> entries, string source)
 	{

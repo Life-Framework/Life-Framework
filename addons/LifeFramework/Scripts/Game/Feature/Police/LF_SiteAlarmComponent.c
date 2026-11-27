@@ -75,13 +75,6 @@ class LF_SiteAlarmComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True once this machine started the siren (a renderer that was in audible range).
-	bool IsSounding()
-	{
-		return m_Audio != null;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The loudest alarm alive on this machine whose hear range covers position: "loud",
 	//! "normal", or "none". What the harness reports as heard.
 	static string HeardAt(vector position)

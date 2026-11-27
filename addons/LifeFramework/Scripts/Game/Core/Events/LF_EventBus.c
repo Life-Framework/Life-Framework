@@ -61,13 +61,6 @@ class LF_EventBus
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Events published since the server started. Tests read it.
-	static int GetPublishedCount()
-	{
-		return s_iPublished;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! \param eventType The event class, e.g. LF_OnCrimeCommitted.
 	//! \return False when the subscriber is null or already subscribed to this type.
 	static bool Subscribe(typename eventType, LF_EventSubscriber subscriber)

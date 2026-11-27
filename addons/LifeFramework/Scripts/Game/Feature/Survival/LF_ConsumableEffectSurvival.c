@@ -23,12 +23,6 @@ class LF_ConsumableEffectSurvival : LF_ConsumableEffectEat
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void SetHealthRestore(float value)
-	{
-		m_fHealthRestore = value;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------------------------------
 	//! Server, from LF_ConsumableEffectEat.ApplyEffect once the use animation completes and the
 	//! rules allow it. `target` is the entity receiving the effect.

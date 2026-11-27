@@ -221,7 +221,3 @@ export function statusLine(root) {
   return `workbench (this PC): ${hs.length}/${limit} busy${who ? ` (${who})` : ""}${qd.length ? `, ${qd.length} queued` : ""}`;
 }
 
-export function isWbLockFile(name) {
-  return name.startsWith(PREFIX);
-}
-

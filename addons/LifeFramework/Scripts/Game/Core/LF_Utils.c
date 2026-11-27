@@ -262,40 +262,6 @@ class LF_Utils : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static SCR_ChimeraCharacter FindCharacterById(string characterId)
-	{
-		if (!characterId || characterId.IsEmpty())
-			return null;
-
-		// First-party lookup: a tracked instance by persistence id.
-		SCR_PersistenceSystem persistence = SCR_PersistenceSystem.GetScriptedInstance();
-		if (persistence)
-		{
-			UUID characterUuid = characterId;
-			Managed instance = persistence.FindById(characterUuid);
-			IEntity resultEntity = IEntity.Cast(instance);
-			if (resultEntity)
-				return SCR_ChimeraCharacter.Cast(resultEntity);
-		}
-
-		PlayerManager playerManager = GetGame().GetPlayerManager();
-		if (!playerManager)
-			return null;
-
-		array<int> playerIds = {};
-		playerManager.GetPlayers(playerIds);
-		foreach (int playerId : playerIds)
-		{
-			IEntity entity = playerManager.GetPlayerControlledEntity(playerId);
-			SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(entity);
-		if (character && GetCharacterId(character) == characterId)
-				return character;
-		}
-
-		return null;
-	}
-    
-	//------------------------------------------------------------------------------------------------
 	//! Recursively change color on entity and all children using material parameters
 	static void ChangeColorRecursive(IEntity entity, Color color)
 	{
@@ -328,34 +294,6 @@ class LF_Utils : Managed
 		}
 	}
     
-	//------------------------------------------------------------------------------------------------
-	//! Set color on vehicle slots
-	static void SetSlotsColor(IEntity vehicle, int colorInt)
-	{
-		if (!vehicle)
-			return;
-        
-		Color color = Color.FromInt(colorInt);
-        
-		// Find slot manager
-		SlotManagerComponent slotManager = SlotManagerComponent.Cast(vehicle.FindComponent(SlotManagerComponent));
-		if (!slotManager)
-			return;
-        
-		// Apply color to all slotted entities
-		array<EntitySlotInfo> slots = {};
-		slotManager.GetSlotInfos(slots);
-        
-		foreach (EntitySlotInfo slotInfo : slots)
-		{
-			IEntity slottedEntity = slotInfo.GetAttachedEntity();
-			if (slottedEntity)
-			{
-				ChangeColorRecursive(slottedEntity, color);
-			}
-		}
-	}
-
 	//------------------------------------------------------------------------------------------------
 	//! The key the player's character-scoped records are saved under (bank, progression, wanted
 	//! reports, tickets, vehicles, ...): the record key of the account's active character (#331).

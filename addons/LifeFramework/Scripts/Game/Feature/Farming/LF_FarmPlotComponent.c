@@ -226,12 +226,6 @@ class LF_FarmPlotComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	int GetHarvestAmount()
-	{
-		return m_iHarvestAmount;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	array<ref LF_CropStage> GetStages()
 	{
 		return m_aStages;
@@ -279,13 +273,6 @@ class LF_FarmPlotComponent : ScriptComponent
 	void GetSlots(notnull array<vector> outSlots)
 	{
 		LF_StoreRules.ParseSlots(m_sSlots, outSlots);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Local crop copies this machine draws right now.
-	int GetVisualCount()
-	{
-		return m_aVisualIds.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------

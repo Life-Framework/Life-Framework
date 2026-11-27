@@ -16,8 +16,6 @@ import { parseStringTable, coverageError } from "./merge/union-string-table.mjs"
 import * as wt from "./wt.mjs";
 
 export const MARKDOWN_ROWS = ["docs/features.md", "docs/debug-log-triage.md"];
-// MARKDOWN_ROWS plus every docs/features/<area>.md the merge touched (listed from git objects by the caller).
-export const isMarkdownRows = (p) => MARKDOWN_ROWS.includes(p) || (p.startsWith("docs/features/") && p.endsWith(".md"));
 // Rows `tools\cli credits` regenerates from docs/credits.md; a credits regen may rename them.
 export const CREDITS_KEY_PREFIX = "LF-Credits_";
 

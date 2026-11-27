@@ -95,13 +95,6 @@ class LF_GossipBenchComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True when a live gossip resident stands within earshot of the bench.
-	bool GossipNear()
-	{
-		return Gossips().m_bFound;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The gossip residents within earshot of the bench.
 	protected LF_GossipQuery Gossips()
 	{

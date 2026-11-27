@@ -34,7 +34,7 @@
   `PARCEL`, else `CIVILIAN`), read through `LF_PlayerAccount` and
   `LF_CivilianJob.GetSignedUpJob` only. One credit is capped at 300 s (a wall-clock
   jump is not playtime). Keyed by the account uid, so gates read the person across
-  characters. Read with `Total(uid)`, `JobSeconds(uid, job)`, `CollectJobs`.
+  characters. Read with `Total(uid)`, `JobSeconds(uid, job)`.
   Persisted as the `playtime` payload (save version 26, `LF_PlaytimeRecord`).
   `account/playtime` and the `e2e/pass*` pair cover it.
 

@@ -53,7 +53,7 @@ by #2674, so `OK` now; sized below), `OK` bounded.
 | 8 | `Feature/Terms/LF_TermBook.c:337,341,366,367,435,440` | `result += text.Substring(i, length - i)`: the tail of a localised template after the last placeholder | A template text, hundreds of chars | OK until one template passes 8191 chars |
 | 9 | `Feature/Moderation/LF_StaffWebhook.c:161` `CutUtf8` | `text.Substring(0, end)`, `end` at most `MAX_TEXT` 1900 | 1900 | OK |
 | 10 | `Police/LF_PoliceApplicationGm.c:263` (160), `Ops/LF_HostSay.c:86` (200), `Racing/LF_RaceRecords.c:144` (48), `Police/LF_PoliceApplicationStaff.c:44-60` (one file line) | Substring with a fixed cap, or of one line | Under 300 | OK |
-| 11 | `Core/LF_Utils.c:426-431,688,728`, `LF_ComponentData.c:12`, `LF_ContentReload.c:35-37`, `LF_SaveIds.c:195`, `Shop/*`, `Comms/*`, `Rules/*Sheet*`, `Chess/*`, `Medic/LF_TreatmentBills.c`, `Police/LF_Wanted*`, `Packs/*` | Substring of a name, key, id, plate, date stamp, row name or path | A key or id, under 200 | OK |
+| 11 | `Core/LF_Utils.c:426-431,688,728`, `LF_ContentReload.c:35-37`, `LF_SaveIds.c:195`, `Shop/*`, `Comms/*`, `Rules/*Sheet*`, `Chess/*`, `Medic/LF_TreatmentBills.c`, `Police/LF_Wanted*`, `Packs/*` | Substring of a name, key, id, plate, date stamp, row name or path | A key or id, under 200 | OK |
 | 12 | `Feature/AgentHarness/*` (about 35 `Substring` calls); `RpcDo_LF_HarnessResult(.., string detail)` | Harness command parsing and result text | Dev tooling, not a player path | OK |
 | 13 | `string.Format(` with a payload argument | Every hit read passes a count, an id or a name and builds a log line (`LF_Debug`); none builds a saved or sent payload | Log lines only | OK |
 

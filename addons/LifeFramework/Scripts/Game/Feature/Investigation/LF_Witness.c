@@ -536,12 +536,6 @@ class LF_Witness
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int StatementCount()
-	{
-		return Statements().Count();
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The statements on a report, oldest first.
 	static void CollectFor(int report, notnull array<LF_WitnessStatement> outStatements)
 	{

@@ -161,15 +161,6 @@ export function defaultPackOut(root, name) {
   return join(root, "tmp", "workshop-pack", name);
 }
 
-// Every addon folder under addons/ with a project file is one of ADDONS.
-export function unknownAddonFolders(root) {
-  const dir = join(root, "addons");
-  if (!existsSync(dir)) return [];
-  return readdirSync(dir, { withFileTypes: true })
-    .filter((e) => e.isDirectory() && existsSync(join(dir, e.name, `${e.name}.gproj`)) && !ADDONS.some((a) => a.name === e.name))
-    .map((e) => e.name);
-}
-
 // Source files that pass two `-addonsDir` flags to one launch. Returns the offending line numbers.
 export function repeatedAddonsDirLines(text) {
   const lines = text.split("\n");

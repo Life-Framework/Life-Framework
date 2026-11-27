@@ -210,12 +210,6 @@ class LF_UITheme
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static Color Blur()
-	{
-		return Token(Base().m_sBlur, BuiltIn(LF_UIThemeConfig.BASE_ID).m_sBlur);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static Color Row()
 	{
 		return Token(Base().m_sRow, BuiltIn(LF_UIThemeConfig.BASE_ID).m_sRow);

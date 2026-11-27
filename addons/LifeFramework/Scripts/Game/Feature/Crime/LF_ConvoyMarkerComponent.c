@@ -77,18 +77,6 @@ class LF_ConvoyMarkerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	string GetMarkerId()
-	{
-		if (!m_sMarkerId.IsEmpty())
-			return m_sMarkerId;
-
-		if (GetOwner())
-			return GetOwner().GetName();
-
-		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
 	bool IsDrop()
 	{
 		return m_bDrop;

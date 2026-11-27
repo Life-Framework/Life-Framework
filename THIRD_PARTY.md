@@ -18,7 +18,6 @@ section 5 of `docs/ecosystem.md`. Paths below are under
 - Files:
   - `Feature/Money/LF_MoneyDeltaTracker.c` from `Scripts/Game/Data/OVT_MoneyDeltaTracker.c`
   - `Feature/Money/LF_MoneyFormat.c` from `Scripts/Game/Data/OVT_MoneyFormat.c`
-  - `Feature/Resources/LF_ResourceDefs.c` from `Scripts/Game/Data/OVT_ResourceDefs.c`
   - `Feature/Shop/LF_ShopRules.c` from `Scripts/Game/Data/OVT_ShopSellRules.c`
   - `Feature/Property/LF_HouseSpawnComponent.c` from `Scripts/Game/Components/OVT_SpawnPointComponent.c`
   - `Feature/Fuel/LF_FuelStockRules.c` from `Scripts/Game/Data/OVT_FuelPricing.c` and `OVT_FuelChargeLedger.c` (shape only)

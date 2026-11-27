@@ -275,11 +275,6 @@ class LF_NpcSpots
 		return s_iMoved;
 	}
 
-	static int CrowdedCount()
-	{
-		return s_iCrowded;
-	}
-
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{

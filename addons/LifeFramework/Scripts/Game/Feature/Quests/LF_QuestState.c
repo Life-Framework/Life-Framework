@@ -162,7 +162,5 @@ class LF_QuestState
 	}
 
 	LF_EQuestStatus GetStatus() { return m_eStatus; }
-	string GetQuestId() { return m_sQuestId; }
-	float GetDeadline() { return m_fDeadline; }
 	float GetLastTurnedInAt() { return m_fLastTurnedInAt; }
 }

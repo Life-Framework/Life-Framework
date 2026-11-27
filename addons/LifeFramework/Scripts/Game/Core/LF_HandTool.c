@@ -77,12 +77,6 @@ class LF_HandToolComponent : SCR_GadgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	bool EquipsOnPickup()
-	{
-		return m_bEquipOnPickup;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! A tool deleted within the pickup delay (a delivered parcel) must not leave the call queued.
 	void ~LF_HandToolComponent()
 	{

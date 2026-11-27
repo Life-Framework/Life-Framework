@@ -142,10 +142,7 @@
   `HandAdditiveTranslation` has no effect on a weapon, so moving the grip also
   needs a re-exported mesh with the pivot up the handle.
 
-### `LF_MiningSpawn` + `LF_MiningForge` — `Feature/Mining/`
-- ✅ Weighted ore spawn. A roll in `[0, total)` maps onto the first bin, including
-  a roll of 0. The spawn count is the shortfall to the configured amount, and
-  an over-full area spawns nothing. An empty list logs `LF_Debug.Error`.
+### `LF_MiningForge` — `Feature/Mining/`
 - ✅ Timed forge. One iron nugget
   (`{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et`) becomes one iron
   bar (`{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et`) after 5 seconds

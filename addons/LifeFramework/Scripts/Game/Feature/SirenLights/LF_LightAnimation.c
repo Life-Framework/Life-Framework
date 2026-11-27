@@ -117,10 +117,4 @@ class LF_LightAnimation
 		}
 	}
 
-	//------------------------------------------------------------------------------------------------
-	void SetPrecision(int precision)
-	{
-		if (precision < 1) m_Precision = 1;
-		else m_Precision = precision;
-	}
 }

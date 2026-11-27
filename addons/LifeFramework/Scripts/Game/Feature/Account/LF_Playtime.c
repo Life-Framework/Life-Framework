@@ -338,21 +338,6 @@ class LF_Playtime
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Fills jobs with every job the account has time in (staff tools).
-	static void CollectJobs(string accountUid, notnull array<string> jobs)
-	{
-		jobs.Clear();
-		if (!s_mRows)
-			return;
-
-		foreach (string key, LF_PlaytimeRecord row : s_mRows)
-		{
-			if (row.m_sAccountUid == accountUid)
-				jobs.Insert(row.m_sJob);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Persistence seam: credits the online clocks up to now, then copies every row.
 	static array<ref LF_PlaytimeRecord> ExportAll()
 	{

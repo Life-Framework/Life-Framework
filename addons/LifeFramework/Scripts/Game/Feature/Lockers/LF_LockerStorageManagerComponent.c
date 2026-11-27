@@ -365,12 +365,6 @@ class LF_LockerStorageManagerComponent : ScriptedInventoryStorageManagerComponen
 	}
 
 	//------------------------------------------------------------------------------------------------
-	string GetCharacterKey()
-	{
-		return m_sCharacterKey;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The engine asks this when a client's inventory request moves or removes an item the container
 	//! holds. Only the renter's own inventory may; everyone else is refused and it is logged.
 	override protected bool HandleAccessValidation(InventoryStorageManagerComponent instigatorManager, IEntity item, EInventoryManagerOperation operation)

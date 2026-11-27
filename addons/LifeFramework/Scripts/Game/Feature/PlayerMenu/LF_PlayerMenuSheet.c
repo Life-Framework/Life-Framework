@@ -1152,24 +1152,6 @@ class LF_PlayerMenuSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static string LicencesLine(notnull LF_PlayerMenuData data)
-	{
-		if (data.m_aLicenceKeys.IsEmpty())
-			return LF_Terms.Text("#LF-PlayerMenu_LicencesNone");
-
-		string names = string.Empty;
-		foreach (string key : data.m_aLicenceKeys)
-		{
-			if (!names.IsEmpty())
-				names += ", ";
-
-			names += Printed(key);
-		}
-
-		return LF_Terms.Text("#LF-PlayerMenu_Licences", names);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! A key's text, or the raw value when it is not a key.
 	protected static string Printed(string key)
 	{
@@ -1177,16 +1159,6 @@ class LF_PlayerMenuSheet
 			return key;
 
 		return LF_Terms.Text(key);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static string SummaryLine(notnull LF_PlayerMenuData data)
-	{
-		int done;
-		int total = data.CountGroup(LF_EPlayerMenuQuestGroup.ARRIVAL, done);
-		int otherDone;
-		int others = data.CountGroup(LF_EPlayerMenuQuestGroup.ERRANDS, otherDone);
-		return LF_Terms.Text("#LF-PlayerMenu_Summary", (done + otherDone).ToString(), (total + others).ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------

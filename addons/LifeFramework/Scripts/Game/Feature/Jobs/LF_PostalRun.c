@@ -887,15 +887,6 @@ class LF_PostalRun
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Tests: the run's clock starts `seconds` earlier (a run that took that long already).
-	static void AgeForTest(string uid, float seconds)
-	{
-		LF_PostalRunState run = GetRun(uid);
-		if (run)
-			run.m_fStartedAt = run.m_fStartedAt - seconds;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Tests: the driver went away from the van `seconds` ago.
 	static void AwayForTest(string uid, float seconds)
 	{
@@ -913,12 +904,6 @@ class LF_PostalRun
 	{
 		if (s_mEndedAt)
 			s_mEndedAt.Remove(uid);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static void SetNoSpotForTest(bool noSpot)
-	{
-		s_bTestNoSpot = noSpot;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -175,20 +175,6 @@ class LF_HeistStages
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Milliseconds left on the clock, or -1 with no limit or when not running.
-	int RemainingMs(int nowMs)
-	{
-		if (m_iState != LF_EHeistState.RUNNING || m_iClockMs <= 0)
-			return -1;
-
-		int left = m_iClockMs - (nowMs - m_iStartMs);
-		if (left < 0)
-			return 0;
-
-		return left;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	protected bool ClockExpired(int nowMs)
 	{
 		return m_iClockMs > 0 && (nowMs - m_iStartMs) >= m_iClockMs;
