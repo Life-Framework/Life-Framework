@@ -35,6 +35,16 @@ export function roadEndOf(detail, goal) {
   return end.length === 2 && end.every(Number.isFinite) ? end : goal;
 }
 
+// A drive that ended `stuck` (or `close` with this much left) hands the rest to the player on foot: out of the car, `walk to` the
+// goal. FOOT_ARRIVE_M is how near the walker must end; FOOT_SECONDS the walk's budget (sprinting is about 5 m/s).
+export const FOOT_ARRIVE_M = 8;
+export const FOOT_SECONDS = 150;
+export const FOOT_MIN_M = 25;
+export const FOOT_MAX_M = 400;
+export function needsFoot(status, restM) {
+  return /^(stuck|close|distance|timeout)/.test(String(status ?? "")) && restM > FOOT_MIN_M && restM <= FOOT_MAX_M;
+}
+
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(name);
   return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : fallback;
@@ -47,6 +57,7 @@ function selftest() {
   const g = roadEndOf("plan points=3 route=100m straight=90m", [1, 2]);
   if (g[0] !== 1 || g[1] !== 2) f.push("a plan with no near list keeps the goal");
   if (planOf("plan points=1 route=2m straight=3m")?.route !== 2) f.push("planOf is re-exported");
+  if (!needsFoot("stuck", 150) || needsFoot("stuck", 10) || needsFoot("arrived", 150) || needsFoot("stuck", 2500)) f.push("a stuck drive far from its goal walks on");
   if (LEGS.length !== 6 || LEGS.some((l) => !l.id || !l.to)) f.push("six legs, each with an id and a goal");
   for (const x of f) console.log(`FAIL  ${x}`);
   console.log(f.length ? "drive-night-tour selftest: FAIL" : "drive-night-tour selftest: PASS");
@@ -67,8 +78,9 @@ async function run(args) {
   const pin = () => on({ verb: "time", hour }, 15000);
   const veh = () => kv(on({ verb: "vehicle", words: ["state"] }).detail);
   const posOf = (s) => {
-    const m = /^(-?[\d.]+),(-?[\d.]+)/.exec(String(s.pos ?? ""));
-    return m ? [Number(m[1]), Number(m[2])] : null;
+    // `vehicle state` pos is x,y,z (y the height): the ground position is x and z.
+    const m = /^(-?[\d.]+),(-?[\d.]+),(-?[\d.]+)/.exec(String(s.pos ?? ""));
+    return m ? [Number(m[1]), Number(m[3])] : null;
   };
   // A picture of the client's screen, copied out of the capture folder under a name that says where it was taken.
   const shot = (name) => {
@@ -139,6 +151,31 @@ async function run(args) {
   console.log(`headlights: lights=${lamp.lights} fuel=${lamp.fuel}`);
   shot("0_lot_seat");
 
+  // On foot to the leg's goal: stop the car, get out, `walk to` the spot until `walk state` says arrived or timeout. The leg
+  // counts as arrived (`onfoot`) when the walker ends within FOOT_ARRIVE_M of it; the LEG line says so and how far it walked.
+  const walkTo = (leg, goal, rest) => {
+    on({ verb: "vehicle", words: ["stop"] }, 20000);
+    wait(1500);
+    const out = on({ verb: "vehicle", words: ["exit", "force"] }, 10000);
+    wait(1800);
+    const from = String(on({ verb: "walk", words: ["state"] }).detail ?? "");
+    const go = on({ verb: "walk", words: ["to", goal.join(","), String(FOOT_SECONDS), String(FOOT_ARRIVE_M)] }, 10000);
+    console.log(`ONFOOT ${leg.id}: the car stopped ${rest.toFixed(0)} m short; out of the car: ${out.status}; walk to ${goal.join(",")}: ${go.status} ${String(go.detail).slice(0, 100)}`);
+    let state = "";
+    const w0 = Date.now();
+    while (go.status === "ok" && Date.now() - w0 < (FOOT_SECONDS + 30) * 1000) {
+      wait(4000);
+      state = String(on({ verb: "walk", words: ["state"] }).detail ?? "");
+      console.log(`${leg.id} on foot t=${((Date.now() - w0) / 1000).toFixed(0)}s ${state}`);
+      if (/walk=(arrived|timeout)/.test(state)) break;
+    }
+    const left = Number(/left=(\d+)/.exec(state)?.[1] ?? 9999);
+    const ok = /walk=arrived/.test(state) || left <= FOOT_ARRIVE_M;
+    const line = `${ok ? "arrived" : "short"} on foot, car ${rest.toFixed(0)} m short, ${left} m left after ${((Date.now() - w0) / 1000).toFixed(0)} s (${state})`;
+    console.log(`ONFOOT ${leg.id}: ${line}`);
+    return { status: ok ? "onfoot_arrived" : "onfoot_short", line, from };
+  };
+
   // One leg: plan for the road end where it matters, drive, take pictures on the way and at the end.
   const legsOut = [];
   const driveLeg = (leg) => {
@@ -156,9 +193,12 @@ async function run(args) {
     let end = { status: "not_started" };
     // A shut gate or boom barrier across the way ends the drive (`why=...shut_door_...`): open it as a player does and
     // drive on, at most twice.
-    for (let attempt = 0; attempt < 3; attempt++) {
-    if (attempt > 0) {
-      if (!/shut_door/.test(end.why ?? "")) break;
+    for (let attempt = 0; attempt < 4; attempt++) {
+    if (attempt > 0 && !/shut_door/.test(end.why ?? "")) {
+      // Stuck in trees far from the goal (a car left in a forest by the leg before): back out and try the drive again.
+      if (end.status !== "stuck" || dist(posOf(veh()) ?? goal, goal) <= FOOT_MAX_M) break;
+      console.log(`RETRY ${leg.id}: stuck ${dist(posOf(veh()) ?? goal, goal).toFixed(0)} m from the goal (${end.why}); driving again`);
+    } else if (attempt > 0) {
       const carAt = String(veh().pos ?? "").split(",").map(Number);
       if (carAt.length !== 3) break;
       const gate = openShutGate(on, wait, carAt);
@@ -211,11 +251,18 @@ async function run(args) {
         end.tail = `status=${String(tailEnd.status ?? "?")} driven=${tailEnd.driven} err=${tailEnd.err}`;
       }
     }
+    // The car cannot get closer (the creep gave up in trees or on a bank): park and walk the rest as a player does.
+    const rest = dist(posOf(veh()) ?? goal, goal);
+    if (needsFoot(end.status, rest)) {
+      const foot = walkTo(leg, goal, rest);
+      end.status = foot.status;
+      end.foot = foot.line;
+    }
     const last = veh();
     const wall = (Date.now() - t0) / 1000;
     const row = { leg, from, end, last, wall, route: pl?.route, straight: pl?.straight, goal };
     legsOut.push(row);
-    console.log(`LEG ${leg.id}: ${end.status} driven=${end.driven} m time=${end.time}s wall=${wall.toFixed(0)}s err=${end.err} max=${end.max} backups=${end.backups} replans=${end.replans} fuel=${last.fuel}${end.why ? ` why=${end.why}` : ""}${end.stuckat ? ` stuckat=${end.stuckat}` : ""}${end.tail ? ` tail ${end.tail}` : ""}`);
+    console.log(`LEG ${leg.id}: ${end.status} driven=${end.driven} m time=${end.time}s wall=${wall.toFixed(0)}s err=${end.err} max=${end.max} backups=${end.backups} replans=${end.replans} fuel=${last.fuel}${end.why ? ` why=${end.why}` : ""}${end.stuckat ? ` stuckat=${end.stuckat}` : ""}${end.tail ? ` tail ${end.tail}` : ""}${end.foot ? ` ONFOOT ${end.foot}` : ""}`);
     return row;
   };
 
@@ -250,7 +297,7 @@ async function run(args) {
     }
     on({ verb: "vehicle", words: ["lights", "on"] });
     const row = driveLeg(leg);
-    const arrived = /arrived|distance|close/.test(row.end.status);
+    const arrived = /arrived|distance|close|onfoot_arrived/.test(row.end.status);
     step(`${leg.id} ${leg.label}`, arrived, `${row.end.status} ${row.end.driven} m in ${row.end.time} s, err ${row.end.err}, ${row.end.backups} back-ups${row.end.why ? `, why ${row.end.why}` : ""}`);
     arriveAt(leg);
   }

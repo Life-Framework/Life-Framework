@@ -1,0 +1,33 @@
+FrameWidgetClass "{A0B19919AC53C135}" {
+ Name "DownedClockRoot"
+ Slot FrameWidgetSlot "{A25D58A56E30762A}" {
+  Anchor 0 0 1 1
+ }
+ {
+  TextWidgetClass "{8DA5E92E00B46B74}" {
+   Name "Line"
+   Slot FrameWidgetSlot "{3B75BF873FD7F217}" {
+    Anchor 0.5 0.84 0.5 0.84
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 1100
+    OffsetRight -1100
+    SizeY 36
+    OffsetBottom -36
+    Alignment 0.5 0
+   }
+   "Is Visible" 1
+   Color 0.96 0.93 0.84 1
+   Text ""
+   "Font Size" 24
+   "Min Font Size" 24
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{5991909E034BFF2E}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+ }
+}

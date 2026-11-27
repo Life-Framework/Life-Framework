@@ -14,6 +14,8 @@ import { arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } fr
 //      spot is refused and the wallet stays;
 //   4. `exportorder give rest` adds the last unit: the hand-in pays the order;
 //   5. a second hand-in pays nothing.
+// `--kind planks` first draws the 120-plank order as the board's first line, so step 3 takes the truck branch
+// (own a truck: run truck-check-proof earlier in the same session; the proof parks it at the spot, unlocks, loads).
 // Verdicts read the wallet (`state`) and the server's [LFDebug:ExportOrder] lines.
 const BOARD = "Grid_slice_4411_R0";
 const SPOT = "Grid_slice_4411_CraneSpot";
@@ -57,6 +59,19 @@ async function runExportCraneProof() {
   // The refusal below is for a level-1 hauler: a checkpoint or an earlier proof may have left DELIVERY higher.
   on(1, { verb: "levelset", words: ["DELIVERY", "1"] }, 10000);
   wait(1500);
+  // --kind planks: the first line of the book becomes the 120-plank order (harness `exportorder draw`), so the
+  // board's first real take row takes it and the truck branch below runs. Drawn before the board is first read.
+  const kind = flag("--kind", "");
+  if (kind) {
+    const m0 = exportLines().length;
+    on(1, { verb: "exportorder", words: ["draw", kind] }, 10000);
+    let drawn = null;
+    for (let i = 0; i < 8 && !drawn; i++) {
+      wait(1000);
+      drawn = /harness export draw \S+: order \d+ \((\d+) x ([^)]+)\) is the first line/.exec(newLines(m0));
+    }
+    step(`the book's first line is a '${kind}' order`, !!drawn, drawn ? `${drawn[1]} x ${drawn[2]}` : newLines(m0).slice(0, 200));
+  }
 
   // 1. The board's real take row, for a level-1 hauler.
   // The first stand from the far spawn can land short while the island streams in: stand twice.
@@ -91,28 +106,27 @@ async function runExportCraneProof() {
   const before = cash();
   mark = exportLines().length;
   on(1, { verb: "exportorder", words: ["give", "short"] }, 10000);
-  // The pockets hold a few planks: an order of 40 to 120 units cannot be carried in them (2026-11-26). When the
-  // server says it gave fewer than count - 1, the goods go into the owner's truck instead, the way a player loads it.
-  let gave = null;
-  for (let i = 0; i < 8 && !gave; i++) {
-    wait(1000);
-    gave = /harness export give: (\d+) of (\d+) x/.exec(newLines(mark));
-  }
-  const pocketsHoldIt = !gave || Number(gave[1]) >= Number(gave[2]);
+  // The pockets hold a few planks: an order of 40 to 120 units cannot be carried in them (2026-11-26). The give
+  // log counts what was spawned, not what stayed (the carry limit drops the excess a moment later), so what the
+  // pockets hold is read from the crane's own refusal: "brought N of M". Short of M - 1 and the goods go into the
+  // owner's truck instead, the way a player loads it.
+  wait(3000);
   on(1, { verb: "stand", entityName: spot }, 10000);
   wait(2500);
   shot("spot");
+  mark = exportLines().length;
+  handIn();
+  shot("short");
+  const brought = /hand-in refused: \S+ brought (\d+) of (\d+)/.exec(newLines(mark));
+  step("the server refuses the short count", !!brought, newLines(mark).slice(0, 200));
+  step("a short hand-in pays nothing", cash() === before, `cash ${cash()} (before ${before})`);
+  const pocketsHoldIt = !brought || Number(brought[1]) >= Number(brought[2]) - 1;
   if (pocketsHoldIt) {
-    mark = exportLines().length;
-    handIn();
-    shot("short");
-    step("the server refuses the short count", /hand-in refused: \S+ brought \d+ of \d+/.test(newLines(mark)), newLines(mark).slice(0, 200));
-    step("a short hand-in pays nothing", cash() === before, `cash ${cash()} (before ${before})`);
     // 4. The last unit: paid.
     on(1, { verb: "exportorder", words: ["give", "rest"] }, 10000);
     wait(1500);
   } else {
-    step(`the order needs a truck (the pockets held ${gave[1]} of ${gave[2]}): the character owns one`, ownsTruck, "run truck-check-proof first: a bought truck stays parked and the proof then keeps the pack and its key");
+    step(`the order needs a truck (the pockets held ${brought[1]} of ${brought[2]}): the character owns one`, ownsTruck, "run truck-check-proof first: a bought truck stays parked and the proof then keeps the pack and its key");
     if (ownsTruck) {
       on(1, { verb: "parkat", words: [spot, "2.4"] }, 15000);
       wait(1500);
@@ -144,6 +158,9 @@ async function runExportCraneProof() {
 
 export default {
   name: "export-crane-proof",
-  usage: "export-crane-proof [--board <entity>] [--spot <entity>] [--name <prefix>]   (up --mission grid --profile full)",
+  // The runner's per-proof reset would clear the pack and so the key of a truck bought by truck-check-proof; the
+  // proof resets the player itself (resetplayer) only when the character owns no truck.
+  noReset: true,
+  usage: "export-crane-proof [--board <entity>] [--spot <entity>] [--name <prefix>] [--kind planks]   (up --mission grid --profile full; --kind planks after truck-check-proof runs the truck branch)",
   run: () => runExportCraneProof(),
 };

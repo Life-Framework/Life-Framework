@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-19 with `tools/cli test --no-build --only LF_Test_BedWakePose` on the unfixed beds: "the first-spawn wake point is on the floor (y 0.3, floor 0)", "... beside the mattress, not on it (bed x 0 ...)" and both stand points at the bed height failed; green with LF_BedWakePose.
+// red-proof: observed 2026-11-19 with `tools/cli test --no-build --only LF_Test_BedWakePose` on the unfixed beds: "the first-spawn wake point is on the floor (y 0.3, floor 0)", "... beside the mattress, not on it (bed x 0 ...)" and both stand points at the bed height failed; green with LF_BedWakePose. #5153 (2026-11-27): the laid-patient check reads 0 m above the bed origin on the old GetWakeTransform (bed origin + a zero offset), 0.52 m on the fixed one.
 //! The arrival bed float (2026-11-19): a body that wakes in a first-spawn or hospital bed is spawned
 //! with its feet on the floor at the bed's free side, clear of the mattress, and steps off onto the
 //! floor; never at the bed origin, which physics pushed up onto the mattress so the bed wake
@@ -66,6 +66,18 @@ class LF_Test_BedWakePose : LF_Test
 		away[1] = 0;
 		away.Normalize();
 		ctx.True(vector.Dot(sit[2], away) < -0.9, "the waking body faces the bed");
+
+		// A patient laid in the hospital bed lies on the mattress top, never at the bed origin on the
+		// floor under the frame (#5153), and has a floor spot to step down to beside the bed.
+		vector lay[4];
+		hospital.GetWakeTransform(lay);
+		vector hospitalMins, hospitalMaxs;
+		hospitalBed.GetBounds(hospitalMins, hospitalMaxs);
+		float layHeight = lay[3][1] - hospitalBed.GetOrigin()[1];
+		ctx.True(layHeight >= hospitalMaxs[1] * 0.5 && layHeight <= hospitalMaxs[1] + 0.2, string.Format("a patient laid in the hospital bed lies on the mattress (%1 m above the bed origin, bed top %2)", layHeight, hospitalMaxs[1]));
+		vector stepSpot;
+		ctx.True(hospital.FindStandSpot(null, stepSpot), "the hospital bed has a floor spot to step down to");
+		ctx.True(Math.AbsFloat(stepSpot[1] - world.GetSurfaceY(stepSpot[0], stepSpot[2])) <= TOLERANCE, "the step-down spot is on the floor");
 
 		// The sit point in bed space: the side of the stand offset, kept off the bed ends.
 		vector bedMins = "-0.58 0 -1.25";

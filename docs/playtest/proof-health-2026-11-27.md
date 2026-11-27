@@ -28,7 +28,7 @@ Hours are the X-6 checkpoint each proof belongs to (`docs/playtest/rounds/2026-1
 | 5 | `mining-iron-chain` | pass | pass (13 of 13) | |
 | 5 | `iron-chain-proof` | pass | pass (14 of 14) | run it 5 min or more after `mining-iron-chain` |
 | 6 | `casualty-call` | pass | pass | it runs `resetplayer`, which clears the pack and so the truck key (see `truck-haul-proof`) |
-| 7 | `export-crane-proof` (`--board Fit_saint_philippe_dock_warehouse_export_board --spot Fit_saint_philippe_dock_dock_crane_spot`) | FAIL | **pass** (order of 40 iron bars, $1,040) | **stale**: it assumed a level-1 hauler (a character that already had DELIVERY took the order at the refusal step) and put the whole order in the pockets (a 120-plank order does not fit). Now `levelset DELIVERY 1` first, keeps the pack when the character owns a truck (the key), and when the pockets cannot hold the order it parks the owned truck at the crane spot, unlocks it and loads it with `exportorder give truck`. **The truck branch has not run live** (every run drew the 40-bar order); it needs a bought truck (run `truck-check-proof` first). A second run in one session fails at the take step because the board's order is already held: one run per session |
+| 7 | `export-crane-proof` (`--board Fit_saint_philippe_dock_warehouse_export_board --spot Fit_saint_philippe_dock_dock_crane_spot`) | FAIL | **pass** (order of 40 iron bars, $1,040) | **stale**: it assumed a level-1 hauler (a character that already had DELIVERY took the order at the refusal step) and put the whole order in the pockets (a 120-plank order does not fit). Now `levelset DELIVERY 1` first, keeps the pack when the character owns a truck (the key), and when the pockets cannot hold the order it parks the owned truck at the crane spot, unlocks it and loads it with `exportorder give truck`. **The truck branch now runs live** (export-truck-branch, 11-27, one lowspec island session: `truck-check-proof`, then `export-crane-proof --board ... --spot ... --kind planks`: order of 120 planks, the pockets held 3, truck parked at the crane spot, unlocked, loaded, hand-in paid $1,018, second paid nothing). Three proof faults hid it: `--kind planks` is new (harness `exportorder draw planks` puts the plank order first, since every run drew the 40-bar one); the give line counted planks dropped at the feet as given (119 of 119), so the proof never chose the truck branch, and it now reads "brought N of M" from the short hand-in refusal; and the runner's per-proof reset cleared the pack and with it the truck key (`#EL-VehicleLock_MissingKey`), so the proof is `noReset`. No game bug. A second run in one session fails at the take step because the board's order is already held: one run per session |
 | 8 | `booking-desk-proof` | pass | pass (24 steps) | |
 | 8 | `outpost-north-proof` | pass | pass | |
 | 9 | `level-set-proof` | pass | pass | |
@@ -76,7 +76,7 @@ Sessions on this PC from `ws/proof-health-1127-r2`, `--mission island --profile 
 
 1. The first-two-hours flow, then `starter-gates-proof` on the same character, in any order: the proof sets up its own precondition (`_preconditions.mjs`, rc-proof-order). It puts every trade back to level 1 and skips the clerk when `arrival_register` is already turned in (the gate is the quest, not the card; `resetplayer` empties the pack but the quest stays). The one thing it cannot reset is a criminal record (no harness verb clears one), so it still goes before the police and jail proofs.
 2. Hour 6 `casualty-call` resets the pack; do the truck proofs on a character that has not been reset since `truck-check-proof` bought the truck: `truck-check-proof` then `truck-haul-proof` back to back (about 2 min plus 6 min), before the restart or after it (the haul proof collects an impounded truck).
-3. Hour 7 `export-crane-proof` once per session, with a bought truck parked first if the order drawn is the 120 planks.
+3. Hour 7 `export-crane-proof` once per session, with a bought truck parked first if the order drawn is the 120 planks (`--kind planks` forces it, straight after `truck-check-proof`).
 4. Hour 8 `outpost-north-proof` on a character at standing 0 (`repgrant UNDERWORLD 0`), once per session; `booking-desk-proof` with two clients; it holds the officer's handcuffs before every cuffing and grants a pair through `itemgive` when the pack has none (the duty kit is issued once per account; step 1b once flaked `NO_CUFFS` with the officer holding no cuffs yet), so a fresh or a reused officer both pass.
 5. Police and crew proofs (`island-cop-proof`, `island-vault-proof`, `island-bank-door-clear-proof`) each want a fresh two-client session, or at least a character that has not used the cop kit; `island-vault-proof` and `island-bank-door-clear-proof` both take the vault's single bag.
 6. `mining-iron-chain` and `iron-chain-proof` 5 minutes apart at least.
@@ -85,6 +85,27 @@ Sessions on this PC from `ws/proof-health-1127-r2`, `--mission island --profile 
 ### Run `ui-click-smoke` first
 
 8. **`ui-click-smoke` goes first, right after the first-two-hours flow and before the gated proofs** (one lowspec island session, `up --mission island --profile lowspec --hold 20`, then `session.mjs ui-click-smoke`, about 4 min). It presses the first actionable row or button of the F2 Next, errand and skill lists, a shop, the licence desk, the car lot, the ATM and the charge sheet through the real widgets, and fails on any `widget_not_found` (the #5099 class: a row with no button, found by no proof for five days). It buys one cheap row at a till and the lot and runs `checkpoint 10`, so give it its own session: later proofs that want a fresh character (`starter-gates-proof`, `island-cop-proof`) must not follow it in the same session (`ui-click-smoke fresh` keeps the new character). A red smoke is a dead button: file the issue before the rest of the run.
+
+### Proofs added the evening of 2026-11-27 (placed in the run order)
+
+Docs only: this branch ran none of them; each was run by the PR that added it (arguments and what each reads are in
+`agent-box/README.md`, "Proofs added 2026-11-27"). Where they go:
+
+9. **`map-search-proof`** and **`lot-sheet-proof`** are read-only (neither buys or changes the character), so they go
+   right after `ui-click-smoke`, in any order: `map-search-proof` in a lowspec session, `lot-sheet-proof` (hour 10, the
+   car lot and truck yard sheets) in a full one because it takes `ui` pictures.
+10. **`downed-call`, `downed-flow-proof` and `clinic-bed-proof`** (hour 8, the medic side) in one two-client full session
+    before the police proofs of step 5: each clocks one client in at the clinic desk and downs the other, and each
+    (the default for a proof) runs the harness reset first, so the order inside the session does not matter. After
+    `down`, grep the three console logs for `GetCharacterControlType` (`downed-flow-proof` prints their directory).
+11. **`crime-playtest-proof`** (hour 8, the police and crime loop played through) in its own fresh two-client full
+    session next to step 5: the cop signs up at the duty desk and the civilian robs the fuel till, as in
+    `island-cop-proof`, so it follows the same rule, a fresh session or characters that have not used the cop kit. It
+    books the suspect and the civilian pays bail at the cell phone, so it ends with the suspect free.
+12. **`jip-sweep-proof`** goes last of the two-client proofs, in a fresh lowspec session with `up --clients 2`: client 1
+    buys a car and a house and is cuffed, and the proof does not reset the character (`noReset`), so no later proof
+    in that session wants it. It joins client 3 itself. `--selftest` runs its token parsers with no game.
+13. Before every `session down` in this run: `session.mjs pull <dir>`. `down` deletes the client screenshot folders.
 
 ## Files changed
 

@@ -5,8 +5,11 @@
 //!   take        the caller takes the open order with the smallest count, at the gate level (the
 //!               DELIVERY track's level is not reached in a proof); the board's level refusal is a
 //!               separate, real take.
-//!   give short  the server puts the held order's count minus one of its goods in the caller's pockets;
-//!   give rest   one more unit (overflow drops at the feet);
+//!   give short  the server puts the held order's count minus one of its goods in the caller's pockets
+//!               (what does not fit drops at the feet, and the log line counts the drops as given);
+//!   give rest   one more unit;
+//!   draw <kind> opens an order of the template whose id starts with <kind> (planks) as the board's first
+//!               line, so the board's first take row takes it (the truck branch of the proof needs it);
 //!   give truck  the held order's whole count into the storage of the nearest vehicle within 12 m, what a
 //!               player does with the inventory screen when loading the truck (the harness cannot drag).
 //------------------------------------------------------------------------------------------------
@@ -17,9 +20,9 @@ modded class LF_AgentHarnessVerbs
 		if (cmd.Verb != "exportorder")
 			return super.Handle(cmd);
 
-		if (cmd.Arg1 != "take" && cmd.Arg1 != "give")
+		if (cmd.Arg1 != "take" && cmd.Arg1 != "give" && cmd.Arg1 != "draw")
 		{
-			LF_AgentHarness.Answer(cmd.Id, "error", "exportorder take|give short|rest");
+			LF_AgentHarness.Answer(cmd.Id, "error", "exportorder take|give short|rest|truck|draw <kind>");
 			return true;
 		}
 
@@ -67,6 +70,16 @@ modded class SCR_PlayerController
 		}
 
 		LF_ExportOrderBook.Tick(LF_ExportOrderBook.CurrentMinute());
+		if (what == "draw")
+		{
+			LF_ExportOrder drawn = LF_ExportOrderBook.OpenFirst(mode, LF_ExportOrderBook.CurrentMinute());
+			if (drawn)
+				LF_Debug.Info(LF_ExportOrderBook.FEATURE, string.Format("harness export draw %1: order %2 (%3 x %4) is the first line of the book", mode, drawn.m_iId, drawn.m_iCount, drawn.m_sGoodsName));
+			else
+				LF_Debug.Warn(LF_ExportOrderBook.FEATURE, string.Format("harness export draw refused: no priced order kind starts with '%1'", mode));
+			return;
+		}
+
 		if (what == "take")
 		{
 			LF_ExportOrder smallest;
@@ -104,6 +117,8 @@ modded class SCR_PlayerController
 		if (mode == "short")
 			count = held.m_iCount - 1;
 
+		// The count is what AddAmount spawned: the carry limit drops the pockets' excess a moment later (119 of
+		// 119 here, then the crane counts 3), so the proof reads what the crane counts from its refusal line.
 		int given = LF_InventoryUtils.AddAmount(user, held.m_Goods, count, true);
 		LF_Debug.Info(LF_ExportOrderBook.FEATURE, string.Format("harness export give: %1 of %2 x %3 to %4", given, count, held.m_sGoodsName, uid));
 	}

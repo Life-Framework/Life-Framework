@@ -46,6 +46,8 @@ class LF_ExportOrderBook
 	static const string REFUSE_HOLDS_ONE = "#LF-ExportOrder_RefuseHoldsOne";
 	static const string REFUSE_NONE_HELD = "#LF-ExportOrder_RefuseNoneHeld";
 	static const string REFUSE_SHORT = "#LF-ExportOrder_RefuseShort";
+	//! The short-count refusal that names how many units are still missing (%1); REFUSE_SHORT stays for a short with no count.
+	static const string REFUSE_SHORT_COUNT = "#LF-ExportOrder_RefuseShortCount";
 
 	protected static ref array<ref LF_ExportOrder> s_aOrders;
 	protected static int s_iNextId = 1;
@@ -152,11 +154,45 @@ class LF_ExportOrderBook
 	{
 		LF_ExportOrderTemplate template = config.m_aTemplates[s_iNextTemplate % config.m_aTemplates.Count()];
 		s_iNextTemplate++;
+		LF_ExportOrder order = Build(config, template, now);
+		if (order)
+			Orders().Insert(order);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Harness only (`exportorder draw <kind>`, gated at the RPC): opens one order of the template whose
+	//! id starts with `kindPrefix` as the FIRST line of the book, so the board's first take row takes it.
+	//! The rotation is left alone. A proof needs the 120-plank order, which only a truck carries.
+	//! \return The order, or null when no template matches or it has no price.
+	static LF_ExportOrder OpenFirst(string kindPrefix, int now)
+	{
+		LF_ExportOrderConfig config = LF_ExportOrderConfig.Get();
+		if (!config || kindPrefix.IsEmpty())
+			return null;
+
+		foreach (LF_ExportOrderTemplate template : config.m_aTemplates)
+		{
+			if (!template || !template.m_sId.StartsWith(kindPrefix))
+				continue;
+
+			LF_ExportOrder order = Build(config, template, now);
+			if (order)
+				Orders().InsertAt(order, 0);
+
+			return order;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static LF_ExportOrder Build(notnull LF_ExportOrderConfig config, notnull LF_ExportOrderTemplate template, int now)
+	{
 		int pay = config.PayForTemplate(template);
 		if (pay <= 0)
 		{
 			LF_Debug.Error(FEATURE, string.Format("export order kind %1 not opened: no wholesale price for %2 (template or market row)", template.m_sId, template.m_Goods));
-			return;
+			return null;
 		}
 
 		LF_ExportOrder order = new LF_ExportOrder();
@@ -169,8 +205,8 @@ class LF_ExportOrderBook
 		order.m_iCount = template.m_iCount;
 		order.m_iPay = pay;
 		order.m_iDeadlineMinute = now + template.m_iGameMinutes;
-		Orders().Insert(order);
 		LF_Debug.Info(FEATURE, string.Format("order %1 open: %2 x %3 for $%4 by %5", order.m_iId, order.m_iCount, order.m_sTemplate, order.m_iPay, order.DeadlineText()));
+		return order;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -326,7 +326,7 @@ class LF_HarvestContract
 				if (removed > 0)
 					LF_MoneyUtils.AddAmount(user, removed, REASON_DEPOSIT + "-rollback");
 
-				return Refuse(LF_EHarvestContract.NO_CASH, string.Format("%1 could not pay the $%2 deposit", key, DEPOSIT));
+				return Refuse(LF_EHarvestContract.NO_CASH, string.Format("%1 could not pay the %2 deposit", key, LF_MoneyFormat.FormatMoney(DEPOSIT)));
 			}
 
 			deposit = DEPOSIT;
