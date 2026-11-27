@@ -366,6 +366,38 @@ worktree: `LIVE` when an edit, commit or session log landed in the last 15 minut
 server logs), `done (ship)` / `done (heal)`, `idle`, or `none`. An `UNKNOWN` state is re-read through the REST
 API, which makes GitHub compute it.
 
+### Auto-heal on GitHub (`pr-autoheal`)
+
+GitHub runs no custom merge driver, and it ignores `merge=union` too (tested 2026-11-27, PRs #5030-#5033: the union
+file went CONFLICTING like the control). So every merge to main turned the other PRs that append rows to a
+driver-merged file CONFLICTING, and each one cost a `prs heal` (about 15 sweep PRs on the night of 2026-11-26).
+
+`.github/workflows/pr-autoheal.yml` runs `tools/pr-autoheal.mjs` on every push to main, every 20 minutes and by hand.
+For each open, non-draft, same-repo PR into main with no `no-autoheal` label:
+
+1. `git merge-tree` with no drivers (GitHub's view). Clean: skipped.
+2. Every conflicted path must carry a `merge=lf-*` attribute at the PR head. Any other conflict is left for a human.
+3. Merges `origin/main` into the PR head with `tools/merge/drivers.gitconfig` included and pushes the merge commit,
+   never forced. A push that lost a race with the agent, or that would change a workflow file (GITHUB_TOKEN may not),
+   is skipped and logged.
+4. GitHub parks the `pull_request` runs that a GITHUB_TOKEN push starts as `action_required` (the bot counts as a
+   first-time contributor), so the required `validate` check never reports. The script approves the parked runs on
+   the exact head it pushed (`POST /actions/runs/<id>/approve`). A `workflow_dispatch` validate run does not work: its
+   check suite is not linked to the PR, which stays BLOCKED (PR #5038).
+
+Proof, 2026-11-27: two scratch PRs appended to `docs/features/atmosphere.md` on a scratch base. After one merged, the
+other went CONFLICTING, the workflow healed it and it read MERGEABLE (#5034, #5035). A PR into main CONFLICTING on the
+same file was healed, its validate run approved by the workflow's own token, and it read MERGEABLE with `validate`
+green and `mergeStateStatus` CLEAN (#5040). The island baseline (`tools/place/island-baseline.json`) got its own driver
+(`lf-island-baseline`, a three-way row-set merge) in the same change, so two shrinks no longer conflict.
+
+The agent's side: the remote branch now has a commit the worktree lacks. `wt ship` treats a non-fast-forward push
+refusal as that case: it fetches the branch, merges it with the drivers and pushes again (`ship-direct-selftest`).
+A plain `git push` from the worktree needs `git pull --no-rebase` first. `prs heal` stays the fallback for what the
+workflow skips.
+
+### Healing by hand (`prs heal`)
+
 **Hand-off marker (2026-11-27).** On 2026-11-25 six night-light PRs that appended to `docs/features/*.md` sat
 CONFLICTING for about an hour. Each agent had shipped and stopped. The ship's own logs in `tmp/`, and then heal's own
 merge commit (a fresh reflog entry), read as `LIVE 7m`, so every pass skipped the PR it had just healed while main

@@ -26,6 +26,7 @@ import { removeWorktree, safeRemoveTree } from "./link-safety.mjs";
 import { mergeStringTables } from "./merge/union-string-table.mjs";
 import { mergeLines } from "./merge/merge-markdown.mjs";
 import { mergeLintBaselines } from "./merge/union-lint-baseline.mjs";
+import { mergeIslandBaselines } from "./merge/merge-island-baseline.mjs";
 import { safetyCheck } from "./prs-safety.mjs";
 import { cmdSchedule } from "./prs-schedule.mjs";
 import * as shipQ from "./lib/ship-queue.mjs";
@@ -66,13 +67,15 @@ export function conflictKind(path) {
   // Per-area Feature.md (#1371 failed on Ops/Feature.md): appended sections merge like the docs above.
   if (/^addons\/[^/]+\/Scripts\/Game\/Feature\/[^/]+\/Feature\.md$/.test(p)) return "markdown";
   if (p === "tools/validation/enforce-lint-baseline.json") return "lint-baseline";
+  // Shrink-only row set; two branches that each drop rows conflict in a line merge.
+  if (p === "tools/place/island-baseline.json") return "island-baseline";
   // Generated from the Feature/ scan: rewritten from the merged sources.
   if (p === "docs/config-inventory.md") return "regen-config-inventory";
   return null;
 }
 
 // Resolution order: sources before what is generated from them.
-const KIND_ORDER = ["string-table", "markdown", "lint-baseline", "regen-localization", "regen-config-inventory"];
+const KIND_ORDER = ["string-table", "markdown", "lint-baseline", "island-baseline", "regen-localization", "regen-config-inventory"];
 
 // The CLI command that rewrites each regen- kind (credits also rewrites the string tables).
 const REGEN_COMMANDS = {
@@ -187,6 +190,7 @@ function resolveByStages(wtPath, path, kind) {
   let merged;
   if (kind === "string-table") merged = mergeStringTables(base, ours, theirs);
   else if (kind === "markdown") merged = mergeLines(base, ours, theirs);
+  else if (kind === "island-baseline") merged = mergeIslandBaselines(base, ours, theirs);
   else merged = mergeLintBaselines(base, ours, theirs);
   if (!merged.ok) return { ok: false, error: merged.error ?? `${path}: both sides changed the same lines` };
   writeFileSync(join(wtPath, path), merged.text);

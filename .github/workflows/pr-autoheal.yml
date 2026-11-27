@@ -1,0 +1,40 @@
+# Keeps open PRs mergeable when their only conflicts are in driver-merged files (docs/features/*.md, the string
+# table, the language confs, debug-log-triage.md, the island baseline ...). GitHub runs no custom merge driver, so
+# every merge to main used to turn the other row-appending PRs CONFLICTING until an agent or `prs heal` merged main
+# in by hand. This job merges origin/main into each such PR with tools/merge/drivers.gitconfig, pushes the merge
+# commit, and approves the validate run GitHub parks for that bot push (action_required), so the PR's required check
+# reports and auto-merge goes ahead. Any other conflict is left alone. The script and its rules: tools/pr-autoheal.mjs.
+name: pr-autoheal
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write # push the merge commit to the PR branch
+  actions: write # approve the parked validate run on the healed head
+  pull-requests: read
+
+concurrency:
+  group: pr-autoheal
+  cancel-in-progress: false
+
+jobs:
+  heal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Merge main into PRs whose only conflicts are driver-merged files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: node tools/pr-autoheal.mjs
