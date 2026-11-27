@@ -469,7 +469,10 @@
   duty pay. The faction is the duty role: POLICE only while clocked in.
   Feedback: the vanilla pick-up gesture on the acting client, the range control
   panel button click (`SOUND_RANGECP_STARTBUTTON`) broadcast from the desk, then
-  a toast. Death on duty ends the shift: the body keeps the police gear, the
+  a toast. The clock-in toast (`#LF-Duty_ClockedIn`, 6 s, police and medic desks) says the
+  clothes, cash and things wait in the duty locker until clock-out: the carried cash goes into the
+  stash with the rest, and before 2026-11-27 the readout dropped to $0 with only "You are now on duty"
+  (medic playtest). Clock-out still reads "You are now off duty". Death on duty ends the shift: the body keeps the police gear, the
   civilian stash becomes the carried snapshot the respawn restores, and the
   next shift starts from the starter kit. Going on duty starts the rank clock;
   going off duty settles it. `PoliceStation_Debug` and `PoliceDutyNPC` no
@@ -482,6 +485,15 @@
   for the clock-out. A second clock-out, a clock-out with no clock-in, and a
   non-police account pay nothing. Unpaid seconds are session state: a restart
   during a shift drops that shift's pay, it never pays twice.
+- 🔧 **Clock-out names the locker cash apart from the pay** (#5148, crime playtest 2026-11-27; merged, in-dev). The
+  clock-in side is the `#LF-Duty_ClockedIn` toast (#5157: clothes, cash and things wait in the duty locker). At
+  clock-out the money HUD flashed the locker cash and the shift pay as one rise; now `#LF-Duty_LockerCashReturned`
+  ("Your $100 cash is back from your duty locker.") is its own line beside the `#EL-Duty_Paid` pay toast.
+  `LF_DutyLocker.LockerCash(characterId)` counts the cash in `civilian_stash` (legacy cash prefabs too, not marked
+  notes); `LF_DutyAction` reads it before clock-out empties the locker. No cash, no toast.
+  Pay is unchanged. A restart mid-shift keeps the locker cash once: `wt e2e` saves an on-duty officer with $100 in the
+  locker and after the restart finds $100 in `civilian_stash`, none in the carried police gear, and gets it back once at
+  clock-out (`keepCash` off still strips it, `persistence/keep-stash`). WORLD `police/duty-locker-cash`.
 - 🔨 **Duty pay and rank count only a capped, connected shift** (#2416, in-dev). `LF_PoliceRanks.SettleDutyAt` counts at
   most `dutyShiftMaxSeconds` (police config, 10800 = 3 h; 0 = no cap, #2622) of one clock-in for pay and rank (`ShiftCredit`); the clock runs on
   uncounted until the officer clocks out and in again, so an AFK officer earns at most one capped shift per visit to
@@ -1053,3 +1065,7 @@ The short container: a tally clerk leaves one container short on the books, and 
 - 🧪 **Playtest town jail work stations (#4679, 2026-11-24, merged, in-dev):** `Everon1989Town_Layers/Village_Jail.layer` places the island's three jail stations (`LF_JailLaundryTub`, `LF_JailKitchenSink`, `LF_JailYardBroom`, jobs `laundry_tub`, `kitchen_sink`, `yard_broom`) in the town's walled yard, south of the cell door's walk-up, so a jailed player can shorten the sentence with the island's props. The core `Roadmap_Jail_ScrubBucket` and `Roadmap_Jail_LaundryBasket` stay (core DebugWorld proof `jail-work-proof`). The cell and outer doors already matched the island's (`EL_JailDoor`, #4336). Proof: session, `Sign_DebugJailMe`, work at the tub (`jail` 29 to 19 s), `stand Roadmap_Jail_Door` ends at the cell origin (the locked door keeps the prisoner in).
 - 🔧 (2026-11-27, crime playtest, `docs/playtest/agent-playtest-crime-2026-11-27.md`) **Bail no longer ends with "Sentence served".** A prisoner who paid bail read "Bail of $2,250 paid from your bank. You are free to go." and then "Sentence served". `LF_Jail.EndOnBail` completes the sentence with no served toast (`Complete(uid, false)` -> `Release(uid, false)`); a served sentence still says it. `LF_Jail.ReleaseToastsQueued()` counts the queued toasts for tests (LOGIC `police/jail-bail`). Money and release are unchanged.
 - 🔧 (2026-11-27, crime playtest) **The searched player is told what the police took.** Only the officer got "Seized from <name>: M9"; the suspect saw nothing. `LF_ConfiscateAction.NotifySeized` now also sends the suspect `LF_ItemSearch.TakenText` ("The police took: M9", `#LF-Search_TakenFromYou`, the same three-names-and-a-count list), or `#LF-Search_TakenPlain` when only chain goods went. WORLD `catalogue/search-seized-list`.
+- 🔧 (2026-11-27, crime playtest, #5145) **The search toast names only a suspect the officer was introduced to.** It
+  used the account name (`LF_Utils.GetPlayerName`) for a stranger. `LF_ItemSearch.SuspectNameFor(officerUid,
+  suspectUid)` gives the character name when `LF_Introductions.Knows(officer, suspect)`, else "an unknown person"
+  (`#LF-Search_UnknownSuspect`): "Seized from an unknown person: M9". WORLD `catalogue/search-suspect-name`.

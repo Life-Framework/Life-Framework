@@ -56,6 +56,9 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	protected static const string OFFICER_UID = "e2e-officer";
 	protected static const string DUTY_UID = "e2e-duty-officer";
 	protected static const string MEDIC_UID = "e2e-duty-medic";
+	protected static const string DUTY_CASH_UID = "e2e-duty-cash-officer";
+	//! Cash the mid-shift officer left in the duty locker at the save (#5148).
+	protected static const int DUTY_LOCKER_CASH = 100;
 	protected static const string INTRO_KNOWER_UID = "e2e-intro-knower";
 	protected static const string GARAGE_OWNER_UID = "e2e-garage-owner";
 	protected static const string GARAGED_ID = "e2e-garaged-car";
@@ -274,6 +277,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 			ctx.EqualStr("", LF_DutyLocker.ClockOut(medicAccount, medicBody, LF_Faction.MEDIC), "e2e medic clocks out before the save");
 		}
 
+		SeedLockerCash(ctx);
+
 		LF_WantedReportRecord robbery = LF_WantedReports.Add(ACCOUNT_UID, LF_WantedReports.OFFENCE_ROBBERY, "#AR-Jacket_M88", "", "Fuel station", true);
 		robbery.m_sAppearance = WANTED_LOOK;
 
@@ -486,6 +491,28 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		foreach (LF_StoreUnpaidItem tag : tags)
 			tag.m_sCarrierKey = CARRIED_CHARACTER_ID;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #5148: an officer clocks in with exactly DUTY_LOCKER_CASH on them and is still on duty at the
+	//! save. The cash waits in the duty locker (civilian_stash); the carried police gear holds none.
+	protected void SeedLockerCash(LF_TestContext ctx)
+	{
+		LF_PlayerAccount account = LF_TestPoliceKit.Account(DUTY_CASH_UID, true);
+		IEntity body = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(body);
+		if (!body)
+			return;
+
+		int held = LF_MoneyUtils.GetCash(body);
+		if (held > 0)
+			LF_MoneyUtils.RemoveCash(body, held, "test");
+		ctx.Equal(DUTY_LOCKER_CASH, LF_MoneyUtils.AddCash(body, DUTY_LOCKER_CASH, "test"), "e2e the mid-shift officer carries the locker cash");
+		ctx.EqualStr("", LF_DutyLocker.ClockIn(account, body), "e2e the mid-shift officer clocks in before the save");
+		string characterId = account.GetActiveCharacter().GetId();
+		ctx.Equal(DUTY_LOCKER_CASH, LF_DutyLocker.LockerCash(characterId), "e2e the cash is in the duty locker before the save");
+		ctx.Equal(0, LF_MoneyUtils.GetCash(body), "e2e the officer on duty carries no cash before the save");
+		ctx.True(account.IsOnDuty(), "e2e the officer is still on duty at the save");
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -526,6 +553,9 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	protected static const string OFFICER_UID = "e2e-officer";
 	protected static const string DUTY_UID = "e2e-duty-officer";
 	protected static const string MEDIC_UID = "e2e-duty-medic";
+	protected static const string DUTY_CASH_UID = "e2e-duty-cash-officer";
+	//! Cash the mid-shift officer left in the duty locker at the save (#5148).
+	protected static const int DUTY_LOCKER_CASH = 100;
 	protected static const string INTRO_KNOWER_UID = "e2e-intro-knower";
 	protected static const string GARAGE_OWNER_UID = "e2e-garage-owner";
 	protected static const string GARAGED_ID = "e2e-garaged-car";
@@ -901,6 +931,12 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 		VerifyDutyInventories(ctx);
 		VerifyMedicInventory(ctx);
+#ifndef LF_E2E_LEGACY_SAVE
+#ifndef LF_E2E_PRE_MOVE
+		// The old saves hold no mid-shift officer with locker cash (#5148 came later).
+		VerifyLockerCash(ctx);
+#endif
+#endif
 		ctx.Equal(1, LF_WantedReports.CountFor(ACCOUNT_UID), "e2e wanted report present after the save load");
 		ctx.True(LF_WantedReports.IsIdentified(ACCOUNT_UID), "e2e wanted report stays identified after the save load");
 		array<ref LF_WantedReportRecord> robberyReports = LF_WantedReports.GetFor(ACCOUNT_UID);
@@ -1195,6 +1231,42 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(0, LF_Stores.OwedBy(store.GetStoreKey(), restored), "e2e nothing is owed once paid");
 		LF_Stores.DeleteLooseReceipt();
 #endif
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #5148 after the restart: the officer saved mid-shift finds the locker cash in the locker,
+	//! exactly once (not lost, not doubled into the carried gear), and clock-out hands it back once.
+	protected void VerifyLockerCash(LF_TestContext ctx)
+	{
+		LF_PlayerAccount account = LF_PlayerAccountManager.GetInstance().GetFromCache(DUTY_CASH_UID);
+		ctx.NotNull(account, "e2e mid-shift officer account present after the save load");
+		if (!account || !account.GetActiveCharacter())
+			return;
+
+		string characterId = account.GetActiveCharacter().GetId();
+		ctx.True(account.IsOnDuty(), "e2e the mid-shift officer is still on duty after the restart");
+		ctx.Equal(DUTY_LOCKER_CASH, LF_DutyLocker.LockerCash(characterId), "e2e the locker cash survives the restart once");
+		LF_StorageSnapshotRecord carried = LF_StorageSnapshot.Get(characterId, LF_StorageSnapshot.SLOT_CARRIED);
+		ctx.NotNull(carried, "e2e the police gear is the carried snapshot after the restart");
+		ctx.Equal(0, LF_DutyLocker.CashIn(carried), "e2e the carried police gear holds no copy of the locker cash");
+		LF_Debug.Info(LF_DutyLocker.FEATURE, string.Format("e2e restart: locker cash %1, carried cash %2", LF_DutyLocker.LockerCash(characterId), LF_DutyLocker.CashIn(carried)));
+
+		IEntity body = LF_TestCharacterFixture.Spawn(ctx);
+		if (!body)
+			return;
+
+		if (carried)
+			LF_StorageSnapshot.Apply(body, carried);
+		account.SetFaction(LF_Faction.POLICE);
+		ctx.EqualStr("", LF_DutyLocker.ClockOut(account, body), "e2e the mid-shift officer clocks out after the restart");
+		int back = LF_MoneyUtils.GetCash(body);
+		// Shift pay rides on top; at $350-450 an hour it stays far below a second copy of the cash.
+		ctx.True(back >= DUTY_LOCKER_CASH, string.Format("e2e clock-out hands the locker cash back after the restart (got %1)", back));
+		ctx.True(back < 2 * DUTY_LOCKER_CASH, string.Format("e2e clock-out hands the locker cash back once (got %1)", back));
+		ctx.Equal(0, LF_DutyLocker.LockerCash(characterId), "e2e the locker is empty after clock-out");
+
+		LF_TestPoliceKit.Release(DUTY_CASH_UID);
+		LF_TestCharacterFixture.Delete(body);
 	}
 
 	//------------------------------------------------------------------------------------------------
