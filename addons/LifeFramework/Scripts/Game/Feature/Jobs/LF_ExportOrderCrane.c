@@ -47,7 +47,17 @@ class LF_ExportOrderCraneComponent : ScriptComponent
 	//! \return Empty on success, else the refusal as a string key.
 	static string HandIn(IEntity user, IEntity crane, out int paid)
 	{
+		int missing;
+		return HandInCounted(user, crane, paid, missing);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! HandIn that also says how far short a refused hand-in was.
+	//! \param[out] missing Units still needed when the refusal is a short count (REFUSE_SHORT), else 0.
+	static string HandInCounted(IEntity user, IEntity crane, out int paid, out int missing)
+	{
 		paid = 0;
+		missing = 0;
 		if (!user || !crane || (Replication.IsRunning() && !Replication.IsServer()))
 			return LF_ExportOrderBook.REFUSE_NONE_HELD;
 
@@ -80,6 +90,7 @@ class LF_ExportOrderCraneComponent : ScriptComponent
 		if (inVehicle + withUser < order.m_iCount)
 		{
 			LF_Debug.Info(LF_ExportOrderBook.FEATURE, string.Format("hand-in refused: %1 brought %2 of %3 for order %4", uid, inVehicle + withUser, order.m_iCount, order.m_iId));
+			missing = order.m_iCount - (inVehicle + withUser);
 			return LF_ExportOrderBook.REFUSE_SHORT;
 		}
 

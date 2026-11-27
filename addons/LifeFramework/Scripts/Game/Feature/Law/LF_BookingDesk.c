@@ -342,7 +342,7 @@ class LF_BookingDesk
 
 		string terms = string.Format("%1 min", offer.ServeMinutes());
 		if (offer.m_bPayable)
-			terms = string.Format("$%1 or %2 min", offer.m_iFine, offer.ServeMinutes());
+			terms = string.Format("%1 or %2 min", LF_MoneyFormat.FormatMoney(offer.m_iFine), offer.ServeMinutes());
 
 		int suspectId = LF_PlayerInteraction.PlayerIdOf(suspect);
 		if (suspectId > 0)

@@ -55,7 +55,7 @@ class LF_PlacementCostTerms
 			return "free";
 
 		if (m_eCost == LF_EPlacementCost.CASH)
-			return string.Format("$%1", m_iAmount);
+			return LF_MoneyFormat.FormatMoney(m_iAmount);
 
 		return string.Format("%1 x %2", m_iAmount, LF_PlacementPolicy.KindOfPrefab(m_sItem));
 	}
@@ -178,7 +178,7 @@ class LF_PlacementCost
 		if (terms.m_eCost == LF_EPlacementCost.CASH)
 		{
 			toastKey = TOAST_CASH;
-			return string.Format("cannot pay $%1 for %2 (carries $%3)", terms.m_iAmount, terms.m_sKind, LF_Utils.MaxInt(have, 0));
+			return string.Format("cannot pay %1 for %2 (carries %3)", LF_MoneyFormat.FormatMoney(terms.m_iAmount), terms.m_sKind, LF_MoneyFormat.FormatMoney(LF_Utils.MaxInt(have, 0)));
 		}
 
 		toastKey = TOAST_ITEM;

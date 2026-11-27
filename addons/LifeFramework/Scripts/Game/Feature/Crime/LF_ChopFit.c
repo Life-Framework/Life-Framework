@@ -163,7 +163,7 @@ class LF_ChopFit
 		if (price < 0)
 			return string.Empty;
 
-		return price.ToString();
+		return LF_MoneyFormat.FormatMoney(price);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -302,7 +302,7 @@ class LF_ChopFitAction : ScriptedUserAction
 			return;
 		}
 
-		LF_Utils.NotifyEntity(pUserEntity, "#LF-ChopFit_Done", "#LF-Chop_Title", 4.0, paid.ToString());
+		LF_Utils.NotifyEntity(pUserEntity, "#LF-ChopFit_Done", "#LF-Chop_Title", 4.0, LF_MoneyFormat.FormatMoney(paid));
 		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(pUserEntity);
 		if (character && !m_sSound.IsEmpty())
 			character.LF_BroadcastStationSound("LF_ChopFitAction", m_sSound);

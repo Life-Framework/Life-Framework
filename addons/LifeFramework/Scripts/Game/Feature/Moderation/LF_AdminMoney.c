@@ -225,7 +225,7 @@ class LF_AdminMoney
 			place = "bank";
 
 		if (moved == 0)
-			return string.Format("Nothing moved for %1 (%2): no room or no funds for $%3.", targetName, place, requested);
+			return string.Format("Nothing moved for %1 (%2): no room or no funds for %3.", targetName, place, LF_MoneyFormat.FormatMoney(requested));
 
 		string verb = "Gave";
 		int shown = moved;
@@ -237,9 +237,9 @@ class LF_AdminMoney
 
 		string note = "";
 		if (moved != requested)
-			note = string.Format(" (asked for $%1)", requested);
+			note = string.Format(" (asked for %1)", LF_MoneyFormat.FormatMoney(requested));
 
-		return string.Format("%1 $%2 (%3) for %4%5.", verb, shown, place, targetName, note);
+		return string.Format("%1 %2 (%3) for %4%5.", verb, LF_MoneyFormat.FormatMoney(shown), place, targetName, note);
 	}
 
 	//------------------------------------------------------------------------------------------------
