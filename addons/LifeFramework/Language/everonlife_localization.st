@@ -8538,6 +8538,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Acid carboy"
      Comment "Item name of the acid carboy."
     }
+    CustomStringTableItem "{106871628C24F2E1}" {
+     Id "LF-Item_AspirinBottle_Name"
+     Target_en_us "Aspirin"
+     Comment "Pharmacy row name of the base-game aspirin bottle, which has no inventory name (#5080)."
+    }
     CustomStringTableItem "{AC88D3331A83BBB1}" {
      Id "LF-Item_BaitTin_Description"
      Target_en_us "A green enameled can with a snap lid. Worms and dough balls, mostly."
@@ -8627,6 +8632,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Drill_Name"
      Target_en_us "Drill"
      Comment "Item name of the fence drill."
+    }
+    CustomStringTableItem "{B5EBEF52E13CDECE}" {
+     Id "LF-Item_EntrenchingTool_Name"
+     Target_en_us "Entrenching tool"
+     Comment "Shop row name of the folding shovel the hardware store sells (#5080); the base-game prefab has no inventory name."
     }
     CustomStringTableItem "{E2784D1F4353D38F}" {
      Id "LF-Item_FishBass_Description"
