@@ -86,6 +86,7 @@ import * as testWorld from "./lib/test-world.mjs";
 import { onlyArgs } from "./lib/test-only-args.mjs";
 import { planE2eLegs } from "./lib/e2e-legs.mjs";
 import * as wbGate from "./lib/wb-gate.mjs";
+import * as serverCompile from "./lib/server-compile.mjs";
 import * as wbRoute from "./lib/wb-route.mjs";
 import * as gateTier from "./lib/gate-tier.mjs";
 import * as worldDiff from "./lib/world-diff.mjs";
@@ -953,7 +954,7 @@ function removeGeneratedAddonRoot(repoRoot, target) {
   rmdirSync(targetPath);
 }
 
-function serverGameAddons(root) {
+function serverGameAddons(root, scope = "serve") {
   const env = envOf();
   const configured = env.ENFUSION_SERVER_PATH || "C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server";
   const serverDir = /\.exe$/i.test(configured) ? dirname(configured) : configured;
@@ -966,7 +967,7 @@ function serverGameAddons(root) {
     source = join(gameDir, "addons");
   }
 
-  const target = join(root, "server", "profile", "serve", "game-addons");
+  const target = join(root, "server", "profile", scope, "game-addons");
   removeGeneratedAddonRoot(root, target);
   mkdirSync(target, { recursive: true });
   createJunction(join(target, "data"), join(source, "data"));
@@ -4018,6 +4019,25 @@ async function ciWorldEdit(root, c, tests, opts = {}, maint = maintainerGate(roo
   return failed === 0 ? 0 : 1;
 }
 
+// The dedicated server's compile under the session defines (LF_SESSION_IDENTITY, LF_HARNESS): 0 pass, 1 fail,
+// wbGate.ENV_SHORT_CODE when the machine gave no verdict (no server install, a server that quit or hung).
+async function serverCompileStep(root) {
+  const t0 = Date.now();
+  let r;
+  try {
+    const profile = join(root, "server", "profile", "compile-probe");
+    const args = serverCompile.serverCompileArgs({ mission: playtestMission(launchAddons(root)), addonsDirs: [join(root, "addons"), serverGameAddons(root, "compile-probe")], addons: launchAddons(root), profile });
+    r = await serverCompile.runServerCompile({ exe: serverExe(), args, profile, spawnFn: (exe, a, o) => quietSpawn(exe, a, o) });
+  } catch (e) {
+    r = { verdict: "env", why: String(e?.message ?? e), lines: [] };
+  }
+  console.log(`${serverCompile.verdictLine(r)} (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
+  for (const l of (r.lines ?? []).slice(0, 25)) console.log(`  ${l}`);
+  if (r.log) console.log(`  log: ${r.log}`);
+  if (r.verdict === "ok") return 0;
+  return r.verdict === "env" ? wbGate.ENV_SHORT_CODE : 1;
+}
+
 // The Workbench compile (validate-scripts.ps1) and the build, on this PC, under one Workbench slot.
 async function ciWorkbench(root, opts = {}) {
   // Over ssh (a pool machine's remote gate) this is session 0, which has no GPU device: Workbench
@@ -4059,6 +4079,13 @@ async function ciWorkbench(root, opts = {}) {
       }
       console.log(`${res.status === 0 ? "PASS" : "FAIL"}  validate/validate-scripts.ps1 (${seconds.toFixed(1)} s)`);
       ok = res.status === 0;
+      // The build a session boots (LF_HARNESS) on the compiler that boots it: Workbench validate misses a crash
+      // only the dedicated server's compiler has (#5180; tools/lib/server-compile.mjs).
+      if (ok && !skip.has("server-compile")) {
+        const sc = await serverCompileStep(root);
+        if (sc === wbGate.ENV_SHORT_CODE) return sc;
+        ok = sc === 0;
+      }
     }
     if (opts.compileOnly) return ok ? 0 : 1;
     console.log("--- ci: build ---");

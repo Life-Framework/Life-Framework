@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
+import { MONEY, parseMoney } from "./_money.mjs";
 
 // Export orders end to end (#4580): take an order, bring the goods to the crane spot, hand in, get paid.
 //   node agent-box/session.mjs up --mission grid --profile full --wait   (the pack grid header, so the
@@ -143,8 +144,8 @@ async function runExportCraneProof() {
   mark = exportLines().length;
   handIn();
   shot("paid");
-  const paidMatch = newLines(mark).match(/export order handed in by \S+: \$(\d+)/);
-  const paid = paidMatch ? Number(paidMatch[1]) : 0;
+  const paidMatch = newLines(mark).match(new RegExp(String.raw`export order handed in by \S+: (${MONEY})`));
+  const paid = paidMatch ? parseMoney(paidMatch[1]) : 0;
   const after = cash();
   step("the full hand-in pays the order", paid > 0 && after === before + paid, `paid $${paid}, cash ${after}`);
 

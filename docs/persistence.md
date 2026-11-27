@@ -539,6 +539,13 @@ before the save code, then the `store` line's slowest parts.
   cleared before rebuild.
 - `SelfSpawn` is the only mechanism that crosses a restart boundary for
   entities.
+- The vanilla `Common.conf` we inherit saves every `Character_Base`
+  character, `AIGroup` and `AIWaypoint`, and every plain vehicle and item.
+  Anything a system spawns again at each boot must leave the world save, or
+  a restart puts back a second copy (and a saved `AIGroup` VMEs on load:
+  our game mode has no faction manager). NPCs and AI:
+  `LF_WorldSaveHold.Hold`; session cars: `LF_VehicleWorldSave.Hold`; shelf
+  copies: `LF_StoreShelfSave.Hold` (walker-group-restart, 2026-11-27).
 - No console guards. `ESaveGameType` is a bitmask. `GetSaves()` is async.
 - GUID-matched `.conf` overrides replace list entries: never write partial
   lists.

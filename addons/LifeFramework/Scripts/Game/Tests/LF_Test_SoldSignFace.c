@@ -127,6 +127,17 @@ class LF_Test_SoldSignFace : LF_Test
 			ctx.EqualStr("house_sold", FaceId(late), "a sign that comes into the world after the sale starts sold");
 		}
 
+		RunRestart(ctx, house);
+		LF_Properties.ResetStatics();
+		Cleanup(viewer, house, plot, late);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its own method on purpose: with this block inline, Run grew past a size at which the server's
+	//! script compiler crashed (access violation, no SCRIPT (E) line) in a -scrDefine LF_HARNESS build,
+	//! so no harness session booted (2026-11-27). Keep Run short.
+	protected void RunRestart(LF_TestContext ctx, IEntity house)
+	{
 		// A restart: the load replaces the book. A load without the owner clears the board, with it sets it.
 		array<ref LF_PropertyRecord> rows = new array<ref LF_PropertyRecord>();
 		LF_Properties.ApplyAll(rows);
@@ -144,9 +155,6 @@ class LF_Test_SoldSignFace : LF_Test
 			LF_Properties.SetOwner(HOUSE, "");
 
 		ctx.EqualStr("house_for_sale", FaceId(house), "a cleared owner prints For sale again");
-
-		LF_Properties.ResetStatics();
-		Cleanup(viewer, house, plot, late);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -9,6 +9,7 @@
 // #4875: with a buyer trip costing nothing (`trip = () => 0`) five checks printed FAIL ("one plank a trip to buyers in town is
 // below the rung (got 466/h)", "the premium planks take the near trip", ...); restored, OK.
 import { mkdirSync, writeFileSync } from "node:fs";
+import { AMOUNT } from "../../agent-box/proofs/_money.mjs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { FALLBACK_BUYERS, FALLBACK_CURVES, LUMBER_ASSUMPTIONS, rungCheck, buildLumber, computeLoops, handHaulHour, logSpeedCapOf, lumberFlags, plankBundleOf, renderLumber, sellWholesale, simulateProduct, tripsPerLog } from "../lib/economy-lumber.mjs";
@@ -90,7 +91,7 @@ expect(got.problems.length === 0 && got.loops.length === 3, `planted configs giv
 expect(got.loops[0]?.detail[0].unitsPerHour < 60, `the planted 3-plank sawmill sells fewer planks than the real 4 (got ${got.loops[0]?.detail[0].unitsPerHour})`);
 expect(got.sources.some((x) => /plank: premium assumed/.test(x)), "a missing buyerDemand row is reported as assumed");
 const lines = renderLumber(got);
-expect(lines.some((l) => /LOOP hand-haul softwood -> planks: .*steady \$\d+\/h, first hour \$\d+\/h; duty .*(on the ladder|BELOW THE RUNG)/.test(l)), "a loop line prints steady, first hour and the rung");
+expect(lines.some((l) => new RegExp(String.raw`LOOP hand-haul softwood -> planks: .*steady \$${AMOUNT}\/h, first hour \$${AMOUNT}\/h; duty .*(on the ladder|BELOW THE RUNG)`).test(l)), "a loop line prints steady, first hour and the rung");
 const none = buildLumber({ addonsDir: join(dir, "nowhere"), packLayers: [], owner: null, duty: { police: 900, medic: 792 } });
 expect(none.loops.length === 0 && /lumber loops skipped/.test(none.problems.join()), "no lumber config prints a problem, not a crash");
 

@@ -157,6 +157,8 @@ class LF_EventSceneDrive
 			return;
 		}
 
+		// A drive is session state: a saved group VMEs on load (SCR_AIGroupSerializer, no faction manager).
+		LF_WorldSaveHold.Hold(group);
 		m_GroupId = group.GetID();
 		int enlisted = 0;
 		foreach (int index, EntityID id : m_Crew.m_aPeople)
@@ -182,6 +184,7 @@ class LF_EventSceneDrive
 		SCR_BoardingEntityWaypoint boarding = SCR_BoardingEntityWaypoint.Cast(LF_Utils.SpawnEntityPrefab(GETIN_WAYPOINT_PREFAB, vehicle.GetOrigin()));
 		if (boarding)
 		{
+			LF_WorldSaveHold.Hold(boarding);
 			boarding.SetEntity(vehicle);
 			boarding.SetCompletionRadius(ARRIVE_M);
 			m_BoardingId = boarding.GetID();
@@ -201,6 +204,7 @@ class LF_EventSceneDrive
 				continue;
 			}
 
+			LF_WorldSaveHold.Hold(waypoint);
 			waypoint.SetCompletionRadius(ARRIVE_M);
 			m_aAiWaypoints.Insert(waypoint.GetID());
 			group.AddWaypoint(waypoint);
