@@ -10667,6 +10667,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Trucks need the truck license first. The license desk runs the truck check for %1."
      Comment "Vehicle lot refusal for a truck without the truck license (#4417). %1 is the truck check fee. Neutral core text."
     }
+    CustomStringTableItem "{5C1E7A94D2B03F68}" {
+     Id "LF-Lot_RowNeedsTruck"
+     Target_en_us "%1 (needs truck license)"
+     Comment "Vehicle lot sheet: a truck row says it needs the truck license before Buy (#4417). %1 is the truck's name."
+    }
     CustomStringTableItem "{B58D71B1650E8EBB}" {
      Id "LF-Lot_Rule"
      Target_en_us "Cars up to %1 are paid in cash. Dearer cars are paid from your bank: deposit cash at the ATM first."
