@@ -165,10 +165,10 @@ modded class LF_MapPlacesUI
 			string key = LF_MapRunRules.CardKey(match.m_iStep, run.StopCount(), stepText, countText);
 			string next;
 			if (match.m_iStep + 1 < run.StopCount())
-				next = WidgetManager.Translate(run.m_aStops[match.m_iStep + 1].m_sLabel);
+				next = LF_Terms.Expand(WidgetManager.Translate(run.m_aStops[match.m_iStep + 1].m_sLabel));
 
 			// One line: the card holds two (its title and this). A stop two runs share names the first.
-			text = WidgetManager.Translate(key, WidgetManager.Translate(run.m_sLabel), stepText, countText, next);
+			text = WidgetManager.Translate(key, LF_Terms.Expand(WidgetManager.Translate(run.m_sLabel)), stepText, countText, next);
 			break;
 		}
 

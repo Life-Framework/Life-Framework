@@ -204,10 +204,11 @@ class LF_MapLegend
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Bank, Saint-Philippe": what the hover card and the search list call a place.
+	//! "Bank, Saint-Philippe": what the hover card and the search list call a place. The kind's key may
+	//! name a term ("{Police} station"), so it runs through the terms path (#958) like the legend's type name.
 	static string NameOf(notnull LF_MapPoi poi)
 	{
-		return LF_MapPlaceCard.Title(WidgetManager.Translate(poi.m_sLabel), poi.m_sTown);
+		return LF_MapPlaceCard.Title(TypeName(poi), poi.m_sTown);
 	}
 
 	//------------------------------------------------------------------------------------------------
