@@ -55,14 +55,15 @@ class LF_Test_ProcessDropReach : LF_Test
 		array<vector> operators = { "101 5 100", "99 5 100", "100 5 101", "100 5 97.5", "102.1 5 101.6" };
 		foreach (vector operatorAt : operators)
 		{
-			vector drop = LF_ProcessDrop.Point(furnace, operatorAt, offset);
+			vector drop = LF_ProcessDrop.Point(furnace, operatorAt, offset, furnace + offset);
 			float away = vector.Distance(drop, operatorAt);
 			ctx.True(away <= DROP_REACH_M, string.Format("a bar drops %1 m from the operator at %2", away, operatorAt.ToString()));
 			ctx.True(Math.AbsFloat(vector.Distance(drop, furnace) - 1.6) < 0.01, "a bar drops 1.6 m out from the furnace, operator at " + operatorAt.ToString());
 		}
 
-		ctx.True((furnace + offset).ToString() == LF_ProcessDrop.Point(furnace, furnace, offset).ToString(), "an operator on the machine has no side: the prefab offset");
-		ctx.True(furnace.ToString() == LF_ProcessDrop.Point(furnace, "101 5 100", "0 0 0").ToString(), "a zero offset drops at the machine origin");
+		vector local = "100 5 101.6";
+		ctx.True(local.ToString() == LF_ProcessDrop.Point(furnace, furnace, offset, local).ToString(), "an operator on the machine has no side: the machine-local point");
+		ctx.True(local.ToString() == LF_ProcessDrop.Point(furnace, "101 5 100", "0 0 0", local).ToString(), "a zero offset drops at the machine-local point");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -94,6 +95,11 @@ class LF_Test_ProcessDropReach : LF_Test
 				ctx.True(distance <= DROP_REACH_M, string.Format("a board lands %1 m from the operator (at most %2): %3", distance, DROP_REACH_M, label));
 			}
 		}
+
+		// With no worker the offset is the saw's own frame: turned with the saw, not added in world axes.
+		vector alone = LF_ProcessDrop.PointFor(sawmill, null, "-1.8 0 0");
+		ctx.True(Math.AbsFloat(vector.Distance(alone, sawmill.GetOrigin()) - 1.8) < 0.01, "the machine-local drop is 1.8 m from the saw: " + label);
+		ctx.True(vector.Distance(alone, sawmill.GetOrigin() + "-1.8 0 0") > 0.2, "the machine-local drop turns with the saw's heading: " + label);
 
 		LF_InventoryUtils.RemoveAmount(user, HARD_LOG, 1);
 		LF_TestLooseSweep sweep = new LF_TestLooseSweep();
