@@ -242,6 +242,12 @@ and every other lock file are left alone (`tools/lib/stale-git-lock.mjs`, `stale
      (first, recheck, each probe) is red and none printed a compile error or a failing test, the build died before it
      compiled anything: nothing is reverted, the head is marked `infra` (not red), the staff webhook gets one line per
      head, and a later tick runs it again (`infraRun`; a held lock was already infra, #2759).
+   - **A dirty run tree is cleaned, and its refusal is infra (#5117).** The pre-move e2e checks out an old ref in the
+     guard's run worktree; a worker that dies mid-run leaves untracked files under `addons/`, and the next run refused
+     with `e2e --pre-move needs a clean tree` (03731faa and 921ff355 were called red twice and got a wrong fix card).
+     Before every checkout and every `--pre-move` run the guard drops untracked and ignored files under `addons/` of
+     that one worktree through `cleanRunFolder` (never follows a game-addons junction, keeps `resourceDatabase.rdb`),
+     and the refusal itself classifies as infra (`run-tree-clean.mjs`, `main-guard-clean-run-tree-selftest.mjs`).
    - **A test-only merge is bisected with the merge it follows.** A merge that changes only tests (`isTestOnly`)
      directly after another is probed at the test fix, never between the two (`groupFollowUps`), so a data PR whose
      test fix landed is not blamed. After the data PR is reverted, a test-only merge in the same range is explained by
