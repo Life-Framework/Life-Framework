@@ -9045,7 +9045,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{5EEAFA2D61673F01}" {
      Id "LF-JailBook_FirstArrest"
-     Target_en_us "Bring the suspect to the station booking desk at the jail (waypoint set). Escort them, put them in your car, then book them at the cell: full sentence, or reduced if they cooperated."
+     Target_en_us "Bring the suspect to the jail booking point (waypoint set). Escort them, or put them in your car, then book them there."
      Comment "First-arrest note to an officer, once per session."
     }
     CustomStringTableItem "{570E5C4A7E0D9CF9}" {
@@ -18587,6 +18587,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Wanted_OnFoot"
      Target_en_us "on foot"
      Comment "Wanted poster: the suspect was not in a vehicle."
+    }
+    CustomStringTableItem "{7D1E5B0A94C2F368}" {
+     Id "LF-Wanted_PlaceAt"
+     Target_en_us "%1, %2"
+     Comment "A crime place inside a town (#5147): %1 is the site's own name (a sign title), %2 the town. e.g. Fuel Station, Saint Philippe."
     }
     CustomStringTableItem "{35F30778D3B26361}" {
      Id "LF-Wanted_PlaceGrid"
