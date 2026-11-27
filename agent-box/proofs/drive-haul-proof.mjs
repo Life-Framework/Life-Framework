@@ -28,6 +28,10 @@ const SAW_ACTION = process.env.SAW_ACTION ?? "LF_ProcessAction__3";
 const SAW_PARK = [4352, 10640];
 // Where the truck parks at the hardware store's timber counter (counter at 4527.1, 10628.8).
 const MERCHANT_PARK = [4519, 10640];
+// Where a truck bought at the yard stands (Fit_ne_compound_truckyard_lot 5086.6, 10844.3 + m_vOffset -22.5, 4.5),
+// and the point just inside the yard gate the one clear line from it reaches.
+const TRUCK_PAD = [5064, 10849];
+const YARD_GATE_OUT = [5019, 10849];
 const JOG_MPS = 4.5;
 const LOADED_MPS = 4.5 * 0.5;
 const BED_UNITS = 12;
@@ -179,8 +183,14 @@ async function run(args) {
   console.log(`unlock from the seat: ${lockUse.status} ${lockUse.detail}`);
   const nearWood = Math.hypot(spawn[0] - SAW_PARK[0], spawn[2] - SAW_PARK[1]) < 150;
   if (!nearWood) {
+    // The truck yard has no AI road inside it and is shut in by sheds, sand piles, light towers, tin walls and the
+    // display trucks: the one clear line from the pad runs due west to the gate (the planner's ring scan,
+    // 2026-11-27). Out of the gate first, then the road (the nearest road point otherwise lies north across the
+    // scrapyard dump, #5053).
+    const gate = Math.hypot(spawn[0] - TRUCK_PAD[0], spawn[2] - TRUCK_PAD[1]) < 25 ? driveLeg("yard_to_gate", "to", YARD_GATE_OUT, 4, 15) : null;
     const first = driveLeg("yard_to_woodlot", "road", SAW_PARK, 4);
-    step("0b the truck is driven from the truck yard to the woodlot by road", first.status === "arrived" && first.driven > 500, `${first.status} ${first.driven} m in ${first.time} s, stopped ${first.err} m from the pad`);
+    if (gate) console.log(`LEG yard_to_gate counted with the road leg: ${gate.status} ${gate.driven} m`);
+    step("0b the truck is driven from the truck yard to the woodlot by road", (!gate || gate.status === "arrived") && first.status === "arrived" && first.driven > 500, `${gate ? `gate ${gate.status} ${gate.driven} m, ` : ""}${first.status} ${first.driven} m in ${first.time} s, stopped ${first.err} m from the pad`);
   } else console.log("the truck already stands at the woodlot: leg 0 skipped");
   leave();
   const park0 = truckAt();
@@ -217,8 +227,9 @@ async function run(args) {
       break;
     }
     const [key, tx, ty, tz] = [m[1], Number(m[2]), Number(m[3]), Number(m[4])];
-    // Drive to within 9 m of the trunk, straight across the ground.
-    const toTree = driveLeg(`to_tree_${tree + 1}`, "to", [tx - 9, tz], 5, 25);
+    // Drive to within 9 m of the trunk: by road to the nearest clear road point, then across the ground (a straight
+    // line from the saw runs through the woodlot sheds and wood piles).
+    const toTree = driveLeg(`to_tree_${tree + 1}`, "road", [tx - 9, tz], 5, 25);
     if (tree === 0) step("1a the truck is driven off the road to a hardwood tree", /arrived|distance/.test(toTree.status), `${toTree.status} ${toTree.driven} m in ${toTree.time} s, tree at ${tx.toFixed(0)},${tz.toFixed(0)}`);
     leave();
     const truck = truckAt() ?? here;

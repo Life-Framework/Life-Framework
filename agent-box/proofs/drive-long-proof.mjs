@@ -3,16 +3,20 @@ import { LOT, LOT_PAD, driveAndFollow, enterWhenThere, kv } from "./drive-proof.
 
 // Long road drives with the harness driver (LF_DriveHarness.c): the routes Saint-Philippe to the east compound,
 // the north outpost and the NE truck yard (`drive plan`, no driving), then the drive Saint-Philippe to the east
-// compound N times in a row. On `session up --mission island` (one client):
-//   node agent-box/session.mjs drive-long-proof [--runs 3] [--speed 50] [--to x,z] [--tol m] [--no-plans] [--no-drive]
-// Run 1 starts on the car lot pad (the tight lot exit is part of the test); later runs set the car back on the
-// post office street with `parkat` (setup, not the thing measured) and drive again. Each run prints one RUN line:
+// compound N times in a row, driving back to the lot by road between runs. On `session up --mission island` (one client):
+//   node agent-box/session.mjs drive-long-proof [--runs 3] [--speed 50] [--to x,z] [--tol m] [--no-plans] [--no-drive] [--buy] [--return]
+// Every run starts on the car lot pad in a car bought there (the tight lot exit is part of the test; --buy buys one
+// for run 1 too); with --return a later run first drives the same car back to the street by the lot (a RETURN line). Each run prints one RUN line:
 // status, metres, game seconds, back-ups, re-plans and, when it did not arrive, why and where it stopped.
 export const EAST_COMPOUND = [6430, 6470];
 export const NORTH_OUTPOST = [7688, 8240];
 export const TRUCK_YARD = [5024, 10848];
 export const SCRAPYARD = [5045, 10900];
-const DEPOT = "Fit_saint_philippe_parcel_job_depot";
+// Where a truck bought at the yard stands (Fit_ne_compound_truckyard_lot 5086.6, 10844.3 + m_vOffset -22.5, 4.5).
+export const TRUCK_PAD = [5064, 10849];
+// The street just north of the car lot (on the road every run takes out of town): the return legs end here, not
+// on the lot pad, where the display cars box a returning car in.
+export const TOWN_STREET = [4409, 10684];
 
 function opt(args, name, fallback) {
   const i = args.indexOf(name);
@@ -68,8 +72,7 @@ async function run(args) {
 
   // 0: money and licences, a car from the lot, at the wheel.
   // checkpoint resets the pack (the car key with it), so only before a purchase.
-  let st = state();
-  if (!st.parked || st.parked === "none") {
+  const buy = () => {
     on({ verb: "checkpoint", words: ["10"] }, 20000);
     wait(3000);
     on({ verb: "stand", entityName: LOT });
@@ -79,8 +82,10 @@ async function run(args) {
     const widget = /Car\d+_Action/.exec(String(on({ verb: "ui" }).detail))?.[0] ?? "Car0_Action";
     on({ verb: "click", widget });
     wait(4000);
-    st = state();
-  }
+    return state();
+  };
+  let st = state();
+  if (args.includes("--buy") || !st.parked || st.parked === "none") st = buy();
   step("0 a car is bought and parked", !!st.parked && st.parked !== "none", `parked=${st.parked} parkedat=${st.parkedat}`);
   const onLot = Math.hypot(Number(String(st.parkedat).split(",")[0]) - LOT_PAD[0], Number(String(st.parkedat).split(",")[2]) - LOT_PAD[1]) < 10;
   const enter = onLot ? enterWhenThere(on, wait, LOT_PAD, 6) : { status: seated() ? "ok" : "error", detail: "seated where it stands" };
@@ -94,10 +99,11 @@ async function run(args) {
       ["north outpost", NORTH_OUTPOST, ""],
       ["NE truck yard", TRUCK_YARD, `near=${SCRAPYARD.join(",")}`],
       ["truck yard to town", LOT_PAD, `from=${TRUCK_YARD.join(",")}`],
+      ["truck pad to town", LOT_PAD, `from=${TRUCK_PAD.join(",")} near=${SCRAPYARD.join(",")}`],
     ];
     for (const [label, [x, z], extra] of plans) {
       const words = ["plan", `${x},${z}`];
-      if (extra) words.push(extra);
+      if (extra) words.push(...extra.split(" "));
       const r = on({ verb: "drive", words }, 60000);
       const p = planOf(r.detail);
       step(`1 a road route Saint-Philippe to the ${label}`, r.status === "ok" && !!p && p.route > 0, p ? `${p.route} m by road for ${p.straight} m straight, ${p.points} points` : String(r.detail).slice(0, 160));
@@ -119,24 +125,31 @@ async function run(args) {
 
   // 2: the drive, `runs` times.
   const results = [];
+  const returns = [];
   for (let i = 1; i <= runs && !args.includes("--no-drive"); i++) {
-    const now = String(kv(on({ verb: "vehicle", words: ["state"] }).detail).pos ?? "").split(",").map(Number);
-    const inTown = now.length === 3 && Math.hypot(now[0] - LOT_PAD[0], now[2] - LOT_PAD[1]) < 400;
-    if (i > 1 || !inTown) {
-      // The car locks when its owner gets out, so the driver stays seated while `parkat` sets it back in town.
+    // Each later run starts the way run 1 does: a car bought on the lot pad with a full tank (31 km on one tank
+    // ran a T601 dry on 2026-11-27). No teleport: a car set down by `parkat` under a seated driver will not move,
+    // and a proof does not re-enter a locked car reliably. --return drives the same car back to town instead.
+    if (i > 1 && !args.includes("--return")) {
       on({ verb: "vehicle", words: ["stop"] }, 20000);
       wait(1000);
-      if (!seated()) {
-        step(`2.${i} at the wheel for the set-back`, false, "not seated");
+      on({ verb: "vehicle", words: ["exit", "force"] }, 10000);
+      wait(1500);
+      const fresh = buy();
+      const again = enterWhenThere(on, wait, LOT_PAD, 6);
+      wait(1500);
+      if (again.status !== "ok") {
+        step(`2.${i} at the wheel of a fresh car on the lot pad`, false, `${again.detail} parked=${fresh.parked}`);
         break;
       }
-      on({ verb: "parkat", words: [DEPOT, "8"] }, 15000);
-      wait(3000);
-      const back = kv(on({ verb: "vehicle", words: ["state"] }).detail);
-      if (back.seat !== "pilot" && !seated()) {
-        step(`2.${i} back at the wheel on the depot street`, false, `seat=${back.seat}`);
-        break;
-      }
+    }
+    if (i > 1 && args.includes("--return")) {
+      const back = driveAndFollow(on, wait, ["road", TOWN_STREET.join(","), `speed=${speed}`, "tol=8", "mode=input"], { label: `back${i}`, everyMs: 5000, maxMs: 1500000 });
+      const b2 = back.end;
+      returns.push(b2.status);
+      console.log(`RETURN ${i - 1}: ${b2.status} driven=${b2.driven} time=${b2.time} err=${b2.err} max=${b2.max} backups=${b2.backups} replans=${b2.replans}${b2.why ? ` why=${b2.why}` : ""}${b2.stuckat ? ` stuckat=${b2.stuckat}` : ""}`);
+      on({ verb: "vehicle", words: ["stop"] }, 20000);
+      wait(1000);
     }
     const t0 = Date.now();
     const r = driveAndFollow(on, wait, ["road", to.join(","), `speed=${speed}`, `tol=${tol}`, "mode=input"], { label: `run${i}`, everyMs: 5000, maxMs: 1500000 });
@@ -146,6 +159,7 @@ async function run(args) {
     console.log(`RUN ${i}: ${e.status} driven=${e.driven} time=${e.time} wall=${wall.toFixed(0)}s err=${e.err} max=${e.max} backups=${e.backups} replans=${e.replans} progress=${e.progress}/${e.route}${e.why ? ` why=${e.why}` : ""}${e.stuckat ? ` stuckat=${e.stuckat}` : ""} (${r.started.detail})`);
     step(`2.${i} the drive Saint-Philippe to ${to.join(",")} arrives`, e.status === "arrived", `${e.status} ${e.driven} m in ${e.time} s, backups ${e.backups}`);
   }
+  if (returns.length) console.log(`RETURNS ${returns.filter((x) => x === "arrived").length} of ${returns.length} arrived (${returns.join(", ")})`);
   if (results.length) console.log(`RUNS ${results.filter((s) => s === "arrived").length} of ${results.length} arrived (${results.join(", ")})`);
   return k.finish();
 }

@@ -70,11 +70,15 @@ class LF_DriveHarness
 	//! Stuck: pedal down and standing this long, or the route not PROGRESS_M further in NO_PROGRESS_S.
 	static const float STUCK_S = 3; // lf-fixed: harness tuning
 	static const float NO_PROGRESS_S = 7; // lf-fixed: harness tuning
+	//! The engine starts and a gear goes in at the start of a drive: no stall counts this long.
+	static const float START_GRACE_S = 6; // lf-fixed: harness tuning
 	static const float PROGRESS_M = 1.5; // lf-fixed: harness tuning
 	//! A back-up lasts BACKUP_S or BACKUP_M, whichever comes first, with BACKUP_LOCK of full lock.
 	static const float BACKUP_S = 4; // lf-fixed: harness tuning
 	static const float BACKUP_M = 5; // lf-fixed: harness tuning
 	static const float BACKUP_LOCK = 0.8; // lf-fixed: harness tuning
+	//! A truck over HEAVY_KG takes longer to start rolling backwards.
+	static const float BACKUP_HEAVY_S = 7; // lf-fixed: harness tuning
 	static const int MAX_BACKUPS = 6; // lf-fixed: harness guard
 	static const int MAX_REPLANS = 6; // lf-fixed: harness guard
 	static const float REPLAN_WAIT_S = 8; // lf-fixed: harness guard
@@ -94,9 +98,19 @@ class LF_DriveHarness
 	static const float ROAD_MARGIN_M = 250; // lf-fixed: harness geometry
 	static const float ROAD_MARGIN_SHARE = 0.3; // lf-fixed: harness geometry
 	static const float ROAD_JOIN_M = 6; // lf-fixed: harness geometry
-	//! A road's points are thinned to this far apart (its ends kept) before the search.
-	static const float NODE_STEP_M = 4; // lf-fixed: harness geometry
 	static const int MAX_ROAD_NODES = 150000; // lf-fixed: harness guard
+	//! The road is joined at the nearest of this many road points, within this reach, with a clear line.
+	static const int CLEAR_CANDIDATES = 12; // lf-fixed: harness guard
+	static const int CLEAR_KEEP = 3; // lf-fixed: harness guard
+	static const float CLEAR_REACH_M = 200; // lf-fixed: harness geometry
+	static const float LINE_STEP_M = 4; // lf-fixed: harness geometry
+	//! The way onto the road is checked this far either side of its middle (about half a truck).
+	static const float SWEEP_HALF_M = 1.4; // lf-fixed: harness geometry
+	//! The way out of a shut-in yard: waypoints in this many directions at 15, 30 and 45 m, each with
+	//! up to VIA_TRIES road points within VIA_REACH_M tried.
+	static const int VIA_DIRECTIONS = 16; // lf-fixed: harness guard
+	static const int VIA_TRIES = 4; // lf-fixed: harness guard
+	static const float VIA_REACH_M = 120; // lf-fixed: harness geometry
 	//! `drive plan ... near=x,z` lists the route points this close to that point.
 	static const float PLAN_NEAR_M = 45; // lf-fixed: harness geometry
 
@@ -132,6 +146,8 @@ class LF_DriveHarness
 	protected static float s_fBestProgress;
 	protected static float s_fWheelbase = 2.7;
 	protected static float s_fFrontM = 2;
+	protected static float s_fHalfWidthM = 0.8;
+	protected static float s_fBackupS = BACKUP_S;
 	protected static float s_fLateral = LATERAL_MPS2;
 	protected static float s_fBackupSteer;
 	protected static float s_fDriven;
@@ -494,7 +510,7 @@ class LF_DriveHarness
 			prefab = prefab.Substring(slash + 1, prefab.Length() - slash - 1);
 
 		string line = string.Format("seat=%1 veh=%2 speed=%3kmh pos=%4,%5,%6 heading=%7 engine=%8 gear=%9", seat, prefab, Round1(SpeedKmh(car)), Round1(at[0]), Round1(at[1]), Round1(at[2]), Math.Round(angles[0]), engine, gear);
-		line += string.Format(" handbrake=%1 health=%2 owner=%3 lights=%4", handbrake, Math.Round(LF_RepairKit.HealthOf(car) * 100) / 100, owner, lightsOn);
+		line += string.Format(" handbrake=%1 health=%2 owner=%3 lights=%4 fuel=%5", handbrake, Math.Round(LF_RepairKit.HealthOf(car) * 100) / 100, owner, lightsOn, Math.Round(FuelShare(car) * 100) / 100);
 		line += string.Format(" drive=%1 driven=%2m mode=%3 ticks=%4 prep=%5", s_sStatus, Math.Round(s_fDriven), s_sMode, s_iTicks, s_iPrepares);
 		return line;
 	}
@@ -816,10 +832,15 @@ class LF_DriveHarness
 		car.GetBounds(mins, maxs);
 		s_fWheelbase = Math.Clamp((maxs[2] - mins[2]) * 0.6, 2.2, 5.5);
 		s_fFrontM = maxs[2];
+		s_fHalfWidthM = Math.Max((maxs[0] - mins[0]) * 0.5 - 0.15, 0.3);
+		s_fBackupS = BACKUP_S;
 		s_fLateral = LATERAL_MPS2;
 		Physics physics = car.GetPhysics();
 		if (physics && physics.GetMass() > HEAVY_KG)
+		{
 			s_fLateral = LATERAL_HEAVY_MPS2;
+			s_fBackupS = BACKUP_HEAVY_S;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1043,7 +1064,7 @@ class LF_DriveHarness
 		if (s_iWaitId > 0)
 		{
 			string answer = "ok";
-			if (status == "timeout" || status == "stuck" || status == "lost_vehicle")
+			if (status == "timeout" || status == "stuck" || status == "lost_vehicle" || status == "out_of_fuel")
 				answer = "error";
 
 			LF_AgentHarness.Answer(s_iWaitId, answer, summary);
@@ -1243,7 +1264,8 @@ class LF_DriveHarness
 		}
 
 		string reason;
-		if (s_fStillSinceMs > 0 && now - s_fStillSinceMs > STUCK_S * 1000)
+		bool starting = now - s_fStartMs < START_GRACE_S * 1000;
+		if (s_fStillSinceMs > 0 && now - s_fStillSinceMs > STUCK_S * 1000 && !starting)
 			reason = "stalled";
 		else if (now - s_fProgressAtMs > NO_PROGRESS_S * 1000)
 			reason = "no_progress";
@@ -1281,6 +1303,12 @@ class LF_DriveHarness
 
 		s_sStuckAt += string.Format("%1,%2", Math.Round(at[0]), Math.Round(at[2]));
 		s_sWhy = reason + "_" + blocker;
+		if (blocker == "out_of_fuel")
+		{
+			Finish("out_of_fuel");
+			return false;
+		}
+
 		if (s_iBackups >= MAX_BACKUPS)
 		{
 			Finish("stuck");
@@ -1302,7 +1330,7 @@ class LF_DriveHarness
 			s_fBackupSteer = s_fSteerSign * side * BACKUP_LOCK;
 
 		s_vBackupFrom = at;
-		s_fBackupUntilMs = now + BACKUP_S * 1000;
+		s_fBackupUntilMs = now + s_fBackupS * 1000;
 		s_fStillSinceMs = 0;
 		s_sStatus = "backing";
 		LF_Debug.Info(FEATURE, string.Format("drive stuck at %1 (%2), backing up %3 of %4 steer=%5", at, s_sWhy, s_iBackups, MAX_BACKUPS, Round1(s_fBackupSteer)));
@@ -1386,11 +1414,19 @@ class LF_DriveHarness
 	//! a lip or a steep bank stops a car with nothing in front of it).
 	protected static string Blocker(IEntity car, vector forward)
 	{
+		// An empty tank stops a car with nothing in front of it.
+		if (FuelShare(car) == 0)
+			return "out_of_fuel";
+
+		// Three rays (both front corners and the middle) at a kerb height and a bumper height.
 		array<float> heights = {0.35, 0.9};
-		foreach (float h : heights)
+		array<float> sides = {0, -1, 1};
+		for (int ray = 0; ray < 6; ray++)
 		{
+			float side = sides[ray / 2];
+			float h = heights[ray % 2];
 			TraceParam trace = new TraceParam();
-			trace.Start = car.CoordToParent(Vector(0, h, s_fFrontM - 0.2));
+			trace.Start = car.CoordToParent(Vector(side * s_fHalfWidthM, h, s_fFrontM - 0.2));
 			trace.End = trace.Start + forward * BLOCKER_LOOK_M;
 			trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
 			trace.LayerMask = EPhysicsLayerPresets.Main;
@@ -1415,11 +1451,28 @@ class LF_DriveHarness
 				name = name.Substring(slash + 1, name.Length() - slash - 1);
 
 			name.Replace(".et", "");
-			return string.Format("blocked_by_%1_at_%2m", name, Round1(fraction * BLOCKER_LOOK_M));
+			string corner = "middle";
+			if (side < 0)
+				corner = "left";
+			else if (side > 0)
+				corner = "right";
+
+			return string.Format("blocked_by_%1_at_%2m_%3", name, Round1(fraction * BLOCKER_LOOK_M), corner);
 		}
 
 		vector angles = car.GetYawPitchRoll();
 		return string.Format("clear_pitch_%1", Math.Round(angles[1]));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The fuel left as a share of the tank (0..1), or -1 for a car without a fuel manager.
+	static float FuelShare(IEntity car)
+	{
+		SCR_FuelManagerComponent manager = SCR_FuelManagerComponent.Cast(car.FindComponent(SCR_FuelManagerComponent));
+		if (!manager || manager.GetTotalMaxFuel() <= 0)
+			return -1;
+
+		return manager.GetTotalFuel() / manager.GetTotalMaxFuel();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1585,7 +1638,7 @@ class LF_DriveHarness
 
 //------------------------------------------------------------------------------------------------
 //! A route along the AI road network: A* over the points of the roads in the box round the start
-//! and the goal (a road's points thinned to NODE_STEP_M apart, its two ends always kept), joined
+//! and the goal, joined
 //! where roads meet, kept LANE_M right of the middle line. A binary heap keeps a whole-island
 //! route (thousands of points) to one quick pass on the server.
 class LF_DriveRoute
@@ -1621,11 +1674,6 @@ class LF_DriveRoute
 			for (int k = 0; k < count; k++)
 			{
 				vector p = Vector(points[k][0], 0, points[k][2]);
-				bool end = k == 0 || k == count - 1;
-				int lastNode = nodes.Count() - 1;
-				if (!end && lastNode >= 0 && roadOf[lastNode] == r && vector.DistanceXZ(nodes[lastNode], p) < LF_DriveHarness.NODE_STEP_M)
-					continue;
-
 				if (nodes.Count() >= LF_DriveHarness.MAX_ROAD_NODES)
 					return string.Format("road_graph_too_big_%1_nodes", nodes.Count());
 
@@ -1641,12 +1689,46 @@ class LF_DriveRoute
 		map<int, ref array<int>> joins = new map<int, ref array<int>>();
 		Joins(nodes, roadOf, LF_DriveHarness.ROAD_JOIN_M, joins);
 
-		int from = Nearest(nodes, start);
-		int to = Nearest(nodes, goal);
+		// The way onto the road and off it is a straight line: take the nearest road point that line
+		// reaches without running into a wall, a fence or a wreck (a truck yard's nearest road point can
+		// lie across a scrapyard dump, #5053; a walled smelter's across its tin wall).
+		// Pairs are tried nearest first; the first that connects wins.
+		array<int> fromList = {};
+		array<int> toList = {};
+		vector fromVia;
+		vector toVia;
+		bool fromViaUsed;
+		bool toViaUsed;
+		JoinCandidates(nodes, roadOf, start, fromList, fromVia, fromViaUsed);
+		JoinCandidates(nodes, roadOf, goal, toList, toVia, toViaUsed);
 		array<int> chain = {};
-		float length = Search(nodes, roadOf, joins, from, to, chain);
+		float length = -1;
+		int from = fromList[0];
+		int to = toList[0];
+		for (int sum = 0; sum <= fromList.Count() + toList.Count() - 2 && length < 0; sum++)
+		{
+			for (int fi = 0; fi < fromList.Count() && length < 0; fi++)
+			{
+				int ti = sum - fi;
+				if (ti < 0 || ti >= toList.Count())
+					continue;
+
+				from = fromList[fi];
+				to = toList[ti];
+				length = Search(nodes, roadOf, joins, from, to, chain);
+			}
+		}
+
 		if (length < 0)
+		{
+			LF_Debug.Warn(LF_DriveHarness.FEATURE, string.Format("drive road: no way from %1 to %2 over %3 road points (join candidates %4 at the start, %5 at the goal)", start, goal, n, fromList.Count(), toList.Count()));
 			return "no_road_path";
+		}
+
+		int plainFrom = fromList[fromList.Count() - 1];
+		int plainTo = toList[toList.Count() - 1];
+		if (from != plainFrom || to != plainTo)
+			LF_Debug.Info(LF_DriveHarness.FEATURE, string.Format("drive road joins at %1 (%2 m from the start) and leaves at %3 (%4 m from the goal), not the nearest road points %5 and %6: a straight line to those is blocked or they lead nowhere", nodes[from], Math.Round(vector.DistanceXZ(nodes[from], start)), nodes[to], Math.Round(vector.DistanceXZ(nodes[to], goal)), nodes[plainFrom], nodes[plainTo]));
 
 		// The middle line, dropping points under 3 m apart.
 		array<vector> line = {};
@@ -1676,6 +1758,13 @@ class LF_DriveRoute
 			vector rightOf = Vector(dir[2], 0, -dir[0]);
 			route.Insert(line[i6] + rightOf * LF_DriveHarness.LANE_M);
 		}
+
+		// A waypoint out of a shut-in yard belongs to the first road point only.
+		if (fromViaUsed && from == fromList[0])
+			route.InsertAt(fromVia, 0);
+
+		if (toViaUsed && to == toList[0])
+			route.Insert(toVia);
 
 		route.Insert(Vector(goal[0], 0, goal[2]));
 		LF_Debug.Info(LF_DriveHarness.FEATURE, string.Format("drive road route roads=%1 raw=%2 nodes=%3 joins=%4 points=%5 length=%6m straight=%7m", roads.Count(), rawPoints, n, joins.Count(), route.Count(), Math.Round(length), Math.Round(straight)));
@@ -1896,6 +1985,244 @@ class LF_DriveRoute
 		int cx = Math.Floor(p[0] / cell) + dx;
 		int cz = Math.Floor(p[2] / cell) + dz;
 		return cx * 100000 + cz;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest road point within CLEAR_REACH_M whose straight line from `at` meets no entity at
+	//! bumper height, trying up to CLEAR_CANDIDATES points nearest first and at most two per road (the
+	//! points of one road lie side by side, so a wall in front of one is in front of its neighbours);
+	//! the plain nearest when none is clear. Fills `joinsAt` with up to CLEAR_KEEP clear points,
+	//! nearest first, and the plain nearest last, for the search to fall back on when the first lies
+	//! on a road stub that leads nowhere.
+	protected static void JoinCandidates(array<vector> nodes, array<int> roadOf, vector at, notnull array<int> joinsAt, out vector via, out bool viaUsed)
+	{
+		viaUsed = false;
+		joinsAt.Clear();
+		int nearest = Nearest(nodes, at);
+		array<int> near = {};
+		array<float> nearD = {};
+		foreach (int i, vector p : nodes)
+		{
+			float d = vector.DistanceXZ(p, at);
+			if (d <= LF_DriveHarness.CLEAR_REACH_M)
+			{
+				near.Insert(i);
+				nearD.Insert(d);
+			}
+		}
+
+		map<int, int> perRoad = new map<int, int>();
+		int tried = 0;
+		string blocked;
+		while (tried < LF_DriveHarness.CLEAR_CANDIDATES && joinsAt.Count() < LF_DriveHarness.CLEAR_KEEP && !near.IsEmpty())
+		{
+			int best = 0;
+			for (int k = 1; k < near.Count(); k++)
+			{
+				if (nearD[k] < nearD[best])
+					best = k;
+			}
+
+			int candidate = near[best];
+			near.Remove(best);
+			nearD.Remove(best);
+			int seen = 0;
+			perRoad.Find(roadOf[candidate], seen);
+			if (seen >= 2)
+				continue;
+
+			perRoad.Set(roadOf[candidate], seen + 1);
+			tried++;
+			if (LineClear(at, nodes[candidate]))
+				joinsAt.Insert(candidate);
+			else
+				blocked += string.Format(" %1,%2:%3", Math.Round(nodes[candidate][0]), Math.Round(nodes[candidate][2]), s_sLastHit);
+		}
+
+		if (!blocked.IsEmpty())
+			LF_Debug.Info(LF_DriveHarness.FEATURE, string.Format("drive road joins near %1 skip blocked road points:%2", at, blocked));
+
+		// Shut in on every side (a yard with walls, a ramp and parked trucks between the car and every
+		// road point): a waypoint with a clear line from here and a clear line on to a road point (the
+		// yard gate) is the way out.
+		if (joinsAt.IsEmpty())
+		{
+			int viaNode;
+			if (ViaJoin(nodes, roadOf, at, via, viaNode))
+			{
+				viaUsed = true;
+				joinsAt.Insert(viaNode);
+				LF_Debug.Info(LF_DriveHarness.FEATURE, string.Format("drive road joins near %1 by way of %2 to the road point %3", at, via, nodes[viaNode]));
+			}
+		}
+
+		if (joinsAt.Find(nearest) < 0)
+			joinsAt.Insert(nearest);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A waypoint VIA_RADII metres out in one of VIA_DIRECTIONS directions with a clear line from `at`
+	//! and a clear line on to a road point (up to VIA_TRIES of the nearest to it, two per road).
+	protected static bool ViaJoin(array<vector> nodes, array<int> roadOf, vector at, out vector via, out int node)
+	{
+		array<float> radii = {15, 30, 45};
+		string tried;
+		foreach (float radius : radii)
+		{
+			for (int k = 0; k < LF_DriveHarness.VIA_DIRECTIONS; k++)
+			{
+				float angle = k * 2 * Math.PI / LF_DriveHarness.VIA_DIRECTIONS;
+				vector v = at + Vector(Math.Cos(angle) * radius, 0, Math.Sin(angle) * radius);
+				if (!LineClear(at, v))
+				{
+					tried += string.Format(" %1,%2:%3", Math.Round(v[0]), Math.Round(v[2]), s_sLastHit);
+					continue;
+				}
+
+				int found = FirstClear(nodes, roadOf, v);
+				if (found >= 0)
+				{
+					via = Vector(v[0], 0, v[2]);
+					node = found;
+					return true;
+				}
+
+				tried += string.Format(" %1,%2:on_%3", Math.Round(v[0]), Math.Round(v[2]), s_sLastHit);
+			}
+		}
+
+		LF_Debug.Info(LF_DriveHarness.FEATURE, string.Format("drive road finds no way out near %1:%2", at, tried));
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest road point within VIA_REACH_M of `at` with a clear line to it (VIA_TRIES tried, two
+	//! per road), or -1.
+	protected static int FirstClear(array<vector> nodes, array<int> roadOf, vector at)
+	{
+		array<int> near = {};
+		array<float> nearD = {};
+		foreach (int i, vector p : nodes)
+		{
+			float d = vector.DistanceXZ(p, at);
+			if (d <= LF_DriveHarness.VIA_REACH_M)
+			{
+				near.Insert(i);
+				nearD.Insert(d);
+			}
+		}
+
+		map<int, int> perRoad = new map<int, int>();
+		int tried = 0;
+		while (tried < LF_DriveHarness.VIA_TRIES && !near.IsEmpty())
+		{
+			int best = 0;
+			for (int k = 1; k < near.Count(); k++)
+			{
+				if (nearD[k] < nearD[best])
+					best = k;
+			}
+
+			int candidate = near[best];
+			near.Remove(best);
+			nearD.Remove(best);
+			int seen = 0;
+			perRoad.Find(roadOf[candidate], seen);
+			if (seen >= 2)
+				continue;
+
+			perRoad.Set(roadOf[candidate], seen + 1);
+			tried++;
+			if (LineClear(at, nodes[candidate]))
+				return candidate;
+		}
+
+		return -1;
+	}
+
+	protected static string s_sLastHit;
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the way from a to b, 0.3 m and 0.8 m above the ground, meets nothing but the terrain, a vehicle
+	//! or a character. It is traced in LINE_STEP_M pieces that follow the ground (one straight line
+	//! would run into a hill), with WORLD as well as ENTS: placed static props (a wreck, a tin wall)
+	//! answer only to WORLD.
+	static const float OWN_CAR_M = 5; // lf-fixed: harness geometry
+
+	static bool LineClear(vector a, vector b)
+	{
+		// A scrap pile lower than a bumper still stops a truck that climbs it, and one a metre beside
+		// the middle line is under a truck's wheels: three lines, the middle and SWEEP_HALF_M either side.
+		vector dir = Vector(b[0] - a[0], 0, b[2] - a[2]);
+		if (dir.Length() < 0.01)
+			return true;
+
+		dir.Normalize();
+		vector side = Vector(dir[2], 0, -dir[0]) * LF_DriveHarness.SWEEP_HALF_M;
+		array<float> offsets = {0, -1, 1};
+		foreach (float o : offsets)
+		{
+			vector from = a + side * o;
+			vector to = b + side * o;
+			if (!LineClearAt(from, to, a, 0.3) || !LineClearAt(from, to, a, 0.8))
+				return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool LineClearAt(vector a, vector b, vector origin, float height)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		float length = vector.DistanceXZ(a, b);
+		int pieces = Math.Ceil(length / LF_DriveHarness.LINE_STEP_M);
+		if (pieces < 1)
+			return true;
+
+		vector last = Vector(a[0], world.GetSurfaceY(a[0], a[2]) + height, a[2]);
+		for (int k = 1; k <= pieces; k++)
+		{
+			float share = k;
+			share = share / pieces;
+			vector p = a + (b - a) * share;
+			vector next = Vector(p[0], world.GetSurfaceY(p[0], p[2]) + height, p[2]);
+			TraceParam trace = new TraceParam();
+			trace.Start = last;
+			trace.End = next;
+			trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+			trace.LayerMask = EPhysicsLayerPresets.Main;
+			float fraction = world.TraceMove(trace, null);
+			last = next;
+			if (fraction >= 1)
+				continue;
+
+			IEntity hit = trace.TraceEnt;
+			if (!hit || GenericTerrainEntity.Cast(hit))
+				continue;
+
+			// The driver's own car at the start and a person are not walls; a parked truck further on is.
+			IEntity root = hit;
+			while (root.GetParent())
+				root = root.GetParent();
+
+			vector contact = trace.Start + (trace.End - trace.Start) * fraction;
+			if (ChimeraCharacter.Cast(root) || (Vehicle.Cast(root) && vector.DistanceXZ(contact, origin) < OWN_CAR_M))
+				continue;
+
+			string name = LF_Utils.GetPrefabName(root);
+			int slash = name.LastIndexOf("/");
+			if (slash >= 0)
+				name = name.Substring(slash + 1, name.Length() - slash - 1);
+
+			if (name.IsEmpty())
+				name = root.ClassName();
+
+			s_sLastHit = string.Format("%1@%2,%3", name, Math.Round(contact[0]), Math.Round(contact[2]));
+			return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
