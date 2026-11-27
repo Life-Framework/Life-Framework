@@ -367,17 +367,17 @@
       "mouth": "49996218744799899997751298545644311000000000000355698869942292100003766614698675447544433311200"
     },
     "settle_foundation": {
-      "hash": "02f79f161a546360",
-      "date": "2026-11-26",
+      "hash": "5668bfb86b58b763",
+      "date": "2026-11-27",
       "voice_id": "NxYVRLlKssuLUMfbtwGR",
       "voice_name": "Julien - Serious",
       "model": "eleven_multilingual_v2",
-      "text": "Lay the foundation of your cottage. The general store sells gravel and cement.",
-      "chars": 78,
-      "chars_total": 31,
-      "request_id": "eH7tlM9PpdkdbEnKeyuM",
-      "seconds": 5.93,
-      "mouth": "68999473389888799676776412755751297444324310000000010100000368459999997552687764432765432128988456521145233565432122100"
+      "text": "Lay the foundation of your cottage. The hardware store sells gravel and cement.",
+      "chars": 79,
+      "chars_total": 63,
+      "request_id": "VXAiW9TtYj0sRiWK8BkV",
+      "seconds": 6.54,
+      "mouth": "69999994499896997555875117647613885542343100000000000000475479969986552787764442877664321111100031586999847653111166333677643322100"
     },
     "card_replaced": {
       "hash": "f965c914123652f9",
