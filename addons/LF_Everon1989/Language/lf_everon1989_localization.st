@@ -4244,10 +4244,30 @@ StringTable {
      Target_en_us "Aspirin"
      Comment "Shop row name for the base-game aspirin bottle wherever a list has no row key of its own (the priced extras); found by file name (UI sweep 2026-11-27)."
     }
+    CustomStringTableItem "{4B1D7E20A93C5F01}" {
+     Id "LF-ItemName_Gauze_01"
+     Target_en_us "Gauze roll"
+     Comment "Pharmacy row name of the olive rolled bandage; the base game names it and the sterile pack both Gauze, so the list showed two Gauze rows (UI sweep 2026-11-27)."
+    }
+    CustomStringTableItem "{4B1D7E20A93C5F02}" {
+     Id "LF-ItemName_Gauze_02"
+     Target_en_us "Sterile gauze pack"
+     Comment "Pharmacy row name of the white sealed gauze packet (see LF-ItemName_Gauze_01)."
+    }
     CustomStringTableItem "{A0C7F324DEA458FE}" {
      Id "LF-ItemName_LF_Reaper_01"
      Target_en_us "Reaper"
      Comment "Farm supply row name for the tractor reaper, an implement with no inventory name; found by file name (UI sweep 2026-11-27)."
+    }
+    CustomStringTableItem "{4B1D7E20A93C5F04}" {
+     Id "LF-ItemName_Tourniquet_USSR_01"
+     Target_en_us "Rubber tourniquet"
+     Comment "Pharmacy row name of the red rubber band tourniquet (see LF-ItemName_Tourniquet_US_01)."
+    }
+    CustomStringTableItem "{4B1D7E20A93C5F03}" {
+     Id "LF-ItemName_Tourniquet_US_01"
+     Target_en_us "Buckle tourniquet"
+     Comment "Pharmacy row name of the olive strap tourniquet with the metal buckle; the base game names it and the rubber one both Tourniquet (UI sweep 2026-11-27)."
     }
     CustomStringTableItem "{5E7C2A90D13B4F68}" {
      Id "LF-ItemName_WaterBottle"

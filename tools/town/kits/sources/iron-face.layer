@@ -176,3 +176,12 @@ GameEntity Mine_Lamp_Sign : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerose
 GenericEntity Mine_Glow_Sign : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
  coords 4.4 0 -7.4
 }
+GenericEntity Mine_Beacon_Turn : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 36 0 -17
+}
+GenericEntity Mine_Beacon_Bend : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 57 0 34
+}
+ParticleEffectEntity Mine_Fire_Turn : "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et" {
+ coords 33 0 -15
+}

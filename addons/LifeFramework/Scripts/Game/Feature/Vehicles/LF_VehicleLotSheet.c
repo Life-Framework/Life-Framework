@@ -187,7 +187,7 @@ class LF_VehicleLotSheet
 	static const string ROW_PREFIX = "Car";
 	//! The change-locks row (#2411). Not ROW_PREFIX, so RowIndex never reads it as an offer.
 	static const string LOCKS_ROW = "ChangeLocks";
-	static const float LIST_HEIGHT = 330;
+	static const float LIST_HEIGHT = 312;	// lf-fixed: eight compact rows of 39 (UI sweep 2026-11-27)
 
 	protected static ref LF_UIScreen s_Screen;
 	protected static RplId s_LotId;
@@ -202,7 +202,7 @@ class LF_VehicleLotSheet
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "LotTitle", "#LF-Lot_Title"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LotMoney", WidgetManager.Translate("#LF-Lot_Money", LF_MoneyFormat.FormatMoney(bank), LF_MoneyFormat.FormatMoney(cash))));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LotRule", WidgetManager.Translate("#LF-Lot_Rule", LF_MoneyFormat.FormatMoney(cashCeiling))));
-		parts.Insert(LF_UIPart.CreateList(LIST));
+		parts.Insert(LF_UIPart.CreateList(LIST).Compact());
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, "LotClose", "#LF-Lot_Leave"));
 
 		s_Screen = LF_UIScreen.Open(parts, LF_UISkin.PriceList());
