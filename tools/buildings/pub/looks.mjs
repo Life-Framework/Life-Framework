@@ -25,7 +25,7 @@ for (const r of spec.looks.rooms) {
   calls.push({ name: r.name, args: ["look", "grid:pub", "--interior", w.join(","), "--radius", String(r.radius), "--close", "0", ...h], dir: "grid-pub-interior" });
 }
 for (const c of calls) {
-  console.log(`tools\cli ${c.args.join(" ")}`);
+  console.log(`tools\\cli ${c.args.join(" ")}`);
   if (!process.argv.includes("--run")) continue;
   const res = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...c.args], { cwd: ROOT, stdio: "inherit", windowsHide: true });
   const src = join(ROOT, "tmp", "look", c.dir);

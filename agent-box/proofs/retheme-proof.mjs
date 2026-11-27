@@ -20,7 +20,7 @@ import { ROOT, arrive, clientBox, readSession, sessionDir } from "../session.mjs
 // One PASS or FAIL line per overlay: theme, prices, items, slot, terms. Each reads what client 1 sees,
 // then the server log says the overlay loaded. The picture of the themed price list goes to <out dir>
 // (default agent-box/reports/retheme, which `session pull` brings home).
-// The fixtures stand in this proof's own grid cell (Grid_retheme_proof.layer, `toolscli grid place retheme-proof`), never in the
+// The fixtures stand in this proof's own grid cell (Grid_retheme_proof.layer, `tools\cli grid place retheme-proof`), never in the
 // annex or the town (three-worlds.md, #1896). The pack session runs on GridWorld: `--prepare` points the generated pack's header there.
 export const SHOP = "Retheme_Shop";
 export const GUNS = "Retheme_Guns";

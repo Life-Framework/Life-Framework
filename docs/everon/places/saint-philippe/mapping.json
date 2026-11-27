@@ -3,7 +3,7 @@
   "template": "town",
   "place": "saint-philippe",
   "status": "approved",
-  "note": "A proposal for the lead to approve (D10). Approval is a reviewed PR holding only this file (label town-mapping). `toolscli town map <place> --check` passes.",
+  "note": "A proposal for the lead to approve (D10). Approval is a reviewed PR holding only this file (label town-mapping). `tools\\cli town map <place> --check` passes.",
   "dossier": {
     "schema": 1,
     "generated": "2026-11-17",
@@ -228,7 +228,7 @@
       ],
       "why": [
         "D10 pick (#3314), garbage round card #3338: nine drops, each a building of the districts survey (an outposts drop cannot name this place's own survey, so the village buildings that the east-ring survey also covers go by their districts ids): the depot and tip at di:b51 (Shed_03, 26.5 m2, no interior) in the outbuilding cluster at the south-east edge, which is the dump because neither survey lists a dump or a landfill, and eight street bins at the kerbs of di:b56, b73, b43, b50, b66, b27, b49 and b11 (the square row east of the church, the east road, the police end and the eastern houses)",
-        "the round walks the east half of the village from the square (di:b56 is 38 m from the scout centre, di:b11 163 m); the west half of the centre has no districts id, so a west-side bin is a follow-up once the slot can name its own place's buildings. The slot's 6 m margin lets a bin stand at the kerb, not only on the wall; `toolscli town drops saint-philippe bins` seats them"
+        "the round walks the east half of the village from the square (di:b56 is 38 m from the scout centre, di:b11 163 m); the west half of the centre has no districts id, so a west-side bin is a follow-up once the slot can name its own place's buildings. The slot's 6 m margin lets a bin stand at the kerb, not only on the wall; `tools\\cli town drops saint-philippe bins` seats them"
       ]
     },
     "loot": {

@@ -14,7 +14,7 @@ export async function main(args, { root }) {
   const [first] = args;
   if (first === "install") { install(root); return 0; }
   if (first === "status") {
-    console.log(installed(root) ? `3d-asset-server ${PIN.slice(0, 7)} at ${serverDir(root)}` : "3d-asset-server not installed: tools\cli asset-search install");
+    console.log(installed(root) ? `3d-asset-server ${PIN.slice(0, 7)} at ${serverDir(root)}` : "3d-asset-server not installed: tools\\cli asset-search install");
     return installed(root) ? 0 : 1;
   }
   const opt = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };

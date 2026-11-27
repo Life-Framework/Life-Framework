@@ -87,7 +87,7 @@
 - ✅ The playtest mission `Missions/LF_PlaytestTown.conf` (`LF_MissionHeader`,
   `Core/LF_MissionHeader.c`) runs DebugWorld with `m_bLF_DevToolsOff 1`: the
   header overrides the DebugWorld game mode opt-in, so only administrators
-  pass `LF_DevGate` there. A bare world (Workbench play, `toolscli test`) has
+  pass `LF_DevGate` there. A bare world (Workbench play, `tools\cli test`) has
   no LF header and keeps the opt-in. LOGIC test `host/playtest-mission`
   (2026-11-08).
 - ✅ **Workshop scenario (2026-11-10).** `LF_PlaytestTown.conf` is the Workshop item's scenario

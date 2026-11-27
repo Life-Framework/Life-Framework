@@ -1,7 +1,7 @@
 # Feedback dry run, November 2026
 
 Slice #1678, acceptance of #316 as a rehearsal: one recorded session and five feedback
-posts go through `toolscli host feedback`, and the drafts are read for their session link,
+posts go through `tools\cli host feedback`, and the drafts are read for their session link,
 their label and the folded duplicate. **No issue was filed on GitHub**; the `gh issue create`
 lines below were printed and not run. The command is
 [`tools/host/feedback.mjs`](https://github.com/Life-Framework/Life-Framework/blob/main/tools/host/feedback.mjs);
@@ -14,7 +14,7 @@ Discord ids in them are the fake ids the command is meant to strip. The scratch 
 its drafts lived in the worktree's `tmp/` and are not committed.
 
 ```
-LF_HOST_DIR=<scratch>/host toolscli host feedback <scratch>/export.txt --out <scratch>/out
+LF_HOST_DIR=<scratch>/host tools\cli host feedback <scratch>/export.txt --out <scratch>/out
 ```
 
 ## Input posts

@@ -60,7 +60,7 @@ const chains = ["lumber", "wheat", "mining"].reduce((n, k) => n + (rep[k]?.loops
 expect(real.rows.length === chains && chains > 0, `a full-perks row for each of the ${chains} chains (got ${real.rows.length})`);
 expect(real.rows.every((r) => r.full >= r.novice), "no chain pays less with the perks than without");
 expect(real.flags.length === 0, `the shipped chains raise no perks flag (got ${real.flags.map((f) => f.text).join("; ")})`);
-expect(typeof cmd.perksSection === "function" && cmd.perksSection(rep).rows.length === real.rows.length, "tools\cli economy adds the perks section (perksSection)");
+expect(typeof cmd.perksSection === "function" && cmd.perksSection(rep).rows.length === real.rows.length, "tools\\cli economy adds the perks section (perksSection)");
 
 if (fails.length) {
   console.error(fails.join("\n"));

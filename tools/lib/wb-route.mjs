@@ -48,7 +48,7 @@ export function localPolicy({ machines, env = process.env, host = os.hostname() 
   return { hasCap, forced, allowed: hasCap || forced, host };
 }
 
-// One line for `toolscli status` (#2749): may a headless Workbench start on THIS machine? Names the host so
+// One line for `tools\cli status` (#2749): may a headless Workbench start on THIS machine? Names the host so
 // an agent on lf-testbox (PC1) never mistakes the maintainer's-PC rule for itself.
 export function statusLine({ machines, env = process.env, host = os.hostname() } = {}) {
   const p = localPolicy({ machines, env, host });

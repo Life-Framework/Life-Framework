@@ -62,7 +62,7 @@ export function cmdRecord(root, host, flags) {
 export function cmdStart(root, host, flags) {
   const [exe, ...args] = flags;
   if (!exe) {
-    console.log("usage: tools\cli testbox start <exe on the box> [args...]");
+    console.log("usage: tools\\cli testbox start <exe on the box> [args...]");
     return 2;
   }
   if (!pushScripts(root, host)) return 1;

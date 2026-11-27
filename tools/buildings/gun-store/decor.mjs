@@ -7,7 +7,7 @@
 // Heights: a prop's y is a hint; surface.mjs snaps it onto the top under it (`on:` names the support), so a counter-top
 // prop never hovers over its counter. `tools\cli building check gun-store` proves it.
 //
-// Lights meet the medium building budget (docs/architecture/performance.md, `toolscli perf building GunStore --size medium`):
+// Lights meet the medium building budget (docs/architecture/performance.md, `tools\cli perf building GunStore --size medium`):
 // 6 lights in all (4 inside, 1 per facade lamp), CastShadow written on every one, one shadow caster (the spot over
 // the counter) and no point light casting. Fixtures that only have to look on are emissive meshes, not lights.
 //

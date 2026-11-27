@@ -232,13 +232,13 @@ desktop is up). The task runs `conhost.exe --headless powershell.exe ...`, so th
 `powershell.exe` action died ~15 s after logon when its window was closed, #2590):
 
 ```
-toolscli desktop-helper setup lf-testbox     # over ssh
-toolscli desktop-helper setup --local        # on the machine
-toolscli desktop-helper status lf-testbox    # session verdict, heartbeat age, task state
-toolscli desktop-helper remove lf-testbox
+tools\cli desktop-helper setup lf-testbox     # over ssh
+tools\cli desktop-helper setup --local        # on the machine
+tools\cli desktop-helper status lf-testbox    # session verdict, heartbeat age, task state
+tools\cli desktop-helper remove lf-testbox
 ```
 
-`toolscli pool status` shows a `desktop:` line per machine: `GPU session ok: PC1jaspe, session 1, Active, 2 monitor(s);
+`tools\cli pool status` shows a `desktop:` line per machine: `GPU session ok: PC1jaspe, session 1, Active, 2 monitor(s);
 logon helper alive (3 s ago)`, or `NO GPU SESSION: <the line above>`. `docs/worktrees.md` "Desktop on the box" has the rest.
 
 ## Troubleshooting

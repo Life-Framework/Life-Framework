@@ -316,7 +316,7 @@ async function run(args) {
   console.log(`ARC  whole arc ${arcMin.toFixed(1)} min wall clock (axe shopping included); fell, haul, saw and sell ${loopMin.toFixed(1)} min with teleports`);
   console.log(`ARC  walk a player makes: ${Math.round(walkM)} m on foot + ${Math.round(loadedM)} m under a log = ${walkMin.toFixed(1)} min; loop with the walk ${adjMin.toFixed(1)} min`);
   console.log(`ARC  axe -$${AXE_PRICE}; ${sold} plank(s) sold +${earned} from ${felled.logs} log(s) (${hoisted} hoisted, ${sawnPlanks} sawn, ${buyerTrips} trips to the buyer); measured $${perHour}/h over the loop, $${adjPerHour}/h with the walk, $${dollarsPerHour(earned - AXE_PRICE, arcMin)}/h over the arc with the axe`);
-  console.log(`ARC  tools\cli economy hand-haul planks: ${econ ? `steady $${econ.steady}/h, first hour $${econ.first}/h` : "row not read"} (one tree is one cycle: the measured figure carries the purse refill only)`);
+  console.log(`ARC  tools\\cli economy hand-haul planks: ${econ ? `steady $${econ.steady}/h, first hour $${econ.first}/h` : "row not read"} (one tree is one cycle: the measured figure carries the purse refill only)`);
   step("5 the arc's minutes and dollars are measured", earned > 0 && loopMin > 0, `${adjMin.toFixed(1)} min with the walk, +$${earned}, $${adjPerHour}/h`);
   return finish(results);
 }

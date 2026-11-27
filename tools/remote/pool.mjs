@@ -3113,7 +3113,7 @@ ${q.formatRunsByPurpose(kinds)}`);
   // The ship queue wt ship feeds (tools/ship-queue.mjs): what gates now, what waits and why, the last few done.
   const sq = shipQueue.readQueue(wt.hubDirOf(root));
   if (sq.entries.length) for (const l of shipQueue.statusLines(sq, { waits: shipQueue.pickRunnable(sq.entries, { slots: 99, lightSlots: 99 }).wait.filter((w) => !/gate slot/.test(w.why)) })) console.log(l);
-  else console.log("ship queue: empty (tools\cli ship-queue status)");
+  else console.log("ship queue: empty (tools\\cli ship-queue status)");
   return 0;
 }
 

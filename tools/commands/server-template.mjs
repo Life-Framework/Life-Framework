@@ -26,7 +26,7 @@ export function engineVerdict(log) {
 export async function main(args, { root }) {
   const [sub] = args;
   if (sub !== "check") {
-    console.log("usage: tools\cli server-template check [--engine]");
+    console.log("usage: tools\\cli server-template check [--engine]");
     return 1;
   }
   const fails = templateProblems(root);

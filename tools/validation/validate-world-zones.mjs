@@ -122,7 +122,7 @@ export function checkClaims(root, { mainClaims: onMain = [], prClaims = [] } = {
     if (isAuthoringClaim(c) && !isBayClaim(c)) errors.push(`${c.file}: an authoring claim sits exactly on one 2x2 authoring bay (${authoringBays().map((x) => x.id).join(", ")}), not ${c.cell}${c.span ? ` span ${JSON.stringify(c.span)}` : ""}`);
     if (!isAuthoringClaim(c) && claimCellIds(c).some(isAuthoringCell)) errors.push(`${c.file}: ${c.cell} touches an authoring bay; only \`town author\` (grid place --bay) claims those. Run tools\\cli grid free ${c.slug} and grid place ${c.slug} again for a free cell`);
     for (const id of claimCellIds(c)) {
-      if (seen.has(id)) errors.push(`${c.file}: cell ${id} is claimed by ${seen.get(id)} too. Run tools\cli grid free ${c.slug} and grid place again for a free cell`);
+      if (seen.has(id)) errors.push(`${c.file}: cell ${id} is claimed by ${seen.get(id)} too. Run tools\\cli grid free ${c.slug} and grid place again for a free cell`);
       else seen.set(id, c.file);
     }
     const layer = layerOfSlug(c.slug);

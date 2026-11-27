@@ -116,8 +116,8 @@ budget is a handoff to a fresh `lf-builder`, not an escalation.
 ## Plan utilization: aim for 100% of the week
 
 The target (maintainer, 2026-11-17): the Gaming plan's WEEKLY limit used up by its reset, without the 5-hour
-limit ever blocking agents hard. `toolscli usage --accounts` only estimates from local logs and is unreliable
-(it once said 184%); `toolscli usage --plan [--account gaming|personal|all] [--json]` reads the real figures
+limit ever blocking agents hard. `tools\cli usage --accounts` only estimates from local logs and is unreliable
+(it once said 184%); `tools\cli usage --plan [--account gaming|personal|all] [--json]` reads the real figures
 the way `/usage` does: a GET to `https://api.anthropic.com/api/oauth/usage` with the account's OAuth token from
 `~/.claude-gaming/.credentials.json` (`~/.claude` for Personal), header `anthropic-beta: oauth-2025-04-20`. The token
 is held in memory only and never printed or stored; an expired one is not refreshed (the next Claude Code run on
@@ -139,7 +139,7 @@ Gaming: 5h 2% (resets 13:00, in 4h48m) | week 0% (resets Thu 19:00, in 2d11h) | 
 - **Active agents** are Claude logs written in the last 10 min on this PC plus the laptop (the laptop is read over ssh,
   6 s; if it does not answer the line says `laptop agents not counted`).
 
-**The lead** reads the `USAGE` line of `toolscli lead` at every check-in, like POOL RAM. Under-using: start the
+**The lead** reads the `USAGE` line of `tools\cli lead` at every check-in, like POOL RAM. Under-using: start the
 next ready slices on the Gaming provider (`usage --pick`) up to N, one agent per file-disjoint slice, and hardware
 lanes permitting. On pace: keep the current rate. Over pace or 5h tight: start nothing new until the printed reset;
 agents already running finish. The first hours after a plan change have no samples, so N rests on the assumed

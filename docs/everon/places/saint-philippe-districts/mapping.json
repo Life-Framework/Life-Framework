@@ -3,7 +3,7 @@
   "template": "districts",
   "place": "saint-philippe-districts",
   "status": "proposed",
-  "note": "Proposal for lead approval (D10): the tool proposal, hand-edited for state 2a, on the districts template (#2896, no required slot): the districts have no hall and no board, so b05 (a 663 m2 house) and b01 (a henhouse) are no longer mapped. The districts are the residential ring east of the square (scout centre 4650, 10700, radius 160). 2a needs the districts houses and a fuel station on the road; the rest stays none. Approval is a reviewed PR holding only this file (label town-mapping); `toolscli town map saint-philippe-districts --check` passes.",
+  "note": "Proposal for lead approval (D10): the tool proposal, hand-edited for state 2a, on the districts template (#2896, no required slot): the districts have no hall and no board, so b05 (a 663 m2 house) and b01 (a henhouse) are no longer mapped. The districts are the residential ring east of the square (scout centre 4650, 10700, radius 160). 2a needs the districts houses and a fuel station on the road; the rest stays none. Approval is a reviewed PR holding only this file (label town-mapping); `tools\\cli town map saint-philippe-districts --check` passes.",
   "dossier": {
     "schema": 1,
     "generated": "2026-11-17",
