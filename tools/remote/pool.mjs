@@ -29,6 +29,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "../wt.mjs";
 import * as q from "../lib/pool-queue.mjs";
+import * as gameUpdate from "../lib/game-update.mjs";
 import { PS_GPU_PROBE, PS_READ_HEARTBEAT, desktopLine, parseProbe, readLocalProbe } from "../lib/gpu-session.mjs";
 import * as pr from "../lib/pool-ram.mjs";
 import * as pc from "../lib/pool-commit.mjs";
@@ -3000,6 +3001,11 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
   } catch (e) {
     console.log(`WARN  pool: idle-session check failed (${String(e?.message ?? e).split("\n")[0]})`);
   }
+  // This PC's Steam apps out of step (client updated, server not): every `session up` here would fail (tools/lib/game-update.mjs).
+  try {
+    const gu = gameUpdate.check(root);
+    if (gu.line) console.log(gu.line);
+  } catch {}
   // Per machine: reachable, its lane locks (alive or stale), its live free RAM.
   const seen = new Map();
   for (const m of machines) {
