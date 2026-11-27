@@ -67,6 +67,19 @@ function readYardPrices(sessionOwnerConfig) {
 }
 
 const escape = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// `--truck <name>`: the yard row to buy, by a part of its prefab name ("Ural"), -1 when none matches. The sheet lists the
+// yard's rows in the conf's order (Car0, Car1, ...). Without the option the proof buys the first row the buyer can pay.
+export function truckRowIndex(yard, name) {
+  const want = String(name ?? "").toLowerCase();
+  return want ? yard.findIndex((r) => String(r.prefab).toLowerCase().includes(want)) : -1;
+}
+
+// The prefab path of the last `[LFDebug:Vehicle] purchased <prefab> owner=` line in the server log, "" when there is none.
+export function lastPurchased(log) {
+  const all = [...String(log).matchAll(/\[LFDebug:Vehicle\] purchased (\S+) owner=/g)];
+  return all.length ? all[all.length - 1][1] : "";
+}
 const count = (log, re) => (String(log).match(re) || []).length;
 
 // The gate lines the server logs: `truck check gate <n>: <uid> reached it, the check says <GATE_OK|PASSED|FAILED_COURSE>`.
@@ -112,6 +125,10 @@ function selftest() {
   if (!passedLine(log, uid) || !failedLine(log, uid) || !lotRefusedLine(log, uid) || !lotBoughtLine(log, uid) || !deskLine(log, uid)) fails.push("a one-line judge missed its line");
   if (passedLine(log, "someone-else")) fails.push("passedLine matched another account");
   if (!deskHeldLine(log, uid) || deskHeldLine(log, "someone-else")) fails.push("deskHeldLine (a character that already holds the driving licence)");
+  if (truckRowIndex(rows, "ural") !== 1 || truckRowIndex(rows, "M923A1") !== 0 || truckRowIndex(rows, "nothing") !== -1 || truckRowIndex(rows, "") !== -1) fails.push("truckRowIndex");
+  const bought = "01:11:13.000 SCRIPT: [LFDebug:Vehicle] purchased {F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et owner=u1 id=7 plate=CD MU 3665 cash=0 bank=9600\n"
+    + "01:12:13.000 SCRIPT: [LFDebug:Vehicle] purchased {F1FBD0972FA5FE0A}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport.et owner=u1 id=8 plate=AB CD 1234 cash=0 bank=100\n";
+  if (!lastPurchased(bought).includes("Ural4320") || lastPurchased("no purchase here") !== "") fails.push("lastPurchased");
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "truck-check-proof selftest: FAIL" : "truck-check-proof selftest: PASS");
   return fails.length ? 1 : 0;
@@ -136,7 +153,8 @@ function keepPictures(dir) {
   console.log(`kept ${kept} picture(s) in ${out}`);
 }
 
-async function run() {
+async function run(args = []) {
+  const wantTruck = args.indexOf("--truck") >= 0 ? args[args.indexOf("--truck") + 1] : "";
   const h = await import("../harness.mjs");
   const dir = sessionDir();
   const on = (n, spec, timeout) => {
@@ -160,8 +178,10 @@ async function run() {
     return { cash: Number(s.cash), bank: Number(s.bank) };
   };
   // The sheet offers a Buy button only on a row the buyer can pay (the dearer truck has none): click the first one.
-  const clickBuy = () => {
-    const widget = /Car\d+_Action/.exec(String(on(1, { verb: "ui" }).detail))?.[0] ?? "Car0_Action";
+  const clickBuy = (row = -1) => {
+    const widgets = String(on(1, { verb: "ui" }).detail);
+    const widget = row >= 0 ? `Car${row}_Action` : /Car\d+_Action/.exec(widgets)?.[0] ?? "Car0_Action";
+    if (row >= 0 && !widgets.includes(widget)) console.log(`${widget} is not on the sheet (the buyer cannot pay that row?)`);
     on(1, { verb: "click", widget });
   };
   const shot = (name) => on(1, { verb: "capture", mode: "ui", name }, 25000);
@@ -275,10 +295,18 @@ async function run() {
   wait(1500);
   shot("truck_check_lot_open");
   const bankBefore = stateOf().bank;
-  clickBuy();
+  // Which truck an account gets depends on its bank: after `resetplayer` a fresh account is left with too little for the
+  // dearer M923A1 and takes the Ural, a checkpoint-10 account (the RC order) can pay the M923A1. `--truck Ural` pins
+  // the row, so the driven haul (`drive-haul-proof`, which the M923A1 cannot yet get through the woodlot sheds) gets the
+  // same truck in every order.
+  const row = truckRowIndex(yard, wantTruck);
+  if (wantTruck) expect(row >= 0, `--truck ${wantTruck} names a row of the yard's catalogue (${yard.map((r) => r.prefab.replace(/^.*\//, "")).join(", ")})`);
+  clickBuy(row);
   wait(3000);
   shot("truck_check_bought");
   expect(lotBoughtLine(serverLog(), uid), "the yard sells a truck to the licence holder (server log)");
+  if (wantTruck) expect(lastPurchased(serverLog()).toLowerCase().includes(wantTruck.toLowerCase()), `the truck bought is the ${wantTruck} (server log: ${lastPurchased(serverLog()).replace(/^.*\//, "")})`);
+  else console.log(`bought: ${lastPurchased(serverLog()).replace(/^.*\//, "")}`);
   const paid = bankBefore - stateOf().bank;
   expect(yard.some((r) => r.price === paid), `the truck's $${paid} left the bank: one of the yard's catalogue prices (${yard.map((r) => r.price).join(", ")})`);
 
@@ -289,6 +317,6 @@ async function run() {
 
 export default {
   name: "truck-check-proof",
-  usage: "truck-check-proof [--selftest]",
-  run: (ctx) => ((ctx?.args ?? []).includes("--selftest") ? selftest() : run()),
+  usage: "truck-check-proof [--truck <Ural|M923A1>] [--selftest]   (--truck pins the yard row bought; without it the first row the account can pay)",
+  run: (ctx) => ((ctx?.args ?? []).includes("--selftest") ? selftest() : run(ctx?.args ?? [])),
 };
