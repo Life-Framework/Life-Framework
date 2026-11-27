@@ -52,9 +52,10 @@ export function driveAndFollow(on, wait, words, opts) {
 }
 
 // The doors `drive probe` lists (`name@<d>m,h<h>,at=x;y;z,door`): a boom barrier's bar, a yard gate.
+// `,door:shut` or `,door:open` is the state the probe reads (a bare `,door` is an older build: taken as shut).
 export function doorsOf(detail) {
   const out = [];
-  for (const m of String(detail ?? "").matchAll(/(\S+?)@[\d.]+m,h[\d.]+,at=(-?[\d.]+);(-?[\d.]+);(-?[\d.]+),door/g)) out.push({ name: m[1], at: [Number(m[2]), Number(m[3]), Number(m[4])] });
+  for (const m of String(detail ?? "").matchAll(/(\S+?)@[\d.]+m,h[\d.]+,at=(-?[\d.]+);(-?[\d.]+);(-?[\d.]+),door(?::(open|shut))?/g)) out.push({ name: m[1], at: [Number(m[2]), Number(m[3]), Number(m[4])], open: m[5] === "open" });
   return out;
 }
 
@@ -65,15 +66,22 @@ export function openShutGate(on, wait, car) {
   wait(1000);
   on({ verb: "vehicle", words: ["exit", "force"] }, 10000);
   wait(1500);
-  const doors = doorsOf(on({ verb: "drive", words: ["probe", `${car[0]},${car[2]}`, "r=10"] }, 20000).detail);
+  const probe = () => doorsOf(on({ verb: "drive", words: ["probe", `${car[0]},${car[2]}`, "r=10"] }, 20000).detail);
+  const doors = probe();
+  const stateOf = (d) => probe().find((x) => x.name === d.name && Math.hypot(x.at[0] - d.at[0], x.at[2] - d.at[2]) < 0.5);
   let opened = "";
-  for (const d of doors) {
-    for (const r of [1.5, 2.5, 3.5]) {
+  // A `use` finds the nearest door action in reach, which can be another door (a guardhouse's) than the one wanted: only a
+  // door the probe then reads open counts. A bar's action is a few metres along it from its pivot.
+  for (const d of doors.filter((x) => !x.open).sort((a, b) => (/BarGate/.test(b.name) ? 1 : 0) - (/BarGate/.test(a.name) ? 1 : 0))) {
+    for (const r of [4.5, 3.5, 2.5, 1.5]) {
       for (let k = 0; k < 8 && !opened; k++) {
         const a = (k * Math.PI) / 4;
         on({ verb: "capture", mode: "world", name: "drive_gate", x: d.at[0], y: d.at[1], z: d.at[2], ox: Number((r * Math.cos(a)).toFixed(2)), oy: 0, oz: Number((r * Math.sin(a)).toFixed(2)) }, 30000);
         wait(800);
-        if (on({ verb: "use", className: "SCR_DoorUserAction" }, 10000).status === "ok") opened = d.name;
+        if (on({ verb: "use", className: "SCR_DoorUserAction" }, 10000).status !== "ok") continue;
+        wait(3500);
+        if (stateOf(d)?.open) opened = d.name;
+        // Something else opened (or the door is slow): open it again only when it still reads shut after the wait.
       }
     }
     if (opened) break;
@@ -101,6 +109,8 @@ function selftest() {
   if (s.seat !== "pilot" || s.pos !== "1,2,3" || s.drive !== "driving") f.push("kv reads a state line");
   const doors = doorsOf("probe ground=43.6 n=2 BarGate_01_bar.et@4.4m,h0.5,at=7450.1;44.9;8283.2,door GuardHouse_01_beige.et@11.9m,h8.1,at=7460;44.4;8290");
   if (doors.length !== 1 || doors[0].name !== "BarGate_01_bar.et" || doors[0].at[2] !== 8283.2) f.push("doorsOf reads the doors a probe lists");
+  const states = doorsOf("probe n=2 BarGate_01_bar.et@4.4m,h0.5,at=1;2;3,door:shut layers[Main:- x] Door_01.et@5m,h2,at=4;5;6,door:open");
+  if (states.length !== 2 || states[0].open || !states[1].open) f.push("doorsOf reads the open or shut state");
   if (Math.round(Math.hypot(BAY_PAD[0] - LOT_PAD[0], BAY_PAD[1] - LOT_PAD[1])) < 250) f.push("the pads are about 300 m apart");
   for (const x of f) console.log(`FAIL  ${x}`);
   console.log(f.length ? "drive-proof selftest: FAIL" : "drive-proof selftest: PASS");
