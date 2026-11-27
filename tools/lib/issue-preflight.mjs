@@ -64,7 +64,54 @@ export function namedIssues(body, self) {
   return out;
 }
 
-const FIXED_WORDS = /\b(already (fixed|done|implemented|on main|landed|shipped)|fixed (by|in) #[0-9]+|duplicate of #[0-9]+|superseded by #[0-9]+|done (by|in) #[0-9]+)/i;
+// 2026-11-27 sweep: #2497, #2488, #2462 (and #2435, #4301) were fixed by merged PRs while the issue stayed open and
+// issue-check said only CHECK. Their fixes landed through slice issues the lead named in a COMMENT ("Sliced: #2547"),
+// and the slice PRs cite the slice number, not the parent. So the verdict now also follows those slices, the issue's
+// own title in a PR title or body, and commits naming the issue's key symbols.
+const NOT_ALL_SLICED = /\b(not (yet )?sliced|unsliced|stays unsliced|not cut)\b/i;
+
+// The slice issues the lead named in comments ("Sliced: #2547", "Sliced items 4 and 1+2: #2511 ... #2512"). partial is
+// true when a comment says some part was not sliced, so every named slice done still leaves work open.
+export function slicedIssues(comments, self) {
+  const numbers = [];
+  let partial = false;
+  for (const c of comments || []) {
+    const body = String(c.body || "");
+    // Only a line that starts "Sliced ...", and only its first sentence: the rest names sibling cards and PRs in prose
+    // ("draft #1865 owns that file"), which are not the issue's slices. Gather drops PR numbers.
+    const at = body.search(/(?:^|\n)\s*Sliced\b/);
+    if (at < 0) continue;
+    if (NOT_ALL_SLICED.test(body)) partial = true;
+    const first = body.slice(at).trimStart().split(/\.(?:\s|$)/)[0];
+    for (const m of first.matchAll(/#([0-9]{2,5})(?![0-9])/g)) {
+      const n = Number(m[1]);
+      if (n !== self && !numbers.includes(n)) numbers.push(n);
+    }
+  }
+  return { numbers, partial };
+}
+
+// Identifiers an issue body names that a fixing commit's message would name too: LF_ classes (the method part and
+// a file extension dropped) and `validate-*` checks. Test classes and the logger are too common to say anything.
+export function keySymbols(body, max = 5) {
+  const out = [];
+  const text = String(body || "");
+  const add = (s) => {
+    if (s.length >= 8 && !/^LF_(Test_?|Debug$)/.test(s) && !out.includes(s)) out.push(s);
+  };
+  for (const m of text.matchAll(/\bLF_[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*/g)) add(m[0]);
+  for (const m of text.matchAll(/`(validate-[a-z0-9-]+)/g)) add(m[1]);
+  return out.slice(0, max);
+}
+
+const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+// The issue's own title (24+ letters, so short titles cannot match by accident) in a PR's title or body.
+export function quotesTitle(text, title) {
+  const t = norm(title);
+  return t.length >= 24 && ` ${norm(text)} `.includes(` ${t} `);
+}
+
+const FIXED_WORDS =/\b(already (fixed|done|implemented|on main|landed|shipped)|fixed (by|in) #[0-9]+|duplicate of #[0-9]+|superseded by #[0-9]+|done (by|in) #[0-9]+)/i;
 
 // Skip-list text (the lead's stale list): every issue number on a line that says ALREADY-FIXED or DONE.
 export function skipListNumbers(text) {
@@ -91,21 +138,48 @@ export function verdict(facts) {
   const weak = [];
   if (String(facts.issue.state || "").toLowerCase() === "closed") strong.push("the issue is closed");
   for (const l of labels) if (DONE_LABELS.includes(l)) strong.push(`label ${l}: a merged PR already refs it`);
+  const quoted = new Set();
   for (const p of facts.prs || []) {
-    if (!citesIssue(`${p.title}\n${p.body}`, n)) continue;
-    if (prIsFor(p, n) && !PLANNING_PR.test(p.title)) strong.push(`merged PR #${p.number} is for #${n}: ${p.title}`);
+    const planning = PLANNING_PR.test(p.title);
+    if (!citesIssue(`${p.title}\n${p.body}`, n)) {
+      // Found by the title search, not the number: a PR titled like the issue is its fix; a body that only quotes the
+      // title may be a note.
+      if (planning) continue;
+      if (quotesTitle(p.title, facts.issue.title)) strong.push(`merged PR #${p.number} is titled like the issue: ${p.title}`);
+      else if (quotesTitle(p.body, facts.issue.title)) weak.push(`merged PR #${p.number} quotes the issue title in its body (read it): ${p.title}`);
+      else continue;
+      quoted.add(p.number);
+      continue;
+    }
+    if (prIsFor(p, n) && !planning) strong.push(`merged PR #${p.number} is for #${n}: ${p.title}`);
+    else if (!planning && quotesTitle(p.title, facts.issue.title)) strong.push(`merged PR #${p.number} is titled like the issue: ${p.title}`);
     else weak.push(`merged PR #${p.number} only mentions #${n} (read it: a design note or a sibling card?): ${p.title}`);
   }
   for (const c of facts.commits || []) {
     if (titleIsFor(c.subject, n)) strong.push(`main commit ${c.sha.slice(0, 9)} is for #${n}: ${c.subject}`);
     else weak.push(`main commit ${c.sha.slice(0, 9)} only mentions #${n}: ${c.subject}`);
   }
+  // A comment says "Sliced: #2547": the issue was cut into cards, and the slice PRs cite the cards. All cards done is
+  // the issue done, unless a comment says part of it was never sliced.
+  const slices = (facts.slices || []).filter((i) => !PARENT_ISSUE.test(i.title || ""));
+  if (slices.length) {
+    const isDone = (i) => String(i.state || "").toLowerCase() === "closed" || (i.labels || []).map((l) => (typeof l === "string" ? l : l.name)).some((l) => DONE_LABELS.includes(l));
+    const done = slices.filter(isDone);
+    const list = (xs) => xs.map((i) => `#${i.number}`).join(", ");
+    if (done.length === slices.length && !facts.slicesPartial) strong.push(`all ${slices.length} slice(s) it was cut into are done (${list(done)}): read their PRs`);
+    else if (done.length === slices.length) weak.push(`its ${slices.length} slice(s) are done (${list(done)}) but a comment says part of it was not sliced`);
+    else if (done.length) weak.push(`${done.length} of ${slices.length} slice(s) it was cut into are done (${list(done)}); open: ${list(slices.filter((i) => !isDone(i)))}`);
+  }
+  // Commits that name the issue's own classes: the fix may never have cited the number.
+  const cited = new Set((facts.commits || []).map((c) => c.sha));
+  for (const c of [...(facts.symbolCommits || [])].filter((x) => !cited.has(x.sha)).sort((a, b) => b.symbols.length - a.symbols.length).slice(0, 3))
+    weak.push(`main commit ${c.sha.slice(0, 9)} names its key symbol${c.symbols.length > 1 ? "s" : ""} ${c.symbols.join(", ")}: ${c.subject}`);
   for (const c of facts.issue.comments || []) {
     const m = FIXED_WORDS.exec(c.body || "");
     if (m) strong.push(`a comment says "${m[0]}"`);
   }
   if (facts.skipList?.has(n)) strong.push("the stale-issue skip list names it");
-  const citing = new Set((facts.prs || []).filter((p) => citesIssue(`${p.title}\n${p.body}`, n)).map((p) => p.number));
+  const citing = new Set([...quoted, ...(facts.prs || []).filter((p) => citesIssue(`${p.title}\n${p.body}`, n)).map((p) => p.number)]);
   for (const p of facts.similar || []) if (!citing.has(p.number)) weak.push(`similar merged PR #${p.number}${p.mergedAt ? ` (${p.mergedAt.slice(0, 10)})` : ""}: ${p.title}`);
   for (const i of facts.named || []) {
     if (PARENT_ISSUE.test(i.title || "")) continue;
