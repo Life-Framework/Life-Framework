@@ -641,6 +641,7 @@ class LF_Garage
 //! character, or walking CLOSE_DISTANCE meters from the desk it was read at.
 class LF_GarageLedger
 {
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float CLOSE_DISTANCE = 5;
 	static const int PLACE_STORED = 0;
 	static const int PLACE_IMPOUNDED = 1;

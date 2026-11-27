@@ -144,6 +144,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	//! Registration retries per player. Capped so a player whose UID or account never resolves
 	//! (or who left) does not keep a ~1 s retry alive for the whole session.
 	protected static ref map<int, int> s_mRegisterRetries;
+	// lf-fixed: retry bound or retry delay of an engine-readiness wait, not a balance value
 	static const int MAX_REGISTER_RETRIES = 60;
 
 	//------------------------------------------------------------------------------------------------

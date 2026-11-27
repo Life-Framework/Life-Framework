@@ -15,6 +15,7 @@ class LF_FineTicketRole : LF_PlayerRoleHandler
 	static const string SOUND_PAPER = "SOUND_PICK_UP";
 	static const string SOUND_STAMP = "SOUND_RANGECP_STARTBUTTON";
 	//! Delay before the paper sound, so the new item has reached the clients.
+	// lf-fixed: UI sequencing delay (let the engine settle before the next step), not a balance value
 	static const int SOUND_DELAY_MS = 400;
 
 	//------------------------------------------------------------------------------------------------
@@ -319,6 +320,7 @@ class LF_FineTicketPayAction : ScriptedUserAction
 class LF_FineTicketPad
 {
 	static const string ROW_PREFIX = "TicketOffence";
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float CLOSE_DISTANCE = 4;
 
 	protected static ref LF_FineTicketPad s_Pad;
@@ -464,6 +466,7 @@ class LF_FineTicketPad
 modded class SCR_PlayerController
 {
 	static const int LF_TICKET_CUE_TRIES = 10;
+	// lf-fixed: retry bound or retry delay of an engine-readiness wait, not a balance value
 	static const int LF_TICKET_CUE_RETRY_MS = 200;
 
 	//------------------------------------------------------------------------------------------------

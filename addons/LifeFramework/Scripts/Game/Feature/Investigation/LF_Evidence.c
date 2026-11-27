@@ -84,8 +84,11 @@ class LF_Evidence
 	{
 		return LF_PrefabSlots.Get(SLOT_STATEMENT);
 	}
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int SWEEP_MS = 30000;
+	// lf-fixed: UI sequencing delay (let the engine settle before the next step), not a balance value
 	static const int DROP_SETTLE_MS = 1500;
+	// lf-fixed: memory bound on a pending list, not a balance value
 	static const int MAX_PENDING_DROPS = 64;
 	//! A dropped item farther than this from its marker was moved: it is no longer scene evidence.
 	static const float ITEM_MOVED_M = 2.0;

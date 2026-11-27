@@ -9,10 +9,13 @@
 class LF_ATMTerminal
 {
 	//! The ATM action shows within this range of the machine's origin.
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float SHOW_DISTANCE = 3.0;
 	//! Half a metre past the action range, so a step while typing does not close the screen.
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float CLOSE_DISTANCE = 3.5;
 	//! A request with no reply after this long tells the player instead of hanging.
+	// lf-fixed: client wait for a server reply, a protocol mechanic, not a balance value
 	static const int REPLY_TIMEOUT_MS = 5000;
 
 	static const string DEPOSIT = "DepositButton";

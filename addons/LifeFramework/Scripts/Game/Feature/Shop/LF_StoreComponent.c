@@ -75,6 +75,7 @@ class LF_StoreComponent : ScriptComponent
 	//! ...and within this height of it: under the 0.36 m between two gondola boards (#1143).
 	protected static const float STRAY_HEIGHT = 0.2;
 	//! Seconds after a fill or a load when the shelf looks once more for copies the engine restored late.
+	// lf-fixed: UI sequencing delay (let the engine settle before the next step), not a balance value
 	protected static const int LATE_RECONCILE_MS = 4000;
 	//! The spawn trace runs from this far above a shelf point to SNAP_BELOW under it. Under the 0.36 m
 	//! between two boards of a vanilla gondola (tools/buildings/pipeline/fixtures.json).

@@ -9,7 +9,9 @@
 // the character, or walking CLOSE_DISTANCE from the counter.
 class LF_ShopPriceList
 {
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float SHOW_DISTANCE = 3.0;
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float CLOSE_DISTANCE = 3.5;
 	//! Lines drawn at once; typing narrows a larger catalog to its matches.
 	static const int MAX_ROWS = 40;
@@ -18,6 +20,7 @@ class LF_ShopPriceList
 	//! at 1080p and at 720p alike (the sheet is laid out in 1080-unit height either way) with the slip, keys and Leave kept.
 	static const float LIST_HEIGHT = 312;	// lf-fixed: eight compact rows of LF_UIScreen.COMPACT_ROW_PITCH (39), leaving the slip, preview, keys and Leave room under the sheet's screen cap
 	static const int SEARCH_POLL_MS = 250;
+	// lf-fixed: client wait for a server reply, a protocol mechanic, not a balance value
 	static const int REPLY_TIMEOUT_MS = 5000;
 	//! After a till reply the Cash line keeps the server's figure this long before the poll reads the
 	//! carried cash again, so a replicated change that lands a frame later does not flicker the old figure.

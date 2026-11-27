@@ -11,6 +11,7 @@ class LF_KnownNames
 	//! cos(15 degrees): you have to look at them, not near them.
 	static const float LOOK_COS = 0.966;
 	static const float HEAD_HEIGHT = 1.6;
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int TICK_MS = 200;
 	static const ResourceName LAYOUT = "{6C1E5A3F9B2D4E71}UI/Layouts/HUD/LF_KnownName.layout";
 

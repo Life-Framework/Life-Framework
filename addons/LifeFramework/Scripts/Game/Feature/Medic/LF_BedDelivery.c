@@ -20,7 +20,9 @@ enum LF_EDeliveryRefusal
 class LF_BedDelivery
 {
 	static const string FEATURE = "Medic";
+	// lf-fixed: UI sequencing delay (let the engine settle before the next step), not a balance value
 	static const int STEP_OFF_MS = 3000;
+	// lf-fixed: UI sequencing delay (let the engine settle before the next step), not a balance value
 	static const int DISMOUNT_WAIT_MS = 2500;
 
 	protected static int s_iDeliveredCount;

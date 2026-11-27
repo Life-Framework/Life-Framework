@@ -9,6 +9,7 @@ class LF_GiveCashSheet
 	static const string PART_AMOUNT = "GiveCashAmount";
 	static const string PART_ERROR = "GiveCashError";
 	static const string PART_GIVE = "GiveCashButton";
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float CLOSE_DISTANCE = 4;
 
 	protected static ref LF_GiveCashSheet s_Sheet;

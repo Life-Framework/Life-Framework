@@ -30,6 +30,7 @@ class LF_ChainTraceListener : Managed
 class LF_ChainTrace
 {
 	static const string FEATURE = "Chains";
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int SWEEP_MS = 5000;
 	static const float CUE_COOLDOWN_S = 60;
 	static const float LEAD_COOLDOWN_S = 300;

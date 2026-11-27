@@ -19,6 +19,7 @@ class LF_DebugMenu : ChimeraMenuBase
 	//! (mouse) and the per-frame poll in OnMenuUpdate (keyboard / gamepad). Both are needed —
 	//! drop the poll and Enter/pad-A stop working, drop the buttons and clicks stop.
 	//! 150 ms is comfortably longer than one frame at any playable rate.
+	// lf-fixed: input debounce, an interaction-feel constant, not a balance value
 	protected static const float ACTION_DEBOUNCE_MS = 150;
 
 	protected ButtonWidget m_wGiveCashButton;

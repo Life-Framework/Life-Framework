@@ -421,6 +421,7 @@ class LF_FilmCameraRunner
 class LF_FilmClean
 {
 	protected static const string FEATURE = "Film";
+	// lf-fixed: poll cadence of a loop, not a balance value
 	protected static const int HINT_MS = 400;
 	protected static bool s_bHidden;
 	protected static bool s_bWasVisible;

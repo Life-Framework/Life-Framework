@@ -9,6 +9,7 @@
 
 // A body posed 18 m up lands in about 2 s; the last pose of a shot is
 // reapplied 0.7 s after the first.
+// lf-fixed: agent harness only, never a player-facing value
 const int LF_HARNESS_POSE_SAFE_MS = 8000;
 // A stand across the island waits this long for the target to stream in to the client: about 11 s
 // on a lowspec client after a 2.7 km jump. Under the harness's 25 s stand timeout (STAND_TIMEOUT_MS in

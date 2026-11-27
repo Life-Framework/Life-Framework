@@ -41,6 +41,7 @@ class LF_SignComponent : ScriptComponent
 	static const float CLIENT_TITLE_WIDTH = 290;
 	// RobotoCondensed Bold capitals measured about 0.6 em each ("WELCOME" was
 	// 406 units at 96). A long word does not wrap, so the font shrinks to fit it.
+	// lf-fixed: a measured font metric of the sign face, not a balance value
 	static const float CLIENT_EM_PER_CHAR = 0.62;
 
 	// LF_SignBoardFace.layout, the painted board face. The A4 sheet's UVs cover
