@@ -35,6 +35,7 @@ import * as pin from "./lib/guard-pin.mjs";
 import { runGitHealing } from "./lib/stale-git-lock.mjs";
 import { hostname } from "node:os";
 import { killTreeSync } from "./lib/wb-until.mjs";
+import { cleanRunTree } from "./lib/run-tree-clean.mjs";
 
 const HOST = pin.leaseHostName(process.env.LF_MACHINE_NAME || hostname());
 
@@ -173,12 +174,22 @@ function checkout(dir, sha) {
   for (let i = 0; i < 3; i++) {
     git(dir, ["reset", "-q", "--hard"]);
     const r = git(dir, ["checkout", "-q", "--detach", sha]);
-    if (r.status === 0) return;
+    if (r.status === 0) { dropStrays(dir); return; }
     // An empty stderr was a spawn that never ran git (killed, no buffer): name the real reason.
     last = (r.stderr || r.stdout || "").trim() || `git exited ${r.status ?? "-"}${r.signal ? ` (${r.signal})` : ""}${r.error ? `: ${r.error.message}` : ""}`;
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 3000);
   }
   throw new Error(`checkout ${sha.slice(0, 8)} in ${dir}: ${last} (after 3 tries)`);
+}
+
+// #5117: untracked files under addons/ that an old-ref checkout left when the worker died mid-pre-move-e2e make the next
+// pre-move e2e refuse ("needs a clean tree"). Dropped through the link-safe helper (never follows a junction); a failure is
+// logged, never fatal: the step itself then reports what is still dirty.
+function dropStrays(dir, say = () => {}) {
+  try {
+    const gone = cleanRunTree(dir);
+    if (gone.length) say(`cleaned ${gone.length} untracked path(s) under addons/ in ${dir}: ${gone.slice(0, 5).join(", ")}`);
+  } catch (e) { say(`clean of ${dir} failed: ${e?.message ?? e}`); }
 }
 
 // One cli command in the run worktree, at high pool priority (LF_PRIORITY: `build` takes no --priority flag and read it as an addon), logged to its own file; resolves { code, text, log }.
@@ -195,6 +206,7 @@ function activityNow() {
 // budgetMs: the step is killed (its whole tree: a check's git and PowerShell children too) past it; timedOut says so.
 function runCli(root, dir, args, tag, extraEnv = {}, dropRdb = false, budgetMs = STEP_BUDGET_MS) {
   if (dropRdb) rdbCache.dropAllRdbs(dir);
+  if (args.includes("--pre-move")) dropStrays(dir, (m) => log(root, m));
   const file = join(mainRoot(root), "tmp", "logs", `main-guard-${tag}-${Date.now()}.log`);
   mkdirSync(dirname(file), { recursive: true });
   activeLogs.add(file);

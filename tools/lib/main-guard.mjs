@@ -103,6 +103,8 @@ export const INFRA_REFUSALS = [
   [/Couldn't build device list|^\s*ENV\s/i, "the Workbench died before compiling"],
   [/Workbench not found|game install not found/i, "the toolchain is missing on the machine"],
   [/This is the machine \(Workbench could not register/i, "the Workbench could not refresh the resource database"],
+  // #5117: a dirty run tree is leftovers of a worker that died mid-e2e, not a broken save: the guard cleans it and retries.
+  [/e2e --pre-move needs a clean tree/i, "the run worktree was not clean (leftovers of a dead run)"],
 ];
 // The compiler's or the suite's own words: with any of these in the transcript the step failed, whatever else it says.
 export const REAL_FAILURE = /does not compile|Can't compile|SCRIPT\s*\(E\)|\bVME\b|\[LFTEST\] FAIL /i;
