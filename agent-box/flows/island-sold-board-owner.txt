@@ -1,0 +1,5 @@
+# Sold sign board after a restart (client 1, the buyer): run after `node agent-box/session.mjs restart`. The account exists, so no quiz or form.
+step 1 The owner at the sign after the load: Sold
+stand HomeSign_saint_philippe_sp_b83
+wait 4000
+shot world sold_owner_restart 4375.452 6.23 10782.689 1.673 -1.8 -1.858

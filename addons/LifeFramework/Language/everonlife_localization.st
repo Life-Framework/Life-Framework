@@ -16890,6 +16890,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A house nobody owns yet. Use the sign to buy it with cash and get its key."
      Comment "Read card of the house sale sign (#3207)."
     }
+    CustomStringTableItem "{7D1A3C95E2B84F06}" {
+     Id "LF-Sign_HouseSold_Next"
+     Target_en_us "Look for another house with a For sale sign."
+     Comment "Read card of the house sale sign once the house is owned: what to do next (sold-sign-board)."
+    }
+    CustomStringTableItem "{4B91C7E2A05D3F18}" {
+     Id "LF-Sign_HouseSold_Title"
+     Target_en_us "Sold"
+     Comment "Face and Read title of the house sale sign once somebody owns the house (sold-sign-board)."
+    }
+    CustomStringTableItem "{D3F60A8B1E742C95}" {
+     Id "LF-Sign_HouseSold_What"
+     Target_en_us "This house has an owner. It is no longer for sale."
+     Comment "Read card of the house sale sign once the house is owned (sold-sign-board)."
+    }
     CustomStringTableItem "{6A32B827033280BE}" {
      Id "LF-Sign_How"
      Target_en_us "How"
@@ -16919,6 +16934,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_PlotForSale_What"
      Target_en_us "A plot of land nobody owns yet. Use the sign to buy it with cash."
      Comment "Read card of the plot sign (#2780)."
+    }
+    CustomStringTableItem "{A04E8B27C6D15F39}" {
+     Id "LF-Sign_PlotSold_Next"
+     Target_en_us "Look for another plot with a For sale sign."
+     Comment "Read card of the plot sign once the plot is owned: what to do next (sold-sign-board)."
+    }
+    CustomStringTableItem "{2A7E5C19F8B04D63}" {
+     Id "LF-Sign_PlotSold_Title"
+     Target_en_us "Sold"
+     Comment "Face and Read title of the plot sign once somebody owns the plot (sold-sign-board)."
+    }
+    CustomStringTableItem "{86C1F2D40B9A7E35}" {
+     Id "LF-Sign_PlotSold_What"
+     Target_en_us "This plot of land has an owner. It is no longer for sale."
+     Comment "Read card of the plot sign once the plot is owned (sold-sign-board)."
     }
     CustomStringTableItem "{C71FE54AE5989467}" {
      Id "LF-Sign_Read"

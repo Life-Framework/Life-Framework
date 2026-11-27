@@ -1,0 +1,7 @@
+# Sold sign board, the second player after the purchase (client 2): run it again after `session.mjs rejoin 2` for the relog (a late joiner).
+# The account exists, so no quiz or form.
+step 1 The same stranger, the board says Sold
+stand HomeSign_saint_philippe_sp_b83 w3
+wait 4000
+shot world sold_viewer_after 4375.452 6.23 10782.689 1.673 -1.8 -1.858
+shot world sold_viewer_after_wide 4375.452 6.23 10782.689 3.346 -1.8 -3.716
