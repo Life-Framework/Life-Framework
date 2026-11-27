@@ -9,7 +9,7 @@
     "pickup": { "sacks": 6 },
     "truck": { "sacks": 12 }
   },
-  "sackUnits": { "iron-ore": 10, "copper-ore": 10, "limestone": 5, "coal": 10 },
+  "sackUnits": { "iron-ore": 10, "limestone": 5, "coal": 10 },
   "chains": [
     {
       "id": "iron-brow-foot", "label": "iron at Coalman's Brow, bars sold at the dock by car", "recipe": "furnace-iron-mine", "vehicle": "car",
@@ -26,14 +26,6 @@
       "buyer": "hardware", "premiumGood": "BCD1E8CD7F975074", "wholesaleGood": "BCD1E8CD7F975074",
       "km": { "mineToPlant": 2.5, "plantToBuyer": 4.7, "returnToMine": 2.3 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
       "note": "Highstone hill to the centre-east smelter, sold at Saint-Philippe"
-    },
-    {
-      "id": "copper-car", "label": "copper by car", "recipe": "refinery-copper", "vehicle": "car",
-      "gather": { "item": "copper-ore", "units": 16, "perMinute": 4 },
-      "reagents": [{ "item": "acid", "guidName": "AcidCarboy", "unitCost": 8, "source": "bought at the Saint-Philippe hardware store, $8" }],
-      "buyer": "hardware", "premiumGood": "577A665F1662E7AD", "wholesaleGood": "577A665F1662E7AD",
-      "km": { "mineToPlant": 5.6, "plantToBuyer": 7, "returnToMine": 4.1 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
-      "note": "Humboldt Hill to the Levie refinery, sold at Saint-Philippe"
     },
     {
       "id": "stone-truck", "label": "stone by truck", "recipe": "cement-works", "vehicle": "truck",

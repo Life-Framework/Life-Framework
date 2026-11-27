@@ -86,7 +86,6 @@ missing and where to get it.
 | Smelting | 8 | Larger run: up to 8 bars |
 | Smelting | 9 | Hotter fire: 35-second runs |
 | Smelting | 10 | First perk: pick Double yield or Swift hands at the labor office |
-| Smelting | 15 | The Levie refinery |
 | Smelting | 16 | Bigger batches: up to 10 bars a run |
 | Smelting | 20 | Second perk: Light touch joins the choices at the labor office |
 | Salvage | 10 | First perk: pick Double yield or Swift hands at the labor office |

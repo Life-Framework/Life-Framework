@@ -23,7 +23,6 @@ class LF_Test_EveronTradeUnlocks : LF_Test
 	protected void MachineIds(notnull array<string> into)
 	{
 		into.Insert("smelter-iron");
-		into.Insert("refinery-copper");
 		into.Insert("cement-works");
 	}
 

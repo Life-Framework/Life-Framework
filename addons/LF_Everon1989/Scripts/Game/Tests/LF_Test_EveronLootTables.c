@@ -1,4 +1,5 @@
 // red-proof: #3844: with no scrap rows in the tables (before this change) every `drops` / `holds the most` line fails on the unfixed conf; the pay guard stays green. On main (no Configs/Loot overlay) `tools\cli test --no-build --only LF_Test_EveronLootTables` fails every `has a loot table` line; RedProof() looks the kinds up under a missing name. #3345: before the three prefabs exist (and under RedProof) every `prefab spawns` line fails.
+// red-proof (2026-11-27, no-copper-gold): the copper nugget row back in the dump table fails `dump drops no copper nugget (no copper on the island)`.
 //! #3344 (slice of #1020): the 1989 pack's loot tables for homes, shop back rooms, sheds and the dump
 //! (`Configs/Loot/LF_Loot_Everon1989.conf`, merged over the core crate table). Checked against the merged
 //! pack config (pack leg): each table is rollable, every row's prefab loads and has a sell price, the dump
@@ -150,7 +151,8 @@ class LF_Test_EveronLootTables : LF_Test
 		ctx.True(parcelHourly > 0, string.Format("the parcel job pays (%1 an hour)", parcelHourly));
 
 		array<string> kinds = {"home", "backroom", "shed", "dump"};
-		array<ResourceName> scrap = {IRON_NUGGET, COPPER_NUGGET};
+		array<ResourceName> scrap = {IRON_NUGGET};
+		array<ResourceName> noCopper = {COPPER_NUGGET};	// the island has no copper rock: nothing drops a copper nugget
 		array<ResourceName> tools = {ETOOL, AXE};
 		array<ResourceName> metal = {SCRAP_METAL};
 		array<ResourceName> rubber = {RUBBER_SCRAP};
@@ -195,6 +197,8 @@ class LF_Test_EveronLootTables : LF_Test
 			ctx.True(perFill > 0, string.Format("%1 pays something (%2 a fill)", kind, perFill));
 			ctx.True(hourly < parcelHourly * MAX_SHARE_OF_PARCEL, string.Format("%1: %2 searches an hour at %3 a fill is %4 an hour, under %5 percent of the parcel job's %6", kind, searches, perFill, hourly, MAX_SHARE_OF_PARCEL * 100, parcelHourly));
 			scrapPerFill.Set(kind, CountPerFill(table, scrap));
+			if (!RedProof())
+				ctx.True(CountPerFill(table, noCopper) == 0, string.Format("%1 drops no copper nugget (no copper on the island)", kind));
 			toolsPerFill.Set(kind, CountPerFill(table, tools));
 			metalPerFill.Set(kind, CountPerFill(table, metal));
 			rubberPerFill.Set(kind, CountPerFill(table, rubber));
