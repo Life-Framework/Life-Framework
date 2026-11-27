@@ -17,7 +17,8 @@ unfinished. Run it in the foreground (timeout up to 600000 ms) or call
    `ws/<slug>`. Never run git in the main checkout and never write into it; the
    hook refuses both. Scratch goes in `<worktree>\tmp\` with names unique to your task
    (`tmp\pr-body.md`), never a shared session dir.
-2. **Read.** The issue (`gh issue view <n>`) or PR, `AGENTS.md`, the
+2. **Read.** The issue (`gh issue view <n>`; for an old bug run `tools\cli issue-check <n>`
+   first and read the PRs it cites, since it is often already fixed) or PR, `AGENTS.md`, the
    `docs/decisions.md` entries for your area, and the area's `Feature.md`.
 3. **Scaffold, then red first.** A feature starts with
    `tools\cli feature new <Area> <Name> --kind logic|world|ui|item --issue <n>` and follows
@@ -41,8 +42,10 @@ unfinished. Run it in the foreground (timeout up to 600000 ms) or call
 5. **Ship.** Commit (end the message with the attribution line your session
    gives), write the PR body to `tmp\pr-body-<slug>.md`, then
    `tools\cli wt ship <slug> --refs <n> --body-file tmp\pr-body-<slug>.md`. It
-   checks the tree, runs a seconds-long preflight (merge-tree conflicts,
-   `validate` of the changed inputs), pushes, opens the PR and turns auto-merge
+   checks the tree, prints the tests your diff can break that GitHub's
+   `validate` never runs (run that `test --no-build --only ...` line before you
+   ship; pack data prints the whole pack leg), runs a seconds-long preflight
+   (merge-tree conflicts, `validate` of the changed inputs), pushes, opens the PR and turns auto-merge
    on at once. There is no pre-merge gate: GitHub's `validate` is the check and
    the main guard compiles and tests `main` afterwards (`docs/worktrees.md`
    "Ship"). Do not poll for the merge; `tools\cli prs status` once. The async

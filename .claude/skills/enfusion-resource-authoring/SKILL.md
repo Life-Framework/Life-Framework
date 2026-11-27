@@ -45,6 +45,14 @@ not the pivot; the vanilla default Offset `0 0 0`, Radius `0.650`, Height `0`
 is the door hinge. A mesh taller than about 1.5 m gets a Height so the volume
 is a capsule along the mesh. Handheld pickups stay as they are.
 `validate-action-contexts` fails on an interactable left at the default.
+A prefab with user actions also needs an `RplComponent` (on itself or an addon ancestor), or a client on a dedicated
+server drops every request ("Attempting to send an RPC through unregistred item") while a host still works:
+`validate-actions-have-rpl` fails it; a local-mesh prop whose action overrides `HasLocalEffectOnlyScript()` is exempt.
+
+Data with an owner (each has a `validate-*` check): a shop price rule, a catalogue price or a catalogue offer is written
+in one pack file, the one whose shop sells it, because overlays merge in header order and the later file wins in silence
+(`validate-shop-price-owners`); every piece a mannequin wears is a priced catalogue item its outlet still offers, so
+dropping an offer means dropping it from the `LF_MannequinOutfitComponent` list too (`validate-mannequin-outfits`).
 
 Checklist for a counter, till, desk, or bench (a point that floated above the
 till or sat behind a desk is the usual miss):
