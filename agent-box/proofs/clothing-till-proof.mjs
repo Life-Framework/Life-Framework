@@ -46,8 +46,11 @@ async function runClothingTillProof() {
 
   on(1, { verb: "stand", entityName: SHELF });
   wait(2500);
-  const took = on(1, { verb: "pickup", item: "Hat_FlatCap" }, 15000);
-  if (took.status !== "ok" || !/pickup took/.test(took.detail)) fails.push(`no cap taken off the shelf: ${took.status} ${took.detail}`);
+  // What hangs on the shelf is the layer's business and has changed (a cap, then trousers): take the cap if it is
+  // there, else whatever item is in reach. The proof is about the till, not about one garment.
+  let took = on(1, { verb: "pickup", item: "Hat_FlatCap" }, 15000);
+  if (took.status !== "ok" || !/pickup took/.test(took.detail)) took = on(1, { verb: "pickup" }, 15000);
+  if (took.status !== "ok" || !/pickup took/.test(took.detail)) fails.push(`nothing taken off the shelf: ${took.status} ${took.detail}`);
   wait(1500);
 
   on(1, { verb: "stand", entityName: TILL });
@@ -79,7 +82,7 @@ async function runClothingTillProof() {
   if (!(cashAfter < cashBefore)) fails.push(`the wallet did not shrink (${cashBefore} -> ${cashAfter})`);
 
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "clothing till proof: FAIL" : `clothing till proof: PASS (the interact key offered the till, a cap was paid for, cash ${cashBefore} -> ${cashAfter})`);
+  console.log(fails.length ? "clothing till proof: FAIL" : `clothing till proof: PASS (the interact key offered the till, an item was paid for, cash ${cashBefore} -> ${cashAfter})`);
   return fails.length ? 1 : 0;
 }
 

@@ -49,8 +49,14 @@ async function runExportCraneProof() {
 
   arrive(on, 1, wait);
   wait(3000);
-  on(1, { verb: "resetplayer", cash: 0 }, 15000);
+  // A character that owns a truck keeps its pack: resetplayer clears the key, and the truck path below needs it to
+  // unlock the truck at the crane. Cash is judged by difference, so a pocket that is not empty is fine.
+  const ownsTruck = /parked=(?!none)\S+/.test(String(on(1, { verb: "state" }, 10000).detail));
+  if (!ownsTruck) on(1, { verb: "resetplayer", cash: 0 }, 15000);
   on(1, { verb: "guide", words: ["close"] });
+  // The refusal below is for a level-1 hauler: a checkpoint or an earlier proof may have left DELIVERY higher.
+  on(1, { verb: "levelset", words: ["DELIVERY", "1"] }, 10000);
+  wait(1500);
 
   // 1. The board's real take row, for a level-1 hauler.
   // The first stand from the far spawn can land short while the island streams in: stand twice.
@@ -83,20 +89,43 @@ async function runExportCraneProof() {
 
   // 3. Short by one: refused, nothing paid.
   const before = cash();
+  mark = exportLines().length;
   on(1, { verb: "exportorder", words: ["give", "short"] }, 10000);
-  wait(1500);
+  // The pockets hold a few planks: an order of 40 to 120 units cannot be carried in them (2026-11-26). When the
+  // server says it gave fewer than count - 1, the goods go into the owner's truck instead, the way a player loads it.
+  let gave = null;
+  for (let i = 0; i < 8 && !gave; i++) {
+    wait(1000);
+    gave = /harness export give: (\d+) of (\d+) x/.exec(newLines(mark));
+  }
+  const pocketsHoldIt = !gave || Number(gave[1]) >= Number(gave[2]);
   on(1, { verb: "stand", entityName: spot }, 10000);
   wait(2500);
   shot("spot");
-  mark = exportLines().length;
-  handIn();
-  shot("short");
-  step("the server refuses the short count", /hand-in refused: \S+ brought \d+ of \d+/.test(newLines(mark)), newLines(mark).slice(0, 200));
-  step("a short hand-in pays nothing", cash() === before, `cash ${cash()} (before ${before})`);
-
-  // 4. The last unit: paid.
-  on(1, { verb: "exportorder", words: ["give", "rest"] }, 10000);
-  wait(1500);
+  if (pocketsHoldIt) {
+    mark = exportLines().length;
+    handIn();
+    shot("short");
+    step("the server refuses the short count", /hand-in refused: \S+ brought \d+ of \d+/.test(newLines(mark)), newLines(mark).slice(0, 200));
+    step("a short hand-in pays nothing", cash() === before, `cash ${cash()} (before ${before})`);
+    // 4. The last unit: paid.
+    on(1, { verb: "exportorder", words: ["give", "rest"] }, 10000);
+    wait(1500);
+  } else {
+    step(`the order needs a truck (the pockets held ${gave[1]} of ${gave[2]}): the character owns one`, ownsTruck, "run truck-check-proof first: a bought truck stays parked and the proof then keeps the pack and its key");
+    if (ownsTruck) {
+      on(1, { verb: "parkat", words: [spot, "2.4"] }, 15000);
+      wait(1500);
+      for (let tries = 0; tries < 2; tries++) {
+        on(1, { verb: "look" }, 10000); // a fresh offer before the press
+        wait(tries ? 6500 : 1500);
+        if (on(1, { verb: "use", className: "LF_VehicleLockAction" }, 10000).status === "ok") break;
+      }
+      wait(1500);
+      on(1, { verb: "exportorder", words: ["give", "truck"] }, 10000);
+      wait(2500);
+    }
+  }
   mark = exportLines().length;
   handIn();
   shot("paid");

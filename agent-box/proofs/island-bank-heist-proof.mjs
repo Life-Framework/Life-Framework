@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
+import { graceOff } from "./_grace.mjs";
 
 // #3752: the Saint-Philippe bank job on the island with two robbers and two officers on a dedicated
 // server. Clients 1 and 2 are robbers, 3 and 4 are officers (the police roster). Steps:
@@ -55,6 +56,7 @@ async function runIslandBankHeistProof() {
   };
 
   for (const n of [1, 2, 3, 4]) arrive(on, n, wait);
+  graceOff(on, dir, wait); // a fresh account is in its robbery grace: the vault rob would be refused
   wait(8000);
   for (const n of [1, 2]) on(n, { verb: "resetcrime" }, 10000);
   const logStart = serverLog().length;
@@ -83,7 +85,14 @@ async function runIslandBankHeistProof() {
   check("staff door open", doorOpen(1) === "1", `open=${doorOpen(1)}`);
 
   on(2, { verb: "drill" }, 10000);
-  on(2, { verb: "hold", item: "LF_Drill" }, 10000);
+  wait(1500);
+  // The rob row wants the drill in the hands: a quick-slot press, repeated until `held=1` (a press toggles, so one that
+  // finds it held leaves it be).
+  for (let slotTry = 0; slotTry < 3; slotTry++) {
+    if (/held=1/.test(String(on(2, { verb: "quickslot", words: ["drill"] }, 10000).detail))) break;
+    on(2, { verb: "quickslot", words: ["drill", "press"] }, 10000);
+    wait(3000);
+  }
   on(2, { verb: "stand", entityName: VAULT });
   wait(2500);
   const rob = on(2, { verb: "use", className: "LF_BankRobAction", entityName: VAULT }, 10000);
