@@ -79,9 +79,12 @@ export function openShutGate(on, wait, car) {
         on({ verb: "capture", mode: "world", name: "drive_gate", x: d.at[0], y: d.at[1], z: d.at[2], ox: Number((r * Math.cos(a)).toFixed(2)), oy: 0, oz: Number((r * Math.sin(a)).toFixed(2)) }, 30000);
         wait(800);
         if (on({ verb: "use", className: "SCR_DoorUserAction" }, 10000).status !== "ok") continue;
-        wait(3500);
-        if (stateOf(d)?.open) opened = d.name;
-        // Something else opened (or the door is slow): open it again only when it still reads shut after the wait.
+        // Re-probe until the door reads open (a bar swings slowly); something else may have opened instead: use again
+        // only when it still reads shut after the last look.
+        for (let p = 0; p < 3 && !opened; p++) {
+          wait(p === 0 ? 2500 : 2000);
+          if (stateOf(d)?.open) opened = d.name;
+        }
       }
     }
     if (opened) break;
