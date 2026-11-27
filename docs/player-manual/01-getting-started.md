@@ -70,7 +70,7 @@ marker sits over it for 30 seconds, so you can tell it from the other cars on th
 | Buy a pickaxe | The miner's supply counter beside the mine desk ($150); the hardware store and general store sell one too. Skipped if you carry one |
 | Take your car out | Your garage; any car will do (the buyer is down at the dock). Skipped if a car is already out or you own none |
 | Go to the mine | Back up to Coalman's Brow |
-| Mine 15 iron nuggets | Swing at the rust-veined rocks and pick up the pieces, one full furnace load. Every piece levels **Mining**; level 2 opens the coal license |
+| Mine 15 iron nuggets | Swing at the rust-veined rocks and pick up the pieces, one full furnace load. Every piece levels **Mining**; level 4 opens the East Rise coal seam |
 | Smelt your bars | The mine furnace: 3 nuggets make a bar, so 15 make 5 bars in one 4-minute run |
 | Sell your bars | The iron counter in the dock wholesale warehouse, $20 a bar. The mine adds $180 for your first run, so you finish about $130 ahead after the pickaxe |
 

@@ -226,7 +226,7 @@ StringTable {
     }
     CustomStringTableItem "{2FC28DBE70BC949C}" {
      Id "LF-Activity_Mining_Ore_Note"
-     Target_en_us "Swing at the rust-veined rocks and pick up 15 iron nuggets, one full furnace load; every piece levels Mining, and level 2 opens the coal license."
+     Target_en_us "Swing at the rust-veined rocks and pick up 15 iron nuggets, one full furnace load; every piece levels Mining, and level 4 opens the East Rise coal seam."
      Comment "Mining step note, one sentence, with the levelling hint."
     }
     CustomStringTableItem "{BBF0328175038D91}" {
@@ -1281,7 +1281,7 @@ StringTable {
     }
     CustomStringTableItem "{5B5767DDBD7822D1}" {
      Id "LF-Dialogue_ForemanCoalmansBrow_Next02"
-     Target_en_us "Next up, level 2. Coal face permit: cut coal with a pick. Keep swinging."
+     Target_en_us "Next up, level 2. Coal face permit. The East Rise coal seam opens at Mining 4. Keep swinging."
      Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
     }
     CustomStringTableItem "{ECAED3F1E2EFB65D}" {
@@ -4111,7 +4111,7 @@ StringTable {
     }
     CustomStringTableItem "{8D9AF0769206C83F}" {
      Id "LF-Handbook_Everon_MedicBody2"
-     Target_en_us "Medics treat people in the street and admit them to the ward. A medic needs an ambulance service ID, issued at the hospital, before going on duty. Only licensed medics may take the morphine and saline from the medic stores."
+     Target_en_us "Medics treat people in the street and admit them to the ward. Anyone may sign on: clock in at the medic duty desk in the clinic and take the medic kit. Saline and morphine join the kit as you rise in rank."
      Comment "Everon handbook page medic, paragraph 2 (#1776)."
     }
     CustomStringTableItem "{325BC1AC6E7EF57B}" {
@@ -9481,7 +9481,7 @@ StringTable {
     }
     CustomStringTableItem "{2D369C29900B50C8}" {
      Id "LF-Unlock_Miner_02"
-     Target_en_us "Coal face permit: cut coal with a pick"
+     Target_en_us "Coal face permit: the East Rise coal seam opens at Mining 4"
      Comment "What Miner level 2 opens (a real gate: LICENSE); the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{1A00A6261B157402}" {

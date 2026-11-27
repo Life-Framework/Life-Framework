@@ -62,8 +62,8 @@
       "for_key": "#LF-Foreman_MINER_Next_Top", "key_pin": "3db46144"
     },
     "next_02": {
-      "text": "Next up, level 2. Coal face permit: cut coal with a pick. Keep swinging.",
-      "for_key": "#LF-Foreman_MINER_Next_02", "key_pin": "21a0868a", "pin_key": "#LF-Unlock_Miner_02"
+      "text": "Next up, level 2. Coal face permit. The East Rise coal seam opens at Mining 4. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_02", "key_pin": "8bd2ffb6", "pin_key": "#LF-Unlock_Miner_02"
     },
     "next_03": {
       "text": "Next up, level 3. Copper seam permit: cut copper ore. Keep swinging.",

@@ -42,17 +42,17 @@
       "mouth": "999866439987520697477367675754167766587664342100000000009999862764386415687644576553100"
     },
     "next_02": {
-      "hash": "b170a8e6ad877e6e",
-      "date": "2026-11-24",
+      "hash": "a48c7f12690fc55f",
+      "date": "2026-11-27",
       "voice_id": "nPczCjzI2devNBz1zQrb",
       "voice_name": "Brian - Deep, Resonant and Comforting",
       "model": "eleven_multilingual_v2",
-      "text": "Next up, level 2. Coal face permit: cut coal with a pick. Keep swinging.",
-      "chars": 72,
-      "chars_total": 56,
-      "request_id": "71oxKpecknBJrS1OYeEd",
-      "seconds": 4.23,
-      "mouth": "9986496288572468643200000049984397513877742000058961459877642149512100289353788642100"
+      "text": "Next up, level 2. Coal face permit. The East Rise coal seam opens at Mining 4. Keep swinging.",
+      "chars": 93,
+      "chars_total": 93,
+      "request_id": "GMiNSV5ynEaS8APfZvvn",
+      "seconds": 6.36,
+      "mouth": "99668971599672439764320000000006699647864138776310000000000991999526987543386554677667546585369877633766643100004994538876431000"
     },
     "next_03": {
       "hash": "ed1f46ed4e555574",
