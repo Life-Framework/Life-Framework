@@ -3522,8 +3522,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F15EDBFA8B381B38}" {
      Id "LF-ChargeSheet_OverCap"
-     Target_en_us "%1, above your rank's limit"
-     Comment "Greyed row status: the charge's own fine, which the rank fine cap cuts from the total. %1 = the charge fine as money text (LF-ChargeSheet_Money)."
+     Target_en_us "%1, over your limit"
+     Comment "Greyed row status: the charge's own fine, which the rank fine cap cuts from the total. %1 = the charge fine as money text (LF-ChargeSheet_Money). Keep it short: the status column of the row is narrow and clips past about 25 characters (#5081); the note under the total explains the rank cap."
     }
     CustomStringTableItem "{36EB17C89AD9A18C}" {
      Id "LF-ChargeSheet_Pick"
