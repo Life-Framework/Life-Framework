@@ -155,8 +155,10 @@ class LF_ConfiscateAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: tells the officer what the search seized (#2154). Chain goods carry no item line, so a
-	//! search that took only those keeps the plain "contraband found" toast.
+	//! Server: tells the officer what the search seized (#2154), and the searched player what they lost
+	//! (they saw nothing before: agent playtest 2026-11-27). Chain goods carry no item line, so a search
+	//! that took only those keeps the plain "contraband found" toast for the officer and the plain
+	//! "the police took what you may not carry" one for the suspect.
 	protected static void NotifySeized(IEntity officer, IEntity suspect, notnull array<string> seizedLines)
 	{
 		string text = LF_ItemSearch.SeizedText(LF_Utils.GetPlayerName(suspect), seizedLines);
@@ -164,5 +166,11 @@ class LF_ConfiscateAction : ScriptedUserAction
 			text = "#LF-Search_Found";
 
 		LF_Utils.NotifyEntity(officer, text, "#EL-Police_Title", 4.0);
+
+		string taken = LF_ItemSearch.TakenText(seizedLines);
+		if (taken.IsEmpty())
+			taken = "#LF-Search_TakenPlain";
+
+		LF_Utils.NotifyEntity(suspect, taken, "#EL-Police_Title", 5.0);
 	}
 };
