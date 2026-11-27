@@ -115,7 +115,7 @@ export async function buildMaps({ log = () => {}, render = true } = {}) {
   await inset("lake", "Black Lake", [9430, 2930, 9610, 3070], 4, [
     g(T("LF-MapPoi_FishingSpot") + " (Black Lake)", "Quiet lake shore with a bench and a lantern.", P("FishingSpot", "blacklake.shore")),
   ], { key: false });
-  await inset("harbour", "Harbour and dock", [4370, 11000, 4570, 11250], 3.5, [
+  await inset("harbour", "Harbor and dock", [4370, 11000, 4570, 11250], 3.5, [
     ...pick([T("LF-MapPoi_Smokehouse"), T("LF-MapPoi_Wholesale"), T("LF-Sign_HarbourOffice_Title"), T("LF-MapPoi_Atm") + " (harbour)"]),
   ]);
   await inset("scrapyard", "Scrapyard", [4930, 10790, 5110, 10930], 4, [

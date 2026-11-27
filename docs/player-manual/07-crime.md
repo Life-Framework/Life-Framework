@@ -6,13 +6,13 @@ see on the **wanted board**. A wanted player can be **arrested**; the cell time 
 
 ## Wanted level
 
-| Offence | Adds |
+| Offense | Adds |
 |---|---|
 | Robbing a till | +1 |
 | Shoplifting | +1 |
 | Breaking into a building | +1 |
 | Stealing a car (not by force) | +1 |
-| Cash van or armoury or bank heist | +1 each |
+| Cash van or armory or bank heist | +1 each |
 | Robbing a hospital | +1 |
 | Stealing a weapon | +2 |
 | Carrying an unlicensed item | +1 |
@@ -31,13 +31,13 @@ The level is capped at 5. An arrest sentence ends with one level **removed**.
   warns you if you leave its radius. If it pays you get **$150** in cash. A downed attendant ends the hold unpaid.
 * **Supermarket till.** Pays **$120 to $180**, same rules. Both tills have a **cooldown** after a robbery and refuse if you have no room to carry the cash.
 * **General store box safe.** A small olive steel safe stands behind the counter of the general store in Saint-Philippe. It needs **at least 1 police officer on duty**. It opens after a short fuse, sounds the store alarm and pays a little cash (**$120**). After a haul it stays shut for **45 minutes**; a second try in that time is refused.
-* **Supermarket box safe.** The Saint-Philippe supermarket has the same olive steel safe behind its till, with the same rules: **at least 1 police officer on duty**, a short fuse, the store alarm, *** **General store box safe.** A small olive steel safe stands behind the counter of the general store in Saint-Philippe. It needs **at least 1 police officer on duty**. It opens after a short fuse, sounds the store alarm and pays a little cash (**$120**). After a haul it stays shut for **45 minutes**; a second try in that time is refused.
-20**, and a **45 minute** wait after a haul.
+* **Supermarket box safe.** The Saint-Philippe supermarket has the same olive steel safe behind its till, with the same rules: **at least 1 police officer on duty**, a short fuse, the store alarm, **$120**, and a **45 minute** wait after a haul.
+* **Bakery, butcher and cafe tills.** Each pays **$120**, same rules as the other tills.
 * **Weapons and cars.** Stealing a weapon adds +2; taking a car by force adds +3. Only civilians can do either; the police see it at once.
 * **Crew tills.** Where a till needs a crew, **Start the job** gathers every armed civilian within 15 m.
 * **Hospital till.** Robbing it adds +1 and rings the hospital alarm.
 
-**Everyone sees the alarm on the map.** While a till, the bank vault, the clinic cabinet or the armoury is being robbed, its badge on the map (**M**) has a **pulsing red ring with a "!"** for about three minutes after the alarm; then it turns **grey** for fifteen minutes ("Robbed recently"). Hover the badge to see when the alarm went off; the map key on the right lists it as **Alarm**. Police still get their own radio call.
+**Everyone sees the alarm on the map.** While a till, the bank vault, the clinic cabinet or the armory is being robbed, its badge on the map (**M**) has a **pulsing red ring with a "!"** for about three minutes after the alarm; then it turns **gray** for fifteen minutes ("Robbed recently"). Hover the badge to see when the alarm went off; the map key on the right lists it as **Alarm**. Police still get their own radio call.
 
 ## Lockpicks, drills and the fence
 
@@ -52,6 +52,18 @@ The **fence** (map name *Fence*, off the public map, in a yard just east of the 
 | Breaching charge | $4,000 | 5 |
 
 A **lockpick** opens a house or shop door (+1 break-in, and a witness can call it in). The fence also **buys stolen car parts** at half price.
+
+**License bans.** A conviction can take a license for a number of game days (2 real hours each): stealing a car takes the driving license for 14 days,
+carjacking for 21, a speeding ticket for 2. Robbery takes the firearm permit for 14 days, stealing a weapon for 14, an armory heist for 30, and murder takes both licenses for 30.
+
+## The north outpost
+
+A rebel outpost stands about 4 km from Saint-Philippe. Inside its fence is a **safe zone**: nobody fights there. It has gate guards,
+a **quartermaster**, a **contraband buyer** and a chalk board by the fire. On-duty police are turned away at the traders; off-duty police are served.
+
+The quartermaster does not know you at first. What he sells grows with your **standing** in the underworld (Unknown, Known, Trusted, Respected; the game never shows a number):
+a gang radio ($60) for anyone, a pistol ($450) once you are Known, a rifle (AK-74, $2,000) once you are Trusted. A better piece is refused in words until then.
+Crime, gang work and trading at the outpost raise the same standing. Bar staff at the Chotain and Levie bars may pass on a tip once the town knows you; the place is marked on your map for that shift only.
 
 ## Chop shop
 
@@ -87,7 +99,7 @@ Everything is at the **still barn** in the barn compound. Three **mash barrels**
 4. **Sell** at a **buyer spot** (three in town, off the public map). A bottle is worth about **$60**.
 
 The work can **go wrong**: a 6 percent chance on each work tick. Three strikes **ruin the batch** and the barrel **explodes**, hurting anyone close.
-The barn also gives off **smoke and heat** that police can follow. Some chains need a licence or equipment; the refusal says which.
+The barn also gives off **smoke and heat** that police can follow. Some chains need a license or equipment; the refusal says which.
 
 ## Laundering
 
@@ -121,7 +133,7 @@ When the cells blow, **every prisoner in the cell is free**: their sentence ends
 
 ## Hideouts
 
-Two **contested sites** (a hideout on the hilltop mast and the farm compound) are fought over by organizations. Organizations are run from the **organization office** in town; the **war board** there lists the fights. Each site has a flag pole: it flies the flag of the gang that holds the site, with the gang's name on the board below, and a plain white cloth when nobody does. Pick a new flag at the flag wall and your poles change within a few seconds.
+Two **contested sites** (a hideout on the hilltop mast and the farm compound) are fought over by organizations. Organizations are run from the **registry cabin** in town (map name *Organization office*, with the flag wall outside): the registrar founds a crew for **$250**, takes joins and files notices, and the **war board** there lists the fights. A war declaration costs **$2,500** from the crew's fund; the other crew has 15 minutes to answer, a war lasts 2 hours, and the same two crews can fight once a day. Each site has a flag pole: it flies the flag of the gang that holds the site, with the gang's name on the board below, and a plain white cloth when nobody does. Pick a new flag at the flag wall and your poles change within a few seconds.
 
 Recruit face to face. Look at a player with no organization and pick **Invite to <name>** from the action list. They look back at you and pick **Join <name>** or **Decline <name>**; an offer lapses after 2 minutes. A leader looking at a member picks **Remove from <name>**. Nobody can remove the founder.
 
@@ -129,7 +141,7 @@ A new recruit is a **prospect** for the first 48 hours (real time, restarts incl
 
 A **gang radio** keeps the crew on its own channel. Carry one and pick **Tune to gang channel** from its action list: your crew hears you and nobody else does, even on the same frequency. When someone leaves or is removed, the channel changes and the radios of members who are online follow it; if you were away, or after a server restart, pick **Tune to gang channel** again.
 
-Your map shows where every online member of your organization is, updated every few seconds, and nobody outside the crew sees these marks. A member who is downed, jailed or cuffed shows in grey. While you are jailed or cuffed yourself, the crew's marks disappear from your map and come back once you are free. A member who leaves or is removed drops off everyone's map at once.
+Your map shows where every online member of your organization is, updated every few seconds, and nobody outside the crew sees these marks. A member who is downed, jailed or cuffed shows in gray. While you are jailed or cuffed yourself, the crew's marks disappear from your map and come back once you are free. A member who leaves or is removed drops off everyone's map at once.
 
 <!-- map:crime -->
 ![Crime and police in Saint-Philippe](../../website/public/docs-images/player-manual/crime-town.png)

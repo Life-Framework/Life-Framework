@@ -1,14 +1,14 @@
 # Life Framework: Everon 1989. Player manual
 
-For the **0.2.0 alpha** on the real Everon island. Written for players, not developers. Keep it on your phone or print it:
+For the **0.3.0 alpha** on the real Everon island. Written for players, not developers. Keep it on your phone or print it:
 [`manual.html`](manual.html) is the same manual in one file, with every map inside.
 
 ## The first ten minutes
 
 1. You wake in the **hostel** in Saint-Philippe. A waypoint and a mark on your map send you south to the town hall.
-2. Talk to the **registry clerk**. You get your ID card. Keep it on you.
-3. Read the **notice board**, take **one parcel run** at the post office, and **deposit** your pay at an ATM. Each step shows its own waypoint.
-4. Back at the clerk you get a welcome gift: a folded paper map, crackers and apple juice.
+2. Talk to the **town clerk**. You get your ID card, a welcome pack (bread, a sausage, a bottle of water and $100 in cash) and a starter car.
+3. Take the car out at the **garage counter** by the car lot, drive to the **orchard**, pick **six apples** and press them into **juice** at the stall.
+4. Sell the juice at the **market stall** in town. Each step shows its own waypoint, and the next errands wait under **F2**.
 5. Eat and drink from your inventory (**Use**). Press **F** on anything with a prompt: counters, signs, doors, ATMs.
 
 ## What is in the manual
@@ -33,10 +33,11 @@ Each is marked in the page that covers it.
 
 | Live | Not on the island yet |
 |---|---|
-| Parcel runs, taxi runs, wheat harvest with the reaper, lumber, fishing and the smokehouse, moonshine, chop shop, till robberies, the bank heist, police duty, medic duty, homes and plots for sale, cars, every shop in Saint-Philippe | **Garbage round** (only in the test grid). **Fuel haul** (no tanker depot on the island). **Mining** (kits built, no mine placed). **A fish buyer** and **a scrap buyer** (you can catch and smoke fish, search the scrap piles and run the recycler, but nobody pays for the result). **Grain mill and bakery flour.** **Bank-to-bank transfers** (ATMs only deposit and withdraw) |
+| Parcel runs, the postal van run, taxi runs, wheat harvest with the reaper, lumber (by hand or by truck), fishing and the smokehouse, **iron mining and smelting** (Coalman's Brow, Highstone, the east smelter), **coal** (East Rise seam, the power plant buys it), scrap and the recycler, **export orders** at the dock, moonshine, chop shop, till robberies, the bank heist, the north rebel outpost, crews and the registry, police duty, medic duty, homes and plots for sale, cars and the **truck yard**, every shop in Saint-Philippe | **Garbage round** (only in the test grid). **Fuel haul** (no tanker depot on the island). **Copper and stone** (no copper seam, refinery or quarry is placed yet). **Grain mill and bakery flour.** |
 
 The other towns (Meaux, Montignac, Lamentin, Morton, Saint Pierre) are scenery for now. Everything you can do is in
-Saint-Philippe or at one of the work sites on the [island map](maps.md).
+Saint-Philippe or at one of the work sites on the [island map](maps.md); the mines, the smelter, the truck yard and the
+north outpost are described in [Jobs](03-jobs.md) and [Crime](07-crime.md) with their distances from town.
 
 ## The alpha server in one paragraph
 

@@ -24,7 +24,7 @@ The **pharmacy** north of the clinic sells aspirin ($10), gauze ($8) and tourniq
 
 1. Go to the **medic duty desk** in the clinic and press **F** to **Clock in**. Anyone may sign on; there is no roster. Your civilian things are stored and you take the medic kit.
 2. Wait at the clinic or patrol. The **medic dispatch board** lists calls. Revive downed players and bring patients in.
-3. **Clock out** at the same desk. You are **paid in cash** for the time you were on duty.
+3. **Clock out** at the same desk. You are **paid in cash** for the time you were on duty. One clock-in counts at most 3 hours of pay and rank time, and time away from the game or standing idle does not count; clock out and in again for a fresh shift.
 
 | Rank | Pay per hour | Bonus cap per hour | Adds to your kit | On duty to rise |
 |---|---|---|---|---|
