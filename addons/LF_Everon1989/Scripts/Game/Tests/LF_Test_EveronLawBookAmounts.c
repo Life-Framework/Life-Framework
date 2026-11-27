@@ -1,4 +1,4 @@
-// red-proof: on main without the pack's LF_CrimeCatalog_Everon1989.conf the new codes are not in the catalog and today's tickets keep $200, $500, $800 and $1,500, so every row fails (run `tools\cli test --no-build --red LF_Test_EveronLawBookAmounts`; RedProof() reads the core catalog alone).
+// red-proof: (#5147) the three item offences (#LF-Offence_UnlicensedItem, _RestrictedItem, _IllegalItem) read $0 on main, so their band rows fail until the pack gives them a fine. Earlier: on main without the pack's LF_CrimeCatalog_Everon1989.conf the new codes are not in the catalog and today's tickets keep $200, $500, $800 and $1,500, so every row fails (run `tools\cli test --no-build --red LF_Test_EveronLawBookAmounts`; RedProof() reads the core catalog alone).
 //! #4208 (police L2, plan "Fines as minutes of work"): under the Everon 1989 header (the pack leg of
 //! `tools\cli test`) every law-book code has a section and an amount inside its band, scaled to a civilian's
 //! $8 a minute: minor road $50 to $75, road $150 to $250, serious road $300 to $400, minor criminal $50 to $200,
@@ -89,6 +89,11 @@ class LF_Test_EveronLawBookAmounts : LF_Test
 		Row("#LF-Ticket_OffenceBrandishing", LF_LawSection.WEAPONS, CLASS_WEAPONS);
 		Row("#LF-Ticket_OffenceIllegalWeapon", LF_LawSection.WEAPONS, CLASS_WEAPONS);
 		Row("#LF-Offence_IllegalConversion", LF_LawSection.WEAPONS, CLASS_VIOLENT);
+
+		// The search files these when it seizes a carried item (#5147: they read "$0" on the charge sheet).
+		Row("#LF-Offence_UnlicensedItem", LF_LawSection.WEAPONS, CLASS_WEAPONS);
+		Row("#LF-Offence_RestrictedItem", LF_LawSection.WEAPONS, CLASS_WEAPONS);
+		Row("#LF-Offence_IllegalItem", LF_LawSection.WEAPONS, CLASS_WEAPONS);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -530,8 +530,8 @@ class LF_ChargeSheetScreen
 }
 
 //------------------------------------------------------------------------------------------------
-//! Harness `chargesheet fixture|close`: a fixture sheet for the session picture (three open codes, all
-//! ticked; two share a stacking group, so one greys). `fixture-cap` adds a low cap so a row greys by cap.
+//! Harness `chargesheet fixture|close`: a fixture sheet for the session picture (four open codes, all
+//! ticked, and a long-named unlicensed-item row; two share a stacking group, so one greys). `fixture-cap` adds a low cap so a row greys by cap.
 modded class LF_AgentHarnessVerbs
 {
 	override bool Handle(LF_AgentCommand cmd)
@@ -555,6 +555,9 @@ modded class LF_AgentHarnessVerbs
 		carjacking.m_sStackGroup = "fixture-theft";
 		LF_CrimeEntry vehicleTheft = LF_CrimeEntry.Make("#LF-Offence_Lockpick", 0, 150);
 		vehicleTheft.m_iSentenceSeconds = 180;
+		// A long name beside a status (#5147): "Carrying without a license" was cut at "licen". First, so it shows above the fold.
+		LF_CrimeEntry unlicensed = LF_CrimeEntry.Make("#LF-Offence_UnlicensedItem", 0, 400);
+		keep.Insert(unlicensed);
 		keep.Insert(robbery);
 		keep.Insert(carjacking);
 		keep.Insert(vehicleTheft);

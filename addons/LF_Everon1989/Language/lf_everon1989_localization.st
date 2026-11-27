@@ -4734,6 +4734,11 @@ StringTable {
      Target_en_us "Worn hand tool"
      Comment "Item name: worn hand tool (scrapyard, #3823)."
     }
+    CustomStringTableItem "{D039C247A562DE64}" {
+     Id "LF-JailBook_FirstArrest"
+     Target_en_us "Bring the suspect to the station booking desk at the jail (waypoint set). Escort them, or put them in your car. At the desk, use Book suspect, tick the codes on the charge sheet and sign it."
+     Comment "First-arrest note to an officer, once per session (#5149). The Saint-Philippe station books at the desk, so the pack row replaces the core text; the key is the same."
+    }
     CustomStringTableItem "{F3657E616B45CD7B}" {
      Id "LF-JobMap_PostLoad"
      Target_en_us "Saint-Philippe post office"

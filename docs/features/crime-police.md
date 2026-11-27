@@ -469,7 +469,10 @@
   duty pay. The faction is the duty role: POLICE only while clocked in.
   Feedback: the vanilla pick-up gesture on the acting client, the range control
   panel button click (`SOUND_RANGECP_STARTBUTTON`) broadcast from the desk, then
-  a toast. Death on duty ends the shift: the body keeps the police gear, the
+  a toast. The clock-in toast (`#LF-Duty_ClockedIn`, 6 s, police and medic desks) says the
+  clothes, cash and things wait in the duty locker until clock-out: the carried cash goes into the
+  stash with the rest, and before 2026-11-27 the readout dropped to $0 with only "You are now on duty"
+  (medic playtest). Clock-out still reads "You are now off duty". Death on duty ends the shift: the body keeps the police gear, the
   civilian stash becomes the carried snapshot the respawn restores, and the
   next shift starts from the starter kit. Going on duty starts the rank clock;
   going off duty settles it. `PoliceStation_Debug` and `PoliceDutyNPC` no
@@ -577,11 +580,14 @@
   raises wanted (till, vehicle and weapon robbery, breach, hospital till) calls
   `LF_Dispatch.Report` (M1-20), which calls `LF_WantedReports.Report`. It records the offence and a description of the
   suspect at that moment: clothing display names, the vehicle they sit in, and
-  the nearest map town or landmark (`LF_NamedPlaces.Nearest`, #1944, WORLD
-  `police/dispatch-names-place`: "bank robbery, Saint Philippe"), else the nearest
-  sign title within `m_fPlaceRadius`, else a 100 m grid square. The town wins over
-  a sign (#3092): on the island the bank's fascia sign stood nearer than the town
-  label and the call read "Bank". The place is stored as a
+  the nearest map settlement (`LF_NamedPlaces.NearestSettlement`, #1944, #5147, WORLD
+  `police/dispatch-names-place`: "bank robbery, Saint Philippe"; a site label such as
+  "Factory" never names a place, the fuel station beside it read "Factory" on the island),
+  joined with the nearest sign title within `m_fPlaceRadius` when there is one ("Fuel
+  Station, Saint Philippe": stored `<site>^<town>`, `LF_WantedBoard.ResolvePlace` reads
+  it with `#LF-Wanted_PlaceAt`). With no sign the town alone names it (#3092: the bank's
+  fascia sign must not replace the town); with no settlement the sign alone, then the
+  nearest site label, then a 100 m grid square. The place is stored as a
   localization key and localized where each board and radio line is built; the
   core holds no place names. In town the hospital till's alarm stands on `Hospital_AlarmBox` (an alarm mount on the hospital front wall, `Street_Hospital.layer`) and the pack names the town "Saint Philippe" (`Place_SaintPhilippe`, town pass #1947).
   An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
