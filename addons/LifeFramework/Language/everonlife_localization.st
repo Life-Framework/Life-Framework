@@ -14745,7 +14745,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9D4E21B7C0A35F86}" {
      Id "LF-Process_Started"
-     Target_en_us "Running. The parts come out here in %1 seconds; the time left shows on the machine, so get on with something else meanwhile."
+     Target_en_us "Running. The finished goods come out here in %1 seconds; the time left shows on the machine, so get on with something else meanwhile."
      Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{11D3E9515907FBC7}" {
@@ -14800,7 +14800,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{E8139375F9985FE0}" {
      Id "LF-Property_HouseNoCash"
-     Target_en_us "You do not carry enough cash for this house."
+     Target_en_us "You do not carry enough cash for this house. Take the price out of the bank at an ATM, then try the sign again."
      Comment "Toast: house purchase refused, short of cash; nothing was taken (#3207)."
     }
     CustomStringTableItem "{32F7CFE0FED0514B}" {
