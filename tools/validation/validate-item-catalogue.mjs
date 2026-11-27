@@ -43,8 +43,8 @@ export function parseCatalogue(text) {
     const head = /^\s*(LF_CatalogueItem|LF_OutletOffer)\b.*\{\s*$/.exec(line);
     if (head && !cur) {
       cur = head[1] === "LF_CatalogueItem"
-        ? { kind: "item", line: i + 1, id: "", prefab: "", price: null, sell: null }
-        : { kind: "offer", line: i + 1, outlet: "", item: "", grants: "" };
+        ? { kind: "item", line: i + 1, id: "", prefab: "", price: null, sell: null, removed: null }
+        : { kind: "offer", line: i + 1, outlet: "", item: "", grants: "", removed: null };
       recDepth = depth;
     }
     if (cur) {
@@ -58,6 +58,7 @@ export function parseCatalogue(text) {
         else if (f[1] === "m_sOutlet") cur.outlet = v;
         else if (f[1] === "m_sItem") cur.item = v;
         else if (f[1] === "m_sGrantsLicence") cur.grants = v;
+        else if (f[1] === "m_bRemoved") cur.removed = v === "1" || v === "true";
       }
     }
     for (const c of line) {

@@ -159,6 +159,13 @@ gate before a merge; the main guard (next section) checks `main` after it.
    `Missions/`, or `tools/config/schema-overrides.json` gets `node tools/config/schema.mjs --write` run, and any change
    in `docs/config/` is committed with it (`tools/lib/config-schema-regen.mjs`, #3717; main went red on a stale
    schema in #3510, #3527 and #3716). It runs again after a behind-merge.
+   Before the preflight ship prints the tests this diff can break and GitHub's `validate` does not run (advice only,
+   never a failure; `tools/lib/touched-tests.mjs`, `touched-tests-selftest.mjs`, `docs/testing/revert-audit-2026-11-27.md`):
+   a changed test file runs its class; a changed file runs the tests whose source names its stem, a class it declares or
+   a string Id it adds; **any pack data change (`addons/LF_Everon1989` Configs, Prefabs, Missions, Language, UI) prints
+   the whole pack leg** as one `tools\cli test --no-build --only ...` (about 40 s: a pack test reads the merged config
+   and rarely names the file it pins); persistence files add `--tier persistence` and `wt e2e`; a world layer adds
+   `audit placement --strict`; the test world pin lists add `--tier all`. Run what it prints, then ship.
 3. Pushes, opens the PR (or reuses the open one) and runs `gh pr merge --auto --merge` at once. If GitHub refuses
    because the branch is behind ("Base branch was modified", not up to date) or reports it `BEHIND`, ship merges
    `origin/<base>` in, pushes again and retries.
