@@ -1,4 +1,4 @@
-// red-proof: RED-OK licence/seizure, observed 2026-11-19 with `tools\cli test --no-build --red LF_Test_LicenceSeizure`: with the booking and the arrest event skipped, `the arrest bans the permit for 7 days (expected 7, got 0)`, `the arrest drops the open application (expected -1, got 10001440)` and `the desk refuses the arrested buyer (expected 11, got 3)`. Green: `--only` passed=2.
+// red-proof: RED-OK licence/seizure, observed 2026-11-19 with `tools\cli test --no-build --red LF_Test_LicenceSeizure`: with the booking and the arrest event skipped, `the arrest bans the permit for 7 days (expected 7, got 0)`, `the arrest drops the open application (expected -1, got 10001440)` and `the desk refuses the arrested buyer (expected 11, got 3)`. Green: `--only` passed=2. 2026-11-27 (crime playtest): on the unfixed code `--only` failed `a player with no permit is told they are barred, not that it was seized (expected '#LF-LicenceBarred_Firearm', got '#LF-LicenceSeized_Firearm')`; green after the fix.
 //! An arrest seizes the licence and the desk says when it comes back (#3432): booking a conviction
 //! for a mapped crime code takes the licence from the body and the saved record and bans it, the
 //! arrested player is told, an open permit application is dropped, and the licence desk refuses the
@@ -12,6 +12,7 @@ class LF_Test_LicenceSeizure : LF_Test
 	protected static const string UID = "test-licseize-a";
 	protected static const string UID_BUS = "test-licseize-bus";
 	protected static const string UID_UNMAPPED = "test-licseize-none";
+	protected static const string UID_NOPERMIT = "test-licseize-nopermit";
 	static const string E2E_UID = "test-licseize-e2e";
 	protected static const string BRANDISHING = "#LF-Ticket_OffenceBrandishing";
 	protected static const string UNMAPPED = "unmapped-offence";
@@ -41,6 +42,7 @@ class LF_Test_LicenceSeizure : LF_Test
 		LF_Progression.Forget(UID);
 		LF_Progression.Forget(UID_BUS);
 		LF_Progression.Forget(UID_UNMAPPED);
+		LF_Progression.Forget(UID_NOPERMIT);
 
 		IEntity holder = LF_TestCharacterFixture.Spawn(ctx);
 		LF_LicenseManagerComponent manager;
@@ -60,6 +62,7 @@ class LF_Test_LicenceSeizure : LF_Test
 		LF_Progression.Forget(UID);
 		LF_Progression.Forget(UID_BUS);
 		LF_Progression.Forget(UID_UNMAPPED);
+		LF_Progression.Forget(UID_NOPERMIT);
 		LF_LicenceDesk.SetNowForTest(-1);
 		LF_LicencesConfig.ResetStatics();
 		// Hand every other test's ban back, then leave the e2e conviction for the shutdown save.
@@ -101,6 +104,7 @@ class LF_Test_LicenceSeizure : LF_Test
 		ctx.Equal(7, LF_LicenceSeizure.DaysLeft(UID, LF_ELicenseType.FIREARM_PERMIT), "the brandishing ban is 7 in-game days");
 		ctx.Equal(-1, LF_LicenceDesk.DueMinutes(UID), "the conviction drops the open permit application");
 		ctx.EqualStr(LF_LicenceSeizure.KEY_FIREARM, LF_LicenceSeizure.SeizedKey(LF_ELicenseType.FIREARM_PERMIT, 7), "the arrested player's line names the permit");
+		ctx.EqualStr(LF_LicenceSeizure.KEY_FIREARM, LF_LicenceSeizure.LastToldKey(), "a held permit is told as seized");
 
 		// The desk refuses with the days left and takes no cash.
 		LF_TestCashWallet wallet = LF_TestCashWallet.Create(1000, 100000);
@@ -129,6 +133,17 @@ class LF_Test_LicenceSeizure : LF_Test
 		ctx.False(manager.HasLicense(LF_ELicenseType.DRIVING_LICENCE), "the conviction takes the driving licence");
 		ctx.Equal(LF_ELicenceDesk.BANNED, LF_LicenceDesk.BuyDrivingFor(holder, UID, wallet), "the desk refuses to sell a banned driving licence");
 		ctx.EqualStr("3", LF_LicenceDesk.DrivingAnswerArg(LF_ELicenceDesk.BANNED, UID), "the driving refusal says 3 days");
+
+		// A conviction that bans a licence the player never held says so: "seized" is wrong for a player
+		// with no permit (agent playtest 2026-11-27: an armed robber with no permit read "Your firearm permit has been seized").
+		LF_Utils.SetUidForTests(holder, UID_NOPERMIT);
+		array<LF_ELicenseType> none = {LF_ELicenseType.UNEMPLOYED};
+		manager.SetUnlockedLicenses(none);
+		LF_Progression.NoteLicenses(UID_NOPERMIT, none);
+		array<string> brandishing = {BRANDISHING};
+		ctx.Equal(1, LF_LicenceSeizure.Book(UID_NOPERMIT, brandishing, holder), "a conviction with no permit still bans the permit");
+		ctx.True(LF_LicenceBans.IsBanned(UID_NOPERMIT, LF_ELicenseType.FIREARM_PERMIT), "the player with no permit is barred from one");
+		ctx.EqualStr("#LF-LicenceBarred_Firearm", LF_LicenceSeizure.LastToldKey(), "a player with no permit is told they are barred, not that it was seized");
 	}
 
 	//------------------------------------------------------------------------------------------------
