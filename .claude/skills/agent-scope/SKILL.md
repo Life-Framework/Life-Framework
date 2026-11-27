@@ -94,8 +94,8 @@ unfinished. Run it in the foreground (timeout up to 600000 ms) or call
   Assert through `LF_Terms.Text("#Key")` where you can, not a copy of the words.
 - **One slot per island-layer branch.** A `Place_*.layer` changes only in a `town-draft-<place>-<slot>` worktree (a
   follow-up on a slot with an open PR: `...-<slot>-<word>`), one slot per PR (`brief town`). PRs that append to the
-  same `docs/features/<area>.md` go CONFLICTING on GitHub (no merge driver there); `prs heal` fixes it (six night-light
-  PRs, 11-25). Do not hand-merge the append.
+  same `docs/features/<area>.md` go CONFLICTING on GitHub (no merge driver there); the `pr-autoheal` workflow merges
+  main in within minutes, `prs heal` is the fallback (six night-light PRs, 11-25). Do not hand-merge the append.
 - **Sessions.** Prepare every edit first. A proof over about 10 minutes needs `session up --hold 20` (the pool closes a
   session at 10 to 12 minutes when anyone waits). Proof and shots in that one session, `session down` straight after.
   In a proof's `SUMMARY`, `failures=` counts failed steps; `verb-errors=` counts harness answers retried by design
