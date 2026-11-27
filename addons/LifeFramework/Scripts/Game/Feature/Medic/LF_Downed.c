@@ -456,6 +456,7 @@ modded class SCR_ChimeraCharacter
 		Replication.BumpMe();
 		LF_StunBuzz.Sync(this);
 		LF_Knockout.Sync(this);
+		LF_DownedHud.OnServerChanged(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -536,6 +537,7 @@ modded class SCR_ChimeraCharacter
 		Replication.BumpMe();
 		LF_StunBuzz.Sync(this);
 		LF_Knockout.Sync(this);
+		LF_DownedHud.OnServerChanged(this);
 		return m_iLF_StunToken;
 	}
 

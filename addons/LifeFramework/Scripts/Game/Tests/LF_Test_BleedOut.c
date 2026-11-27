@@ -78,11 +78,13 @@ class LF_Test_BleedOut : LF_Test
 		LF_BleedOut.Advance(3);
 		ctx.Equal(94, character.LF_GetBleedSecondsLeft(), "the replicated copy catches up once the drift passes the step");
 		ctx.True(character.LF_IsDowned(), "still downed while time is left");
+		ctx.Equal(6, character.LF_GetDownedForShown(), "the replicated seconds downed (the downed HUD's start) catch up with it");
 
 		LF_BleedOut.Advance(1000);
 		ctx.True(damage.GetState() == EDamageState.DESTROYED, "running out of time kills for real");
 		ctx.False(character.LF_IsDowned(), "the downed flag is gone with the death");
 		ctx.Equal(-1, character.LF_GetBleedSecondsLeft(), "the replicated clock is cleared");
+		ctx.Equal(0, character.LF_GetDownedForShown(), "and the replicated seconds downed with it");
 		ctx.Equal(1, LF_BleedOut.GetExpiredCount(), "one expiry");
 
 		LF_BleedOut.Advance(1000);
