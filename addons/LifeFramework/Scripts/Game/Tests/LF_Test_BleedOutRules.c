@@ -1,4 +1,5 @@
 // red-proof: observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_BleedOutRules`: LF_BleedOut.IsExpired using `left < 0` failed `zero is expiry`; restored, green.
+// red-proof: 2026-11-27 (medic playtest) SecondsUntilGiveUp returning the whole delay failed `the too-early toast names the seconds still to wait` (expected 5, got 30); fixed, green.
 
 //! The pure rules of the bleed-out timer (LF_BleedOut): the clock never goes below zero, zero is
 //! expiry, giving up waits for the configured delay, and the replicated copy only moves in
@@ -21,6 +22,10 @@ class LF_Test_BleedOutRules : LF_Test
 		ctx.False(LF_BleedOut.CanGiveUp(29.9, 30), "give-up is refused before the delay");
 		ctx.True(LF_BleedOut.CanGiveUp(30, 30), "give-up is allowed at the delay");
 		ctx.True(LF_BleedOut.CanGiveUp(0, 0), "a zero delay allows give-up at once");
+		ctx.Equal(5, LF_BleedOut.SecondsUntilGiveUp(25, 30), "the too-early toast names the seconds still to wait, not the whole delay");
+		ctx.Equal(30, LF_BleedOut.SecondsUntilGiveUp(0, 30), "at the moment of going down the whole delay is left");
+		ctx.Equal(1, LF_BleedOut.SecondsUntilGiveUp(29.6, 30), "a part second still reads one second");
+		ctx.Equal(1, LF_BleedOut.SecondsUntilGiveUp(31, 30), "never zero or less while the server refused it");
 
 		ctx.False(LF_BleedOut.NeedsSync(180, 179), "one second of drift does not bump the replicated copy");
 		ctx.False(LF_BleedOut.NeedsSync(180, 176.5), "four seconds of drift does not bump it");

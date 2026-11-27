@@ -6345,6 +6345,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Clock out"
      Comment "Duty desk action: punch the card, go off duty, collect duty pay, get the civilian inventory back."
     }
+    CustomStringTableItem "{62E1A14A9FCEE005}" {
+     Id "LF-Duty_ClockedIn"
+     Target_en_us "You are now on duty. Your own clothes, cash and things wait in the duty locker until you clock out."
+     Comment "Toast at the duty desk on clock-in: the duty locker keeps the civilian inventory, cash included, and gives it back at clock-out"
+    }
+    CustomStringTableItem "{D7EB4DB6446F954F}" {
+     Id "LF-Duty_LockerCashReturned"
+     Target_en_us "Your {currency:sym}%1 cash is back from your duty locker."
+     Comment "Toast at clock-out when the civilian inventory handed back held cash (#5148); %1 is the amount. Shown apart from the duty pay toast."
+    }
     CustomStringTableItem "{AB08E8AF6A8954AD}" {
      Id "LF-Duty_NoAccount"
      Target_en_us "Register your character first."
@@ -9050,7 +9060,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{5EEAFA2D61673F01}" {
      Id "LF-JailBook_FirstArrest"
-     Target_en_us "Bring the suspect to the station booking desk at the jail (waypoint set). Escort them, put them in your car, then book them at the cell: full sentence, or reduced if they cooperated."
+     Target_en_us "Bring the suspect to the jail booking point (waypoint set). Escort them, or put them in your car, then book them there."
      Comment "First-arrest note to an officer, once per session."
     }
     CustomStringTableItem "{570E5C4A7E0D9CF9}" {
@@ -11279,13 +11289,13 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3C71B0A2D4E5F612}" {
      Id "LF-Medic_Downed"
-     Target_en_us "You are down and bleeding out. You can give up (hold X) in %1 seconds."
+     Target_en_us "You are down and bleeding out. Wait for help, or give up (hold X) after %1 seconds."
      Comment "Toast: shown to a player who goes down."
     }
     CustomStringTableItem "{3C71B0A2D4E5F611}" {
      Id "LF-Medic_GiveUpTooEarly"
-     Target_en_us "You can give up in %1 seconds from going down."
-     Comment "Toast: give up asked too early."
+     Target_en_us "You can give up in %1 seconds."
+     Comment "Toast: give up asked too early. %1 is the seconds still to wait."
     }
     CustomStringTableItem "{3C71B0A2D4E5F610}" {
      Id "LF-Medic_Keybind_GiveUp"
@@ -16326,6 +16336,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The {police} took goods you may not carry."
      Comment "Toast to the searched player when the search took only chain goods, which have no item names."
     }
+    CustomStringTableItem "{6B2AEFE8DB63D32F}" {
+     Id "LF-Search_UnknownSuspect"
+     Target_en_us "an unknown person"
+     Comment "Inserted as %1 in LF-Search_SeizedFrom (Seized from %1: %2) when the suspect never introduced themselves to the officer (#5145)."
+    }
     CustomStringTableItem "{5EA2C4A000000004}" {
      Id "LF-Search_Vehicle_Action"
      Target_en_us "Search vehicle"
@@ -18592,6 +18607,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Wanted_OnFoot"
      Target_en_us "on foot"
      Comment "Wanted poster: the suspect was not in a vehicle."
+    }
+    CustomStringTableItem "{7D1E5B0A94C2F368}" {
+     Id "LF-Wanted_PlaceAt"
+     Target_en_us "%1, %2"
+     Comment "A crime place inside a town (#5147): %1 is the site's own name (a sign title), %2 the town. e.g. Fuel Station, Saint Philippe."
     }
     CustomStringTableItem "{35F30778D3B26361}" {
      Id "LF-Wanted_PlaceGrid"

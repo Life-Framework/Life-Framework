@@ -86,6 +86,11 @@ class LF_DutyAction : ScriptedUserAction
 		}
 
 		bool clockingIn = !account.IsOnDuty();
+		// Clock-out hands the locker cash back: read it before the swap empties the locker (#5148).
+		int lockerCash;
+		if (!clockingIn && account.GetActiveCharacter())
+			lockerCash = LF_DutyLocker.LockerCash(account.GetActiveCharacter().GetId());
+
 		string refusal;
 		if (clockingIn)
 			refusal = LF_DutyLocker.ClockIn(account, pUserEntity, GetRole());
@@ -100,11 +105,24 @@ class LF_DutyAction : ScriptedUserAction
 
 		PlayPunch(pOwnerEntity, pUserEntity);
 
-		string statusKey = "#LF-Duty_OffDuty";
+		// Clock-in swaps the civilian inventory, cash included, into the duty locker (LF_DutyLocker): say so,
+		// or the cash readout drops to $0 with no reason given (medic playtest 2026-11-27).
 		if (clockingIn)
-			statusKey = "#LF-Duty_OnDuty";
+		{
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-Duty_ClockedIn", "#EL-Duty_Status", 6.0);
+			return;
+		}
 
-		LF_Utils.NotifyEntity(pUserEntity, "#EL-Duty_Status_Change", "#EL-Duty_Status", 3.0, statusKey);
+		LF_Utils.NotifyEntity(pUserEntity, "#EL-Duty_Status_Change", "#EL-Duty_Status", 3.0, "#LF-Duty_OffDuty");
+
+		// The money HUD flashes the locker cash and the pay as one rise; this line names the locker
+		// part, apart from the duty pay toast (#5148).
+		string cashKey = LF_DutyLocker.LockerCashReturnedKey(lockerCash);
+		if (!cashKey.IsEmpty())
+		{
+			LF_Utils.NotifyEntity(pUserEntity, cashKey, "#EL-Duty_Status", 5.0, lockerCash.ToString());
+			LF_Debug.Info(LF_DutyLocker.FEATURE, string.Format("locker cash %1 for %2: %3", lockerCash, account.GetPersistentId(), cashKey));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

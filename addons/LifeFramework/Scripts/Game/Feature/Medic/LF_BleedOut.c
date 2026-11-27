@@ -64,6 +64,18 @@ class LF_BleedOut
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whole seconds the player still waits before giving up, never under 1 while it is refused (the
+	//! too-early toast named the full delay however long the player had been down: playtest 2026-11-27).
+	static int SecondsUntilGiveUp(float downedFor, float delay)
+	{
+		int left = Math.Ceil(delay - downedFor);
+		if (left < 1)
+			return 1;
+
+		return left;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Whether the replicated copy (`synced`, whole seconds) is stale enough to be bumped.
 	//! Always true at zero so the client sees the end.
 	static bool NeedsSync(int synced, float left)
@@ -201,7 +213,7 @@ class LF_BleedOut
 		if (!CanGiveUp(character.LF_GetDownedForSeconds(), delay))
 		{
 			LF_Debug.Info(FEATURE, string.Format("give up refused for %1: downed %2s, needs %3s", LF_Utils.GetPlayerUID(character), character.LF_GetDownedForSeconds(), delay));
-			LF_Utils.NotifyEntity(character, "#LF-Medic_GiveUpTooEarly", "", 3.0, Math.Ceil(delay).ToString());
+			LF_Utils.NotifyEntity(character, "#LF-Medic_GiveUpTooEarly", "", 3.0, SecondsUntilGiveUp(character.LF_GetDownedForSeconds(), delay).ToString());
 			return false;
 		}
 
