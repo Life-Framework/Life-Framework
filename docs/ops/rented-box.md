@@ -82,10 +82,10 @@ The game listens on UDP 2001 and the A2S query on UDP 17777 (`server/example/ser
       the Steam path (`C:/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server`), so a box with the
       server in another folder sets `ENFUSION_SERVER_PATH` (env var, or `lf.local.json`) to that folder.
 - [ ] **Box mode.** A plain clone is a main checkout, which `host start|watch|autostart` refuse (on the
-      maintainer's PC it is the world-editor copy). Run `toolscli host box on` once: it writes
+      maintainer's PC it is the world-editor copy). Run `tools\cli host box on` once: it writes
       `.lf-host-box` (git-ignored) and lifts that refusal for the host commands only; `LF_HOST_BOX=1` does the same
       for one shell, but the scheduled task of step 6 carries no environment, so use the marker there.
-      `toolscli host box check` lists what the clone still lacks (`addons/`, the server folder); `host start`
+      `tools\cli host box check` lists what the clone still lacks (`addons/`, the server folder); `host start`
       prints the same list in one `FAIL host start:` line. `host box off` removes the marker.
 - [ ] Copy the flagship folder: `server/flagship/` from the repo at `stable` (the live branch,
       [release-process](../release-process.md)). It holds `server.json` and `config.json` once C1 (#1321)
@@ -142,7 +142,7 @@ A drill that fails means do not open the box. Fix the cause, or keep playing on 
       must pass `-loadSessionSave`, and a stop through `host stop` must not trigger a restart.
 - [ ] Kill the server process by hand once. It is back, with the crash backup, inside a minute, and the log
       shows `save loaded:`.
-- [ ] **After a reboot.** `toolscli host autostart install` registers the scheduled task that runs `host watch
+- [ ] **After a reboot.** `tools\cli host autostart install` registers the scheduled task that runs `host watch
       --flagship` at logon; it needs box mode on (step 4) in a plain clone. Check it with `host autostart status`.
 - [ ] **Restart schedule.** The flagship restarts at 06:00 and 18:00 server time, with in-game warnings at 15, 5
       and 1 minute ([m4-slice-plan](../roadmap/m4-slice-plan.md), "Decisions"). The times are set in

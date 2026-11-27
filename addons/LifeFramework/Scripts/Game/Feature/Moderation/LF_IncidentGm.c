@@ -134,13 +134,19 @@ class LF_IncidentGm
 modded class SCR_PlayerController
 {
 	//! Rows from the last answer; the Game Master panel reads them. Client only.
-	protected static ref array<string> s_aLF_IncidentRows = new array<string>();
+	protected static ref array<string> s_aLF_IncidentRows;
+	protected static array<string> LzLF_IncidentRows()
+	{
+		if (!s_aLF_IncidentRows)
+			s_aLF_IncidentRows = new array<string>();
+		return s_aLF_IncidentRows;
+	}
 	protected static int s_iLF_IncidentAnswers;
 
 	//------------------------------------------------------------------------------------------------
 	static array<string> LF_GetIncidentRows()
 	{
-		return s_aLF_IncidentRows;
+		return LzLF_IncidentRows();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -199,6 +205,7 @@ modded class SCR_PlayerController
 	protected void RpcDo_LF_Incidents(array<string> rows)
 	{
 		s_aLF_IncidentRows = new array<string>();
+		LzLF_IncidentRows();
 		s_aLF_IncidentRows.Copy(rows);
 		s_iLF_IncidentAnswers++;
 	}

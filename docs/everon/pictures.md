@@ -1,6 +1,6 @@
 # Everon building pictures
 
-Taken with `toolscli look <x,z> --world Worlds/CoreOnEveron/CoreOnEveron.ent` on vanilla Everon, 2026-11-16 (free camera, midday). One or two per building type; coordinates are where the camera looked, the prefab is the catalog entry ([catalog-buildings.md](catalog-buildings.md)).
+Taken with `tools\cli look <x,z> --world Worlds/CoreOnEveron/CoreOnEveron.ent` on vanilla Everon, 2026-11-16 (free camera, midday). One or two per building type; coordinates are where the camera looked, the prefab is the catalog entry ([catalog-buildings.md](catalog-buildings.md)).
 
 Not pictured: garages and workshops, hen houses, sheds (no clean shot; see the catalog for sizes).
 

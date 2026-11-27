@@ -91,7 +91,7 @@ For those:
   ```json
   "polish": { "props": [ { "prefab": "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et", "at": [-3.6, 0.1, 6.05], "why": "..." } ] }
   ```
-  `at` is building space like a nudge, `yaw` optional; the prefab is named with its `{GUID}` (`toolscli call
+  `at` is building space like a nudge, `yaw` optional; the prefab is named with its `{GUID}` (`tools\cli call
   asset_search` finds the path, the game's resource database the GUID) and the prefab stage checks it. Floor is
   y 0.1. Heights on shelves come from the model: `tools\cli measure <prefab> --surfaces` (the shop fixtures' are cached by `tools\cli fixtures` in `tools/buildings/pipeline/fixtures.json`); a
   `look item` picture for the rest, then the game picture.

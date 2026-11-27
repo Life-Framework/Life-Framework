@@ -7,7 +7,7 @@ import { ROOT, arrive, clientBox, newestLog, parseState, sessionDir, sessionPath
 //   node agent-box/session.mjs island-jail-breach-proof
 //   tools\cli session down
 // Phase 1 is the island cop flow (A signs up, clocks in, B robs the fuel till twice so the sentence outlasts the break,
-// A cuffs and arrests B). Phase 2 runs on the sentence that leaves running, with no pause: B stays in the cell (the cell door is named, so Confines holds), A charges the
+// A cuffs B and books them at the booking desk). Phase 2 runs on the sentence that leaves running, with no pause: B stays in the cell (the cell door is named, so Confines holds), A charges the
 // cells first and is refused (#LF-JailBreak_OuterFirst), then blows the outer door, then the cells; B is freed from
 // custody. Every step prints PASS or FAIL.
 async function runIslandJailBreachProof() {
@@ -20,7 +20,16 @@ async function runIslandJailBreachProof() {
     return r;
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
-  const state = (n) => parseState(on(n, { verb: "state" }, 10000).detail);
+  // A client can answer no_session for a few seconds after a booking settles: ask again until it answers.
+  const state = (n) => {
+    let r;
+    for (let i = 0; i < 8; i++) {
+      r = on(n, { verb: "state" }, 10000);
+      if (r.status === "ok") break;
+      wait(2000);
+    }
+    return parseState(r.detail);
+  };
   const serverLog = () => {
     const f = newestLog(join(sessionPaths(dir).server, "logs"));
     return f ? readFileSync(f, "utf8") : "";
@@ -54,19 +63,23 @@ async function runIslandJailBreachProof() {
   const suspect = `Player${bid}`;
   on(1, { verb: "stand", entityName: DESK });
   wait(2500);
-  on(1, { verb: "look" });
-  on(1, { verb: "use", className: "LF_PoliceApplyAction", entityName: DESK }, 10000);
-  wait(1500);
-  on(1, { verb: "type", widget: "PolAppName", text: "Ada_Newcomer" });
-  on(1, { verb: "type", widget: "PolAppWhy", text: "Keep_Saint_Philippe_safe" });
-  on(1, { verb: "type", widget: "PolAppAvailability", text: "Evenings" });
-  on(1, { verb: "click", widget: "PolAppSubmit" });
-  wait(3000);
-  on(1, { verb: "look" });
-  on(1, { verb: "use", className: "LF_DutyAction", entityName: DESK }, 10000);
+  // A seeded-roster account sees Clock in and no Apply row (LF_PoliceApplyAction.CanBeShownScript); fill the form only when offered.
+  const deskRows = String(on(1, { verb: "look" }).detail);
+  if (/LF_PoliceApplyAction/.test(deskRows)) {
+    on(1, { verb: "use", className: "LF_PoliceApplyAction", entityName: DESK }, 10000);
+    wait(1500);
+    on(1, { verb: "type", widget: "PolAppName", text: "Ada_Newcomer" });
+    on(1, { verb: "type", widget: "PolAppWhy", text: "Keep_Saint_Philippe_safe" });
+    on(1, { verb: "type", widget: "PolAppAvailability", text: "Evenings" });
+    on(1, { verb: "click", widget: "PolAppSubmit" });
+    wait(3000);
+    on(1, { verb: "look" });
+  }
+  // A second run in one session finds A on duty already; the clock would take them off.
+  if (state(1).duty !== "1") on(1, { verb: "use", className: "LF_DutyAction", entityName: DESK }, 10000);
   wait(3000);
   step("A is on duty", state(1).duty === "1" || /police/i.test(String(state(1).duty)), `duty=${state(1).duty}`);
-  // Staging before the arrest, so the break fits inside a one-wanted sentence (60 s): the cells are refused while the outer
+  // Staging before the arrest, so the break fits inside the sentence (900 s at one wanted): the cells are refused while the outer
   // door stands, then the outer door is blown.
   on(1, { verb: "charge" }, 10000);
   on(1, { verb: "hold", item: "LF_Charge" }, 10000);
@@ -106,6 +119,48 @@ async function runIslandJailBreachProof() {
   step("B is wanted after the robbery", (Number(state(2).wanted) || 0) >= 1, `wanted=${state(2).wanted}`);
   on(2, { verb: "hold", item: "none" }, 10000);
   wait(2500);
+  // The island has no instant arrest (LF_JailArrestAction is not offered, #5047): the cell is the booking desk. Both walk to it,
+  // A books the cuffed suspect and signs the sheet, B takes the time (the answer row that matches /min/), as booking-desk-proof does.
+  const BOOKING = "Fit_saint_philippe_police_police_kit_booking_desk";
+  const answerTime = () => {
+    let aim;
+    const started = Date.now();
+    const selected = () => /selected=LF_BookingDeskAnswerAction/.test(aim.detail);
+    do {
+      for (const target of [-45, -30, -20, -55, -10]) {
+        on(2, { verb: "input", action: "CharacterPitch", value: target }, 8000);
+        wait(800);
+        aim = on(2, { verb: "aim", words: [] }, 10000);
+        if (selected()) break;
+      }
+      if (!selected()) wait(4000);
+    } while (!selected() && Date.now() - started < 30000);
+    for (let i = 0; i < 3 && !/min/.test((/ name=(.*?) menu=/.exec(aim.detail) ?? [0, ""])[1]); i++) {
+      on(2, { verb: "interact", step: "next" }, 8000);
+      wait(700);
+      aim = on(2, { verb: "aim", words: [] }, 10000);
+    }
+    on(2, { verb: "interact", step: "confirm" }, 8000);
+    wait(3500);
+    on(2, { verb: "input", action: "CharacterPitch", value: 0 }, 8000);
+  };
+  const bookB = () => {
+    on(1, { verb: "stand", entityName: BOOKING, side: "e" });
+    wait(2500);
+    on(2, { verb: "stand", entityName: BOOKING, side: "w" });
+    wait(3000);
+    on(1, { verb: "look" });
+    on(1, { verb: "use", className: "LF_BookingDeskBookAction", entityName: BOOKING }, 10000);
+    h.setBoxes([clientBox(dir, 1)]);
+    h.waitForText("Sign", 12000);
+    on(1, { verb: "ui", mode: "text" }, 10000);
+    on(1, { verb: "click", widget: "ChargeSheetRow0_Action" }, 10000);
+    wait(800);
+    on(1, { verb: "ui", mode: "text" }, 10000);
+    on(1, { verb: "click", widget: "ChargeSheetSign" }, 10000);
+    wait(2500);
+    answerTime();
+  };
   const arrestB = () => {
     on(1, { verb: "stand", entityName: suspect });
     wait(3000);
@@ -119,13 +174,7 @@ async function runIslandJailBreachProof() {
     wait(2000);
     on(1, { verb: "cuffing", playerId: Number(bid), kind: "cuff", mode: "finish" }, 10000);
     wait(2500);
-    on(1, { verb: "look" });
-    for (let i = 0; i < 4; i++) {
-      const arrest = on(1, { verb: "use", className: "LF_JailArrestAction", entityName: suspect }, 10000);
-      if (arrest.status === "ok") break;
-      wait(2000);
-    }
-    wait(3000);
+    bookB();
   };
   arrestB();
   wait(3000);
@@ -160,7 +209,7 @@ async function runIslandJailBreachProof() {
   step("both jail layers sounded the jailbreak siren (kind 'jail')", sirens >= 2, `siren lines=${sirens}; no-site lines=${after.split(String.fromCharCode(10)).filter((l) => /no alarm site/.test(l)).length}`);
   step("B's sentence is over", (Number(state(2).jail) || 0) === 0, `jail=${state(2).jail}`);
 
-  // 3. Bail: B is wanted again after the break (escaped custody); A arrests B once more and B pays at the phone in the cell.
+  // 3. Bail: B is booked again after the break; A arrests B once more and B pays at the phone in the cell.
   const PHONE = "Fit_saint_philippe_jail_jail_bail_phone";
   on(1, { verb: "stand", entityName: suspect });
   wait(3000);
@@ -168,6 +217,12 @@ async function runIslandJailBreachProof() {
   wait(3000);
   step("B is serving again", (Number(state(2).jail) || 0) > 0, `jail=${state(2).jail}`);
   const bank0 = Number(state(2).bank) || 0;
+  // Every island sentence at one wanted is 900 s (15 min), and bail is $150 for each started minute left (the pack's
+  // LF_JailBreak_Everon1989.conf): $2,250 against a fresh account's $2,000 bank, which the game rightly refuses ("bank 2000 < bail 2250",
+  // #5047). B waits until the minutes left are affordable (about 100 s) and then pays, as a prisoner without the money would.
+  const perMinute = Number(/m_iBailPerMinute (\d+)/.exec(readFileSync(join(ROOT, "addons", "LF_Everon1989", "Configs", "Police", "LF_JailBreak_Everon1989.conf"), "utf8"))?.[1]) || 150;
+  const affordable = Math.floor(bank0 / perMinute) * 60;
+  for (let i = 0; i < 40 && (Number(state(2).jail) || 0) > affordable; i++) wait(10000);
   on(2, { verb: "stand", entityName: PHONE });
   wait(2500);
   on(2, { verb: "look" });

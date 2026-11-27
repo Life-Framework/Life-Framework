@@ -75,5 +75,5 @@ pass, the counts table, `## Manual testing`. No town layers, no `ws/town-maintai
 - A GUID is made once and kept (rule 2); typed coordinates only in a building-space row the script writes. `look` queues on the pool, never here.
 
 ## Environment
-No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`toolscli status` says which you are on). Never pin a machine. Run in the foreground (timeout up to 600000 ms) or `t3_background_wait`;
+No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`tools\cli status` says which you are on). Never pin a machine. Run in the foreground (timeout up to 600000 ms) or `t3_background_wait`;
 never end the turn with a run pending. Never `--force`, `rm -rf` or `Remove-Item -Recurse` a worktree (`wt prune`).

@@ -29,7 +29,13 @@ class LF_ResidentTalkRumor
 	static const string KEY_ASKED_TODAY = "#LF-RumorTalk_AskedToday";
 
 	//! "<characterId>|<giver key>" -> the game day that giver last told that character a rumor.
-	protected static ref map<string, int> s_mToldDay = new map<string, int>();
+	protected static ref map<string, int> s_mToldDay;
+	protected static map<string, int> LzToldDay()
+	{
+		if (!s_mToldDay)
+			s_mToldDay = new map<string, int>();
+		return s_mToldDay;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	protected static string Key(string characterId, string giverKey)
@@ -57,6 +63,7 @@ class LF_ResidentTalkRumor
 	static bool AskedToday(string characterId, string giverKey, int day)
 	{
 		int told;
+		LzToldDay();
 		return s_mToldDay.Find(Key(characterId, giverKey), told) && told == day;
 	}
 
@@ -84,6 +91,7 @@ class LF_ResidentTalkRumor
 		}
 
 		array<ref LF_RumorDef> offers = LF_RumorPool.Offers(characterId, giver, tier, state);
+		LzToldDay();
 		LF_RumorDef def = LF_RumorPool.Pick(offers, day + s_mToldDay.Count());
 		if (!def || !LF_RumorPool.Tell(characterId, def))
 		{
@@ -92,6 +100,7 @@ class LF_ResidentTalkRumor
 			return null;
 		}
 
+		LzToldDay();
 		s_mToldDay.Set(Key(characterId, giverKey), day);
 		LF_Debug.Info(FEATURE, string.Format("heard anything: '%1' told %2 rumor '%3' about %4", giverKey, characterId, def.m_sId, def.m_sPlaceId));
 		outcome = LF_ERumorTalk.TOLD;

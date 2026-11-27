@@ -11,7 +11,13 @@ class LF_Test_DebugWorldCollision : LF_Test
 {
 	protected static int s_iEntities;
 	protected static int s_iMissingTraceable;
-	protected static ref array<string> s_aFailures = {};
+	protected static ref array<string> s_aFailures;
+	protected static array<string> LzFailures()
+	{
+		if (!s_aFailures)
+			s_aFailures = new array<string>();
+		return s_aFailures;
+	}
 	protected static ref array<EntityID> s_aTraderTables = {};
 	protected static vector s_vTraderOrigin;
 
@@ -57,6 +63,7 @@ class LF_Test_DebugWorldCollision : LF_Test
 		if (!(entity.GetFlags() & EntityFlags.TRACEABLE))
 		{
 			s_iMissingTraceable++;
+			LzFailures();
 			s_aFailures.Insert(label + " is not traceable");
 		}
 
@@ -87,6 +94,7 @@ class LF_Test_DebugWorldCollision : LF_Test
 		GetGame().GetWorld().QueryEntitiesBySphere(center, 500, InspectEntity, null, EQueryEntitiesFlags.ALL);
 
 		ctx.True(s_iEntities > 0, "DebugWorld collision scan found entities");
+		LzFailures();
 		ctx.Equal(0, s_iMissingTraceable, "DebugWorld entities are traceable: " + s_aFailures.ToString());
 		CheckObstacle(ctx, world.FindEntityByName(LF_TestAnnex.APPLE_TRADE_CONTAINER), LF_TestAnnex.APPLE_TRADE_CONTAINER, "0 0.15 0");
 		CheckObstacle(ctx, world.FindEntityByName(LF_TestAnnex.APPLE_TRADE_CONTAINER3), LF_TestAnnex.APPLE_TRADE_CONTAINER3, "0 0.15 0");

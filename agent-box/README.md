@@ -152,6 +152,12 @@ session-scoped:
   `session.json` and refuses with `error session_owned_by_other_checkout
   <root>` when the live session was started from another checkout, or
   `error no_live_session` when none is running.
+- A command with no `--client`, run while this checkout has a live session, goes to **client 1** of it; a session with
+  more than one client prints `harness: this session has N clients and no --client was given; using client 1` on stderr
+  (`defaultClientArgs`, `LF_HARNESS_NO_DEFAULT_CLIENT=1` turns it off). It used to write the default profile's command file,
+  which no session client reads: `flow` waited out every step for 10 minutes with no output, and the session, which saw no
+  command, was closed by the pool as idle. A `flow` whose first step gets no answer from any session stops there with one
+  line instead of running on.
 - A client runs only commands addressed to its own id
   (`LF_AgentCommand.SessionAccepts`); anything else answers
   `error wrong_session` and logs `[LFDebug:AgentHarness] refused command ...`.

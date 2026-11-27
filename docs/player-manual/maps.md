@@ -11,9 +11,9 @@ The whole village, from the dock in the north to the wheat field in the south.
 <!-- map:town -->
 ![Saint-Philippe: every place](../../website/public/docs-images/player-manual/saint-philippe.png)
 
-Closer in, the centre of town:
+Closer in, the center of town:
 
-![Saint-Philippe centre](../../website/public/docs-images/player-manual/saint-philippe-centre.png)
+![Saint-Philippe center](../../website/public/docs-images/player-manual/saint-philippe-centre.png)
 
 | # | Place (in-game name) | Kind | What you do here |
 |---|---|---|---|
@@ -73,11 +73,11 @@ Saint-Philippe is in the north. The other towns are scenery for now. Work sites 
 | 2 | Meaux | 1.2 km | Village on the road south. Nothing built for players yet. |
 | 3 | Montignac | 3.6 km | Town with a notice board at the fuel depot. No shops yet. |
 | 4 | Lamentin | 5.7 km | Western town. Scenery only. |
-| 5 | Morton | 6.7 km | Northern town. Scenery only. |
-| 6 | Saint Pierre | 10.5 km | Far north-east town. Scenery only. |
+| 5 | Morton | 6.7 km | Southern town on the bay. Scenery only. |
+| 6 | Saint Pierre | 10.5 km | Far south-east town. Scenery only. |
 | 7 | Sawmill | 5.6 km | The island sawmill: lumberjack desk, two saws, boards. |
 | 8 | Fishing spot (Fisherman's Bay) | 0.4 km | Sheltered cove with a bench and lantern. Gaspard tells you about it. |
-| 9 | Fishing spot (Black Lake) | 9.2 km | A lake shore far to the north-east. |
+| 9 | Fishing spot (Black Lake) | 9.2 km | A lake shore far to the south-east. |
 | 10 | Scrapyard | 0.6 km | Scrap piles and the recycler bench. |
 | 11 | Fuel depot | 3.7 km | Collective-farm fuel depot. Closed to players for now. |
 | 12 | Silo Farm | 3.8 km | Roadside farm with a payphone. |
@@ -157,7 +157,7 @@ The label on the map is the home's code and its alpha price in thousands. Prices
 | 11 | Buyer spot (north-west) | Same, west side. |
 <!-- /map -->
 
-**Alarms on the in-game map.** When a till, the bank vault, the clinic cabinet or the armoury is robbed, its alarm shows on **everyone's** map: the place's badge gets a **pulsing red ring with a "!"** while the robbery is on (about three minutes from the alarm), then turns **grey** for fifteen minutes ("Robbed recently"). Hover the badge to read when the alarm went off.
+**Alarms on the in-game map.** When a till, the bank vault, the clinic cabinet or the armory is robbed, its alarm shows on **everyone's** map: the place's badge gets a **pulsing red ring with a "!"** while the robbery is on (about three minutes from the alarm), then turns **gray** for fifteen minutes ("Robbed recently"). Hover the badge to read when the alarm went off.
 
 ## Job areas, closer in
 
@@ -212,9 +212,9 @@ The label on the map is the home's code and its alpha price in thousands. Prices
 |---|---|---|
 | 60 | Fishing spot (Black Lake) | Quiet lake shore with a bench and a lantern. |
 <!-- /map -->
-### Harbour and dock
+### Harbor and dock
 <!-- map:inset:harbour -->
-![Harbour and dock](../../website/public/docs-images/player-manual/harbour.png)
+![Harbor and dock](../../website/public/docs-images/player-manual/harbour.png)
 
 | # | Place | What |
 |---|---|---|

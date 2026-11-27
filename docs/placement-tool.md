@@ -65,14 +65,14 @@ lie flat is not a physics-settled placement.
 Run it from a worktree. A probe or an audit is one boot of the test server, about 11 s, queued on the
 test lane like `tools\cli test`; no session, no client.
 
-## Heights on a prop: `toolscli measure`
+## Heights on a prop: `tools\cli measure`
 
 Where goods stand on a shelf, a counter top, a cooler deck: read them from the model, not from in-game
 test reruns.
 
 ```
-toolscli measure ShelfShop_01 --surfaces          a file name, a path, {GUID}path or a .xob
-toolscli measure Prefabs/Props/Commercial/CounterShop_01.et CoolingBoxShop_01 --json
+tools\cli measure ShelfShop_01 --surfaces          a file name, a path, {GUID}path or a .xob
+tools\cli measure Prefabs/Props/Commercial/CounterShop_01.et CoolingBoxShop_01 --json
 ```
 
 It reads the `.xob` (addon or game pak) offline: the visual bounds from its header and the colliders
@@ -215,7 +215,7 @@ that slips through still meets the audit there.
 
 ## Sizing a block on the grid: `grid place <slug> <prefab>`
 
-`toolscli grid place <slug> <prefab>` (docs/architecture/world-zones.md "One command for a building") reuses this tool
+`tools\cli grid place <slug> <prefab>` (docs/architecture/world-zones.md "One command for a building") reuses this tool
 instead of a second bounds reader: `prefabInfo` gives the bounds, the scale and the entity class (the prefab's root class,
 `SCR_DestructibleBuildingEntity` for a vanilla building); `tools/lib/game-prefab.mjs` `resolvePrefab` turns a bare name such as
 `Villa_E_2I01` into its `{GUID}path` (the paks carry no `.meta`, so `place` alone refuses a vanilla name no layer uses yet). The

@@ -34,8 +34,8 @@ ok(gb[2].clear === 0.357 && gb[3].clear === null, `boards: the gap above the thi
 // ---- the committed data covers every spec
 const data = JSON.parse(readFileSync(join(ROOT, "tools", "buildings", "pipeline", "fixtures.json"), "utf8"));
 const want = wanted(ROOT);
-for (const n of want.fixtures) ok(data.fixtures[n]?.boards?.length > 0, `data: fixtures.json has boards for ${n} (run tools\cli fixtures)`);
-for (const r of want.items) ok(data.items[itemKey(r)]?.size?.every((v) => v > 0), `data: fixtures.json has a footprint for ${itemKey(r)} (run tools\cli fixtures)`);
+for (const n of want.fixtures) ok(data.fixtures[n]?.boards?.length > 0, `data: fixtures.json has boards for ${n} (run tools\\cli fixtures)`);
+for (const r of want.items) ok(data.items[itemKey(r)]?.size?.every((v) => v > 0), `data: fixtures.json has a footprint for ${itemKey(r)} (run tools\\cli fixtures)`);
 for (const [n, f] of Object.entries(data.fixtures)) ok(f.boards.every((b, i) => i === 0 || b.y > f.boards[i - 1].y), `data: ${n} boards are lowest first`);
 
 // ---- script constants against the measured boards

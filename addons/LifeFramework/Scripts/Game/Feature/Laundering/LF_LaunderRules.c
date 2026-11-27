@@ -28,7 +28,13 @@ class LF_LaunderRules
 	static const string REASON_DAILY_CAP = "daily_cap";
 	static const string REASON_NOTHING = "nothing";
 
-	protected static ref map<string, ref LF_LaunderDay> s_Days = new map<string, ref LF_LaunderDay>();
+	protected static ref map<string, ref LF_LaunderDay> s_Days;
+	protected static map<string, ref LF_LaunderDay> LzDays()
+	{
+		if (!s_Days)
+			s_Days = new map<string, ref LF_LaunderDay>();
+		return s_Days;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Clean cash for `marked` notes at a cut of `cutPct` percent. Integer maths: the clean share rounds
@@ -48,6 +54,7 @@ class LF_LaunderRules
 	//! Marked notes `key` has already washed in the window that covers `nowSec` (0 once it rolled over).
 	static int WashedToday(string key, int nowSec)
 	{
+		LzDays();
 		LF_LaunderDay day = s_Days.Get(key);
 		if (!day)
 			return 0;
@@ -106,11 +113,13 @@ class LF_LaunderRules
 		if (amount <= 0)
 			return;
 
+		LzDays();
 		LF_LaunderDay day = s_Days.Get(key);
 		if (!day)
 		{
 			day = new LF_LaunderDay();
 			day.m_iWindowStart = nowSec;
+			LzDays();
 			s_Days.Set(key, day);
 		}
 		else if (nowSec - day.m_iWindowStart >= DAY_SECONDS)

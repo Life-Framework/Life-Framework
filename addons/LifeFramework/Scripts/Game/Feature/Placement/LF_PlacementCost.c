@@ -85,18 +85,26 @@ class LF_PlacementCost
 	static const string TOAST_ITEM = "#LF-Placement_NeedItem";
 
 	//! Refundable charges still standing in the world.
-	protected static ref array<ref LF_PlacementCharge> s_aCharges = {};
+	protected static ref array<ref LF_PlacementCharge> s_aCharges;
+	protected static array<ref LF_PlacementCharge> LzCharges()
+	{
+		if (!s_aCharges)
+			s_aCharges = new array<ref LF_PlacementCharge>();
+		return s_aCharges;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! How many refundable charges this machine remembers (the tests read it).
 	static int Count()
 	{
+		LzCharges();
 		return s_aCharges.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LzCharges();
 		s_aCharges.Clear();
 	}
 
@@ -276,6 +284,7 @@ class LF_PlacementCost
 			charge.m_aIds.Insert(id);
 
 		Prune();
+		LzCharges();
 		s_aCharges.Insert(charge);
 	}
 
@@ -290,9 +299,10 @@ class LF_PlacementCost
 			return 0;
 
 		int forgotten;
+		LzCharges();
 		for (int i = s_aCharges.Count() - 1; i >= 0; i--)
 		{
-			LF_PlacementCharge charge = s_aCharges[i];
+			LF_PlacementCharge charge = LzCharges()[i];
 			bool standing;
 			foreach (EntityID id : charge.m_aIds)
 			{
@@ -307,6 +317,7 @@ class LF_PlacementCost
 				continue;
 
 			LF_Debug.Info(FEATURE, string.Format("forgot the charge for %1 paid by %2: the placement is gone without a pick-up, no refund", charge.m_Terms.m_sKind, charge.m_sPayerUid));
+			LzCharges();
 			s_aCharges.Remove(i);
 			forgotten++;
 		}
@@ -324,7 +335,7 @@ class LF_PlacementCost
 			return false;
 
 		LF_PlacementCharge charge;
-		foreach (LF_PlacementCharge candidate : s_aCharges)
+		foreach (LF_PlacementCharge candidate : LzCharges())
 		{
 			if (candidate.m_aIds.Find(id) != -1)
 			{
@@ -336,6 +347,7 @@ class LF_PlacementCost
 		if (!charge)
 			return false;
 
+		LzCharges();
 		s_aCharges.RemoveItem(charge);
 		if (!IsPayer(player, charge))
 		{

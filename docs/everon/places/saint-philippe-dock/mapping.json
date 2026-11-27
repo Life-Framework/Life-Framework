@@ -3,7 +3,7 @@
   "template": "harbour",
   "place": "saint-philippe-dock",
   "status": "approved",
-  "note": "Approved by the lead on merge of #3315 (D10): the tool proposal, hand-edited. The dock and the taxi stand share b01, the light tower on the quay road at the junction 40 m inland of the pier head (the dossier lists the concrete pier pieces as props, not buildings, so the kit sets the dock against the quay edge near b01 and the taxi against the kerb). fish-counter and chandler (state 2b, docs/roadmap/m6-outline.md) are mapped for the held fish card #3179; lockers, smokehouse, warehouse and quay-fishing (#3315) and wholesale (#3272) are optional slots no card has fitted yet. `toolscli town map saint-philippe-dock --check` passes. containers (#4441, crime B9): the container yard on the free plot p5, hostless, with container nine and Marcel the tally clerk.",
+  "note": "Approved by the lead on merge of #3315 (D10): the tool proposal, hand-edited. The dock and the taxi stand share b01, the light tower on the quay road at the junction 40 m inland of the pier head (the dossier lists the concrete pier pieces as props, not buildings, so the kit sets the dock against the quay edge near b01 and the taxi against the kerb). fish-counter and chandler (state 2b, docs/roadmap/m6-outline.md) are mapped for the held fish card #3179; lockers, smokehouse, warehouse and quay-fishing (#3315) and wholesale (#3272) are optional slots no card has fitted yet. `tools\\cli town map saint-philippe-dock --check` passes. containers (#4441, crime B9): the container yard on the free plot p5, hostless, with container nine and Marcel the tally clerk.",
   "dossier": {
     "schema": 1,
     "generated": "2026-11-17",

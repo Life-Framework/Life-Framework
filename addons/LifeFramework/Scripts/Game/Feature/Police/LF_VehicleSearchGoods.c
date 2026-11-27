@@ -41,7 +41,13 @@ class LF_VehicleSearchGoods
 	static const int PENDING_MS = 300000; // lf-fixed: a stale-state guard between two searches by one officer, not a server tunable
 
 	//! Prefab -> class for items without the marker (a pack script, a test). Server only.
-	protected static ref map<string, int> s_mClassByPrefab = new map<string, int>();
+	protected static ref map<string, int> s_mClassByPrefab;
+	protected static map<string, int> LzClassByPrefab()
+	{
+		if (!s_mClassByPrefab)
+			s_mClassByPrefab = new map<string, int>();
+		return s_mClassByPrefab;
+	}
 	//! Vehicle key -> world time of the find not yet seized. Server only.
 	protected static ref map<string, int> s_mPending = new map<string, int>();
 
@@ -54,12 +60,14 @@ class LF_VehicleSearchGoods
 			return;
 		}
 
+		LzClassByPrefab();
 		s_mClassByPrefab.Set(prefab, goodsClass);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LzClassByPrefab();
 		s_mClassByPrefab.Clear();
 		s_mPending.Clear();
 	}
@@ -79,7 +87,7 @@ class LF_VehicleSearchGoods
 		if (prefab.IsEmpty())
 			return LF_EVehicleSearchGoodsClass.LEGAL;
 
-		foreach (string registered, int goodsClass : s_mClassByPrefab)
+		foreach (string registered, int goodsClass : LzClassByPrefab())
 		{
 			if (LF_Utils.SamePrefab(registered, prefab))
 				return goodsClass;

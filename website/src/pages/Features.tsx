@@ -231,7 +231,7 @@ const SYSTEMS: System[] = [
       },
       {
         head: "Ore rocks",
-        text: "Iron, copper and gold rocks read as stone, with the ore only in the cracks and thin veins.",
+        text: "Iron rocks read as stone, with the ore only in the cracks and thin veins.",
       },
       {
         head: "Paperwork",

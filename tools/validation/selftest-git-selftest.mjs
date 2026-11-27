@@ -11,6 +11,8 @@
 //   5. runGit: a silent failure (rev-parse -q of a missing ref) comes back with SILENT-GIT evidence and a traced re-run;
 //      one that is silent only once (a flaky script) is re-run to a pass; a leaked GIT_DIR / GIT_INDEX_FILE cannot
 //      steer a scratch repo (red: the leak child fails without the LEAKED scrub, the flaky script fails without the re-run).
+//   6. FastStream + fastImport (2026-11-27): a base, a side commit and a merge commit built by one git process have the right parents,
+//      subject, tree and refs, and the marks come back as shas. red: with the merge parents dropped, "the merge commit's parents" failed.
 // red-proof (2026-11-17): under the hostile config the plain git child's commit exits nonzero (the gpg program is
 //   missing) where the hermetic child's exits 0 on main; safeRemoveTree on the held folder throws EBUSY where
 //   removeScratch removes it once the holder exits. Both are asserted above, so each fixture is its own red.
@@ -18,7 +20,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { describeRun, removeScratch, runGit } from "../lib/selftest-git.mjs";
+import { describeRun, FastStream, fastImport, gitMust as must, removeScratch, runGit } from "../lib/selftest-git.mjs";
 import { silentFailureNote } from "../lib/silent-failure.mjs";
 import { safeRemoveTree } from "../link-safety.mjs";
 import * as wt from "../wt.mjs";
@@ -174,6 +176,25 @@ console.log("ok");
   check(silentFailureNote("x.mjs", { status: 124, timedOut: true, stdout: "", stderr: "" }).includes("time budget"), "a timeout is not in the note");
   check(silentFailureNote("x.mjs", { status: 1, stdout: "FAIL thing", stderr: "" }) === "", "a failure that explained itself got a note");
   check(silentFailureNote("x.mjs", { status: 0, stdout: "", stderr: "" }) === "", "a pass got a note");
+
+  // 6. FastStream + fastImport: a base, a side commit and a --no-ff style merge commit in ONE git process, with the
+  //    merge's two parents, its subject, its tree, and the marks returned as shas (promote and prs-heal-safety build on it).
+  {
+    const repo = join(root, "fast.git");
+    must(root, ["init", "-q", "--bare", "-b", "main", repo]);
+    const fs = new FastStream();
+    fs.commit("refs/heads/main", { mark: 1, message: "base", files: { "base.txt": "base\n" } });
+    fs.commit("refs/tmp/pr7", { mark: 2, from: 1, message: "work", files: { "a.txt": "pr7\n" } });
+    fs.commit("refs/heads/main", { mark: 3, from: 1, merge: [2], message: "Merge pull request #7 from x/ws/pr7", files: { "a.txt": "pr7\n" } });
+    fs.reset("refs/heads/stable", 1);
+    const sha = fastImport(repo, fs);
+    check(Object.keys(sha).length === 3 && /^[0-9a-f]{40,64}$/.test(sha[3] ?? ""), `fastImport marks: ${JSON.stringify(sha)}`);
+    check(must(repo, ["rev-parse", "main"]) === sha[3] && must(repo, ["rev-parse", "stable"]) === sha[1], "fastImport refs do not point at the marked commits");
+    check(must(repo, ["rev-list", "--parents", "-n", "1", "main"]).split(" ").slice(1).join() === [sha[1], sha[2]].join(), "the merge commit's parents are base then the side commit");
+    check(must(repo, ["log", "-1", "--format=%s", "main"]) === "Merge pull request #7 from x/ws/pr7", "the merge commit's subject");
+    check(must(repo, ["ls-tree", "--name-only", "main"]).split("\n").join() === "a.txt,base.txt", "the merge commit's tree is base plus the merged file");
+    check(must(repo, ["log", "--first-parent", "--format=%s", "main"]).split("\n").join("|") === "Merge pull request #7 from x/ws/pr7|base", "first-parent history is the merge, then base");
+  }
 } catch (e) {
   failures.push(`selftest threw: ${e.stack || e.message}`);
 } finally {

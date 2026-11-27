@@ -3,7 +3,7 @@
   "template": "village",
   "place": "meaux",
   "status": "approved",
-  "note": "Hand-edited from the tool proposal with the Mix rule (D9, docs/architecture/everon-world.md): hall, shop and house are vanilla buildings converted in place. The police villa b07 and the church b17 have no slot in the village template and stay vanilla and dark. Approval is a reviewed PR holding only this file (label town-mapping); `toolscli town map meaux --check --template village` passes.",
+  "note": "Hand-edited from the tool proposal with the Mix rule (D9, docs/architecture/everon-world.md): hall, shop and house are vanilla buildings converted in place. The police villa b07 and the church b17 have no slot in the village template and stay vanilla and dark. Approval is a reviewed PR holding only this file (label town-mapping); `tools\\cli town map meaux --check --template village` passes.",
   "dossier": {
     "schema": 1,
     "generated": "2026-11-17",

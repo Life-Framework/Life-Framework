@@ -184,7 +184,7 @@ The gate now runs on `main`, after the merge (`tools/main-guard.mjs`, rules in `
 through the pool at `--priority high`.
 
 ```sh
-toolscli main-guard start | stop | status | watch   # status is also a line in `toolscli lead`
+tools\cli main-guard start | stop | status | watch   # status is also a line in `tools\cli lead`
 ```
 
 0. **Stage 0, validate (#2889).** On a new head (batched to one run per 3 min, retried at ~10 min after a no-verdict) the guard
@@ -278,7 +278,7 @@ toolscli main-guard start | stop | status | watch   # status is also a line in `
    and the state file (`leaseErr`). `start` and the worker refuse while another machine
    holds a fresh lease; `stop` releases it.
    **Watchdog (#2754).** The worker renews the lease on its own 5-min timer (not between ticks: a long compile
-   once left it 16 min stale under a live worker). `toolscli main-guard watch [--dry-run]` is one watchdog tick: it
+   once left it 16 min stale under a live worker). `tools\cli main-guard watch [--dry-run]` is one watchdog tick: it
    reads the lease and this machine's worker pid and restarts a dead worker with `start` (rule `watchDecision` in
    `tools/lib/main-guard.mjs`). It never kills a live worker. The worker writes a heartbeat to its state file every minute
    (`beatAt`: its event loop runs; `activityAt`: the newest write of the step it waits on, else now). A live worker whose lease
@@ -719,7 +719,7 @@ check, so a gate right after a green `--tier all` reuses it.
   pass from any pool machine, and `LF_Test_PerfBudget` is calibrated per
   machine. Docs and the rest of `tools/` are not in it.
 - **The gate trusts the agent's own run.** The gate's test step asks the cache for the pass its own run would
-  produce, so an agent that ran `toolscli test --no-build --tier all` on the exact tree being gated
+  produce, so an agent that ran `tools\cli test --no-build --tier all` on the exact tree being gated
   (same addons incl. untracked, rdb, `tools/test`, addon list and server build; main not moved over them) is not run
   again: the gate prints `test: reused agent pass <key>` and the usual `CACHED pass` line. `ci`'s sharded suite
   checks the cache per pass (normal and core-only; it did not before) and stores a merged pass under the
@@ -821,7 +821,7 @@ machine) and on a pool machine runs `audit placement` in the synced run folder.
 "This PC" is the maintainer's world-editor machine, Gaming-Box, and only it. Agents never
 run a headless Workbench there. On lf-testbox (PC1, the laptop and primary dev box) and lf-cloud
 the `workbench` cap is present, a Workbench runs there through the pool, and nothing below applies.
-`toolscli status` prints `workbench: ALLOWED` or `NOT allowed` for the machine you are on.
+`tools\cli status` prints `workbench: ALLOWED` or `NOT allowed` for the machine you are on.
 
 On Gaming-Box that is `workbench` missing from the machine's
 caps: `lf.local.json` `pool.machines` entry `{ "name": "local", "caps":
@@ -942,6 +942,19 @@ it, picks a lane and a budget, and prints one line per outcome.
   `session up --hold`. `wt gate` and `wt ship` hold a test lane only for the suite run itself,
   never while `validate --full` or the build runs (`cmdCi` takes no lane; the selftest asserts
   that no gate function acquires one).
+  **A proof or restart is never closed under itself (2026-11-27, `tools/lib/session-heartbeat.mjs`).** A
+  `session.mjs <proof>`, `restart`, `wait` or `run` starts a detached heartbeat that stamps `lease.json` every 30 s
+  (`busyUntil`, three beats ahead) until the command's process ends, at most 45 min. The idle rule counts a busy
+  session as active, and the hold cap waits for it, up to `sessionBusyExtraMin` (20) past cap plus grace so a hung
+  proof cannot keep a lane for ever. `--hold` only raises the hold cap: it never stops the idle rule, which is why a
+  `--hold 20` session was still closed after 5-6 idle minutes. What idles a session is a command that never reaches it:
+  a harness command with no `--client` used to write the default profile (now it goes to client 1, `agent-box/README.md`
+  "session-scoped"). Selftests: `tools/validation/session-tooling-selftest.mjs`, `pool-selftest` "A proof or restart
+  in progress".
+  **`session up --wait` and `maxClients`.** The heat cap `maxClients` limits what the router sends to a pool machine over
+  ssh; the machine you run on is never excluded by it (`up` without `--wait` starts any client count there). With
+  `--wait`, a request no machine can run at all (no machine with the `clients` cap) now refuses at once with the
+  machines it looked at, instead of saying "no session lane freed within 90 min" after a second.
 - **RAM gate (every machine, read live).** A job starts on a machine only when that machine's
   free RAM, read at that moment (`freemem` here, one ssh read on a pool machine, the same check in
   the box's slot holder), covers it. A session reserves its server (`sessionReserveServerMb`, 600)
@@ -1407,7 +1420,7 @@ the `ci --wb-only` steps (`build`, the compile, `validate --full`) re-run in it 
 through `interactiveSpawnDetached`; `ui-image`, `asset run`, `pack` and `call wb_*` re-run in it when started over ssh. With no
 signed-in (or a disconnected) session each stops at once with `<machine> has no signed-in desktop session: log in once`;
 `chooseGate` never picks such a machine (a pin or "all of them" is `none`, not a wait) and `pool status` shows its
-`desktop:` line. The `LF-DesktopHelper` logon task (`toolscli desktop-helper setup <machine>`, docs/setup.md "Desktop helper")
+`desktop:` line. The `LF-DesktopHelper` logon task (`tools\cli desktop-helper setup <machine>`, docs/setup.md "Desktop helper")
 keeps the session awake and writes the heartbeat `pool status` reads.
 
 ssh runs in session 0. The box's signed-in desktop is session 1, so
@@ -1574,6 +1587,10 @@ as `tmp/pr-body.md`. A shared session scratch dir lets one agent publish
 another's file. `validate-worktrees` warns when the main checkout has
 untracked files under `addons/` or `tools/`.
 
+A node selftest's temp folder comes from `scratchDir()` (`tools/lib/scratch.mjs`) and is removed when the process
+ends; `tools\cli tmp-sweep [--hours N] [--dry-run]` deletes older `lf-*` folders a killed run left in the OS temp dir
+(link-safe, default 24 h).
+
 **One-time setup**: GitHub CLI must be authenticated once per machine
 (`gh auth login`). The REST API fallback works with a `GITHUB_TOKEN` env var
 instead.
@@ -1584,9 +1601,9 @@ The maintainer edits DebugWorld by hand in Workbench in his own worktree (`Life-
 branch `ws/town-maintainer-edits`). When he says done, the lead runs, from the main checkout on that PC:
 
 ```sh
-toolscli world diff --wt town-maintainer-edits          # what changed, one line per entity, NOISE apart (under 3 s)
-toolscli world ship --wt town-maintainer-edits --dry-run
-toolscli world ship --wt town-maintainer-edits          # one SUMMARY line; then toolscli wt ship-status town-maintainer-edits
+tools\cli world diff --wt town-maintainer-edits          # what changed, one line per entity, NOISE apart (under 3 s)
+tools\cli world ship --wt town-maintainer-edits --dry-run
+tools\cli world ship --wt town-maintainer-edits          # one SUMMARY line; then tools\cli wt ship-status town-maintainer-edits
 ```
 
 - **diff** (`tools/lib/world-diff.mjs`) matches entities by name, or by prefab plus parent path when unnamed, children
@@ -1603,7 +1620,7 @@ toolscli world ship --wt town-maintainer-edits          # one SUMMARY line; then
 - **Gate tier T1w** ("Gate tiers"): the queue gates such a branch with static validate, the placement audit on the
   touched layers and the layer-named tests (a failing test warns, it does not block). A property or component change, a new layer, a prefab no layer used
   before or any other `addons/` file makes it T2.
-- `toolscli world sync` is the other half (`tools/lib/world-sync.mjs`, a separate change).
+- `tools\cli world sync` is the other half (`tools/lib/world-sync.mjs`, a separate change).
 - Agents never touch the maintainer's worktree; the proofs run on fixtures (`tools/test/fixtures/world-diff/`).
 
 ## Keeping your world editor safe
@@ -1621,7 +1638,7 @@ toolscli world ship --wt town-maintainer-edits          # one SUMMARY line; then
 ## Maintainer world edits
 
 The maintainer hand-edits DebugWorld in Workbench, in his own worktree (`ws/town-maintainer-edits`) on the lead's PC, with
-uncommitted `.layer` edits at any time. `toolscli world-sync` keeps that worktree level with `origin/main` without losing
+uncommitted `.layer` edits at any time. `tools\cli world-sync` keeps that worktree level with `origin/main` without losing
 or mangling them. (Other tools for this workflow add their own `###` subsections under this heading.)
 
 ### What blocks a world ship, what warns
@@ -1637,8 +1654,8 @@ On any `town-maintainer-*` branch the `ci` placement audit (full gate, T1 and T1
 ### Keeping it level with main (`world-sync`)
 
 ```sh
-toolscli world-sync [--wt <slug>] [--dry-run] [--force]     # default --wt town-maintainer-edits; run on the PC that has it
-toolscli world-sync --watch-hint                            # prints the line the lead runs at each check-in (no daemon)
+tools\cli world-sync [--wt <slug>] [--dry-run] [--force]     # default --wt town-maintainer-edits; run on the PC that has it
+tools\cli world-sync --watch-hint                            # prints the line the lead runs at each check-in (no daemon)
 ```
 
 Engine: `tools/lib/world-sync.mjs` (`syncWorktree(dir, { dryRun, force })`); the CLI entry is `tools/commands/world-sync.mjs`.

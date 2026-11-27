@@ -13,7 +13,13 @@ class LF_ChainSearch
 	static const float VEHICLE_REACH = 8.0;
 
 	//! World time of the last search per target key. Server only; one int per searched target.
-	protected static ref map<string, int> s_mLastSearch = new map<string, int>();
+	protected static ref map<string, int> s_mLastSearch;
+	protected static map<string, int> LzLastSearch()
+	{
+		if (!s_mLastSearch)
+			s_mLastSearch = new map<string, int>();
+		return s_mLastSearch;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Chance a search finds a load. Zero for no goods, one at a load of four.
@@ -42,12 +48,14 @@ class LF_ChainSearch
 	{
 		int cooldownMs = LF_PoliceConfig.SearchCooldownSeconds() * 1000;
 		int lastMs = -1;
+		LzLastSearch();
 		if (s_mLastSearch.Find(key, lastMs) && !MaySearch(lastMs, nowMs, cooldownMs))
 		{
 			LF_Debug.Info(FEATURE, string.Format("search of %1 refused: searched %2 ms ago, cooldown %3 ms", key, nowMs - lastMs, cooldownMs));
 			return false;
 		}
 
+		LzLastSearch();
 		s_mLastSearch.Set(key, nowMs);
 		return true;
 	}
@@ -55,7 +63,9 @@ class LF_ChainSearch
 	//------------------------------------------------------------------------------------------------
 	static int ClearSearchCooldowns()
 	{
+		LzLastSearch();
 		int cleared = s_mLastSearch.Count();
+		LzLastSearch();
 		s_mLastSearch.Clear();
 		return cleared;
 	}
@@ -63,6 +73,7 @@ class LF_ChainSearch
 	//------------------------------------------------------------------------------------------------
 	static void ResetSearchCooldowns()
 	{
+		LzLastSearch();
 		s_mLastSearch.Clear();
 	}
 

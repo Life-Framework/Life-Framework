@@ -180,7 +180,13 @@ class LF_Roadblocks
 	//! Server tick of the stop check.
 	static const int TICK_MS = 500; // lf-fixed: sampling period of a cosmetic log, not a gameplay knob
 
-	protected static ref array<ref LF_RoadblockSet> s_aSets = {};
+	protected static ref array<ref LF_RoadblockSet> s_aSets;
+	protected static array<ref LF_RoadblockSet> LzSets()
+	{
+		if (!s_aSets)
+			s_aSets = new array<ref LF_RoadblockSet>();
+		return s_aSets;
+	}
 	protected static ref array<EntityID> s_aFound = {};
 	protected static string s_sLastRefusal;
 
@@ -217,6 +223,7 @@ class LF_Roadblocks
 	//! Roadblocks standing on this machine.
 	static int Count()
 	{
+		LzSets();
 		return s_aSets.Count();
 	}
 
@@ -227,7 +234,7 @@ class LF_Roadblocks
 		if (!placed)
 			return null;
 
-		foreach (LF_RoadblockSet block : s_aSets)
+		foreach (LF_RoadblockSet block : LzSets())
 		{
 			if (block.m_Placed == placed)
 				return block;
@@ -291,7 +298,9 @@ class LF_Roadblocks
 		block.m_sDeployer = LF_PoliceRanks.ResolveUid(officer);
 		block.m_vCentre = proposal[3];
 		block.m_iDeployedMs = NowMs();
+		LzSets();
 		s_aSets.Insert(block);
+		LzSets();
 		if (s_aSets.Count() == 1)
 			GetGame().GetCallqueue().CallLater(Tick, TICK_MS, true);
 
@@ -344,7 +353,9 @@ class LF_Roadblocks
 			return 0;
 		}
 
+		LzSets();
 		s_aSets.RemoveItem(block);
+		LzSets();
 		if (s_aSets.IsEmpty())
 			GetGame().GetCallqueue().Remove(Tick);
 
@@ -358,7 +369,7 @@ class LF_Roadblocks
 	static int StoppedCount()
 	{
 		int total = 0;
-		foreach (LF_RoadblockSet block : s_aSets)
+		foreach (LF_RoadblockSet block : LzSets())
 		{
 			total += block.m_iStopped;
 		}
@@ -407,19 +418,22 @@ class LF_Roadblocks
 	static int ExpireAt(int nowMs)
 	{
 		int cleared;
+		LzSets();
 		for (int i = s_aSets.Count() - 1; i >= 0; i--)
 		{
-			LF_RoadblockSet block = s_aSets[i];
+			LF_RoadblockSet block = LzSets()[i];
 			string reason = ExpiryReason(block, nowMs);
 			if (reason.IsEmpty())
 				continue;
 
 			int removed = LF_RoadblockSet.RemovePieces(block);
+			LzSets();
 			s_aSets.Remove(i);
 			cleared++;
 			LF_Debug.Info(FEATURE, string.Format("cleared the roadblock of %1: %2 (%3 pieces removed)", block.m_sDeployer, reason, removed));
 		}
 
+		LzSets();
 		if (s_aSets.IsEmpty() && cleared > 0)
 			GetGame().GetCallqueue().Remove(Tick);
 
@@ -435,9 +449,10 @@ class LF_Roadblocks
 			return;
 
 		ExpireAt(NowMs());
+		LzSets();
 		for (int i = s_aSets.Count() - 1; i >= 0; i--)
 		{
-			LF_RoadblockSet block = s_aSets[i];
+			LF_RoadblockSet block = LzSets()[i];
 			s_aFound.Clear();
 			world.QueryEntitiesBySphere(block.m_vCentre, LF_RoadblockSet.STOP_RADIUS, CollectVehicle, null, EQueryEntitiesFlags.ALL);
 			foreach (EntityID id : s_aFound)
@@ -471,6 +486,7 @@ class LF_Roadblocks
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(Tick);
 
+		LzSets();
 		s_aSets.Clear();
 		s_aFound.Clear();
 		s_sLastRefusal = "";

@@ -47,8 +47,8 @@ anywhere inside the block, and every cell of it counts as claimed for `grid list
 open-PR and `origin/main` clash checks and `validate-world-zones`. A 3 x 2 block is 36 x 24 m: a 33 x 19 m hotel fits.
 
 ```
-toolscli grid place <slug> <prefab>  [--dry] [--margin M] [--front +z] [--cell cXrY] [--span WxH] [--centre]   one building, sized
-toolscli grid place <slug> [<prefab>...] [--name N] [--rows] [--dry] [--no-verify]                          rows of props
+tools\cli grid place <slug> <prefab>  [--dry] [--margin M] [--front +z] [--cell cXrY] [--span WxH] [--centre]   one building, sized
+tools\cli grid place <slug> [<prefab>...] [--name N] [--rows] [--dry] [--no-verify]                          rows of props
 tools\cli grid list                    claims, free cells, and a map (north up)
 tools\cli grid free <slug>             delete the feature's grid layer and its claim
 tools\cli look grid:<slug>             the look pictures of that cell, from its gap
@@ -58,7 +58,7 @@ tools\cli look grid:<slug>             the look pictures of that cell, from its 
 `Villa_E_2I01`, a path or a `{GUID}path`) and the command does the sizing, the claim and the placement
 (`tools/grid/autosize.mjs`; no coordinates, no `sed`):
 
-1. **Bounds.** The same reader `toolscli place` uses (`prefabInfo`: the measured list, else the mesh's `.xob` header from
+1. **Bounds.** The same reader `tools\cli place` uses (`prefabInfo`: the measured list, else the mesh's `.xob` header from
    the paks, offline, no Workbench): footprint, height, the footprint centre's offset from the pivot (a MunicipalOffice's
    is 0.36, 0.56 m; a Villa's pivot is 1.4 m off its centre), and the entity class read from the prefab's root
    (`SCR_DestructibleBuildingEntity` for the vanilla buildings), never hard-coded. A prefab with an annex child (FenceYard:
@@ -253,7 +253,7 @@ position on the town. `validate-no-town-layout-asserts` enforces it (rules and e
 header); `tools/validation/town-layout-baseline.json` is the debt and only shrinks. What to write
 instead:
 
-- a fixture in the grid (`toolscli grid place`) or a prefab the test spawns and deletes;
+- a fixture in the grid (`tools\cli grid place`) or a prefab the test spawns and deletes;
 - a test-owned stand-in for a town fact (`LF_Zones.RegisterCircle` for a safe zone);
 - a contract that must hold wherever things stand: find it by component, `LF_Places`, a sign id or
   the actions it carries, and measure from what was found.

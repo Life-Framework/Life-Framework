@@ -22,7 +22,13 @@ class LF_RestartWarner
 	//! Seconds to that restart on the previous tick.
 	protected static int s_iPrevUntil = -1;
 	protected static bool s_bDueFired;
-	protected static ref array<int> s_aFiredLeads = {};
+	protected static ref array<int> s_aFiredLeads;
+	protected static array<int> LzFiredLeads()
+	{
+		if (!s_aFiredLeads)
+			s_aFiredLeads = new array<int>();
+		return s_aFiredLeads;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: starts the warning ticker when the owner configured a restart schedule.
@@ -71,6 +77,7 @@ class LF_RestartWarner
 		s_iTarget = -1;
 		s_iPrevUntil = -1;
 		s_bDueFired = false;
+		LzFiredLeads();
 		s_aFiredLeads.Clear();
 	}
 
@@ -99,6 +106,7 @@ class LF_RestartWarner
 			s_iTarget = target;
 			s_iPrevUntil = until + 1;
 			s_bDueFired = false;
+			LzFiredLeads();
 			s_aFiredLeads.Clear();
 		}
 
@@ -109,9 +117,11 @@ class LF_RestartWarner
 				int leadSeconds = lead * 60;
 				if (lead < 1 || until > leadSeconds || leadSeconds >= s_iPrevUntil)
 					continue;
+				LzFiredLeads();
 				if (s_aFiredLeads.Find(lead) != -1)
 					continue;
 
+				LzFiredLeads();
 				s_aFiredLeads.Insert(lead);
 				LF_EventBus.Publish(LF_OnRestartWarning.Create(lead, until));
 				LF_Debug.Info(FEATURE, string.Format("restart warning: %1 minute(s) to the restart at %2 (%3 s)", lead, FormatClock(target), until));

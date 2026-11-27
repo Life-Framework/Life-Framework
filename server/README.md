@@ -21,7 +21,7 @@ tools\cli serve       # boot the test server and stream logs (blocks)
 
 ## Production
 
-`toolscli host start|stop|status|backup` runs the playtest server on
+`tools\cli host start|stop|status|backup` runs the playtest server on
 `Missions/LF_PlaytestTown.conf` from a profile outside every worktree. It
 continues the latest save and backs saves up. See `../docs/playtest.md`.
 The test config above is for automation only.

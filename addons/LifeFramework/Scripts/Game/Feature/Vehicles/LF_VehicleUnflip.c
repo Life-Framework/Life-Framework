@@ -24,7 +24,13 @@ class LF_VehicleUnflip
 	//! Lift above the ground the car is set down from, so the wheels settle instead of clipping.
 	static const float DROP_HEIGHT = 0.6; // lf-fixed: set-down clearance
 
-	protected static ref map<string, int> s_mLastUnflip = new map<string, int>();
+	protected static ref map<string, int> s_mLastUnflip;
+	protected static map<string, int> LzLastUnflip()
+	{
+		if (!s_mLastUnflip)
+			s_mLastUnflip = new map<string, int>();
+		return s_mLastUnflip;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The pure rule. lastMs < 0 means never pushed over.
@@ -107,6 +113,7 @@ class LF_VehicleUnflip
 
 		string key = KeyOf(vehicle);
 		int lastMs = -1;
+		LzLastUnflip();
 		s_mLastUnflip.Find(key, lastMs);
 		LF_EUnflipCheck check = Rules(UpDot(vehicle), HasOccupant(vehicle), distance, lastMs, nowMs);
 		if (check != LF_EUnflipCheck.NONE)
@@ -116,6 +123,7 @@ class LF_VehicleUnflip
 		}
 
 		SetUpright(vehicle);
+		LzLastUnflip();
 		s_mLastUnflip.Set(key, nowMs);
 		LF_Debug.Info(FEATURE, string.Format("%1 set back on its wheels", key));
 		return check;
@@ -165,6 +173,7 @@ class LF_VehicleUnflip
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LzLastUnflip();
 		s_mLastUnflip.Clear();
 	}
 

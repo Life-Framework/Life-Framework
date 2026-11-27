@@ -328,7 +328,13 @@ class LF_ActivityGuide
 	static const float NOTE_SECONDS = 10.0; // lf-fixed: long enough to read one sentence
 
 	//! uid -> quest id of the step the waypoint follows.
-	protected static ref map<string, string> s_mFocus = new map<string, string>();
+	protected static ref map<string, string> s_mFocus;
+	protected static map<string, string> LzFocus()
+	{
+		if (!s_mFocus)
+			s_mFocus = new map<string, string>();
+		return s_mFocus;
+	}
 	//! "uid|questId" -> the job XP when the step started (XP checks).
 	protected static ref map<string, int> s_mXpAtStart = new map<string, int>();
 	protected static ref LF_JobWaypointSink s_Sink;
@@ -352,6 +358,7 @@ class LF_ActivityGuide
 	//------------------------------------------------------------------------------------------------
 	static string FocusOf(string uid)
 	{
+		LzFocus();
 		return s_mFocus.Get(uid);
 	}
 
@@ -410,6 +417,7 @@ class LF_ActivityGuide
 		}
 
 		string questId = LF_ActivityTable.QuestIdOf(def.m_sId, def.m_aSteps[running].m_sStepId);
+		LzFocus();
 		s_mFocus.Set(facts.Uid(), questId);
 		Mark(body, facts.Uid(), def, running);
 		return true;
@@ -432,6 +440,7 @@ class LF_ActivityGuide
 			return;
 
 		LF_ActivityStep step = def.m_aSteps[index];
+		LzFocus();
 		s_mFocus.Set(uid, questId);
 		if (step.m_eCheck == LF_EActivityCheck.XP)
 			s_mXpAtStart.Set(uid + "|" + questId, facts.Xp(step.m_sCheckParam));
@@ -461,6 +470,7 @@ class LF_ActivityGuide
 
 		LF_ActivityDef def;
 		int index;
+		LzFocus();
 		string focus = s_mFocus.Get(uid);
 		LF_EQuestStatus status = facts.Status(focus);
 		bool focusRuns = status == LF_EQuestStatus.ACTIVE || status == LF_EQuestStatus.COMPLETED;
@@ -479,6 +489,7 @@ class LF_ActivityGuide
 				return string.Empty;
 			}
 
+			LzFocus();
 			s_mFocus.Set(uid, focus);
 		}
 
@@ -519,6 +530,7 @@ class LF_ActivityGuide
 
 		LF_ActivityDef def;
 		int index;
+		LzFocus();
 		string focus = s_mFocus.Get(uid);
 		LF_EQuestStatus status = facts.Status(focus);
 		if (status != LF_EQuestStatus.ACTIVE && status != LF_EQuestStatus.COMPLETED)
@@ -595,6 +607,7 @@ class LF_ActivityGuide
 		if (uid.IsEmpty())
 			return;
 
+		LzFocus();
 		s_mFocus.Remove(uid);
 		bool removed = LF_MapShares.Remove(KEY_PREFIX + uid);
 		Sink().Clear(uid, WAYPOINT_ID);
@@ -669,6 +682,7 @@ class LF_ActivityGuide
 	//! Every CHECK_MS: the players the guide follows. Stops when it follows nobody.
 	protected static void Tick()
 	{
+		LzFocus();
 		if (s_mFocus.IsEmpty())
 		{
 			StopTicking();
@@ -684,6 +698,7 @@ class LF_ActivityGuide
 		foreach (int playerId : ids)
 		{
 			IEntity body = players.GetPlayerControlledEntity(playerId);
+			LzFocus();
 			if (body && s_mFocus.Contains(LF_Utils.GetPlayerUID(body)))
 				CheckBody(body);
 		}
@@ -707,6 +722,7 @@ class LF_ActivityGuide
 		if (uid.IsEmpty())
 			return;
 
+		LzFocus();
 		s_mFocus.Remove(uid);
 		array<string> keys = {};
 		foreach (string key, int xp : s_mXpAtStart)

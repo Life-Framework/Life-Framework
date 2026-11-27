@@ -137,7 +137,7 @@ try {
 
   // Wired through the CLI: exit code 1 on the bad host.
   const p = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "host", "verify"], { encoding: "utf8", env: { ...process.env, LF_HOST_DIR: host }, timeout: 60000, windowsHide: true });
-  check(p.status === 1, `tools\cli host verify exits ${p.status} on a bad host`);
+  check(p.status === 1, `tools\\cli host verify exits ${p.status} on a bad host`);
 } finally {
   safeRemoveTree(tmp);
 }

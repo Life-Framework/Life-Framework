@@ -23,7 +23,7 @@
 // red-proof: 2026-11-15, with checkPage a stub returning no findings, `--selftest` printed
 // `FAIL fixture: missing command was not reported` and exited 1.
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -170,21 +170,24 @@ function scan(root, known) {
   return { findings, stale };
 }
 
-if (process.argv.includes("--selftest")) await selftest();
+// Run the check only when executed directly: validate-cli-references imports knownCommands.
+if (resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
+  if (process.argv.includes("--selftest")) await selftest();
 
-const strict = process.argv.includes("--strict");
-const known = knownCommands(ROOT);
-const pages = pagesOf(ROOT);
-const { findings, stale } = scan(ROOT, known);
-// A stale marker on an ops page is an error; on a community page it warns (#1666). A missing command is a
-// warning until the wave-4 commands land, or an error under --strict.
-const staleFail = stale.filter((f) => !f.warnOnly);
-const missingFail = strict || !WARN_ONLY ? findings : [];
-for (const f of stale) console.log(`${f.warnOnly ? "WARN" : "FAIL"}  ${f.page}:${f.line} stale planned marker: \`tools\\cli ${f.ref}\` exists but is marked *(planned)*; drop the marker and say what it does (${f.text})`);
-for (const f of findings) console.log(`${missingFail.includes(f) ? "FAIL" : "WARN"}  ${f.page}:${f.line} \`tools\\cli ${f.ref}\` is not a command: write it as *(planned, #N)* or add it (${f.text})`);
-if (staleFail.length || missingFail.length) {
-  console.log(`SUMMARY validate-ops-commands fail ${missingFail.length} missing, ${staleFail.length} stale *(planned)* in ${pages.length} pages`);
-  process.exit(1);
+  const strict = process.argv.includes("--strict");
+  const known = knownCommands(ROOT);
+  const pages = pagesOf(ROOT);
+  const { findings, stale } = scan(ROOT, known);
+  // A stale marker on an ops page is an error; on a community page it warns (#1666). A missing command is a
+  // warning until the wave-4 commands land, or an error under --strict.
+  const staleFail = stale.filter((f) => !f.warnOnly);
+  const missingFail = strict || !WARN_ONLY ? findings : [];
+  for (const f of stale) console.log(`${f.warnOnly ? "WARN" : "FAIL"}  ${f.page}:${f.line} stale planned marker: \`tools\\cli ${f.ref}\` exists but is marked *(planned)*; drop the marker and say what it does (${f.text})`);
+  for (const f of findings) console.log(`${missingFail.includes(f) ? "FAIL" : "WARN"}  ${f.page}:${f.line} \`tools\\cli ${f.ref}\` is not a command: write it as *(planned, #N)* or add it (${f.text})`);
+  if (staleFail.length || missingFail.length) {
+    console.log(`SUMMARY validate-ops-commands fail ${missingFail.length} missing, ${staleFail.length} stale *(planned)* in ${pages.length} pages`);
+    process.exit(1);
+  }
+  const warnStale = stale.length - staleFail.length;
+  console.log(findings.length || warnStale ? `SUMMARY validate-ops-commands warn ${findings.length} unmarked missing, ${warnStale} stale planned marker in ${pages.length} pages (warn-only)` : `SUMMARY validate-ops-commands ok ${pages.length} pages`);
 }
-const warnStale = stale.length - staleFail.length;
-console.log(findings.length || warnStale ? `SUMMARY validate-ops-commands warn ${findings.length} unmarked missing, ${warnStale} stale planned marker in ${pages.length} pages (warn-only)` : `SUMMARY validate-ops-commands ok ${pages.length} pages`);

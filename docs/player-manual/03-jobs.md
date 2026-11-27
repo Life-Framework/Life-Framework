@@ -1,23 +1,25 @@
 # 3. Jobs
 
 Every card says **where**, **how to start**, **what you do**, **pay per hour** and **what you need**. Pay per hour is
-a paper figure from the server's own economy numbers (`tools\cli economy`), assuming you do not waste time. Real
+a paper figure worked out from the server's own prices, assuming you do not waste time. Real
 hours vary with how far you walk, drive and wait.
 
 | Job | On the island now? | Pay per hour | Needs |
 |---|---|---|---|
 | [Parcel runs (courier)](#parcel-runs-courier) | ✅ yes | about **$400** (+25 percent at night) | nothing |
-| [Postal van run](#postal-van-run) | ✅ yes | about **$480** (+25 percent at night) | a driving licence |
+| [Postal van run](#postal-van-run) | ✅ yes | about **$480** (+25 percent at night) | a driving license |
+| [Fuel delivery](#fuel-delivery) | ✅ yes | about **$560** (+25 percent at night) | work level 4 |
 | [Taxi](#taxi) | ✅ yes | about **$600**, with a passenger | work level 6, a second player |
 | [Harvest and farm](#harvest-and-farm) | ✅ wheat, garden, orchard | about **$420 to $480** for wheat | reaper and a tow vehicle |
-| [Lumber](#lumber) | ✅ yes | about **$400** | an axe |
-| [Fishing](#fishing) | ✅ yes, sold at the dock wholesale | about **$250 to $430** (the wholesale pays 65 percent of a fish counter's rate) | rod and bait |
+| [Lumber](#lumber) | ✅ yes | about **$450** by hand, about **$740** with a truck | an axe |
+| [Fishing](#fishing) | ✅ yes, sold at the dock wholesale | about **$430 to $470** at the three spots | rod and bait |
 | [Scrap and recycling](#scrap-and-recycling) | ✅ yes, sold at the garage | about **$100 to $200** (a side income) | nothing |
 | [Garbage round](#garbage-round) | ❌ not on the island | about $400 planned | |
 | [Fuel haul](#fuel-haul) | ❌ no depot on the island | about $450 planned | |
-| [Mining](#mining) | ✅ iron at Coalman's Brow | about **$500** | a pickaxe ($150) |
-| [Police](06-police.md) | ✅ yes | **$900 to $1,260** | sign up at the station |
-| [Medic](08-medic.md) | ✅ yes | **$792 to $1,224** | none |
+| [Mining](#mining) | ✅ iron at Coalman's Brow and Highstone, coal at East Rise | about **$450** on the brow, **$460 to $520** with the east smelter or the coal | a pickaxe ($150) |
+| [Export orders](#export-orders) | ✅ yes, at the dock | about **$700** | Delivery level 10 |
+| [Police](06-police.md) | ✅ yes | **$350 to $450**, at most **$520** with the bonus | sign up at the station |
+| [Medic](08-medic.md) | ✅ yes | **$480 to $560**, at most **$600** with the bonus | none |
 
 ## Where the job sites are
 
@@ -32,11 +34,11 @@ Saint-Philippe holds most of them; the sawmill, the fishing coves, the lake and 
 | 2 | Meaux | 1.2 km | Village on the road south. Nothing built for players yet. |
 | 3 | Montignac | 3.6 km | Town with a notice board at the fuel depot. No shops yet. |
 | 4 | Lamentin | 5.7 km | Western town. Scenery only. |
-| 5 | Morton | 6.7 km | Northern town. Scenery only. |
-| 6 | Saint Pierre | 10.5 km | Far north-east town. Scenery only. |
+| 5 | Morton | 6.7 km | Southern town on the bay. Scenery only. |
+| 6 | Saint Pierre | 10.5 km | Far south-east town. Scenery only. |
 | 7 | Sawmill | 5.6 km | The island sawmill: lumberjack desk, two saws, boards. |
 | 8 | Fishing spot (Fisherman's Bay) | 0.4 km | Sheltered cove with a bench and lantern. Gaspard tells you about it. |
-| 9 | Fishing spot (Black Lake) | 9.2 km | A lake shore far to the north-east. |
+| 9 | Fishing spot (Black Lake) | 9.2 km | A lake shore far to the south-east. |
 | 10 | Scrapyard | 0.6 km | Scrap piles and the recycler bench. |
 | 11 | Fuel depot | 3.7 km | Collective-farm fuel depot. Closed to players for now. |
 | 12 | Silo Farm | 3.8 km | Roadside farm with a payphone. |
@@ -47,11 +49,11 @@ Saint-Philippe holds most of them; the sawmill, the fishing coves, the lake and 
 <!-- /map -->
 
 **Levels.** Every paid run, felled tree, fish and revive earns job experience. Higher levels unlock the next job
-(fuel delivery at work level 4, about 6 paid runs; taxi at level 6, about 15) and licences (felling, sawing, tools). A refusal message says what is
+(fuel delivery at Delivery level 4, about 3 paid parcel runs on this server; taxi at level 6, about 6) and licenses (felling, sawing, tools). A refusal message says what is
 missing and where to get it.
 
 <!-- unlocks -->
-**What each level opens.** The level-up card and the F2 skill card name what a level really gives you. A level that opens nothing says so: it reads "Mining 12: a seasoned hand" and promises no perk. The levels that open something (a licence, a machine step, a perk pick, a fish, a delivery job) are these; every other level from 2 to 30 is a milestone.
+**What each level opens.** The level-up card and the F2 skill card name what a level really gives you. A level that opens nothing says so: it reads "Mining 13: steady and sure" and promises no perk. The levels that open something (a license, a machine step, a perk pick, a fish, a delivery job) are these; every other level from 2 to 30 is a milestone.
 
 | Trade | Level | Opens |
 |---|---|---|
@@ -61,11 +63,11 @@ missing and where to get it.
 | Farming | 5 | Seasoned field hand license: pick fruit and draw water twice as fast |
 | Farming | 10 | First perk: pick Double yield or Swift hands at the labor office |
 | Farming | 20 | Second perk: Light touch and Good word join the choices at the labor office |
-| Mining | 2 | Coal face permit: cut coal with a pick |
-| Mining | 3 | Copper seam permit: cut copper ore |
+| Mining | 2 | Coal face permit: the East Rise coal seam opens at Mining 4 |
+| Mining | 3 | Mining 3: a steady swing |
 | Mining | 4 | Iron seam permit: mine iron |
 | Mining | 5 | Seasoned miner license: cut any ore twice as fast |
-| Mining | 6 | Gold seam permit: cut gold ore |
+| Mining | 6 | Mining 6: you read the rock |
 | Mining | 10 | First perk: pick Double yield or Swift hands at the labor office |
 | Mining | 20 | Second perk: Light touch and Good word join the choices at the labor office |
 | Lumber | 2 | Felling permit: fell trees with an axe |
@@ -93,7 +95,7 @@ missing and where to get it.
 | Delivery | 5 | Truck check: pass it at the truck yard for freight work |
 | Delivery | 6 | Taxi fares: sign up at the depot counter |
 | Delivery | 10 | Export orders: take one at the export board |
-| Police | 10 | First perk: pick Fast cuff or Long radar at the {Police} station |
+| Police | 10 | First perk: pick Fast cuff or Long radar at the police station |
 | Police | 20 | Second perk: take the one of Fast cuff and Long radar you passed over |
 | Medic | 2 | First aid certificate: treat the injured |
 | Medic | 3 | Advanced first aid certificate: advanced treatment |
@@ -110,8 +112,8 @@ trade has its own first shift, and a new day opens it again. A server restart op
 level 10 in the same trade, you both get a small bonus (a tenth of the award). It works the other way round too, when the
 learner earns. A pair can earn it once a minute, and your own other characters do not count.
 
-**Night pay.** Parcel, fuel and taxi runs finished between **21:00 and 05:00 game time** pay **25 percent more**.
-A game day is 2 real hours and nights are short, so that is about 40 minutes in every 2 hours at the faster night speed.
+**Night pay.** Parcel, postal van, fuel and taxi runs finished between **21:00 and 05:00 game time** pay **25 percent more**.
+A game day is 2 real hours and the night passes twice as fast, so the window lasts about 20 real minutes in every 2 hours.
 
 ---
 
@@ -128,9 +130,9 @@ A game day is 2 real hours and nights are short, so that is about 40 minutes in 
 * **What you do:** carry the parcel to a mailbox **at least 300 m** from the counter. A waypoint marks the stop. At the box pick
   **Complete the run**. You cannot deliver instantly: a drop that is too close, or reached too fast, pays nothing and keeps your run.
   **Abandon the run** at the counter if you give up; you get no pay and lose the deposit.
-* **Pay:** **$40 a run** ($50 at night). About 6 minutes a run is **$400 an hour**. A harbour contract run pays more
-  once you have standing with the harbour master.
-* **Needs:** nothing, and no licence. Every paid run counts toward the next job.
+* **Pay:** **$40 a run** ($50 at night). About 6 minutes a run is **$400 an hour**. A harbor contract run pays more
+  once you have standing with the harbor master.
+* **Needs:** nothing, and no license. Every paid run counts toward the next job.
 
 The drops are on the east side (a house near the district road) and four along the dock; the post office is on the [Saint-Philippe map](maps.md).
 
@@ -149,13 +151,24 @@ The drops are on the east side (a house near the district road) and four along t
   in faster than 7 minutes pays nothing: the start toast and the hand-in say so, and the run stays open so you can hand it in later.
 * **Lose the run:** wreck the van, or leave it and stay more than 350 m away for 3 minutes, and the run ends with no pay (after 2 minutes away a toast warns you how many seconds are left); the van
   goes back to the office. **Give up the postal run** at a stand does the same at once. A new van is ready a minute later.
-* **Needs:** a **driving licence** ($100 at the licence desk). The van is lent, never yours: it is not saved and cannot be garaged.
+* **Needs:** a **driving license** ($100 at the license desk). The van is lent, never yours: it is not saved and cannot be garaged.
+
+## Fuel delivery
+
+**Status:** ✅ live. Needs **Delivery level 4** (about 3 paid parcel runs).
+
+* **Where:** sign up at the **post office counter**. You take a **fuel can** at the **filling station** and carry it to a **fuel drop**,
+  a drum in a farm yard on the edge of the village or under the sheds above the quay.
+* **What you do:** pick the fuel work at the post office counter, take the can at the station, carry it to a drop and use the
+  drop-off action. A drop that is too close to where you started is refused: take it to a farther one.
+* **Pay:** **$75 a run** ($94 at night). About 8 minutes a run is about **$560 an hour**, and every run counts toward your Delivery level.
+* **Needs:** Delivery level 4. No license.
 
 ## Taxi
 
-**Status:** ✅ live. Needs **work level 6** (about 15 paid runs) and **another player in your car**.
+**Status:** ✅ live. Needs **work level 6** (about 6 paid parcel runs) and **another player in your car**.
 
-* **Where:** the **taxi rank** at the clinic corner. A beige cab waits at the kerb. Sign up at the post office counter
+* **Where:** the **taxi rank** at the clinic corner. A beige cab waits at the curb. Sign up at the post office counter
   (**Take taxi work**), then press **F** at the rank for **Start fare**.
 * **What you do:** pick the passenger up, drive to the stop on your waypoint, and complete the run with the passenger still seated.
 * **Pay:** between **$90 and $150** a fare by distance; a 2 km trip pays about $100. About **$600 an hour** with a steady stream of fares.
@@ -170,12 +183,12 @@ The drops are on the east side (a house near the district road) and four along t
   other stop, nearest first, with its fare. Walk up to it and read it.
 * **How:** look at the sign and scroll the action list: one line per stop, nearest first, such as
   **Bus to Harbor: $18, 20 s**. Press **F** on the one you want: the fare comes out of your **cash** (not the bank).
-  There is no window. A greyed line tells you why: **Not enough cash**, **Police nearby** (when you are wanted),
+  There is no window. A grayed line tells you why: **Not enough cash**, **Police nearby** (when you are wanted),
   **Next bus not due yet** or **Ticket already bought**.
 * **The wait:** **20 to 30 seconds** at the stop; a hint counts it down. The screen fades, and you stand beside the sign at
   the stop you picked. Changed your mind? **Cancel trip (refund)** is on the same sign while you wait.
 * **Fare:** **$15** plus about **$6 a kilometre**, never more than **$45**.
-* **Cancelled and refunded:** walk more than a few metres from the sign, get hurt or start a fight, go down, get cuffed or
+* **Cancelled and refunded:** walk more than a few meters from the sign, get hurt or start a fight, go down, get cuffed or
   climb into a vehicle while you wait. You get the fare back.
 * **Refused:** no ticket while dead, downed, cuffed or jailed, in a vehicle, in a fight, or wanted with the police close by.
   After a ride, the next bus is a minute away.
@@ -194,7 +207,7 @@ The drops are on the east side (a house near the district road) and four along t
   3 m square and holds **600 kg**. Drive to the **weighbridge**, stay on the scale and pick **Sell grain** (the market price, falling a little per lot and recovering through the hour)
   or **Bag grain**. **Return kit** at the board when you are done.
 * **Pay:** about **$416 an hour** selling grain, rising a little with a good price. The field grows back, so you can go round again.
-* **Needs:** the reaper and a vehicle to tow it. Buying a car needs the driving licence.
+* **Needs:** the reaper and a vehicle to tow it. Buying a car needs the driving license.
 * **Smaller jobs:** a **vegetable plot** at the farm (plant cabbage seeds, water, harvest; sell cabbage at the market stall for about $4), the **beehives** (honey sells at the market stall from about $8 falling to $4; a hive kit is $120),
   and the **orchard** (take the farmer job at the desk and gather apples and plums; wholesale pays about $5 and $4 and falls as you sell). These are pocket money next to the wheat.
 
@@ -221,8 +234,8 @@ The drops are on the east side (a house near the district road) and four along t
 **Status:** ✅ live. The timber yard at the village edge and the island sawmill both work.
 
 * **Where:** the **timber yard** (sign *Sawmill*) on the western edge of town, with a **lumberjack desk** and a saw. The **timber counter**
-  (*We buy timber*) is on the kerb of the **hardware store** on the south-east road. The **island sawmill** is far to the west
-  (about 5.7 km); see the island map.
+  (*We buy timber*) is on the curb of the **hardware store** on the south-east road. The **island sawmill** is far to the south
+  (about 5.6 km); see the island map.
 * **How to start:** take the **lumberjack job** at the desk. Buy an **axe** ($120) at the hardware store.
 * **What you do:**
   1. **Fell a tree** with the axe in your hands (not in a safe zone, not within 4 m of a road or 12 m of a building). The tree falls **away from you**, so stand on the side you want it to miss. When it lands, the trunk turns into the logs (one per log the tree gives) lying along the line it fell, with a few branches round the crown. A softwood tree (pine, spruce, larch) gives softwood logs; a hardwood tree (hornbeam, linden, alder, birch, poplar) gives the heavier hardwood logs. Collect them soon: logs nobody picks up are gone after about 30 minutes, and the branches clear in a few.
@@ -233,7 +246,7 @@ The drops are on the east side (a house near the district road) and four along t
   3. Sell **planks ($8)** and **hardwood boards ($15)** at the **timber counter**. If its purse is full it tells you to
      "try the wholesale warehouse at the dock". The dock pays a lower, falling price for planks, boards, posts and firewood.
 * **Pay:** about **$400 an hour** carrying softwood by hand. With a truck and hardwood boards, about **$700 to $800 an hour**:
-  the timber counter takes about 30 boards an hour at $15, and the rest sell at the wholesale counter beside it for less.
+  the timber counter takes about 28 boards an hour at $15, and the rest sell at the wholesale counter beside it for less.
 * **Needs:** an axe. Job levels unlock sawing and faster felling (a refusal says what is missing).
 * **Shift board:** at the **island sawmill** a cork **shift board** stands under the roof at the front of the hall, a few steps from the lumberjack desk. **Read the shift board** lists the week's top five workers at the sawmill by the trade XP they earned there, with their trade level. The list empties every Monday at 06:00 UTC.
 
@@ -251,25 +264,25 @@ The drops are on the east side (a house near the district road) and four along t
 **Status:** ✅ live. You can catch, smoke and **sell** fish: the **wholesale warehouse** on the dock buys every fish and every smoked fish at a fixed price.
 
 * **Where:** three spots. **Spring Pond** has a jetty in town, south-east of the square. **Fisherman's Bay** is a sheltered cove on the west coast
-  (Gaspard, the old man on the bench in town, tells you about it once you land three fish). **Black Lake** is far to the north-east.
+  (Gaspard, the old man on the bench in town, tells you about it once you land three fish). **Black Lake** is far to the south-east.
   The **smokehouse** is on the dock.
 * **How to start:** buy a **fishing rod ($60)** and a **bait tin ($30)** at the **seed and feed** store.
 * **What you do:** hold the rod, aim at the water within casting range and **fire** to cast. Wait **15 to 60 seconds** for a bite: the float is pulled under.
   **Fire again within 2 seconds** to land it. You can cast about 6 times a minute. Bait makes bites faster. A spot holds about 14 fish and refills one fish every 90 seconds.
   The pond gives **perch, carp and trout**; the bay and open sea give **mackerel, bass and tuna**; the fish depend on the time of day.
 * **Smokehouse:** put a fresh medium fish and **one firewood bundle** in the smoker; 30 seconds later you have a **smoked fish**.
-* **Selling:** walk into the **wholesale warehouse** on the dock (the same counter that buys planks, iron bars and cement), press **F** on the clerk's counter and sell the fish. It pays **65 percent of a fish counter's rate**, the same every time (no falling price), and takes a whole stack in one go:
+* **Selling:** walk into the **wholesale warehouse** on the dock (the same counter that buys planks, iron bars and cement), press **F** on the clerk's counter and sell the fish. It pays a fixed price, the same every time (no falling price), and takes a whole stack in one go:
 
   | Fish | Small | Medium | Large | Smoked |
   |---|---|---|---|---|
-  | Trout | $4 | $8 | $16 | $18 |
-  | Perch | $3 | $7 | $13 | $16 |
+  | Trout | $4 | $12 | $22 | $18 |
+  | Perch | $3 | $11 | $19 | $16 |
   | Mackerel | $3 | $7 | $13 | $16 |
-  | Carp | $5 | $9 | $18 | $21 |
+  | Carp | $5 | $13 | $24 | $21 |
   | Bass | $5 | $10 | $21 | $23 |
   | Tuna | $10 | $20 | $39 | $43 |
 
-* **Pay:** a spot gives about **40 fish an hour** (14 in the first hour), so the cove at Fisherman's Bay (mostly bass, $10.8 a fish on average) is about **$430 an hour**, the harbour water about **$290** and the Spring Pond about **$245**, rod and bait included. Smoking a medium fish (plus a firewood bundle) turns $7 to $20 into $16 to $43, so the smokehouse is worth the walk when you have fish to spare.
+* **Pay:** a spot refills one fish every 90 seconds, about **40 fish an hour** once its first stock is fished out; between those, the same water keeps giving small fish (a little slower). That is about **$430 an hour** at Spring Pond or Black Lake and about **$470** at the cove at Fisherman's Bay, and more in the first hour while the stock lasts. Bass bite only in the evening (17:00 to 21:00); the rest of the day the cove gives mackerel. Smoking a medium fish (plus a firewood bundle) turns $7 to $13 into $16 to $23, so the smokehouse is worth the walk when you have fish to spare.
 * **Needs:** rod and bait.
 
 <!-- map:inset:pond -->
@@ -294,7 +307,7 @@ The drops are on the east side (a house near the district road) and four along t
 | 60 | Fishing spot (Black Lake) | Quiet lake shore with a bench and a lantern. |
 <!-- /map -->
 <!-- map:inset:harbour -->
-![Harbour and dock](../../website/public/docs-images/player-manual/harbour.png)
+![Harbor and dock](../../website/public/docs-images/player-manual/harbour.png)
 
 | # | Place | What |
 |---|---|---|
@@ -313,7 +326,7 @@ The drops are on the east side (a house near the district road) and four along t
 * **What you do:** **search the scrap piles** for scrap metal, rubber, copper wire coils, worn hand tools and old radios. At the **recycler bench**
   pick **Load** with an item, **hold Work** (each worker adds one unit, so two people finish twice as fast) and **Collect** the parts.
   A worn tool gives scrap metal, an old radio gives metal and wire, **car parts give 3 iron bars**.
-* **Selling scrap:** take it to the **garage** (map name *Garage*, the mechanic's counter in the districts; see the [Saint-Philippe map](maps.md)), press **F** at the till and sell. The mechanic pays **half the catalogue price**, a fixed price with no stock limit and no questions about where it came from: **scrap metal $4, copper wire coil $12, rubber scrap $5**. He does not buy stolen goods or the worn tools and old radios (break those down at the bench first).
+* **Selling scrap:** take it to the **garage** (map name *Garage*, the mechanic's counter in the districts; see the [Saint-Philippe map](maps.md)), press **F** at the till and sell. The mechanic pays **half the catalog price**, a fixed price with no stock limit and no questions about where it came from: **scrap metal $4, copper wire coil $12, rubber scrap $5**. He does not buy stolen goods or the worn tools and old radios (break those down at the bench first).
 * **Pay:** a bench load (a worn tool is $12 of metal, an old radio is $20 of metal and wire) and the loose finds come to about **$100 to $200 an hour** at one search every four minutes, a side income and not a main job. Iron bars sell for about $20 each at the dock wholesale yard and fall as you sell. Car parts cost $200 at the garage, so buying them to recycle loses money; the yard is for parts you find or chop.
 * **Needs:** nothing.
 
@@ -337,19 +350,19 @@ It pays **$15 a bin plus a $25 bonus, $100 a round** (about $400 an hour, no buy
 
 **Status:** ❌ **not on the island yet.** The code and a fuel depot yard at Montignac exist, but no fuel pickup or depot desk is placed, so the run cannot start.
 
-The plan: buy a **1,000-litre load** at the Montignac depot at $0.90 a litre (the locked depot tanker then opens for you alone), pump it into a station tank and earn **$1.35 a litre**
-(a $450 margin per haul, about $450 an hour). The **filling station** pumps in town sell from a 3,000-litre tank (**$2 a litre**). If the tank runs dry
+The plan: buy a **1,000-litre load** at the Montignac depot at $0.90 a liter (the locked depot tanker then opens for you alone), pump it into a station tank and earn **$1.35 a liter**
+(a $450 margin per haul, about $450 an hour). The **filling station** pumps in town sell from a 3,000-litre tank (**$2 a liter**). If the tank runs dry
 the pump says "The tanks are dry. The depot truck is due."
 
 ## Mining
 
-**Status:** ✅ live. One iron mine is open on **Coalman's Brow**, the hill just south of the village. Copper, coal and stone come later.
+**Status:** ✅ live. Iron is mined at **Coalman's Brow**, the hill just south of the village, and at **Highstone**; coal is cut at the **East Rise** seam.
+Copper, gold and stone are not on the island yet.
 
-* **Where:** the **iron mine** (sign *Coalman's Brow mine*, map label **Iron mine**) on the wooded north side of the brow, about 350 m south-west of the square past the farms; the track off the road to the west leads up to it.
-  It has the **miner's desk**, six rust-veined **iron rocks** at the foot of a granite rock face, and a **furnace**. The **pickaxe** is sold at the
-  **miners' supply** till in the **hardware store** on the south-east road (and in the general store).
-* **How to start:** take the **miner job** at the desk by the mine (**Take the job: Miner** on its clock; after a respawn take it again). Then buy a **pickaxe** ($150) at the miners' supply till in the
-  hardware store. Any new miner can buy it.
+* **Where:** the **iron mine** (sign *Coalman's Brow mine*, map label **Iron mine**) on the wooded north side of the brow, about 350 m south of the square past the farms; the track off the road to the west leads up to it.
+  It has the **miner's desk**, a **miner's supply** counter, six rust-veined **iron rocks** at the foot of a granite rock face, and a **furnace**. The **pickaxe** is sold at the
+  supply counter beside the desk, at the **hardware store** on the south-east road and in the general store.
+* **How to start:** take the **miner job** at the desk by the mine (**Take the job: Miner** on its clock). A desk job such as miner, lumberjack or farmer now stays with you after a restart and after a respawn. Then buy a **pickaxe** ($150) at the supply counter. Any new miner can buy it.
 * **What you do:**
   1. Hold the pickaxe and **swing at an iron rock**. Every few swings an **iron nugget** breaks off and drops at your feet; pick it up.
      A rock gives 5 pieces, shrinks as you work it, then crumbles and grows back after about 5 minutes. Each piece is miner XP.
@@ -357,19 +370,24 @@ the pump says "The tanks are dry. The depot truck is due."
      keep mining while it works, the bars drop at the furnace when it is done. Every finished batch is **Smelting** XP, a trade of its own with its own level; it is not Miner XP.
   3. Sell the bars at the **iron counter** in the **wholesale warehouse** at the dock, east of the main counter (**$20 a bar**; it buys 40, then about 24 more an hour). If it says
      it is full, the main wholesale counter buys more (from $20 a bar, falling as you sell).
-* **Pay:** about **$500 an hour**, with nothing to drive. Two players share the six rocks and the furnace comfortably.
+* **Pay:** about **$450 an hour** at the brow, with nothing to drive. Two players share the six rocks and the furnace comfortably.
+* **The second rung (Smelting and Mining levels):**
+  * **Highstone iron mine**, about 2.3 km south of the square: four iron rocks that give 5 nuggets each, and two richer rocks (6 nuggets) that need **Mining 12**. There is no desk or furnace there.
+  * **East Rise coal seam**, about 3.6 km south-east: four coal rocks that give 6 lumps each and open at **Mining 4**. The **power plant coal yard** (about 1.7 km south-east) buys coal at **$8 a lump** until its purse runs out for the hour (60 lumps, 26 more each hour); the rest goes to the dock wholesale at a falling price.
+  * **Iron smelter** at the east works compound, about 4.7 km south-east: **2 nuggets and 1 coal make 1 iron bar**. One run takes 60 seconds and gives up to 5 bars; it is open from Smelting level 1. Bars sell at the dock wholesale (the hardware store counter also buys them at $22 each for a small purse an hour). The same run pays about **$515 an hour** with a pickup or truck for the haul.
 * **Shift board:** a cork **shift board** stands in the mine yard near the miner's desk. **Read the shift board** lists the week's top five workers at the mine by the trade XP they earned there, with their trade level. The list empties every Monday at 06:00 UTC.
 * **Wear:** every swing at a rock wears the pickaxe you swing a little (an axe wears with each tree felled, a fishing rod with each fish landed). Each tool keeps its own condition: a new pickaxe starts in top shape whatever your old one looked like, and a worn one stays worn in your pack, on the ground, in someone else's hands and after a restart. A notice names the tool when it is getting worn, when it is badly worn, and after every use once it is worn out. A worn-out tool still works. At the hardware bench, hold the tool you want fixed: $12 and a scrap of metal bring that one tool back to top shape.
 * **Better tools:** the miners' supply till in the hardware store also sells the pickaxe, axe and fishing rod in three finishes: worn ($150), standard ($600) and fine ($1,800). A better finish wears slower: a worn tool loses twice as much per use as a standard one, a fine one half as much. The standard pickaxe or axe needs trade level 3 and the fine one level 6; below that the till refuses in words.
-* **Needs:** the miner job and a pickaxe. Higher miner levels open the coal and copper rocks as those sites arrive. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the iron smelter takes anyone from Smelting level 1 (you earn the trade by smelting), while the copper refinery wants Smelting level 15 and the cement works Smelting level 6. At the iron smelter the level grows the run: up to 6 bars at level 2, 7 at level 5, 8 at level 8 and 10 at level 16, and the run itself drops from 60 to 45 seconds at level 7 and to 35 at level 9 (the level-up card names each one). Where a trade has a level gate, the refusal says it in words: "Needs Smelting 15".
+* **Needs:** the miner job and a pickaxe. Mining 4 opens the coal seam and Mining 12 the rich Highstone rocks; the level-up card at Mining 2 names the coal permit and says so (the seam still needs Mining 4). The island has no copper or gold rock, so no card names a copper or gold permit. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the iron smelter takes anyone from Smelting level 1 (you earn the trade by smelting), while the copper refinery (Smelting level 15) and the cement works (level 6) are not on the island yet. At the iron smelter the level grows the run: up to 6 bars at level 2, 7 at level 5, 8 at level 8 and 10 at level 16, and the run itself drops from 60 to 45 seconds at level 7 and to 35 at level 9 (the level-up card names each one). Where a trade has a level gate, the refusal says it in words: "Needs Smelting 15".
 
 
 ## Export orders
 
-**Status:** 🚧 coming. The board and the crane spot work, but they are not on the dock yet.
+**Status:** ✅ live. The board stands on the warehouse wall at the dock and the crane spot is on the quay.
 
-* **Where:** the **EXPORT ORDERS** board on the warehouse wall by the quay, and the **crane spot** (a pallet box on the quay apron by the harbour crane).
-* **How it works:** the board lists up to three orders, such as *40 x iron bars to the steamer | $1040 by 23:00*. Scroll to **Take the order** on a line to take it (haulers at Delivery level 10 or higher; one order at a time). Bring every unit to the crane spot, in your pockets or in a vehicle backed up to the pallet box, and choose **Hand in the export order**.
-* **Pay:** the order's price in cash (the market's wholesale price plus 15 percent, plus an order bonus) and Delivery experience. Every kind of order pays about $700 an hour of mining or sawing: 40 iron bars $1,040, 20 copper bars $960, 100 coal $985, 120 planks $1,018. A short count takes nothing: bring the rest and hand in again. Miss the deadline and the order closes and your standing in town drops; it never costs money.
+* **Where:** the **EXPORT ORDERS** board on the warehouse wall by the quay, and the **crane spot** (a pallet box on the quay apron by the harbor crane).
+* **How it works:** the board lists up to three orders, such as *40 x iron bars to the steamer | $1040 by 23:00*; a new order opens every 30 game minutes while a slot is free. Scroll to **Take the order** on a line to take it (haulers at Delivery level 10 or higher; one order at a time). Bring every unit to the crane spot, in your pockets or in a vehicle backed up to the pallet box (a truck holds every order's full count), and choose **Hand in the export order**.
+* **Pay:** the order's price in cash (the market's wholesale price plus 15 percent, plus an order bonus) and Delivery experience. Every kind of order pays about $700 an hour of mining or sawing: 40 iron bars $1,040, 100 coal $985, 120 planks $1,018. A short count takes nothing: bring the rest and hand in again. Miss the deadline (20 game hours for iron, 24 for coal, 30 for planks) and the order closes and your standing in town drops; it never costs money.
+* **Copper:** the board offers no copper order, because no copper seam is placed on the island yet. It comes back with the copper chain.
 
 * **Paper:** a paid shift hands you a payslip, a parcel run a delivery note, and a sale at the granary or a buyer a weigh slip. Each shows what was sold or paid and the date; choose **Read receipt** on it to read it.

@@ -4,8 +4,8 @@
 
 * **Cash** is what you carry. Shops, the fuel pumps and homes take cash. Cash in your pocket is **lost if you die**
   (it stays on your body for someone to search).
-* **Bank** money is safe. Your balance starts at **$2,000**: enough for the cheapest car, the driving licence, a pickaxe, an axe and an entrenching tool, plus three $150 respawn bills if you die, with a little over for fuel and food. Every car costs more than $500, so cars are paid **from the bank**; deposit first.
-* A small **benefit** of $50 is paid every 20 minutes while your money is almost gone, so nobody is ever stuck.
+* **Bank** money is safe. Your balance starts at **$2,000**: enough for the cheapest car, the driving license, a pickaxe, an axe and an entrenching tool, plus three $150 respawn bills if you die, with a little over for fuel and food. Every car costs more than $500, so cars are paid **from the bank**; deposit first.
+* A small **benefit** of $50 is paid every 20 minutes while your money is almost gone (under $250), so nobody is ever stuck.
 * Job pay arrives as **cash**. Police and medic pay is handed out in cash when you clock out. Carry less, bank more.
 
 ## ATMs and the teller
@@ -16,13 +16,13 @@ Three ATMs stand in Saint-Philippe. Walk up to one and look at the part you want
 * **Put cash in:** look at the **DEPOSIT** drawer below it. Pick *Deposit all cash*, *$50*, *$100* or *$500*, then press **F**.
 * **See your balance:** the machine's green screen shows your bank balance and the cash you carry while you stand at it, and it updates after every transaction. Only you see your figures. *Check balance* on the screen also shows them in a short message.
 
-A line you cannot afford is greyed out and says why (*Not enough in the bank*, *Not enough cash on you*). On a gamepad, cycle the lines the same way as on any other object with several actions.
+A line you cannot afford is grayed out and says why (*Not enough in the bank*, *Not enough cash on you*). On a gamepad, cycle the lines the same way as on any other object with several actions.
 To send money to another player's account, look at the keypad and pick *Bank transfer*.
 You can also **talk to the teller** at the bank counter; it does the same thing.
 
 The three ATMs are on the bank wall, on the east side near the filling station, and on the dock; they are marked **ATM** on the [Saint-Philippe map](maps.md).
 
-**Transfers:** there is no bank-to-bank transfer in this build. To pay another player, look at them, press **F** to open the player menu and pick *Give cash*.
+**Transfers:** *Bank transfer* on the keypad opens the transfer page. It shows your own account number; key in the recipient's number and the amount and press SEND. There is no fee, and one account can send up to $50,000 a day. To hand over cash instead, look at the player, press **F** to open the player menu and pick *Give cash*.
 
 ## What things cost
 
@@ -31,24 +31,27 @@ Prices are the ones the alpha server charges. Full shop lists are in [Shops](05-
 | What | Price |
 |---|---|
 | Bread, baguette, croissant | $3 to $4 |
-| Water, soda, juice | $3 to $7 |
+| Water, soda | $3 to $4 |
+| Apple juice (a shop sells it; the market trader pays $18 a bottle) | $20 |
 | A beer | $9 to $10 |
-| Hat | $15 to $20 |
-| Shirt or trousers | $25 to $35 |
-| Jacket | $45 to $250 |
+| Hat | $12 to $38 |
+| Shirt | $25 to $30 |
+| Trousers | $35 to $170 |
+| Jacket | $30 to $250 |
 | Fishing rod, bait tin | $60, $30 |
 | Shovel, axe, pickaxe | $45, $120, $150 |
 | Repair kit | $80 to $90 |
 | Handset radio | $250 |
 | Gang radio (gun counter, anyone) | $60 |
 | Furniture | $20 to $260 |
-| **Driving licence** (town hall) | $100 |
+| **Driving license** (town hall) | $100 |
 | **Firearm permit** (gun store) | $250 |
-| Pistol (permit needed) | $350 to $500 |
-| Rifle (permit needed) | $1,500 and up |
-| **Fuel** at the pumps | $2 per litre |
+| Pistol (permit needed) | $350 |
+| Rifle (permit needed) | $1,500 |
+| **Fuel** at the pumps | $2 per liter |
 | **Cheapest car** (T601) | $560 |
-| Other cars | $800 to $6,400 |
+| Other cars (car lot) | $800 to $3,200 |
+| Trucks (truck yard, truck license $300) | $7,600 to $9,600 |
 | Extra key for a car | $25 |
 | **Cheapest home** (cottage) | $2,000 |
 | Dearest home (villa) | $10,000 |
@@ -56,14 +59,14 @@ Prices are the ones the alpha server charges. Full shop lists are in [Shops](05-
 | Beehive kit | $120 |
 | Reaper (harvest) | $1,200 (or a $300 rental deposit) |
 
-**Cars** (alpha price at 80 percent of the list): T601 $560, S105 $800, V2101 $1,440, UAZ469 $2,000, UAZ452 $2,800, S1203 van $3,200,
-M923A1 truck $6,400. You get **50 percent back** if you sell a car back.
+**Cars** (alpha price at 80 percent of the list): T601 $560, S105 $800, V2101 $1,440, UAZ469 $2,000, UAZ452 $2,800, S1203 van $3,200.
+The **truck yard** in the north-east sells the Ural 4320 for $7,600 and the M923A1 for $9,600. You get **50 percent back** if you sell a car back.
 
 **Fines and bills:** a police ticket is $50 to $800 and doubles after 30 minutes. A hospital stay after dying costs $150. A medic
-reviving you costs $100. A car in the impound costs $200 to get out; a tow costs $150.
+reviving you costs $100. A car in the impound costs $250 to get out ($400 for a Ural truck); a tow costs $150.
 
 ## What you earn
 
-About **$400 an hour** from courier work, **$400 to $500** from harvest or lumber once you have the kit, **$480 to $560** an hour
-on medic duty and **$350 to $450** on police duty. Duty is steady pay, not the best pay: a skilled trade with a van or
+About **$400 an hour** from courier work, **$400 to $500** from harvest, lumber, fishing or apple juice once you have the kit, **$480 to $560** an hour
+on medic duty and **$350 to $450** on police duty (the duty bonus adds a little, up to $600 and $520 an hour). Duty is steady pay, not the best pay: a skilled trade with a van or
 a truck earns more than an officer. The jobs are in [Jobs](03-jobs.md).

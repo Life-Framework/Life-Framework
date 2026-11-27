@@ -217,4 +217,4 @@ Poly Haven's bag carried a modern red "CEMENT / HIGH STRENGTH / CEM 42.5 R" prin
 for era like any other: `tools/assets/<slug>/base_color.png`, when it sits beside the spec, replaces `raw/tex_base_color.png` right after
 the source stage, and the clean stage packs it. The cement bag's is made by `tools/assets/cement-bag/make-label.ps1` (kraft paper, one dark
 ink, stencil Cyrillic "ЦЕМЕНТ / ПОРТЛАНДЦЕМЕНТ М-400 / 50 кг / ГОСТ 10178-85", the Soviet cement standard; no logo, no icons, no barcode). Rerun
-the script, then `toolscli asset run cement-bag --force`.
+the script, then `tools\cli asset run cement-bag --force`.

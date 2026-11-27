@@ -1193,9 +1193,27 @@ class LF_AgentHarness
 	// Characters the harness already stood, with the spot and when. The spatial query and the traces
 	// do not see a body moved this frame (or one whose owner has not applied the teleport yet), so
 	// a second stand in a burst would otherwise pick the same spot.
-	protected static ref array<EntityID> s_aStoodIds = {};
-	protected static ref array<vector> s_aStoodSpots = {};
-	protected static ref array<int> s_aStoodTicks = {};
+	protected static ref array<EntityID> s_aStoodIds;
+	protected static array<EntityID> LzStoodIds()
+	{
+		if (!s_aStoodIds)
+			s_aStoodIds = new array<EntityID>();
+		return s_aStoodIds;
+	}
+	protected static ref array<vector> s_aStoodSpots;
+	protected static array<vector> LzStoodSpots()
+	{
+		if (!s_aStoodSpots)
+			s_aStoodSpots = new array<vector>();
+		return s_aStoodSpots;
+	}
+	protected static ref array<int> s_aStoodTicks;
+	protected static array<int> LzStoodTicks()
+	{
+		if (!s_aStoodTicks)
+			s_aStoodTicks = new array<int>();
+		return s_aStoodTicks;
+	}
 	// lf-fixed: dev-harness bookkeeping, how long a stood spot counts as occupied
 	protected static const int STAND_REMEMBER_MS = 15000;
 	protected static vector s_vShotAngles;
@@ -1919,20 +1937,25 @@ class LF_AgentHarness
 	protected static bool StandSpotRemembered(IEntity self, vector spot)
 	{
 		int now = System.GetTickCount();
+		LzStoodIds();
 		for (int i = s_aStoodIds.Count() - 1; i >= 0; i--)
 		{
-			if (now - s_aStoodTicks[i] > STAND_REMEMBER_MS)
+			if (now - LzStoodTicks()[i] > STAND_REMEMBER_MS)
 			{
+				LzStoodIds();
 				s_aStoodIds.Remove(i);
+				LzStoodSpots();
 				s_aStoodSpots.Remove(i);
+				LzStoodTicks();
 				s_aStoodTicks.Remove(i);
 				continue;
 			}
 
+			LzStoodIds();
 			if (s_aStoodIds[i] == self.GetID())
 				continue;
 
-			vector delta = s_aStoodSpots[i] - spot;
+			vector delta = LzStoodSpots()[i] - spot;
 			delta[1] = 0;
 			if (delta.Length() < STAND_CAPSULE_RADIUS * 2)
 				return true;
@@ -1944,18 +1967,26 @@ class LF_AgentHarness
 	//------------------------------------------------------------------------------------------------
 	protected static void RememberStand(IEntity character, vector spot)
 	{
+		LzStoodIds();
 		for (int i = s_aStoodIds.Count() - 1; i >= 0; i--)
 		{
+			LzStoodIds();
 			if (s_aStoodIds[i] != character.GetID())
 				continue;
 
+			LzStoodIds();
 			s_aStoodIds.Remove(i);
+			LzStoodSpots();
 			s_aStoodSpots.Remove(i);
+			LzStoodTicks();
 			s_aStoodTicks.Remove(i);
 		}
 
+		LzStoodIds();
 		s_aStoodIds.Insert(character.GetID());
+		LzStoodSpots();
 		s_aStoodSpots.Insert(spot);
+		LzStoodTicks();
 		s_aStoodTicks.Insert(System.GetTickCount());
 	}
 

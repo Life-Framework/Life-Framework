@@ -1,5 +1,5 @@
 {
-  "note": "Island placement findings that existed when the gate went on (#3888). May only shrink: `toolscli audit placement --world MainWorld --baseline-shrink` drops fixed rows; placement-gate-selftest fails a branch that adds one.",
+  "note": "Island placement findings that existed when the gate went on (#3888). May only shrink: `tools\\cli audit placement --world MainWorld --baseline-shrink` drops fixed rows; placement-gate-selftest fails a branch that adds one.",
   "rows": [
     "(shop lanes)|Room_Barn_E_03_open|crowded",
     "(shop lanes)|Room_FuelStation_E_01_building_small|lane",

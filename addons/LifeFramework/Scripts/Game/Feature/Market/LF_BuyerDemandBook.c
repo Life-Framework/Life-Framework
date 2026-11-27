@@ -8,7 +8,13 @@ class LF_BuyerDemandBook
 {
 	static const string FEATURE = "Market";
 
-	protected static ref map<string, ref LF_BuyerPurse> s_mPurses = new map<string, ref LF_BuyerPurse>();
+	protected static ref map<string, ref LF_BuyerPurse> s_mPurses;
+	protected static map<string, ref LF_BuyerPurse> LzPurses()
+	{
+		if (!s_mPurses)
+			s_mPurses = new map<string, ref LF_BuyerPurse>();
+		return s_mPurses;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The demand row for a buyer and a good, or null when the config has none (or did not load).
@@ -83,6 +89,7 @@ class LF_BuyerDemandBook
 	//! snapshots it first so a failed payout or item removal can put it back exactly.
 	static LF_BuyerPurse Snapshot(string buyer, ResourceName good)
 	{
+		LzPurses();
 		LF_BuyerPurse purse = s_mPurses.Get(KeyOf(buyer, good));
 		if (!purse)
 			return null;
@@ -100,6 +107,7 @@ class LF_BuyerDemandBook
 		string key = KeyOf(buyer, good);
 		if (!snapshot)
 		{
+			LzPurses();
 			s_mPurses.Remove(key);
 			return;
 		}
@@ -107,6 +115,7 @@ class LF_BuyerDemandBook
 		LF_BuyerPurse copy = new LF_BuyerPurse();
 		copy.m_iRemaining = snapshot.m_iRemaining;
 		copy.m_iStamp = snapshot.m_iStamp;
+		LzPurses();
 		s_mPurses.Set(key, copy);
 	}
 
@@ -115,10 +124,12 @@ class LF_BuyerDemandBook
 	protected static LF_BuyerPurse PurseFor(notnull LF_BuyerDemandRow row, int nowUnix)
 	{
 		string key = KeyOf(row.m_sBuyer, row.m_sGood);
+		LzPurses();
 		LF_BuyerPurse purse = s_mPurses.Get(key);
 		if (!purse)
 		{
 			purse = LF_BuyerPurse.Full(row, nowUnix);
+			LzPurses();
 			s_mPurses.Set(key, purse);
 		}
 
@@ -135,7 +146,7 @@ class LF_BuyerDemandBook
 	//! The live purses keyed by buyer plus good GUID (LF_BuyerDemandSavePayload reads and replaces them).
 	static map<string, ref LF_BuyerPurse> Entries()
 	{
-		return s_mPurses;
+		return LzPurses();
 	}
 
 	//------------------------------------------------------------------------------------------------

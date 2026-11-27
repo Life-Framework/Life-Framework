@@ -31,6 +31,6 @@ export async function runConfigGate(files, stages, log = console.log) {
   }
   log(`=== ci: config harness sessions (${hit.length} file(s) touch config, e.g. ${hit[0]}) ===`);
   const code = await stages.sessions();
-  if (code !== 0) log("config harness sessions FAILED: see the FAIL lines above (tools\cli config-gate --sessions reruns them)");
+  if (code !== 0) log("config harness sessions FAILED: see the FAIL lines above (tools\\cli config-gate --sessions reruns them)");
   return code === 0 ? 0 : 1;
 }

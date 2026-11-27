@@ -1,10 +1,17 @@
 class LF_UIInfoUtils
 {
-	protected static ref map<ResourceName, ref UIInfo> s_mCache = new map<ResourceName, ref UIInfo>();
+	protected static ref map<ResourceName, ref UIInfo> s_mCache;
+	protected static map<ResourceName, ref UIInfo> LzCache()
+	{
+		if (!s_mCache)
+			s_mCache = new map<ResourceName, ref UIInfo>();
+		return s_mCache;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static UIInfo GetInfo(ResourceName prefab)
 	{
+		LzCache();
 		UIInfo resultInfo = s_mCache.Get(prefab);
 
 		if (!resultInfo)
@@ -34,6 +41,7 @@ class LF_UIInfoUtils
 			    }
 			}
 			
+			LzCache();
 			s_mCache.Set(prefab, resultInfo);
 		}
 
@@ -50,6 +58,7 @@ class LF_UIInfoUtils
 
 		UIInfo resultInfo = item.GetAttributes().GetUIInfo();
 		string prefab = LF_Utils.GetPrefabName(entity);
+		LzCache();
 		if (prefab) s_mCache.Set(prefab, resultInfo);
 
 		return resultInfo;

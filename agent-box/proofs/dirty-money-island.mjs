@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
 
 // The dirty-money loop on the island, end to end (#3405, M7 beats 2 to 4 of #1025), the way a player runs it:
@@ -17,7 +18,30 @@ const MOONSHINE = "{5280F09CEB005042}Prefabs/Items/Drinks/Moonshine.et";
 const BOTTLES = 3;
 const PRICE = 80; // LF_BuyerPrices_Everon1989.conf
 const FEE = 150; // LF_Launder_Everon1989.conf, m_iInformantFee
-const HOME_ANCHOR = "Fit_saint_philippe_residents_anchor_door"; // the night-shift worker's doorstep (05:30)
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const PACK = join(ROOT, "addons", "LF_Everon1989");
+const HOME_ANCHOR = "Fit_saint_philippe_residents_anchor_door"; // fallback: the shared slot's doorstep, used only when the pack names no house for him
+// Pure: the night-shift worker's home place id in the pack's residents conf, or "".
+export function nightShiftHomeId(confText) {
+  return /m_sId "night_shift"[\s\S]*?m_sHomePlaceId "([^"]+)"/.exec(String(confText))?.[1] ?? "";
+}
+// Pure: the name of the first `ResidentDoor_*` entity that follows the house marker with this place id in a layer text, or "".
+export function homeDoorOf(layerText, placeId) {
+  if (!placeId) return "";
+  const at = String(layerText).indexOf(`m_sId "${placeId}"`);
+  if (at < 0) return "";
+  return /GenericEntity (ResidentDoor_\w+)/.exec(String(layerText).slice(at))?.[1] ?? "";
+}
+// The worker lives in his own house (the pack's timetable names its place id), not at the shared residents slot (#5047).
+function homeAnchor() {
+  try {
+    const conf = readFileSync(join(PACK, "Configs", "Residents", "LF_Residents_Everon1989.conf"), "utf8");
+    const layer = readFileSync(join(PACK, "Worlds", "MainWorld", "MainWorld_Layers", "Homes_saint-philippe_resident.layer"), "utf8");
+    return homeDoorOf(layer, nightShiftHomeId(conf)) || HOME_ANCHOR;
+  } catch {
+    return HOME_ANCHOR;
+  }
+}
 const TALK = "LF_DialogueTalkAction";
 const INFORMANT = "Resident_night_shift"; // LF_ResidentHarness: a spawned resident by id
 const SALE = "LF_BuyerSaleAction";
@@ -86,7 +110,7 @@ async function runDirtyMoneyIsland() {
   // stand and the talk reach him and never a neighbour. He spawns only with a player near his anchor, so the
   // player first stands at the doorstep, then beside him.
   on(1, { verb: "time", hour: 6 }, 15000);
-  on(1, { verb: "stand", entityName: HOME_ANCHOR, side: "e" }, 20000);
+  on(1, { verb: "stand", entityName: homeAnchor(), side: "e" }, 20000);
   let stand = { status: "none", detail: "" };
   let opened = "";
   for (let tries = 0; tries < 12 && !HIS_GREETING.test(opened); tries++) {
@@ -105,12 +129,12 @@ async function runDirtyMoneyIsland() {
   const greetOk = step("3 the night-shift worker answers the talk at the home doorstep", stand.status === "ok" && HIS_GREETING.test(opened), `stand=${stand.status} ${stand.detail.slice(0, 80)} scene=${opened}`, "the Resident_<id> harness target (#3650): he is not live (not due, or no player near), or his greeting nodes changed");
   if (!greetOk) { laundering(logStart); return finish(results); }
   let state = untilChoosing();
-  // greet rows: zone, move, work, bye (a 'wary' greeting offers bye only: the standing was not enough).
-  if (!/replies=4/.test(state)) { step("3b the greeting offers the work reply", false, state, "the greeting gate (UNDERWORLD or TOWN standing) or a different resident answered"); laundering(logStart); return finish(results); }
+  // greet rows: zone, heard anything, work; bye is the 0 Goodbye row and not counted in `replies=` (a wary greeting offers none: the standing was not enough).
+  if (!/replies=3/.test(state)) { step("3b the greeting offers the work reply", false, state, "the greeting gate (UNDERWORLD or TOWN standing) or a different resident answered"); laundering(logStart); return finish(results); }
   on(1, { verb: "dialogue", arg: "pick", value: "2" }, 10000);
   wait(1200);
   state = untilChoosing();
-  const sawTip = /node=work/.test(state) && /replies=4/.test(state);
+  const sawTip = /node=work/.test(state) && /replies=3/.test(state);
   step("3b after the work reply the informant's tip reply is offered", sawTip, state, "#2922 (the Informant reply gated by the hook)");
   if (!sawTip) { laundering(logStart); return finish(results); }
 
@@ -152,6 +176,14 @@ async function runDirtyMoneyIsland() {
   return finish(results);
 }
 
+function selftest() {
+  const conf = ["LF_ResidentDef \"{1}\" {", " m_sId \"gossip_odile\"", " m_sHomePlaceId \"saint-philippe.home.other\"", "}", "LF_ResidentDef \"{2}\" {", " m_sId \"night_shift\"", " m_sHomeKind \"House\"", " m_sHomePlaceId \"saint-philippe.home.night_shift\"", "}"].join("\n");
+  const homes = ["x m_sId \"saint-philippe.home.other\"", "GenericEntity ResidentDoor_a {", "}", "x m_sId \"saint-philippe.home.night_shift\"", "GenericEntity ResidentPlate_b : \"{1}p\" {", "}", "GenericEntity ResidentDoor_b {", "}"].join("\n");
+  const ok = nightShiftHomeId(conf) === "saint-philippe.home.night_shift" && homeDoorOf(homes, "saint-philippe.home.night_shift") === "ResidentDoor_b" && homeDoorOf(homes, "nope") === "" && nightShiftHomeId("") === "";
+  console.log(ok ? "dirty-money-island selftest: OK" : "dirty-money-island selftest: FAIL");
+  return ok ? 0 : 1;
+}
+
 function finish(results) {
   const failed = results.filter((r) => !r.ok);
   console.log(`dirty-money-island: ${failed.length ? `FAIL (${failed.map((r) => r.name.split(" ")[0]).join(", ")})` : "PASS"} - ${results.length - failed.length}/${results.length} steps`);
@@ -161,5 +193,5 @@ function finish(results) {
 export default {
   name: "dirty-money-island",
   usage: "dirty-money-island   (up --mission island)",
-  run: () => runDirtyMoneyIsland(),
+  run: (ctx) => ((ctx?.args ?? process.argv.slice(2)).includes("--selftest") ? selftest() : runDirtyMoneyIsland()),
 };

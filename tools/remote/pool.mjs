@@ -93,6 +93,7 @@ export function poolSettings(root) {
     sessionHoldMin: pick("sessionHoldMin", "LF_POOL_SESSION_HOLD_MIN"),
     sessionGraceMin: pick("sessionGraceMin", "LF_POOL_SESSION_GRACE_MIN"),
     sessionHoldMaxMin: pick("sessionHoldMaxMin", "LF_POOL_SESSION_HOLD_MAX_MIN"),
+    sessionBusyExtraMin: pick("sessionBusyExtraMin", "LF_POOL_SESSION_BUSY_EXTRA_MIN"),
     sessionKeepHours: pick("sessionKeepHours", "LF_POOL_SESSION_KEEP_H"),
     minFreeDiskGb: pick("minFreeDiskGb", "LF_POOL_MIN_FREE_DISK_GB"),
     rtIdleMin: pick("rtIdleMin", "LF_POOL_RT_IDLE_MIN"),
@@ -1598,6 +1599,8 @@ export function reapIdleSessions(root, locals, tickets, settings = poolSettings(
         if (w.fresh) console.log(`pool: the session of ${info.slug ?? "another worktree"} is past its ${capMin} min cap with ${waiters.length} waiting; warned, it closes in ${settings.sessionGraceMin} min`);
       }
       if (hv.phase !== "close") continue;
+      // A proof or restart is running (its heartbeat is fresh): let it finish rather than close the session under it.
+      if (q.busyDefersClose({ busyUntilMs: Date.parse(lease.busyUntil), now, heldMs: hv.heldMs, capMin, graceMin: settings.sessionGraceMin, extraMin: settings.sessionBusyExtraMin })) continue;
       reason = `held ${Math.round(hv.heldMs / 60000)} min (cap ${capMin}) with ${waiters.length} session request(s) waiting, warned ${settings.sessionGraceMin} min ago`;
       kind = "hold-cap";
     }
@@ -1656,7 +1659,7 @@ export function reapRemoteIdleSessions(root, m, settings = poolSettings(root), o
   const rows = (opts.read ?? readRemoteSessions)(m) ?? [];
   const out = [];
   for (const r of rows) {
-    const t = [r.lease?.lastCommandAt, r.readyAt, r.startedAt, r.lock?.at].map((x) => Date.parse(x)).filter(Number.isFinite);
+    const t = [r.lease?.lastCommandAt, r.lease?.busyUntil, r.readyAt, r.startedAt, r.lock?.at].map((x) => Date.parse(x)).filter(Number.isFinite);
     for (const ms of r.mtimes ?? []) if (Number.isFinite(Number(ms))) t.push(Number(ms));
     const lastActiveAt = t.length ? Math.max(...t) : NaN;
     const idleMin = opts.waiting ? settings.sessionIdleMin : settings.sessionIdleMaxMin;
@@ -1932,8 +1935,22 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
 // `session up` takes it; a lost race there exits LANE_BUSY_CODE and the caller asks again.
 export const LANE_BUSY_CODE = 75;
 
+// maxClients (heat) caps what the router sends to a POOL machine over ssh. The machine this process runs on is never
+// excluded by it: `session up` without --wait starts any client count here (cmdSessionUp checks no cap), so a
+// --wait that drops it left no candidate at all on the laptop, where the laptop is the local machine, and the router
+// answered "no session lane freed within 90 min" after one second (2026-11-27, `up --clients 4 --wait`).
 export function sessionMachineCandidates(root, clients) {
-  return loadMachines(root).filter((m) => m.caps.includes("server") && (clients <= 0 || (m.caps.includes("clients") && !(m.maxClients && clients > m.maxClients))));
+  return loadMachines(root).filter((m) => m.caps.includes("server") && (clients <= 0 || (m.caps.includes("clients") && (m.via === "local" || !(m.maxClients && clients > m.maxClients)))));
+}
+
+// The refusal for a --wait request no machine in the pool can ever run (a client count over every maxClients, or no
+// machine with the clients cap): said at once, not after a pretend 90 minute wait.
+export function noSessionMachineError(root, clients) {
+  const names = loadMachines(root).map((m) => `${m.name}${m.maxClients ? ` (max ${m.maxClients} client(s))` : ""}${m.caps.includes("clients") ? "" : " (no clients cap)"}`);
+  const e = new Error(`no machine in the pool can run a session with ${clients} client(s): ${names.join(", ") || "none configured"}; ask for fewer clients or use --machine <name>`);
+  e.poolHeld = true;
+  e.refusal = true;
+  return e;
 }
 
 // Free session lane on a remote machine (locks only): false when unreachable.
@@ -1966,6 +1983,8 @@ export function machineCtx(root, m, settings, remote = null) {
 export async function chooseSessionMachine(root, { clients = 1, profile = "full", waitMs = 0, priority, meta = {}, log = console.log, opts = {}, avoid } = {}) {
   const all = sessionMachineCandidates(root, clients);
   // One machine configured: its own queue (cmdSessionUp) does the waiting.
+  // None can run it: with --wait that is a refusal, never "waited and nothing freed" (null means the wait ran out).
+  if (all.length === 0 && waitMs > 0) throw noSessionMachineError(root, clients);
   if (all.length < 2) return all[0] ?? null;
   const hereBuild = tb.serverBuildId(tb.localServerDir(root));
   const probeOf = opts.probe ?? ((m) => probe(root, m));
@@ -3113,7 +3132,7 @@ ${q.formatRunsByPurpose(kinds)}`);
   // The ship queue wt ship feeds (tools/ship-queue.mjs): what gates now, what waits and why, the last few done.
   const sq = shipQueue.readQueue(wt.hubDirOf(root));
   if (sq.entries.length) for (const l of shipQueue.statusLines(sq, { waits: shipQueue.pickRunnable(sq.entries, { slots: 99, lightSlots: 99 }).wait.filter((w) => !/gate slot/.test(w.why)) })) console.log(l);
-  else console.log("ship queue: empty (tools\cli ship-queue status)");
+  else console.log("ship queue: empty (tools\\cli ship-queue status)");
   return 0;
 }
 

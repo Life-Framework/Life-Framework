@@ -47,7 +47,7 @@ class LF_BanRecord
 	//! log's own retention (LF_IncidentConfig).
 	static const int INCIDENT_MAX = 10; // lf-fixed: bounds one text row, not a gameplay rule
 
-	protected static string s_sPath = "";
+	protected static string s_sPath;
 
 	//------------------------------------------------------------------------------------------------
 	//! Tests point this at a private file. An empty path uses the profile file.

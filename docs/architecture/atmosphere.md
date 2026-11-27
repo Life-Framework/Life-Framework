@@ -186,7 +186,7 @@ Six more radio tracks sit beside the store and pub tracks, for the story's radio
 `radio_orchestral_serenade` (`Sounds/Atmosphere/Atmosphere_Radio*.acp`, mono 24 kHz, about 60 s each, 2.8 MB
 a sample). They are ElevenLabs Music (`music_v1`, instrumental, 62 s each) like the store and pub tracks:
 one take per track, prompt, model and date in `ambience.json`, the pick and its reason beside the sound.
-`toolscli asset ambience --only generate` pays for them (it waits and retries on a 429 "system busy"),
+`tools\cli asset ambience --only generate` pays for them (it waits and retries on a 429 "system busy"),
 `--only process` band-limits to the small-radio-speaker band, closes the loop with the 2.5 s equal-power
 crossfade and sets the peak to -3 dBFS, and `--only wire` copies them into the pack and writes the projects.
 `radio-tracks-selftest.mjs` checks the spec, the dated record, the credit row ("Music generated with

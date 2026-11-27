@@ -101,7 +101,7 @@ StringTable {
     }
     CustomStringTableItem "{2A339D63A97098B6}" {
      Id "LF-Activity_Fishing_Rod_Note"
-     Target_en_us "Buy a fishing rod at the general store."
+     Target_en_us "Buy a fishing rod at the seed and feed store."
      Comment "Fishing step note, one sentence."
     }
     CustomStringTableItem "{547D45C328DE826A}" {
@@ -121,7 +121,7 @@ StringTable {
     }
     CustomStringTableItem "{6DD6F53CECE3FDBC}" {
      Id "LF-Activity_Lumber_Axe_Note"
-     Target_en_us "Buy an axe at the general store."
+     Target_en_us "Buy an axe at the hardware store."
      Comment "Lumber step note, one sentence."
     }
     CustomStringTableItem "{E465F8E7BDD765C3}" {
@@ -226,7 +226,7 @@ StringTable {
     }
     CustomStringTableItem "{2FC28DBE70BC949C}" {
      Id "LF-Activity_Mining_Ore_Note"
-     Target_en_us "Swing at the rust-veined rocks and pick up 15 iron nuggets, one full furnace load; every piece levels Mining, and level 2 opens the coal license."
+     Target_en_us "Swing at the rust-veined rocks and pick up 15 iron nuggets, one full furnace load; every piece levels Mining, and level 4 opens the East Rise coal seam."
      Comment "Mining step note, one sentence, with the levelling hint."
     }
     CustomStringTableItem "{BBF0328175038D91}" {
@@ -871,7 +871,7 @@ StringTable {
     }
     CustomStringTableItem "{F4258080CC43147C}" {
      Id "LF-Dialogue_ClerkEveron_SettleFoundation"
-     Target_en_us "Lay the foundation of your cottage. The general store sells gravel and cement."
+     Target_en_us "Lay the foundation of your cottage. The hardware store sells gravel and cement."
      Comment "Pack patch of the clerk dialogue's line settle_foundation (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{C2B2AC304D6052FB}" {
@@ -1281,12 +1281,7 @@ StringTable {
     }
     CustomStringTableItem "{5B5767DDBD7822D1}" {
      Id "LF-Dialogue_ForemanCoalmansBrow_Next02"
-     Target_en_us "Next up, level 2. Coal face permit: cut coal with a pick. Keep swinging."
-     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
-    }
-    CustomStringTableItem "{ECAED3F1E2EFB65D}" {
-     Id "LF-Dialogue_ForemanCoalmansBrow_Next03"
-     Target_en_us "Next up, level 3. Copper seam permit: cut copper ore. Keep swinging."
+     Target_en_us "Next up, level 2. Coal face permit. The East Rise coal seam opens at Mining 4. Keep swinging."
      Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
     }
     CustomStringTableItem "{559537B1196BA0B6}" {
@@ -1297,11 +1292,6 @@ StringTable {
     CustomStringTableItem "{245379492B9DA31E}" {
      Id "LF-Dialogue_ForemanCoalmansBrow_Next05"
      Target_en_us "Next up, level 5. Seasoned miner license: cut any ore twice as fast. Keep swinging."
-     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
-    }
-    CustomStringTableItem "{A0A02721D8EA9C3B}" {
-     Id "LF-Dialogue_ForemanCoalmansBrow_Next06"
-     Target_en_us "Next up, level 6. Gold seam permit: cut gold ore. Keep swinging."
      Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
     }
     CustomStringTableItem "{E3081B2AD3609B7C}" {
@@ -4111,7 +4101,7 @@ StringTable {
     }
     CustomStringTableItem "{8D9AF0769206C83F}" {
      Id "LF-Handbook_Everon_MedicBody2"
-     Target_en_us "Medics treat people in the street and admit them to the ward. A medic needs an ambulance service ID, issued at the hospital, before going on duty. Only licensed medics may take the morphine and saline from the medic stores."
+     Target_en_us "Medics treat people in the street and admit them to the ward. Anyone may sign on: clock in at the medic duty desk in the clinic and take the medic kit. Saline and morphine join the kit as you rise in rank."
      Comment "Everon handbook page medic, paragraph 2 (#1776)."
     }
     CustomStringTableItem "{325BC1AC6E7EF57B}" {
@@ -5409,6 +5399,11 @@ StringTable {
      Target_en_us "Saint-Philippe"
      Comment "Named place (#1943, town pass #1947): the map label dispatch reads for a robbery away from any sign; LF_NamedPlaces.Nearest."
     }
+    CustomStringTableItem "{BAB9ACAE05275AD2}" {
+     Id "LF-PlayerMenu_SkillDesc_MINER"
+     Target_en_us "Coal and iron from the pits. The richer ores want more experience first."
+     Comment "Everon pack override of the Mining skill line (#5065): the island has no copper or gold rock, so the core line that names them is replaced."
+    }
     CustomStringTableItem "{3F2132C5DE771A7C}" {
      Id "LF-PlaytestTown_Arrival_Desc"
      Target_en_us "Walk to the town hall on the square and talk to the clerk at the desk for your papers."
@@ -5626,7 +5621,7 @@ StringTable {
     }
     CustomStringTableItem "{4D8E21B7A09C35F6}" {
      Id "LF-Quest_SettleFoundation_Desc"
-     Target_en_us "Lay the foundation of your cottage. The general store sells gravel and cement."
+     Target_en_us "Lay the foundation of your cottage. The hardware store sells gravel and cement."
      Comment "Settling-in chain: finish the foundation stage on a plot (#3195)."
     }
     CustomStringTableItem "{91C6F3A82E5B704D}" {
@@ -7636,7 +7631,7 @@ StringTable {
     }
     CustomStringTableItem "{31F99065D184F5F5}" {
      Id "LF-Sign_Mining_What"
-     Target_en_us "Iron, copper, and gold ore in the rocks here. The furnace stands next to them."
+     Target_en_us "Iron ore in the rocks here. The furnace stands next to them."
      Comment "Mining sign card, What section."
     }
     CustomStringTableItem "{2C369D85CBC200FE}" {
@@ -7851,7 +7846,7 @@ StringTable {
     }
     CustomStringTableItem "{6DB7091FD56820C9}" {
      Id "LF-Sign_PostOffice_Needs"
-     Target_en_us "Courier work is open to all|Fuel delivery needs work level 2, taxi work level 3|Every paid run counts toward your level"
+     Target_en_us "Courier work is open to all|Fuel delivery needs work level 4, taxi work level 6|Every paid run counts toward your level"
      Comment "Sign card for the post office (delivery jobs), Needs section."
     }
     CustomStringTableItem "{1E58663948A81073}" {
@@ -9481,13 +9476,13 @@ StringTable {
     }
     CustomStringTableItem "{2D369C29900B50C8}" {
      Id "LF-Unlock_Miner_02"
-     Target_en_us "Coal face permit: cut coal with a pick"
+     Target_en_us "Coal face permit: the East Rise coal seam opens at Mining 4"
      Comment "What Miner level 2 opens (a real gate: LICENSE); the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{1A00A6261B157402}" {
      Id "LF-Unlock_Miner_03"
-     Target_en_us "Copper seam permit: cut copper ore"
-     Comment "What Miner level 3 opens (a real gate: LICENSE); the level-up card prefixes Opens:."
+     Target_en_us "Mining 3: a steady swing"
+     Comment "Miner level 3 milestone (#5065): opens nothing; the island has no copper rock, so the copper seam permit is gone from the card. The card and F2 show this line as it is."
     }
     CustomStringTableItem "{BC5517754137773A}" {
      Id "LF-Unlock_Miner_04"
@@ -9501,8 +9496,8 @@ StringTable {
     }
     CustomStringTableItem "{1C250B11512B3D55}" {
      Id "LF-Unlock_Miner_06"
-     Target_en_us "Gold seam permit: cut gold ore"
-     Comment "What Miner level 6 opens (a real gate: LICENSE); the level-up card prefixes Opens:."
+     Target_en_us "Mining 6: you read the rock"
+     Comment "Miner level 6 milestone (#5065): opens nothing; the island has no gold rock, so the gold seam permit is gone from the card. The card and F2 show this line as it is."
     }
     CustomStringTableItem "{C11E3BA396E420F8}" {
      Id "LF-Unlock_Miner_07"

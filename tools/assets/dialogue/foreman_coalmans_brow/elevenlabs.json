@@ -42,30 +42,17 @@
       "mouth": "999866439987520697477367675754167766587664342100000000009999862764386415687644576553100"
     },
     "next_02": {
-      "hash": "b170a8e6ad877e6e",
-      "date": "2026-11-24",
+      "hash": "a48c7f12690fc55f",
+      "date": "2026-11-27",
       "voice_id": "nPczCjzI2devNBz1zQrb",
       "voice_name": "Brian - Deep, Resonant and Comforting",
       "model": "eleven_multilingual_v2",
-      "text": "Next up, level 2. Coal face permit: cut coal with a pick. Keep swinging.",
-      "chars": 72,
-      "chars_total": 56,
-      "request_id": "71oxKpecknBJrS1OYeEd",
-      "seconds": 4.23,
-      "mouth": "9986496288572468643200000049984397513877742000058961459877642149512100289353788642100"
-    },
-    "next_03": {
-      "hash": "ed1f46ed4e555574",
-      "date": "2026-11-24",
-      "voice_id": "nPczCjzI2devNBz1zQrb",
-      "voice_name": "Brian - Deep, Resonant and Comforting",
-      "model": "eleven_multilingual_v2",
-      "text": "Next up, level 3. Copper seam permit: cut copper ore. Keep swinging.",
-      "chars": 68,
-      "chars_total": 57,
-      "request_id": "mRtO5ByPJ53KN6rpEDKf",
-      "seconds": 3.98,
-      "mouth": "99863962886734787642000000499668539855767731100379303785274577542239452775542100"
+      "text": "Next up, level 2. Coal face permit. The East Rise coal seam opens at Mining 4. Keep swinging.",
+      "chars": 93,
+      "chars_total": 93,
+      "request_id": "GMiNSV5ynEaS8APfZvvn",
+      "seconds": 6.36,
+      "mouth": "99668971599672439764320000000006699647864138776310000000000991999526987543386554677667546585369877633766643100004994538876431000"
     },
     "next_04": {
       "hash": "2255eb47fb20cc31",
@@ -92,19 +79,6 @@
       "request_id": "SAZpNBGTSu8kbmZ6FS3l",
       "seconds": 4.96,
       "mouth": "9986495498874786653210000001679998998987776775468530599798877762197644369876420000005994538887542000"
-    },
-    "next_06": {
-      "hash": "fe58199ec434d6a6",
-      "date": "2026-11-24",
-      "voice_id": "nPczCjzI2devNBz1zQrb",
-      "voice_name": "Brian - Deep, Resonant and Comforting",
-      "model": "eleven_multilingual_v2",
-      "text": "Next up, level 6. Gold seam permit: cut gold ore. Keep swinging.",
-      "chars": 64,
-      "chars_total": 44,
-      "request_id": "Y3uMeFWNp5F5PFTRVUnu",
-      "seconds": 4.18,
-      "mouth": "996689548856543984253310001049975449983377777410379227976776663200001397453877642100"
     },
     "next_10": {
       "hash": "324ea913c641f068",

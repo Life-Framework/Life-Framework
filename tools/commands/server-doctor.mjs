@@ -8,7 +8,7 @@ export const help = "server-doctor <profile-or-log>   which mods loaded, script 
 export async function main(args, { root }) {
   const target = args.find((a) => !a.startsWith("--"));
   if (!target || args.includes("--help")) {
-    console.log("usage: tools\cli server-doctor <profile-folder|console.log>");
+    console.log("usage: tools\\cli server-doctor <profile-folder|console.log>");
     return target ? 0 : 2;
   }
   const log = findLog(target);

@@ -132,7 +132,7 @@ export const STAGES = [
     // The server log of a server booted on this fixture; the driver (boot-run.mjs) boots, reads and stops.
     run(fx) {
       if (!isBoot(fx)) return [];
-      if (!bootDriver) return ["boot: no server driver (run `tools\cli config-harness --stage boot`)"];
+      if (!bootDriver) return ["boot: no server driver (run `tools\\cli config-harness --stage boot`)"];
       return judgeBootLog(fx.expect.bootLog, bootDriver.log(fx));
     },
   },
@@ -179,7 +179,7 @@ export function main(args) {
     return import("./boot-run.mjs").then((m) => m.runBootStage(val("--dir"), val("--only") ?? ""));
   }
   if (want === "client") {
-    console.log("config-harness: the client stage needs a running game: `tools\cli session up --clients 1`, then `tools\cli session config-harness-proof`, then `session down`");
+    console.log("config-harness: the client stage needs a running game: `tools\\cli session up --clients 1`, then `tools\\cli session config-harness-proof`, then `session down`");
     return 2;
   }
   const stages = want === "all" ? STAGES.filter((s) => !s.needs) : STAGES.filter((s) => s.name === want);

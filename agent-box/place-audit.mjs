@@ -890,7 +890,7 @@ function worldSelftest(fail) {
   if (!res.ranked.some((r) => r.name === "FixtureFloater" && r.problems.some((p) => p.kind === "floating"))) fail("the fixture's floating barrel is flagged floating");
   // The measured bounds list covers every vanilla prefab the layers use, or lists it as unmeasured.
   const list = readJson(join(ROOT, "tools", "place", "prefab-bounds.json"), null);
-  if (!list?.prefabs) fail("tools/place/prefab-bounds.json missing; run tools\cli place measure");
+  if (!list?.prefabs) fail("tools/place/prefab-bounds.json missing; run tools\\cli place measure");
   else {
     const addon = join(ROOT, "addons", "LifeFramework");
     const unlisted = new Set();
@@ -900,7 +900,7 @@ function worldSelftest(fail) {
       }
     }
     const verdict = boundsGapVerdict(unlisted.size, currentBranch());
-    const msg = `vanilla prefabs missing from prefab-bounds.json (run tools\cli place measure): ${[...unlisted].slice(0, 3)}`;
+    const msg = `vanilla prefabs missing from prefab-bounds.json (run tools\\cli place measure): ${[...unlisted].slice(0, 3)}`;
     if (verdict === "fail") fail(msg);
     else if (verdict === "warn") console.log(`WARN  place-audit selftest: ${msg} (a warning on a maintainer branch)`);
   }

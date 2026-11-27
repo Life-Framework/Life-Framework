@@ -434,7 +434,7 @@ server. A missing save under the flag is engine-handled and starts fresh; an
 EL payload that fails to read logs a `Persistence` warning and leaves that
 feature's live state untouched.
 
-`toolscli host start` passes the flag whenever the host profile has a save, and
+`tools\cli host start` passes the flag whenever the host profile has a save, and
 `host stop` closes the server through `$profile:lf-host-stop` so the engine
 writes the SHUTDOWN save (see `docs/playtest.md`).
 

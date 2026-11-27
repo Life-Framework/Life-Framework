@@ -602,7 +602,9 @@ class LF_DriveHarness
 			// The AI road network is loaded on the server only: the server builds the route (dev gate)
 			// and sends its points back, then OnRoute starts the drive.
 			s_iRouteId = id;
+			LzRouteTokens();
 			s_aRouteTokens.Clear();
+			LzRouteTokens();
 			s_aRouteTokens.InsertAll(tokens);
 			character.LF_AskDriveRoute(id, here, roadGoal);
 			LF_AgentHarness.Answer(id, "pending", "routing");
@@ -618,7 +620,13 @@ class LF_DriveHarness
 	}
 
 	protected static int s_iRouteId;
-	protected static ref array<string> s_aRouteTokens = {};
+	protected static ref array<string> s_aRouteTokens;
+	protected static array<string> LzRouteTokens()
+	{
+		if (!s_aRouteTokens)
+			s_aRouteTokens = new array<string>();
+		return s_aRouteTokens;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The server answer to a road route request: "x,z;x,z;..." or an error reason. A negative id is
@@ -659,6 +667,7 @@ class LF_DriveHarness
 
 		array<vector> route = {};
 		DecodeRoute(detail, route);
+		LzRouteTokens();
 		StartDrive(id, s_aRouteTokens, car, route);
 	}
 

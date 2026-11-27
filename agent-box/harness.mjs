@@ -900,6 +900,12 @@ export function readFlow(name) {
     .flatMap((line) => (line.startsWith("@handbook-tour") ? expandHandbookTour(line) : [line]));
 }
 
+// A `state` that failed because nothing is there to answer (not a game-side error): sendCommand's timeout
+// (`no_session`) or addressFor's refusal (`no_live_session`, a session of another checkout, no id).
+export function flowUnanswered(result) {
+  return result?.status !== "ok" && /^(no_session|no_live_session|session_has_no_id|session_owned_by_other_checkout)/.test(String(result?.detail ?? ""));
+}
+
 // `step` and `expect` lines judge a flow (flow-asserts.mjs): a failed line or assert fails its step, and
 // the flow ends with a PASS/FAIL table and exit 1 when any step failed.
 export function runFlow(lines, name = "flow") {
@@ -922,6 +928,13 @@ export function runFlow(lines, name = "flow") {
       current.before = base.status === "ok" ? parseState(base.detail) : null;
       if (base.status !== "ok") failStep(`state at step start: ${base.detail}`);
       out.push(`== step ${current.id} ${current.title}${current.pending ? ` [pending ${current.pending}]` : ""}`);
+      // Nobody answers (no session, or a closed one): every later line would wait out its own timeout and the flow
+      // would print nothing for minutes. Stop now and say which session the commands were aimed at.
+      if (flowUnanswered(base)) {
+        out.push(`flow ${name} stopped at step ${current.id}: no session client answers (${base.detail}). Is a session up for this checkout (\`tools\\cli session status\`)? A flow on a session with more than one client takes \`--client <n>\` in front of \`flow\`.`);
+        code = 1;
+        break;
+      }
       continue;
     }
     if (verb === "expect") {
@@ -1856,9 +1869,48 @@ kit enters play only when a session is not already up.
 `);
 }
 
+// Commands that never send to a client: no session to default to.
+const NO_CLIENT_COMMANDS = new Set(["selftest", "status", "setup", "launch", "play", "town", "pillar", "layers"]);
+const samePath = (a, b) => resolve(String(a)).replaceAll("\\", "/").toLowerCase() === resolve(String(b)).replaceAll("\\", "/").toLowerCase();
+
+// A command with no --client, run while this checkout has a live session, goes to that session's client 1.
+// Without it the command file of the default profile (the Workbench's) was written and nothing read it: every step
+// of `flow` waited out its timeout and the run printed nothing for 10 minutes (2026-11-27, twice), while the
+// session, which saw no command, was closed by the pool as idle. Pure: `session` is the recorded session.json,
+// `alive(pid)` says whether a process runs. Returns { argv, note }: argv with `--client 1` in front when it applies,
+// note a line for stderr when the session has more than one client ("" otherwise).
+export function defaultClientArgs(argv, session, root, alive, env = process.env) {
+  if (argv.includes("--client") || env.LF_HARNESS_NO_DEFAULT_CLIENT === "1") return { argv, note: "" };
+  const first = argv.find((a) => !a.startsWith("--"));
+  if (!first || NO_CLIENT_COMMANDS.has(first) || (first === "chains" && !argv.includes("--run"))) return { argv, note: "" };
+  if (!session || session.stoppedAt || !session.id) return { argv, note: "" };
+  if (!samePath(session.root ?? "", root)) return { argv, note: "" };
+  const pids = [session.serverPid, ...(session.clients ?? []).map((c) => c.pid)];
+  if (!pids.some((p) => p && alive(p))) return { argv, note: "" };
+  const n = (session.clients ?? []).length || Number(session.expectClients) || 0;
+  if (n < 1) return { argv, note: "" };
+  const note = n > 1 ? `harness: this session has ${n} clients and no --client was given; using client 1 (pass --client <n> for another)` : "";
+  return { argv: ["--client", "1", ...argv], note };
+}
+
+function pidAlive(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return e.code === "EPERM";
+  }
+}
+
 // Pulls --client <n> out of argv and points the command files at that
 // session client (agent-box/session.mjs).
 export async function applyClientFlag(argv) {
+  if (!argv.includes("--client")) {
+    const { readSession, sessionDir } = await import("./session.mjs");
+    const dflt = defaultClientArgs(argv, readSession(sessionDir()), ROOT, pidAlive);
+    if (dflt.note) console.error(dflt.note);
+    argv = dflt.argv;
+  }
   const i = argv.indexOf("--client");
   if (i === -1) return argv;
   const n = Number(argv[i + 1]);
