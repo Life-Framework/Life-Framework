@@ -74,29 +74,21 @@ SizeLayoutWidgetClass "{13CF4B9DE8E80BD2}" {
         }
        }
       }
-      SizeLayoutWidgetClass "{4E1B7A92C03D5F68}" {
-       Name "ActionColumn"
-       Slot LayoutSlot "{4E1B7A92C03D5F69}" {
+      ButtonWidgetClass "{8D5C563D5F1D886D}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+       Name "ActionButton"
+       Slot LayoutSlot "{A49BCFCE60FB3967}" {
         VerticalAlign 3
+        SizeMode Fill
+        FillWeight 1
        }
-       AllowWidthOverride 1
-       WidthOverride 170
-       {
-        ButtonWidgetClass "{8D5C563D5F1D886D}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
-         Name "ActionButton"
-         Slot AlignableSlot "{A49BCFCE60FB3967}" {
-          HorizontalAlign 3
-          VerticalAlign 3
-         }
-         components {
-          SCR_ButtonTextComponent "{8519622018F7446E}" {
-           m_sText ""
-          }
-          LF_UIButtonRelay "{5A22B3C9C3D9A3B5}" {
-          }
-         }
+       components {
+        SCR_ButtonTextComponent "{8519622018F7446E}" {
+         m_sText ""
+        }
+        LF_UIButtonRelay "{5A22B3C9C3D9A3B5}" {
         }
        }
+      }
      }
     }
    }

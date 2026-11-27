@@ -311,7 +311,7 @@ class LF_UIScreen
 			return false;
 
 		bool show = !action.IsEmpty();
-		ShowAction(button, show);
+		button.SetVisible(show);
 		if (!show)
 			return true;
 
@@ -1340,19 +1340,7 @@ class LF_UIScreen
 		WireButton(button, part.GetName(), part.GetAction(), false);
 
 		if (part.GetAction().IsEmpty())
-			ShowAction(button, false);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Shows or hides a status row's action. A compact row keeps its button in a fixed-width ActionColumn (so the Order
-	//! column lines up whatever the price chip's width); the column goes with the button.
-	protected void ShowAction(Widget button, bool show)
-	{
-		Widget column = button.GetParent();
-		if (column && column.GetName() == "ActionColumn")
-			column.SetVisible(show);
-
-		button.SetVisible(show);
+			button.SetVisible(false);
 	}
 
 	//------------------------------------------------------------------------------------------------
