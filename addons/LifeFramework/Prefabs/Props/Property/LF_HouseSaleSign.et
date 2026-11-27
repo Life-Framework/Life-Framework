@@ -3,6 +3,7 @@ GenericEntity : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
    m_sSignId "house_for_sale"
+   m_sSoldSignId "house_sold"
    m_vRimColor 0.75 0.1 0.1
    m_vPaintColor 0.97 0.97 0.97
    m_vTextColor 0.75 0.1 0.1
