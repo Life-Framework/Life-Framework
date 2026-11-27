@@ -17,7 +17,7 @@
 // (not a directory or git-metadata touch, #698) belongs to a live agent and is never touched.
 
 import { spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, join, normalize, resolve } from "node:path";
@@ -259,7 +259,18 @@ export function driverGitArgs() {
   if (existsSync(HUB_ATTRIBUTES)) {
     const merges = readFileSync(HUB_ATTRIBUTES, "utf8").split(/\r?\n/).filter((l) => /\bmerge=lf-/.test(l));
     const out = join(tmpdir(), "lf-heal-attributes");
-    writeFileSync(out, merges.join("\n") + "\n");
+    // One shared file, read by every git a heal starts: two heals (or the sections of a selftest) at once must never see
+    // it truncated. Same content: leave it alone; otherwise write a private copy and move it over (a refused move means
+    // another heal holds it open, and it already has this content).
+    const text = merges.join("\n") + "\n";
+    let same = false;
+    try { same = readFileSync(out, "utf8") === text; } catch { /* not there yet */ }
+    if (!same) {
+      const mine = `${out}.${process.pid}`;
+      writeFileSync(mine, text);
+      try { renameSync(mine, out); } catch { if (!existsSync(out)) writeFileSync(out, text); }
+      try { rmSync(mine, { force: true }); } catch { /* a leftover is one small file */ }
+    }
     args.push("-c", `core.attributesFile=${out.replace(/\\/g, "/")}`);
   }
   return args;

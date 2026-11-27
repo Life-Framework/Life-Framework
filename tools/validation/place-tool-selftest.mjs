@@ -1,6 +1,10 @@
 // Proves the placement tool's primitives (tools/place/place.mjs) on fixed bounds and synthetic probe
 // inputs: tools/**, agent-box/**, .githooks/**
 // rays: no game files, no server. Each block names the failure it guards (docs/placement-tool.md).
+// Speed (2026-11-27): the file is four sections run in parallel (selftest-sections.mjs), and the grid audit rows stand 40 m apart:
+// with every box at one point the 2774 grid props overlapped in pairs and each judge() spent 5 s in obbPenetration on overlaps no
+// assertion reads (46 s of the 50). serverRun takes `records` so the later boots reuse the list the first one read.
+// red-proof 2026-11-27: "a grid prop placed in its Grid layer is listed and clean" flipped printed FAIL and "section 'grid audit' exited 1"; restored.
 // red-proof: 2026-11-11, one line broken per primitive, each restored after its FAIL was seen:
 //   restOn without the edge clamp       -> FAIL on: an east anchor keeps the till inside the edge
 //   surfaceTop ignoring the probe cells -> FAIL top: the working top is the probed counter top, not the lower shelf
@@ -29,6 +33,7 @@
 //     -> FAIL ground: a building's pivot (its floor) stands on the ground, its foundation below
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { scratchDir } from "../lib/scratch.mjs";
+import { sections } from "../lib/selftest-sections.mjs";
 import { restoreOthers, snapshotOthers } from "../visual/place-settle.mjs";
 import { join } from "node:path";
 import { checkEntities } from "../actions/prop-on-surface.mjs";
@@ -53,6 +58,8 @@ const refuses = (fn, pattern, what) => {
   }
 };
 
+const S = sections(import.meta.url);
+S.add("primitives, layer edits and judge", () => {
 // ---- maths: the yaw convention is the engine's (yaw 90 turns local +z to world +x) -----------------
 {
   const [x, z] = rot(90, 0, 1);
@@ -279,7 +286,9 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
   ok(judge([t], recs, "0 missing=1")[0].problems.some((p) => /not in the world/.test(p)), "judge: a prefab that did not load fails");
   ok(judge([{ ...t, hung: true }], recs, `0 ${row({ gap: 1.4, backed: 0 })}`)[0].problems.some((p) => /hangs in the air|floating/.test(p)), "judge: a hung thing with nothing behind it fails");
 }
+});
 
+S.add("grid audit", () => {
 // ---- grid audit: `place` into GridWorld_Layers/Grid_<slug>.layer audits that layer ----------------------
 // The audit used to list only the playtest world's layers, so a correctly placed grid prop was "not listed"
 // and rolled back (three agents fell back to --no-verify plus `audit placement --grid`). serverRun now takes
@@ -291,11 +300,13 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
   ok(gridNames.size > 0 && [...gridNames].some((f) => f.startsWith("Grid_")), "grid audit: GridWorld_Layers holds a Grid_*.layer to measure");
   ok(gridWorldOf(["Grid_police_gates.layer"]) === true && gridWorldOf(["Street_Police.layer", "Signs.layer"]) === false && gridWorldOf([]) === false, "grid audit: a Grid_*.layer is the grid world, any other layer is the town");
   refuses(() => gridWorldOf(["Grid_police_gates.layer", "Street_Police.layer"]), /GridWorld .* town at once/, "grid audit: a command spanning both worlds is refused");
-  const clean = (o = {}) => `bmin=0,0,0 bmax=1,1,1 gap=${o.gap ?? 0} tilt=${o.tilt ?? 0} walk=-1 pgap=${o.pgap ?? 0} clip=none scale=1 on=terrain over=0 drop=0 backed=0 c=5,0.3,5 h=0.3,0.3,0.3 a0=1,0,0 a1=0,1,0 a2=0,0,1 flags=none found=x`;
+  // Each row stands 40 m from the last (c=): with every box at one point, the 2774 props of the grid world interpenetrate in
+  // pairs and each judge() spent 5 s in obbPenetration on overlaps the assertions never look at (2026-11-27).
+  const clean = (o = {}, i = 0) => `bmin=0,0,0 bmax=1,1,1 gap=${o.gap ?? 0} tilt=${o.tilt ?? 0} walk=-1 pgap=${o.pgap ?? 0} clip=none scale=1 on=terrain over=0 drop=0 backed=0 c=${5 + 40 * i},0.3,5 h=0.3,0.3,0.3 a0=1,0,0 a1=0,1,0 a2=0,0,1 flags=none found=x`;
   const boot = (seen, o) => (records, opts) => {
     seen.records = records;
     seen.opts = opts;
-    return { outText: records.map((_, i) => `${i} ${clean(o)}`).join("\n") + "\n", failed: false };
+    return { outText: records.map((_, i) => `${i} ${clean(o, i)}`).join("\n") + "\n", failed: false };
   };
   const seen = {};
   const grid = serverRun([], { grid: true, measure: boot(seen) });
@@ -318,18 +329,20 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
     ok(judge([t], town.records, town.outText)[0].problems.some((p) => /did not list it/.test(p)), "grid audit: judged against the town's list the same grid prop is 'not listed' (the old failure)");
     // The grid bar: a tilt is the town's concern, not the grid's (docs/architecture/world-zones.md "Look bar").
     const tiltSeen = {};
-    const tilted = serverRun([], { grid: true, measure: boot(tiltSeen, { tilt: 30 }) });
+    const tilted = serverRun([], { grid: true, records: grid.records, measure: boot(tiltSeen, { tilt: 30 }) });
     ok(judge([t], tilted.records, tilted.outText)[0].problems.some((p) => /tilt/i.test(p)), "grid audit: the town bar flags a tilted prop (control)");
     ok(judge([t], tilted.records, tilted.outText, { grid: true })[0].problems.length === 0, "grid audit: a tilted grid prop passes the grid bar");
     // A label sign's pole goes 0.17 m into the gravel mound by the cell: the audit calls that fine (pivot above the mound), so does the grid judge.
-    const poled = serverRun([], { grid: true, measure: boot({}, { gap: -0.17, pgap: 0.34 }) });
+    const poled = serverRun([], { grid: true, records: grid.records, measure: boot({}, { gap: -0.17, pgap: 0.34 }) });
     ok(judge([t], poled.records, poled.outText, { grid: true })[0].problems.length === 0, "grid audit: a pole 0.17 m into a mound, pivot above it, passes (the audit's own sunk rule)");
     ok(judge([t], poled.records, poled.outText)[0].problems.some((p) => /0.17 m below/.test(p)), "grid audit: the town judge still fails the same 0.17 m (control)");
-    const aired = serverRun([], { grid: true, measure: boot({}, { gap: 0.08, pgap: 0.08 }) });
+    const aired = serverRun([], { grid: true, records: grid.records, measure: boot({}, { gap: 0.08, pgap: 0.08 }) });
     ok(judge([t], aired.records, aired.outText, { grid: true })[0].problems.some((p) => /0.08 m above/.test(p)), "grid audit: 8 cm of air under a grid prop still fails the tool");
   }
 }
+});
 
+S.add("settle", () => {
 // ---- settle (#2954): `place settle` and the settle step of on|ground|arrange|against ---------------------------
 // tools/place/fixtures/settle.json holds the spike's measured cases as the test server answered them. red-proof: 2026-11-18,
 // each line broken, the FAIL seen, restored:
@@ -392,9 +405,11 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
   const run = serverRun(["ray r1 0 1 0 0 0 0"], { grid: true, measure: boot, settle: ["settle e0 IronNugget_01", "settle e1 Farm_PressApple_1", "settle e2 @BarrelMetal_01_blue:191.8,0,310.4"] });
   ok(sent.extra.length === 4 && sent.extra[0].startsWith("ray ") && sent.extra[1] === "settle e0 IronNugget_01", `settle: the boot is sent the settle lines after the rays (${JSON.stringify(sent.extra)})`);
   ok(run.settles.size === 3 && run.rays.size === 1, "settle: serverRun returns the settles and keeps the rays");
-  refuses(() => serverRun([], { grid: true, measure: boot, settle: ["settle e0 A", "settle e1 B", "settle e2 C", "settle e3 D"] }), /answered 3 of 4 settle lines/, "settle: a server that answers fewer settle lines than were sent is an old build");
+  refuses(() => serverRun([], { grid: true, records: run.records, measure: boot, settle: ["settle e0 A", "settle e1 B", "settle e2 C", "settle e3 D"] }), /answered 3 of 4 settle lines/, "settle: a server that answers fewer settle lines than were sent is an old build");
 }
+});
 
+S.add("settle physics", () => {
 // ---- --settle physics (#3065) ---------------------------------------------------------------------------------
 // red-proof: 2026-11-18,
 //   settleModeOf still throwing for "physics"          -> FAIL physics: --settle physics is a mode
@@ -424,9 +439,9 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
   ok(put.join() === "default.layer" && readFileSync(join(dir, "default.layer"), "utf8") === "BSP 520\n", "physics: the editor save's rewrite of another layer is undone");
   ok(readFileSync(join(dir, "Grid_a.layer"), "utf8").includes("angles 89 170 -80"), "physics: the settled layer keeps its written pose");
 }
+});
 
-if (failed) {
-  console.log(`place-tool-selftest: FAILED (${failed})`);
-  process.exit(1);
-}
-console.log("place-tool-selftest: OK");
+process.exitCode = await S.run({
+  failed: () => failed,
+  summary: (n) => (n ? `place-tool-selftest: FAILED (${n})` : "place-tool-selftest: OK"),
+});

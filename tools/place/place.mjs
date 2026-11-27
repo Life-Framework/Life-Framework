@@ -876,9 +876,11 @@ export function parseRays(outText) {
 // `settle`: `settle <id> <token>` lines (settleLine): the server rests each entity by its measured mesh bottom
 // (LF_PlaceSnap, LF_PlacementAudit.SettleLine) after the rays and BEFORE the entity rows, so the audit rows of the
 // same boot measure the props already settled. The answers come back as `settles` (parseSettles).
-export function serverRun(rayLines = [], { grid = false, measure = measureTown, settle = [] } = {}) {
+// `records`: the entity list to measure when the caller already has it (a selftest that runs several boots over the same
+// world reads the layers once); by default the layers are read here.
+export function serverRun(rayLines = [], { grid = false, measure = measureTown, settle = [], records: given } = {}) {
   mkdirSync(TMP, { recursive: true });
-  const records = grid ? auditRecords({ grid: true }) : auditRecords({ annex: true });
+  const records = given ?? (grid ? auditRecords({ grid: true }) : auditRecords({ annex: true }));
   // The probe goes through the pool like `test` (RAM admission, FIFO queue, a run budget). This PC goes first
   // while it has room (a probe is seconds; another machine adds a sync); under the RAM floor the pool sends it
   // to the machine with headroom, carrying in.txt up and out.txt back. Never pinned (`local: true` timed out

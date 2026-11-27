@@ -18,7 +18,7 @@
 //      GIT_INDEX_FILE and friends (set when validate runs under a hook) are removed from the environment, and
 //      hooks are pinned off, so only the scratch repo decides.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
@@ -155,4 +155,59 @@ export function removeScratch(dir, { waitMs = 20000 } = {}) {
   }
   console.error(`WARN  selftest scratch folder left behind: ${dir} (${last?.code ?? ""} ${last?.message ?? last})`);
   return false;
+}
+
+// ---- fast history (one `git fast-import` spawn instead of one git call per commit) ----------------------------
+// A selftest that needs "main with merge commits for PRs 11, 12, 13" used to run init, add, commit, checkout, merge
+// and push for each of them: 6 to 7 spawns each, and a git spawn costs 0.3 s on the Windows runner and the dev
+// boxes. FastStream writes the same commits (same trees, same merge-commit messages) as one fast-import stream.
+//
+//   const fs = new FastStream();
+//   fs.commit("refs/heads/main", { mark: 1, message: "base", files: { "base.txt": "base\n" } });
+//   fs.commit("refs/tmp/pr11", { mark: 2, from: 1, message: "work", files: { "a.txt": "pr11\n" } });
+//   fs.commit("refs/heads/main", { mark: 3, from: 1, merge: [2], message: "Merge pull request #11", files: { "a.txt": "pr11\n" } });
+//   fs.reset("refs/heads/stable", 3);
+//   const sha = fastImport(originDir, fs);   // sha[1], sha[2], sha[3] by mark
+// A merge commit's tree starts from its first parent (`from`), so it lists the files the merged side brought in.
+export class FastStream {
+  constructor({ start = Math.floor(Date.now() / 1000) - 100000 } = {}) {
+    this.time = start;
+    this.parts = [];
+  }
+  data(text) {
+    return `data ${Buffer.byteLength(text, "utf8")}\n${text}\n`;
+  }
+  commit(ref, { mark, from, merge = [], message, files = {} }) {
+    this.time += 60;
+    const who = `t <t@t> ${this.time} +0000`;
+    let s = `commit ${ref}\n`;
+    if (mark !== undefined) s += `mark :${mark}\n`;
+    s += `author ${who}\ncommitter ${who}\n${this.data(message)}`;
+    if (from !== undefined) s += `from ${typeof from === "number" ? `:${from}` : from}\n`;
+    for (const m of merge) s += `merge ${typeof m === "number" ? `:${m}` : m}\n`;
+    for (const [path, text] of Object.entries(files)) s += `M 100644 inline ${path}\n${this.data(text)}`;
+    this.parts.push(`${s}\n`);
+    return this;
+  }
+  reset(ref, from) {
+    this.parts.push(`reset ${ref}\nfrom ${typeof from === "number" ? `:${from}` : from}\n\n`);
+    return this;
+  }
+  toString() {
+    return this.parts.join("");
+  }
+}
+
+// Feeds a FastStream (or a string) to `git fast-import` in `repo` (a bare or a normal repo) and returns { mark: sha }.
+export function fastImport(repo, stream) {
+  const marksFile = join(repo, `lf-fast-import-marks-${process.pid}`);
+  const r = spawnSync("git", ["fast-import", "--quiet", `--export-marks=${marksFile}`], { cwd: repo, input: String(stream), encoding: "utf8", windowsHide: true });
+  if (r.error || r.status !== 0) throw new Error(`git fast-import in ${repo}: ${describeRun(r)}`);
+  const sha = {};
+  for (const line of readFileSync(marksFile, "utf8").split("\n")) {
+    const m = /^:(\d+) ([0-9a-f]{40,64})$/.exec(line.trim());
+    if (m) sha[Number(m[1])] = m[2];
+  }
+  try { rmSync(marksFile, { force: true }); } catch { /* the folder is removed with the scratch repo anyway */ }
+  return sha;
 }
