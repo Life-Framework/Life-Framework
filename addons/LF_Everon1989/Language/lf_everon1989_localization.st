@@ -4244,6 +4244,16 @@ StringTable {
      Target_en_us "Aspirin"
      Comment "Shop row name for the base-game aspirin bottle wherever a list has no row key of its own (the priced extras); found by file name (UI sweep 2026-11-27)."
     }
+    CustomStringTableItem "{6C2F9A41D07E8B0D}" {
+     Id "LF-ItemName_CombatBoots_Soviet_01"
+     Target_en_us "Soviet combat boots, clean"
+     Comment "Workwear counter and clothing rack row name of the clean Soviet combat boots; the base game names it and the dirty pair both Soviet Combat Boots."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B0E}" {
+     Id "LF-ItemName_CombatBoots_Soviet_01_Dirty"
+     Target_en_us "Soviet combat boots, dirty"
+     Comment "Workwear counter row name of the dirty Soviet combat boots (see LF-ItemName_CombatBoots_Soviet_01)."
+    }
     CustomStringTableItem "{4B1D7E20A93C5F01}" {
      Id "LF-ItemName_Gauze_01"
      Target_en_us "Gauze roll"
@@ -4254,10 +4264,60 @@ StringTable {
      Target_en_us "Sterile gauze pack"
      Comment "Pharmacy row name of the white sealed gauze packet (see LF-ItemName_Gauze_01)."
     }
+    CustomStringTableItem "{6C2F9A41D07E8B07}" {
+     Id "LF-ItemName_Hat_Ushanka_01_folded"
+     Target_en_us "Ushanka, flaps up"
+     Comment "Clothing rack row name of the ushanka worn with the ear flaps tied up; the base game names both ushankas Ushanka."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B08}" {
+     Id "LF-ItemName_Hat_Ushanka_01_unfolded"
+     Target_en_us "Ushanka, flaps down"
+     Comment "Clothing rack row name of the ushanka worn with the ear flaps down (see LF-ItemName_Hat_Ushanka_01_folded)."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B0B}" {
+     Id "LF-ItemName_Jacket_Denim_01_strippedShirt"
+     Target_en_us "Jean jacket, clean"
+     Comment "Workwear counter row name of the clean jean jacket; the base game names it and the dirty one both Jean Jacket."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B0C}" {
+     Id "LF-ItemName_Jacket_Denim_01_strippedShirt_dirty"
+     Target_en_us "Jean jacket, dirty"
+     Comment "Workwear counter row name of the dirty jean jacket (see LF-ItemName_Jacket_Denim_01_strippedShirt)."
+    }
     CustomStringTableItem "{A0C7F324DEA458FE}" {
      Id "LF-ItemName_LF_Reaper_01"
      Target_en_us "Reaper"
      Comment "Farm supply row name for the tractor reaper, an implement with no inventory name; found by file name (UI sweep 2026-11-27)."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B01}" {
+     Id "LF-ItemName_Shirt_CottonShirt_01_V1"
+     Target_en_us "Cotton shirt, cream plaid"
+     Comment "Clothing rack row name of the cream plaid cotton shirt; the base game names all six variants Cotton Shirt, so the rack listed six identical rows (shop sheet follow-up 2026-11-27)."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B02}" {
+     Id "LF-ItemName_Shirt_CottonShirt_01_V2"
+     Target_en_us "Cotton shirt, red plaid"
+     Comment "Clothing rack row name of the red plaid cotton shirt (see LF-ItemName_Shirt_CottonShirt_01_V1)."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B03}" {
+     Id "LF-ItemName_Shirt_CottonShirt_01_V3"
+     Target_en_us "Cotton shirt, brown plaid"
+     Comment "Clothing rack row name of the brown plaid cotton shirt (see LF-ItemName_Shirt_CottonShirt_01_V1)."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B04}" {
+     Id "LF-ItemName_Shirt_CottonShirt_01_V4"
+     Target_en_us "Cotton shirt, slate plaid"
+     Comment "Clothing rack row name of the grey-blue plaid cotton shirt (see LF-ItemName_Shirt_CottonShirt_01_V1)."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B05}" {
+     Id "LF-ItemName_Shirt_CottonShirt_01_V5"
+     Target_en_us "Cotton shirt, blue plaid"
+     Comment "Clothing rack row name of the bright blue plaid cotton shirt (see LF-ItemName_Shirt_CottonShirt_01_V1)."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B06}" {
+     Id "LF-ItemName_Shirt_CottonShirt_01_V6"
+     Target_en_us "Cotton shirt, navy"
+     Comment "Clothing rack row name of the plain navy cotton shirt (see LF-ItemName_Shirt_CottonShirt_01_V1)."
     }
     CustomStringTableItem "{4B1D7E20A93C5F04}" {
      Id "LF-ItemName_Tourniquet_USSR_01"
@@ -4268,6 +4328,16 @@ StringTable {
      Id "LF-ItemName_Tourniquet_US_01"
      Target_en_us "Buckle tourniquet"
      Comment "Pharmacy row name of the olive strap tourniquet with the metal buckle; the base game names it and the rubber one both Tourniquet (UI sweep 2026-11-27)."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B0A}" {
+     Id "LF-ItemName_Watch_SandY184A"
+     Target_en_us "Wristwatch, black strap"
+     Comment "Clothing rack row name of the white-dial watch on a black strap (see LF-ItemName_Watch_Vostok)."
+    }
+    CustomStringTableItem "{6C2F9A41D07E8B09}" {
+     Id "LF-ItemName_Watch_Vostok"
+     Target_en_us "Wristwatch, brown strap"
+     Comment "Clothing rack row name of the Vostok watch on its brown leather strap; the base game names both watches Wristwatch."
     }
     CustomStringTableItem "{5E7C2A90D13B4F68}" {
      Id "LF-ItemName_WaterBottle"
