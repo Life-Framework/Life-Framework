@@ -86,20 +86,6 @@ class LF_PlotComponent : ScriptComponent
 	protected void OnOwnedReplicated()
 	{
 		SyncPlace();
-		RepaintFace();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The sign face on this prop (LF_SignComponent.m_sSoldSignId) follows the owned flag.
-	protected void RepaintFace()
-	{
-		IEntity owner = GetOwner();
-		if (!owner)
-			return;
-
-		LF_SignComponent face = LF_Component<LF_SignComponent>.Find(owner);
-		if (face)
-			face.OnSaleChanged();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -191,7 +177,6 @@ class LF_PlotComponent : ScriptComponent
 		Replication.BumpMe();
 		LF_Debug.Info(FEATURE, string.Format("plot sign '%1' owned=%2", m_sPlotKey, nowOwned));
 		SyncPlace();
-		RepaintFace();
 		return true;
 	}
 

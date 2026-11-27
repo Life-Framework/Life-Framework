@@ -78,9 +78,7 @@ class LF_Test_SignCoverage : LF_Test
 		// bus_timetable: the board on the LF_BusStop prefab, placed with each stop (GridWorld cell bus-stops, the pack island).
 		// export_orders: the dock export order board (#4411, LF_ExportOrderBoard), placed in its GridWorld cell until WK-W24_3 puts it on the dock.
 		// outpost_stock: the chalkboard of the LF_OutpostBoard prefab (#4452), placed at the island outposts and on the playtest town square (Village_Places.layer, pack world).
-		// house_sold, plot_sold: the faces the two sale signs switch to once the house or plot is owned (LF_SignComponent.m_sSoldSignId); no prop names them as its own id.
-		// shift_board: the post of the mine shift board (#4180), placed at Coalman's Brow in the pack world only since the town pass moved it out of DebugWorld.
-		return id == "shift_board" || id == "house_sold" || id == "plot_sold" || id == "outpost_stock" || id == "export_orders" || id == "mining" || id == "plot_for_sale" || id == "house_for_sale" || id == "chalk_sample" || id == "price_board" || id == "bus_timetable" || id == "taxi_stand";
+		return id == "outpost_stock" || id == "export_orders" || id == "mining" || id == "plot_for_sale" || id == "house_for_sale" || id == "chalk_sample" || id == "price_board" || id == "bus_timetable" || id == "taxi_stand";
 	}
 
 	//------------------------------------------------------------------------------------------------

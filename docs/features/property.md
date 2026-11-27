@@ -84,13 +84,6 @@
   and from every `LF_HouseManagerComponent.SetOwner`; the action reads only that flag: "Buy house" while for sale, "Sold"
   (not usable) after. The owner key is never sent. Proof: `property/house-sale-buy`; the dedicated-client view of the Sold flip
   is a manual step.
-- 🟡 (sold-sign-board) The board's printed face follows the same flag. It printed "FOR SALE" once and never again, so a bought
-  cottage still read for sale to a passer-by while the action said Sold (playtest round 5). `LF_SignComponent.m_sSoldSignId`
-  (`house_sold` on the house sign, `plot_sold` on the plot sign) makes `GetSign()` return the sold sign while the sale
-  component is owned, so the face and the Read card say "Sold"; the sign's own id (`house_for_sale`) stays the place and quest
-  id. The owned flag now has an `onRplName` callback that reprints the face on every client, a listen host reprints from the
-  server's `RefreshOwned`, a late joiner prints from the flag it receives, and a restart's `ApplyAll` refreshes every sign.
-  Proof: `property/sold-sign-face`; the pictures from a two-client island session are in the PR.
 
 ### Build site — `Feature/Property/LF_BuildSiteComponent.c` (2026-11-18, #2650, spec #756)
 - 🟡 The plot sign also carries an `LF_BuildSiteComponent` and two actions. "Need N more <item>" deposits
