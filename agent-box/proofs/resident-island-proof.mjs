@@ -33,6 +33,20 @@ export function walkLines(consoleText, id, minM = 0) {
   return { walks, arrived: at >= 0 ? (lines.slice(at + 1).find((l) => /arrived after/.test(l)) ?? null) : null, all: lines.slice(-6) };
 }
 
+// Pure: the teller's home place id in the pack's residents conf, or "".
+export function tellerHomeId(confText) {
+  const block = /m_sId "teller"[\s\S]*?m_sHomePlaceId "([^"]+)"/.exec(String(confText));
+  return block ? block[1] : "";
+}
+
+// Pure: the name of the first `ResidentBench_*` entity that follows the house marker with this place id in a layer text, or "".
+export function homeBenchOf(layerText, placeId) {
+  if (!placeId) return "";
+  const at = String(layerText).indexOf(`m_sId "${placeId}"`);
+  if (at < 0) return "";
+  return /GenericEntity (ResidentBench_\w+)/.exec(String(layerText).slice(at))?.[1] ?? "";
+}
+
 // The newest server console of this session (the walk is read from it, not from a pool test log).
 function serverConsole() {
   const dir = join(sessionDir(), "server", "logs");
@@ -46,9 +60,13 @@ async function main(args) {
   const out = args[0] ? resolve(String(args[0])) : "";
   if (out) mkdirSync(out, { recursive: true });
   const bankText = readFileSync(join(LAYERS, "Place_saint-philippe_bank.layer"), "utf8");
-  const homeText = readFileSync(join(LAYERS, "Place_saint-philippe_residents.layer"), "utf8");
+  // The teller's own house (the pack's timetable names its place id) holds their bench, not the shared residents slot
+  // (#3001 first stood there; 100 m from the teller's real bench the walk is out of the 50 m watch radius and they are placed).
+  const homeText = readFileSync(join(LAYERS, "Homes_saint-philippe_resident.layer"), "utf8");
+  const confText = readFileSync(join(ROOT, "addons", "LF_Everon1989", "Configs", "Residents", "LF_Residents_Everon1989.conf"), "utf8");
+  const benchName = homeBenchOf(homeText, tellerHomeId(confText));
   const bank = coordsOf(bankText, "Fit_saint_philippe_bank_Place_BankCounter");
-  const bench = coordsOf(homeText, "Fit_saint_philippe_residents_anchor_bench");
+  const bench = benchName ? coordsOf(homeText, benchName) : null;
   if (!bank || !bench) {
     console.log(`resident-island: the layers lack the bank counter marker or the home bench anchor (bank ${!!bank}, bench ${!!bench})`);
     return 2;
@@ -71,7 +89,7 @@ async function main(args) {
 
   // The walk needs a player within 50 m of the resident when the line changes (LF_ResidentWalk), so the character really
   // stands between the two places (a capture moves only the camera): 30 m west of the home bench, about 40 m from the bank.
-  on({ verb: "stand", entityName: "Fit_saint_philippe_residents_anchor_bench", side: "w30" }, 20000);
+  on({ verb: "stand", entityName: benchName, side: "w30" }, 20000);
   on({ verb: "time", hour: 12.5 }, 15000);
   wait(15000);
   on({ verb: "time", hour: 13.02 }, 15000);
@@ -114,6 +132,12 @@ function selftest() {
   const w = walkLines(text, "teller", 20);
   const short = walkLines(text.split("\n").slice(0, 2).join("\n"), "teller", 20);
   const ok = a?.z === 3 && b?.x === 4.5 && b?.z === -6 && coordsOf(layer, "Nope") === null && /walks 70 m/.test(w.walks) && /after 28 s/.test(w.arrived) && short.walks === null && short.arrived === null && walkLines("", "teller").walks === null;
+  const conf = ["LF_ResidentDef \"{1}\" {", " m_sId \"teller\"", " m_sHomeKind \"House\"", " m_sHomePlaceId \"saint-philippe.home.teller\"", "}"].join("\n");
+  const homes = ["x m_sId \"saint-philippe.home.old_man\"", "GenericEntity ResidentBench_a {", "}", "x m_sId \"saint-philippe.home.teller\"", "GenericEntity ResidentBench_b {", "}"].join("\n");
+  if (tellerHomeId(conf) !== "saint-philippe.home.teller" || homeBenchOf(homes, "saint-philippe.home.teller") !== "ResidentBench_b" || homeBenchOf(homes, "nope") !== "") {
+    console.log("resident-island-proof selftest: FAIL (tellerHomeId / homeBenchOf)");
+    return 1;
+  }
   console.log(ok ? "resident-island-proof selftest: OK" : "resident-island-proof selftest: FAIL");
   return ok ? 0 : 1;
 }
