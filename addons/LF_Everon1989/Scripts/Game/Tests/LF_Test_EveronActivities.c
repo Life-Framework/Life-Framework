@@ -7,6 +7,9 @@
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronActivities : LF_Test
 {
+	//! The one row that is a first step, not a job: founding a crew pays nothing (#5119).
+	static const string NO_WAGE_ID = "crew";
+
 	override string GetName()
 	{
 		return "everon/activities";
@@ -32,7 +35,12 @@ class LF_Test_EveronActivities : LF_Test
 
 			ids += def.m_sId;
 			ctx.EqualStr(string.Empty, LF_ActivityConfig.Problem(def), "the activity stands: " + def.m_sId);
-			ctx.True(def.m_iPayPerHour > 0, "the activity says what it pays: " + def.m_sId);
+			// Every row that earns says what it pays; the one first step that is no job (crew) pays 0 and says so (#5119).
+			if (def.m_sId == NO_WAGE_ID)
+				ctx.Equal(0, def.m_iPayPerHour, "the first step that is no job pays nothing: " + def.m_sId);
+			else
+				ctx.True(def.m_iPayPerHour > 0, "the activity says what it pays: " + def.m_sId);
+
 			ctx.False(def.m_sPlaceKind.IsEmpty(), "the activity has a place for its distance: " + def.m_sId);
 			foreach (LF_ActivityStep step : def.m_aSteps)
 			{

@@ -257,6 +257,16 @@ class LF_PlayerMenuData
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when the character has a guided arrival chain and every step of it is turned in. The welcome
+	//! guide stops sending such a player to the clerk.
+	bool ArrivalFinished()
+	{
+		int done;
+		int total = CountGroup(LF_EPlayerMenuQuestGroup.ARRIVAL, done);
+		return total > 0 && done == total;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return How many quests of a group there are, and how many of them are done.
 	int CountGroup(LF_EPlayerMenuQuestGroup group, out int done)
 	{
