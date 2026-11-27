@@ -64,51 +64,6 @@ class LF_PlacementComposition
 		return m_aPieces.Count();
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! A composition read from `parent`, a prefab whose child props are the pieces: each child's
-	//! ancestor prefab, its `coords` (x across, z forward) and `angleY` in the parent. The pieces
-	//! take the default box. Empty (and an error logged) when the prefab does not resolve or has no
-	//! children.
-	static LF_PlacementComposition FromPrefab(ResourceName parent)
-	{
-		LF_PlacementComposition composition = new LF_PlacementComposition();
-		composition.m_sName = parent;
-		Resource resource = Resource.Load(parent);
-		if (!resource || !resource.IsValid())
-		{
-			LF_Debug.Error(LF_PlacementRules.FEATURE, string.Format("composition skipped: %1 does not resolve", parent));
-			return composition;
-		}
-
-		IEntitySource source = resource.GetResource().ToEntitySource();
-		if (!source)
-		{
-			LF_Debug.Error(LF_PlacementRules.FEATURE, string.Format("composition skipped: %1 is not an entity prefab", parent));
-			return composition;
-		}
-
-		for (int i = 0; i < source.GetNumChildren(); i++)
-		{
-			IEntitySource child = source.GetChild(i);
-			if (!child)
-				continue;
-
-			ResourceName prefab = child.GetResourceName();
-			if (prefab.IsEmpty())
-				continue;
-
-			vector coords;
-			float angle;
-			child.Get("coords", coords);
-			child.Get("angleY", angle);
-			composition.AddPiece(prefab, coords, angle);
-		}
-
-		if (composition.Count() == 0)
-			LF_Debug.Error(LF_PlacementRules.FEATURE, string.Format("composition skipped: %1 has no child props", parent));
-
-		return composition;
-	}
 }
 
 //------------------------------------------------------------------------------------------------

@@ -110,21 +110,6 @@ class LF_SitesConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The hideout ids that have a site entry, in config order.
-	static void SiteIds(notnull array<string> ids)
-	{
-		LF_SitesConfig config = Get();
-		if (!config || !config.m_aRules)
-			return;
-
-		foreach (LF_SiteRuleDef rule : config.m_aRules)
-		{
-			if (rule)
-				ids.Insert(rule.m_sHideoutId);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! \return The entry of this hideout id, or null.
 	LF_SiteRuleDef Find(string hideoutId)
 	{

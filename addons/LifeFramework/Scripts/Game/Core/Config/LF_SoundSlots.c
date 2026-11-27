@@ -218,12 +218,6 @@ class LF_SoundSlots
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int GetSilentEmitterCount()
-	{
-		return s_iSilentEmitters;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The sound project for a slot, or empty when none can be used (logged once per slot). The
 	//! caller plays nothing on empty.
 	static ResourceName Get(string slot)

@@ -526,25 +526,6 @@ class LF_VehiclePricesConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The entry whose lot prefab or locked child has this upper-case GUID. Null when unlisted.
-	LF_VehiclePriceEntry FindByGuid(string guid)
-	{
-		if (!m_aVehicles)
-			return null;
-
-		foreach (LF_VehiclePriceEntry entry : m_aVehicles)
-		{
-			if (!entry)
-				continue;
-
-			if (LF_VehiclePriceModel.GuidOf(entry.m_Prefab) == guid || LF_VehiclePriceModel.GuidOf(entry.m_SpawnPrefab) == guid)
-				return entry;
-		}
-
-		return null;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The entry whose lot prefab or locked child is this prefab, by GUID. Null when unlisted.
 	LF_VehiclePriceEntry Find(ResourceName prefab)
 	{

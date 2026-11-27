@@ -180,17 +180,6 @@ class LF_ResidentSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The activity line the live resident `id` stands doing (empty for idle or not live).
-	static string ActivityOf(string id)
-	{
-		LF_ResidentLive live;
-		if (!s_mLive || !s_mLive.Find(id, live))
-			return string.Empty;
-
-		return live.m_sActivity;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static int LiveCount()
 	{
 		if (!s_mLive)

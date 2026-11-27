@@ -164,23 +164,6 @@ class LF_OrgFlagRules
 		return ClaimedBefore(holder, orgId);
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! Server, live players: Pick with whoever is online now.
-	static bool PickLive(string orgId, int flag)
-	{
-		array<string> online = {};
-		OnlineCharacterIds(online);
-		return Pick(orgId, flag, online);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Server, live players: FliesPlainCloth with whoever is online now.
-	static bool FliesPlainClothLive(string orgId)
-	{
-		array<string> online = {};
-		OnlineCharacterIds(online);
-		return FliesPlainCloth(orgId, online);
-	}
 }
 
 //------------------------------------------------------------------------------------------------

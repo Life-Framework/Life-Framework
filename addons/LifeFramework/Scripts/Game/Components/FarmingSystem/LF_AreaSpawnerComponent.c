@@ -43,18 +43,6 @@ class LF_AreaSpawnerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	ResourceName GetPrefabToSpawn()
-	{
-		return m_PrefabToSpawn;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	int GetAmountToSpawn()
-	{
-		return m_AmountToSpawn;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
 	{
 		SetEventMask(owner, EntityEvent.INIT | EntityEvent.FRAME);

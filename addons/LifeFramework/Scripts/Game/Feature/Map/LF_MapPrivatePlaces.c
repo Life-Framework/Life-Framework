@@ -243,21 +243,6 @@ class LF_MapPrivatePlaces
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool LocalHas(string placeId)
-	{
-		if (!s_aLocal)
-			return false;
-
-		foreach (LF_MapPoiPlace place : s_aLocal)
-		{
-			if (place && place.m_sId == placeId)
-				return true;
-		}
-
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		if (s_mQueued && !s_mQueued.IsEmpty() && GetGame() && GetGame().GetCallqueue())

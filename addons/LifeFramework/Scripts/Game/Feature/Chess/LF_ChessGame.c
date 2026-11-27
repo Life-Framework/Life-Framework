@@ -90,15 +90,6 @@ class LF_ChessGame
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The moves played, long algebraic ("e2e4"), in order.
-	void GetMoveNames(array<string> names)
-	{
-		names.Clear();
-		foreach (string name : m_aMoveNames)
-			names.Insert(name);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! "1. e2e4 e7e5 2. g1f3": the move list a sheet shows.
 	string MoveListText()
 	{

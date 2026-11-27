@@ -46,14 +46,6 @@ class LF_Commendations
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Tests: point the ledger at another file.
-	static void SetPath(string path)
-	{
-		s_sPath = path;
-		s_aRows = null;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static string GetPath()
 	{
 		if (!s_sPath.IsEmpty())

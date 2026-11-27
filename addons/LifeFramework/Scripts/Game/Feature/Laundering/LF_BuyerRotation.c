@@ -106,24 +106,6 @@ class LF_BuyerRotation
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The id of the spot open now.
-	static string OpenSpotNow()
-	{
-		return OpenSpot(System.GetUnixTime());
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The entity of the spot open now, or null.
-	static IEntity OpenSpotEntity()
-	{
-		string spot = OpenSpotNow();
-		if (spot.IsEmpty())
-			return null;
-
-		return LF_Places.Find(PLACE_KIND, spot);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The rotation seed: the test override, else the server's secret from the profile, made at random
 	//! and written the first time. A profile that cannot be written keeps a seed for this run only
 	//! (logged): the buyer then moves differently after a restart, but never by a guessable number.

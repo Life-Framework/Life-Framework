@@ -93,12 +93,6 @@ class LF_MapShareComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	bool ClientHas(string key)
-	{
-		return m_aKeys.Find(key) != -1;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_MapShareAdd(string key, int x, int z, int icon, int colour, string text, int areaRadius, int areaStyle)
 	{

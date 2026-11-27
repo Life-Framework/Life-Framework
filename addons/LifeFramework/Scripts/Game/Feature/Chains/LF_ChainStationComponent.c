@@ -281,12 +281,6 @@ class LF_ChainStationComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	int GetSmoke()
-	{
-		return m_iSmoke;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	protected void OnSmokeChanged()
 	{
 		ApplySmoke();

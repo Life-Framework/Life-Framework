@@ -486,20 +486,6 @@ export async function waitFor(root, slug, { budgetMs = 3 * 60 * 60 * 1000, print
   }
 }
 
-// `tools\cli wt ship-status <slug>`: one line, exit 0 when passed, queued or running, 1 when failed or unknown.
-export async function shipStatus(root, slug, { print = console.log } = {}) {
-  const q = readQueue(root);
-  const e = sq.entryFor(q, slug);
-  let waitWhy = null;
-  if (e?.state === "queued") {
-    const { slots, light } = await gateLimits(root);
-    waitWhy = sq.pickRunnable(q.entries, { slots, lightSlots: light }).wait.find((w) => w.entry.id === e.id)?.why ?? null;
-    if (!workerAlive(root)) waitWhy = `${waitWhy ? `${waitWhy}; ` : ""}no worker running (the next wt ship or wait starts one)`;
-  }
-  print(sq.statusLine(e, { slug, waitWhy }));
-  return e && sq.phaseOf(e) !== "failed" ? 0 : 1;
-}
-
 export async function printStatus(root, print = console.log) {
   const q = readQueue(root);
   const { slots, light } = await gateLimits(root);

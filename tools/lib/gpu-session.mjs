@@ -154,10 +154,6 @@ export function requireDesktopSession({ env = process.env, platform = process.pl
   return { ...v, ok: true };
 }
 
-export function resetCache() {
-  cached = null;
-}
-
 // One status line for `pool status`: the session verdict and whether the logon helper is alive (heartbeat text or null).
 export function desktopLine(name, probe, heartbeatText, { now = Date.now() } = {}) {
   const v = verdict(probe, name);

@@ -17,7 +17,7 @@
 - ✅ One game from the first move to the end, still pure script. `LF_ChessGame` wraps an
   `LF_ChessBoard`: `TryMove(white, "e2e4")` refuses (logs, changes nothing) a move out of turn, an
   illegal or malformed move, and any move once the game is over. It keeps the move list
-  (`GetMoveNames`, `MoveListText` as `1. e2e4 e7e5 2. ...`), reports `IsCheck`, and ends on
+  (`MoveListText` as `1. e2e4 e7e5 2. ...`), reports `IsCheck`, and ends on
   checkmate (the side that mated wins), stalemate (a draw) or `Resign(white)` (the other side wins,
   allowed off turn). `FromFen` loads a position and a game loaded already mated or stalemated is
   over at once. Result is `GetResult()` (`RESULT_*`) and the reason `GetEnd()` (`END_*`).

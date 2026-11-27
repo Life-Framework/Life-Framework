@@ -33,12 +33,6 @@ class LF_RaceCheckpointComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	string GetCheckpointId()
-	{
-		return m_sCheckpointId;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	float GetRadius()
 	{
 		return m_fRadius;

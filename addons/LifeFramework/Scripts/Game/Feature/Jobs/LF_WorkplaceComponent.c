@@ -217,16 +217,6 @@ class LF_WorkplaceComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the workplace's NPC, or null when the slot is empty or the NPC is gone.
-	IEntity GetNpc()
-	{
-		if (m_NpcId == EntityID.INVALID)
-			return null;
-
-		return GetGame().GetWorld().FindEntityByID(m_NpcId);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	string GetJob()
 	{
 		return m_sJob;

@@ -551,13 +551,6 @@ class LF_CaseBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Sends since the server started. Tests read it.
-	static int SendCount()
-	{
-		return s_iSends;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! A rebuild is waiting for its coalescing delay. Tests read it.
 	static bool IsQueued()
 	{

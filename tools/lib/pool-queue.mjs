@@ -126,10 +126,6 @@ export const TEST_BLOCK_PORT = 2403; // test lanes 10..64: 2403..2678
 export const SESSION_BLOCK_PORT = 2803; // session lanes 5..32: 2803..2938
 const BLOCK_STEP = 5;
 
-export function laneCap(kind) {
-  return kind === "session" ? MAX_SESSION_LANES : MAX_TEST_LANES;
-}
-
 export function sessionLane(i) {
   if (i > LEGACY_SESSION_LANES) {
     const port = SESSION_BLOCK_PORT + BLOCK_STEP * (i - LEGACY_SESSION_LANES - 1);

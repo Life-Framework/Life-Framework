@@ -19,12 +19,6 @@ class LF_ATMQuickAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	int GetPreset()
-	{
-		return m_iPreset;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	override bool HasLocalEffectOnlyScript()
 	{
 		return true;

@@ -20,18 +20,6 @@ class LF_CharacterATMComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	LF_BankAccount GetBankAccount()
-	{
-		return m_BankAccount;
-	}
-
-	// Public setter to allow external callbacks to set the bank account safely
-	void SetBankAccount(LF_BankAccount account)
-	{
-		m_BankAccount = account;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Terminal entry points: forward a request to the server through the RPC bridge. A
 	//! listen-server host calls the handler directly, the same as the shop bridge, so the host's
 	//! own requests never depend on a loopback.

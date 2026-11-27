@@ -79,7 +79,6 @@ export function frameOf(root, vfs, prefab, own = null) {
   return f.flags !== null && f.flags & RELATIVE_Y ? "terrain" : "world";
 }
 
-export const isTerrainFrame = (frame) => frame === "terrain";
 export const layerY = (worldY, terrainY, frame) => (frame === "terrain" ? worldY - terrainY : worldY);
 export const worldYOf = (y, terrainY, frame) => (frame === "terrain" ? y + terrainY : y);
 

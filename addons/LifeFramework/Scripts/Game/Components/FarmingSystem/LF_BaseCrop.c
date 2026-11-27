@@ -165,12 +165,6 @@ class LF_BaseCrop : LF_BaseBuilding
 	}
 
 	//------------------------------------------------------------------------------------------------
-	int GetStageIndex()
-	{
-		return m_iCropStage;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	array<ref LF_CropStage> GetCropStages()
 	{
 		return m_aCropStages;

@@ -90,12 +90,6 @@ modded class LF_ReceiptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	string GetSlipText()
-	{
-		return m_sSlipText;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	override bool IsPrinted()
 	{
 		if (!m_sSlipText.IsEmpty())

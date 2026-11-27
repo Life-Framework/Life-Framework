@@ -485,12 +485,6 @@ class LF_ResidentWalk
 		return walk.m_fTimeout;
 	}
 
-	//------------------------------------------------------------------------------------------------
-	static int StartedTotal()
-	{
-		return s_iStarted;
-	}
-
 	static int ArrivedTotal()
 	{
 		return s_iArrived;

@@ -10,13 +10,10 @@
 // uncommitted state. chooseGate and earlyDeath are pure; tools/validation/wb-gate-selftest.mjs
 // proves them.
 
-import { freemem } from "node:os";
-import { loadMachines as poolLoad } from "../remote/pool.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { PS_GPU_PROBE, parseProbe, verdict } from "./gpu-session.mjs";
 import { DEFAULTS, rankMachines } from "./pool-queue.mjs";
 import { SEED_PEAKS_MB } from "./pool-ram.mjs";
-import * as wbLock from "./wb-lock.mjs";
 
 // One headless Workbench compile, build or rdb refresh at its peak: 3.7 GB measured on the laptop
 // 2026-11-16 (2.25 GB before; it died after 6 s with 1.5 GB free on 2026-11-14). The floor (minFreeMb)
@@ -158,19 +155,4 @@ export function parseWbState(text, limit, name = "this machine") {
   const probe = parseProbe(text);
   const v = probe ? verdict(probe, name) : null;
   return { ...(v ? { gpu: { ok: v.ok, line: v.line, note: v.note } } : {}), wbAlive: Number(mm[1]), freeMb: Number(mm[2]), wbLimit: Number(limit) > 0 ? Number(limit) : 1, ...(lk ? { lookServer: { pid: Number(lk[1]), idleS: Math.max(0, Number(lk[2])) } } : {}) };
-}
-
-// The live view of every machine with the workbench cap, for chooseGate: this PC's Workbench slots and
-// free RAM, each pool machine's over one ssh round trip (state null when it does not answer). Used by
-// `ci`'s Workbench steps and by `look`.
-export function workbenchView(root, { mode = "any", machine = null } = {}, { loadMachines, remoteState = remoteWbState, freeMb = () => Math.round(freemem() / 1048576) } = {}) {
-  const load = loadMachines ?? poolLoad;
-  const machines = load(root).filter((m) => !m.disabled && (m.caps ?? []).includes("workbench"));
-  const limit = wbLock.wbLimit(root);
-  const localM = machines.find((m) => m.via === "local");
-  const local = { busy: wbLock.holders(root, limit).filter((h) => h.alive).length, queued: wbLock.liveTickets(root).length, limit, freeMb: freeMb(), multiplier: localM?.budgetMultiplier ?? 1 };
-  const remotes = mode === "local" || machine === "local" ? [] : machines
-    .filter((m) => m.via === "ssh" && (!machine || m.name === machine))
-    .map((m) => ({ name: m.name, caps: m.caps, multiplier: m.budgetMultiplier ?? 1, m, state: remoteState(m) }));
-  return { local, remotes };
 }

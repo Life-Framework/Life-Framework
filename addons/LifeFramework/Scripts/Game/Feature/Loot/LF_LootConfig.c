@@ -156,15 +156,6 @@ class LF_LootConfig
 		return config.FindTable(kind);
 	}
 
-	//------------------------------------------------------------------------------------------------
-	static int TableCount()
-	{
-		LF_LootConfig config = Get();
-		if (!config || !config.m_aTables)
-			return 0;
-
-		return config.m_aTables.Count();
-	}
 }
 
 //------------------------------------------------------------------------------------------------

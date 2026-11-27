@@ -90,8 +90,6 @@ export function guardFromStatuses(list) {
   }
   return null;
 }
-export const ghToGuard = (st) => guardFromStatuses([st]);
-
 // Pure: shas newest first (first-parent of origin/main); statusOf(sha) -> status or null. The newest checked
 // one, and how many commits it sits behind the head. null when none in the list is checked.
 export function pickChecked(shas, statusOf) {

@@ -149,14 +149,6 @@ class LF_LogoutBody
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Tests and server tuning: the window in seconds; 0 turns the body off (the base game deletes it).
-	static void SetWindows(int seconds, int downedSeconds)
-	{
-		s_iWindowSeconds = LF_Utils.MaxInt(0, seconds);
-		s_iDownedWindowSeconds = LF_Utils.MaxInt(0, downedSeconds);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The windows from LF_LogoutBodyConfig; read once per session.
 	static void EnsureConfig()
 	{
@@ -591,17 +583,6 @@ class LF_LogoutBody
 		return s_mBodies && s_mBodies.Contains(uid);
 	}
 
-	//------------------------------------------------------------------------------------------------
-	static int GetKeptCount()
-	{
-		return s_iKept;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static int GetDespawnedCount()
-	{
-		return s_iDespawned;
-	}
 }
 
 //------------------------------------------------------------------------------------------------

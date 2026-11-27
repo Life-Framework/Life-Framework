@@ -278,12 +278,6 @@ class LF_ShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	string GetShopDescription()
-	{
-		return m_sShopDescription;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The items this shop shows: its stock, outlet or curated list; a shop with none shows nothing (#1762).
 	//! Prices always come from the price config via the manager, never from the curated list.
 	array<ref LF_ShopCatalogItem> GetShopItems()
@@ -479,12 +473,6 @@ class LF_ShopComponent : ScriptComponent
 			return curated.GetPrice() / 2;
 
 		return 0;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	bool IsFence()
-	{
-		return m_bFence;
 	}
 
 	//------------------------------------------------------------------------------------------------

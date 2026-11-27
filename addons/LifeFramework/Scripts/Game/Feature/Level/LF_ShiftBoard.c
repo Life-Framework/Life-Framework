@@ -100,13 +100,6 @@ class LF_ShiftBoard : LF_EventSubscriber
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Tests: fix the server clock (unix seconds); 0 returns to the real one.
-	static void SetNowForTests(int unixSeconds)
-	{
-		s_iNowForTests = unixSeconds;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static int Now()
 	{
 		if (s_iNowForTests > 0)

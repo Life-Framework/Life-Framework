@@ -59,20 +59,6 @@ class LF_StoreGarbage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return True when the garbage system can not delete the item: it is not tracked and an insert is refused.
-	static bool IsExcluded(IEntity item)
-	{
-		if (!item)
-			return false;
-
-		GarbageSystem system = Find(item);
-		if (!system)
-			return false;
-
-		return !system.IsInserted(item);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! \return True when the item is tracked by the garbage system.
 	static bool IsTracked(IEntity item)
 	{

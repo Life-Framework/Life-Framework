@@ -20,14 +20,6 @@ class LF_Debug
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static void SetFeatureEnabled(string feature, bool enabled)
-	{
-		if (!s_mFeatureEnabled)
-			s_mFeatureEnabled = new map<string, bool>();
-		s_mFeatureEnabled.Set(feature, enabled);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static bool IsFeatureEnabled(string feature)
 	{
 		if (!s_bAllEnabled)

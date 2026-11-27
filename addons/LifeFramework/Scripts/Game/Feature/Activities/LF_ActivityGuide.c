@@ -356,13 +356,6 @@ class LF_ActivityGuide
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static string FocusOf(string uid)
-	{
-		LzFocus();
-		return s_mFocus.Get(uid);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Server: "Start" for one player's body. \return empty when the first step began, else why not
 	//! ("unknown", "locked", "running", "done", "refused" when the quest system said no).
 	static string Start(IEntity body, string activityId)

@@ -85,22 +85,6 @@ class LF_OrgReplication
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: republishes every online member of an organization (after a name or rank change).
-	static void PublishAll()
-	{
-		if (!Replication.IsServer() || !GetGame() || !GetGame().GetPlayerManager())
-			return;
-
-		PlayerManager players = GetGame().GetPlayerManager();
-		array<int> ids = {};
-		players.GetPlayers(ids);
-		foreach (int playerId : ids)
-		{
-			Publish(players.GetPlayerControlledEntity(playerId));
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Server: the controlled entity of the online player whose active character is characterId.
 	static IEntity FindOnline(string characterId)
 	{

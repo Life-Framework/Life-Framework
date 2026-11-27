@@ -57,13 +57,6 @@ class LF_CargoBedComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void GetStack(array<int> into)
-	{
-		into.Clear();
-		into.InsertAll(m_aStack);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Units of one kind on the bed (a hardwood log counts 2).
 	int CountOf(int kindIndex)
 	{
@@ -407,12 +400,6 @@ class LF_CargoBedComponent : ScriptComponent
 
 			m_aVisualIds.Insert(visual.GetID());
 		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	int GetDrawnCount()
-	{
-		return m_aVisualIds.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------

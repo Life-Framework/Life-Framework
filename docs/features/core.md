@@ -272,7 +272,7 @@
   `SOUND_PICK_UP` (M1-12).
 - ⏳ Proof on a dedicated server with two clients is manual (PR #93 steps).
 
-### `LF_Utils` / `LF_FormatUtils` / `LF_Component` / `LF_ComponentData` — `Core/`
+### `LF_Utils` / `LF_FormatUtils` / `LF_Component` — `Core/`
 - ✅ `MaxInt`/`MinInt`/`ClampInt`, `AbbreviateNumber` (999→raw, 1000→`1.0K`,
   1e6→`M`, 1e9→`B`), typed component finders.
 - ✅ (2026-11-18, #2787) Enforce `Math.Max`/`Math.Min`/`Math.Clamp` work in floats, so an int above 2^24
@@ -281,8 +281,6 @@
   is also exact. `validate-int-time-math` fails a time-named, non-float argument to `Math.Max/Min/Clamp`
   (shrink-only `tools/validation/int-time-math-baseline.json`; `// lf-float: <why>` marks real float time math).
   Test `core/int-time-math`.
-- ⚠️ `LF_ComponentData.Get` strips the last 5 chars of the class name
-  (`XxxClass`→`Xxx`); breaks for any data class not ending in `Class`.
 - ✅ (2026-11-12, #323 batch 0) `LF_Utils.SamePrefab(a, b)` and `PrefabGuid(name)`: two resource
   names are one prefab when their GUIDs match, whatever path text they carry; only a name without
   a GUID falls back to its path (case-insensitive); empty never matches. A resource moved into the
@@ -303,7 +301,7 @@
 ### `LF_InventoryUtils` (Core) / `LF_BuildingManagerComponent` / `LF_ChatManagerComponent`
 - ✅ (2026-11-08) `LF_InventoryUtils.AddItem` spawns through
   `LF_Utils.SpawnEntityPrefab` (unresolved prefab logs and returns false);
-  `IsStorageHierachyRoot`, `GetStorageOwner`, and `DropItem` tolerate an
+  `DropItem` tolerates an
   entity without `InventoryItemComponent` / a character without an inventory
   manager.
 - ✅ The building preview is a local (non-replicated) entity on the owning

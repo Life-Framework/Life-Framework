@@ -29,17 +29,6 @@ class LF_InventoryUtils
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool IsStorageHierachyRoot(IEntity item)
-	{
-		if (!item) return false;
-		InventoryItemComponent itemComponent = InventoryItemComponent.Cast(item.FindComponent(InventoryItemComponent));
-		if (!itemComponent)
-			return true; // Not an inventory item, so it cannot sit inside a storage.
-
-		return !itemComponent.GetParentSlot();
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static IEntity GetStorageHierachyRoot(IEntity item)
 	{
 		while (item)
@@ -63,27 +52,6 @@ class LF_InventoryUtils
 			item = itemComponent.GetParentSlot().GetStorage().GetOwner();
 		}
 		return null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Returns the Owner of the storage the item is in
-	//! \param item Item Entity to get Owner from
-	//! \return Entity Storage Owner
-	static IEntity GetStorageOwner(notnull IEntity item)
-	{
-		InventoryItemComponent itemComponent = InventoryItemComponent.Cast(item.FindComponent(InventoryItemComponent));
-		if (!itemComponent) return null;
-
-		InventoryStorageSlot slot = itemComponent.GetParentSlot();
-		if (!slot) return null;
-
-		BaseInventoryStorageComponent itemParentStorage = slot.GetStorage();
-		if (!itemParentStorage) return null;
-
-		InventoryStorageSlot parentSlot = itemParentStorage.GetParentSlot();
-		if (!parentSlot || !parentSlot.GetStorage()) return null;
-
-		return parentSlot.GetStorage().GetOwner();
 	}
 
 	//------------------------------------------------------------------------------------------------

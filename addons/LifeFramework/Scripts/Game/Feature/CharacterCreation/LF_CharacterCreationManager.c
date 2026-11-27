@@ -246,13 +246,6 @@ class LF_CharacterCreationManager : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return True while this player has the switch sheet open.
-	bool HasSwitchOffer(int playerId)
-	{
-		return m_SwitchOffered.Contains(playerId);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Server, from the player's ask after the clerk said yes: opens the switch sheet. Needs the
 	//! clerk's fresh grant (LF_CharacterSwitch.ConsumeGrant), so a client cannot open it from anywhere,
 	//! and every refusal is checked again here.

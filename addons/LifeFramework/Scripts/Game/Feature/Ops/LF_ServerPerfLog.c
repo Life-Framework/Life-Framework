@@ -62,13 +62,6 @@ class LF_ServerPerfLog
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The line the last Log() printed; tests read it.
-	static string GetLastLine()
-	{
-		return s_sLastLine;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	protected static void Poll()
 	{
 		int now = System.GetTickCount();

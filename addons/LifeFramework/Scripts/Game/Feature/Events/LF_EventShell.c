@@ -163,13 +163,6 @@ class LF_EventShell
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Phase changes since the world started. Tests read it.
-	static int ChangeCount()
-	{
-		return s_iChanges;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! \return players inside the event's place at its last measure, 0 for an unknown event.
 	static int NearbyOf(string eventId)
 	{

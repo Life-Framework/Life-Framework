@@ -371,12 +371,6 @@ class LF_ChopShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	int GetPayout()
-	{
-		return m_iPayout;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	protected void Sync()
 	{
 		int percent = m_Progress.Percent();

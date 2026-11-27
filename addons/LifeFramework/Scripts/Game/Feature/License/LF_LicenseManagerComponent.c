@@ -580,19 +580,6 @@ class LF_LicenseManagerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Unlocks a licence whose requirements are met (whitelist, job level). Nothing is spent.
-	bool PurchaseLicense(LF_ELicenseType licenseType)
-	{
-		if (!CanUnlockLicense(licenseType))
-		{
-			LF_Debug.Log("License", string.Format("purchase rejected (requirements not met): %1", typename.EnumToString(LF_ELicenseType, licenseType)));
-			return false;
-		}
-
-		return UnlockLicense(licenseType);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Job whitelist a license requires, or UNEMPLOYED when it has none.
 	static LF_EJobType GetLicenseWhitelistJob(LF_ELicenseType licenseType)
 	{
@@ -743,18 +730,4 @@ class LF_LicenseManagerComponent : ScriptComponent
 		return m_mLicenseConfigs.Get(licenseType);
 	}
 	
-	//------------------------------------------------------------------------------------------------
-	//! Obtener todas las configuraciones de licencias
-	map<LF_ELicenseType, ref LF_LicenseConfig> GetAllLicenseConfigs()
-	{
-		return m_mLicenseConfigs;
-	}
-	
-	//------------------------------------------------------------------------------------------------
-	ScriptInvoker GetOnLicenseUnlocked()
-	{
-		if (!m_OnLicenseUnlocked)
-			m_OnLicenseUnlocked = new ScriptInvoker();
-		return m_OnLicenseUnlocked;
-	}
 }

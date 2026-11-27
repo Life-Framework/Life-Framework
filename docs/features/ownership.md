@@ -98,8 +98,7 @@
   the pick goes through and both fly the flag. `CanPick` is the same check without the write, for the
   flag wall's "Taken by X (online)" line. When two organizations fly one flag and both have a member
   online, `FliesPlainCloth` is true for the later one: its poles fly a plain cloth in the flag's
-  colour (the pole reads it; nothing renders yet). "Online" is a list of character ids (`PickLive` and
-  `FliesPlainClothLive` read the live players). "Later" is the claim order of `Pick` in this session;
+  colour (the pole reads it; nothing renders yet). "Online" is a list of character ids. "Later" is the claim order of `Pick` in this session;
   an organization with no claim yet counts as earlier, and a tie ranks by organization id, so after a
   restart a pair sharing a flag ranks by id until someone picks again (the order is not saved).
   Re-picking its own flag changes nothing. LOGIC `org/flag-lock`.

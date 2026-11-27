@@ -96,13 +96,6 @@ class LF_SaveTiming
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The last store write in ms.
-	static int GetStoreMs()
-	{
-		return s_iStoreMs;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! \return The slowest parts of the last store write, "name=ms" joined by spaces, or "none slow".
 	static string Slowest()
 	{

@@ -151,13 +151,6 @@ class LF_ParkedCarConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return A random car prefab from the list, or empty when the list is empty.
-	ResourceName PickPrefab()
-	{
-		return PickPrefabAvoiding(null);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! \param failed Car ids (LF_ParkedCarList.CarId) that did not spawn this session; those rows are skipped.
 	//! \return A random car prefab from the rows not in `failed`, or empty when there is none left.
 	ResourceName PickPrefabAvoiding(array<string> failed)

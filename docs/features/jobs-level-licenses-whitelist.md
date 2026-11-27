@@ -169,13 +169,13 @@
 
 ### `LF_LicenseManagerComponent` — `Feature/License/LF_LicenseManagerComponent.c`
 - ✅ License catalog (26 entries), `CanUnlockLicense` (owned/config/whitelist/
-  job level), `PurchaseLicense` (checks, then unlocks; nothing is spent since #749),
+  job level), `UnlockLicense` (nothing is spent since #749),
   `HasLicense`, persistence restore. The level gate is `LF_LicenseGate` (#749): the
   licence family's job (FARMER_* in FARMER, ..., criminal licences in CIVILIAN) at the
   catalog's `m_iMinLevelRequired`, unless the jobs config has a `licenceGates` row.
 - ✅ **Whitelist mapping and purchase ordering fixed** (verified 2026-08-30):
   `GetLicenseWhitelistJob` maps MEDIC access to MEDIC and police licenses to
-  POLICE; `PurchaseLicense` validates requirements before `UnlockLicense`. `SetUnlockedLicenses` is the persistence restore seam,
+  POLICE; `UnlockLicense` validates requirements. `SetUnlockedLicenses` is the persistence restore seam,
   not a player purchase path. Remaining: not localized; `m_bIsInitialLicense`
   is used for initial grants.
 - ✅ **Replicates as a bitmask** (verified 2026-11-07: dedicated/* tests, server side; client receipt is manual): the old `[RplProp] ref array` broke the
@@ -217,8 +217,8 @@
   clears the flag.
 - ⚠️ Getter returns the live internal array (callers can mutate without logging).
 - ✅ **A remove before the first load still removes** (2026-11-17 property review, LOGIC
-  `whitelist/remove-before-load`): `RemoveFactionWhitelist` and `RemoveJobWhitelist` load the
-  file first. They returned false on an empty cache, so a police trial that expired on the first
+  `whitelist/remove-before-load`): `RemoveFactionWhitelist` loads the
+  file first. It returned false on an empty cache, so a police trial that expired on the first
   duty desk use after a restart was marked expired while the officer stayed on the roster.
 - ✅ **`!wadd POLICE <uid>` writes the roster duty reads** (2026-11-17, LOGIC
   `chat/admin-wadd-grant`, #2548): `AdminChatChannel.ApplyWhitelistAdd` calls

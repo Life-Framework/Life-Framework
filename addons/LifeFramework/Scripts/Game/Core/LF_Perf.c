@@ -126,26 +126,10 @@ class LF_Perf
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int GetGauge(string key)
-	{
-		int value;
-		s_mGauge.Find(key, value);
-		return value;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	static int GetTotalMs(string key)
 	{
 		int value;
 		s_mTotalMs.Find(key, value);
-		return value;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static int GetCalls(string key)
-	{
-		int value;
-		s_mCalls.Find(key, value);
 		return value;
 	}
 

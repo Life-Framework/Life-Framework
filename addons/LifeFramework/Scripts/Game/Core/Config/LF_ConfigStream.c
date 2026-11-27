@@ -335,12 +335,6 @@ class LF_ConfigStream
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static int GetReceivedHash()
-	{
-		return s_iReceivedHash;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! \return The last payload a client accepted, or empty before one arrived.
 	static string GetReceivedPayload()
 	{
