@@ -156,7 +156,8 @@ class LF_ConfigOverlay
 	static const string OP_PATCH = "patch";
 	static const string OP_REMOVE = "remove";
 
-	//! Folder -> the rows FolderRows found there. Immutable resource data, so no world-end reset.
+	//! Folder -> the rows FolderRows found there. Dropped at world end: a dedicated server's database
+	//! is fixed for the process, but Workbench adds a `.conf` created between two plays.
 	protected static ref map<string, ref array<string>> s_mFolderRows;
 
 	//------------------------------------------------------------------------------------------------
@@ -200,8 +201,9 @@ class LF_ConfigOverlay
 	//------------------------------------------------------------------------------------------------
 	//! The `.conf` rows ("path|{GUID}path", ordered by path) under one folder. A search walks every `.conf` of every
 	//! loaded addon (~19 ms) and every overlay load asked it once per listed overlay, ~15 times per config load, so a
-	//! dialogue or catalogue test spent a quarter second per config in the search (suite speed, 2026-11-27). The resource
-	//! database cannot change while the game runs, so a folder is searched once per process.
+	//! dialogue or catalogue test spent a quarter second per config in the search (suite speed, 2026-11-27). Every addon is
+	//! mounted before any script runs, so a folder is searched once per world (the world-end hook drops the cache: in
+	//! Workbench a file made between two plays joins the database while the script module lives on).
 	protected static array<string> FolderRows(string folder)
 	{
 		if (!s_mFolderRows)
@@ -219,6 +221,22 @@ class LF_ConfigOverlay
 		rows = collector.GetSorted();
 		s_mFolderRows.Set(folder, rows);
 		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return How many folders the search cache holds (tests).
+	static int CachedFolderCount()
+	{
+		if (!s_mFolderRows)
+			return 0;
+		return s_mFolderRows.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the folder search cache; the next load searches again.
+	static void ResetStatics()
+	{
+		s_mFolderRows = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -450,5 +468,20 @@ class LF_PackFolderCollector
 	{
 		m_aRows.Sort();
 		return m_aRows;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ConfigOverlay's folder search cache (LF_StaticReset finds it by reflection).
+class LF_ConfigOverlay_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_ConfigOverlay";
+	}
+
+	override void Apply()
+	{
+		LF_ConfigOverlay.ResetStatics();
 	}
 }
