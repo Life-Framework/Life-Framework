@@ -163,6 +163,12 @@ class LF_VehicleOwnership
 	static const int COMPARTMENT_MAX = 3; // lf-fixed: the saved range of the compartment level (#752); a pack sells sizes within it
 	//! LF_StorageSnapshot slot of a car's cargo, keyed by the vehicle id (#2809).
 	static const string SLOT_CARGO = "vehiclecargo";
+	//! Ledger reasons of the payments this class takes; a refund books the reason plus "-rollback".
+	//! Each path has its own, so an economy audit reads an impound fee as a fee, not a car sale.
+	static const string REASON_PURCHASE = "vehicle-purchase";
+	static const string REASON_IMPOUND = "impound-release";
+	static const string REASON_EXTRA_KEY = "vehicle-extra-key";
+	static const string REASON_CHANGE_LOCKS = "vehicle-change-locks";
 
 	protected static ref map<string, ref LF_VehicleRecord> s_mRecords;
 	protected static ref map<string, ref LF_VehicleSession> s_mSessions;
@@ -660,7 +666,7 @@ class LF_VehicleOwnership
 			return false;
 		}
 
-		if (fee > 0 && !TakePayment(payer, null, fee, 0))
+		if (fee > 0 && !TakePayment(payer, null, fee, 0, REASON_IMPOUND))
 		{
 			reasonKey = "#LF-Impound_CannotAfford";
 			return false;
@@ -668,7 +674,7 @@ class LF_VehicleOwnership
 
 		if (!SpawnOwned(record, origin, angles, payer))
 		{
-			Refund(payer, null, fee, 0);
+			Refund(payer, null, fee, 0, REASON_IMPOUND);
 			reasonKey = "#LF-Impound_PadBusy";
 			return false;
 		}
@@ -927,7 +933,7 @@ class LF_VehicleOwnership
 			return false;
 		}
 
-		if (!TakePayment(buyer, account, cashDebit, bankDebit))
+		if (!TakePayment(buyer, account, cashDebit, bankDebit, REASON_PURCHASE))
 		{
 			reasonKey = "#EL-Vehicle_CannotAfford";
 			return false;
@@ -936,7 +942,7 @@ class LF_VehicleOwnership
 		IEntity vehicle = LF_Utils.SpawnEntityPrefab(spawnName, origin);
 		if (!vehicle)
 		{
-			Refund(buyer, account, cashDebit, bankDebit);
+			Refund(buyer, account, cashDebit, bankDebit, REASON_PURCHASE);
 			reasonKey = "#EL-Vehicle_NoSpawn";
 			return false;
 		}
@@ -946,7 +952,7 @@ class LF_VehicleOwnership
 		{
 			LF_Debug.Error("Vehicle", string.Format("purchase refused: %1 has no LF_VehicleLockComponent", spawnName));
 			SCR_EntityHelper.DeleteEntityAndChildren(vehicle);
-			Refund(buyer, account, cashDebit, bankDebit);
+			Refund(buyer, account, cashDebit, bankDebit, REASON_PURCHASE);
 			reasonKey = "#EL-Vehicle_NotSold";
 			return false;
 		}
@@ -962,7 +968,7 @@ class LF_VehicleOwnership
 		{
 			LF_Debug.Error("Vehicle", "purchase refused: the lock did not assign an identifier");
 			SCR_EntityHelper.DeleteEntityAndChildren(vehicle);
-			Refund(buyer, account, cashDebit, bankDebit);
+			Refund(buyer, account, cashDebit, bankDebit, REASON_PURCHASE);
 			reasonKey = "#EL-Vehicle_NoSpawn";
 			return false;
 		}
@@ -970,7 +976,7 @@ class LF_VehicleOwnership
 		if (!key)
 		{
 			SCR_EntityHelper.DeleteEntityAndChildren(vehicle);
-			Refund(buyer, account, cashDebit, bankDebit);
+			Refund(buyer, account, cashDebit, bankDebit, REASON_PURCHASE);
 			reasonKey = "#EL-Vehicle_NoSpawn";
 			return false;
 		}
@@ -988,7 +994,7 @@ class LF_VehicleOwnership
 		{
 			SCR_EntityHelper.DeleteEntityAndChildren(vehicle);
 			SCR_EntityHelper.DeleteEntityAndChildren(key);
-			Refund(buyer, account, cashDebit, bankDebit);
+			Refund(buyer, account, cashDebit, bankDebit, REASON_PURCHASE);
 			reasonKey = "#EL-Vehicle_NotSold";
 			return false;
 		}
@@ -1029,14 +1035,14 @@ class LF_VehicleOwnership
 		if (!QuotePurchase(price, cashCeiling, cash, bank, cashDebit, bankDebit))
 			return false;
 
-		if (!TakePayment(buyer, account, cashDebit, bankDebit))
+		if (!TakePayment(buyer, account, cashDebit, bankDebit, REASON_EXTRA_KEY))
 			return false;
 
 		LF_VehicleRecord record = Records().Get(vehicleId);
 		IEntity key = SpawnKey(record.m_sKeyId, KeySpawnOrigin(buyer, origin));
 		if (!key)
 		{
-			Refund(buyer, account, cashDebit, bankDebit);
+			Refund(buyer, account, cashDebit, bankDebit, REASON_EXTRA_KEY);
 			return false;
 		}
 
@@ -1087,7 +1093,7 @@ class LF_VehicleOwnership
 			return false;
 		}
 
-		if (!TakePayment(owner, account, cashDebit, bankDebit))
+		if (!TakePayment(owner, account, cashDebit, bankDebit, REASON_CHANGE_LOCKS))
 			return false;
 
 		reasonKey = "#EL-Vehicle_NoSpawn";
@@ -1095,7 +1101,7 @@ class LF_VehicleOwnership
 		IEntity key = SpawnKey(keyId, KeySpawnOrigin(owner, origin));
 		if (!key)
 		{
-			Refund(owner, account, cashDebit, bankDebit);
+			Refund(owner, account, cashDebit, bankDebit, REASON_CHANGE_LOCKS);
 			return false;
 		}
 
@@ -1490,13 +1496,14 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool TakePayment(IEntity buyer, LF_BankAccount account, int cashDebit, int bankDebit)
+	//! \param[in] reason The ledger reason of the path paying (REASON_*).
+	protected static bool TakePayment(IEntity buyer, LF_BankAccount account, int cashDebit, int bankDebit, string reason)
 	{
 		if (bankDebit > 0)
 		{
-			if (!account || !account.Withdraw(bankDebit, "vehicle-purchase"))
+			if (!account || !account.Withdraw(bankDebit, reason))
 			{
-				LF_Debug.Log("Vehicle", "purchase rejected: bank withdraw failed");
+				LF_Debug.Log("Vehicle", string.Format("%1 rejected: bank withdraw failed", reason));
 				return false;
 			}
 		}
@@ -1505,19 +1512,19 @@ class LF_VehicleOwnership
 		{
 			if (!buyer)
 			{
-				Refund(null, account, 0, bankDebit);
-				LF_Debug.Log("Vehicle", "purchase rejected: cash payment has no character");
+				Refund(null, account, 0, bankDebit, reason);
+				LF_Debug.Log("Vehicle", string.Format("%1 rejected: cash payment has no character", reason));
 				return false;
 			}
 
-			int removed = LF_MoneyUtils.RemoveCash(buyer, cashDebit, "vehicle-purchase");
+			int removed = LF_MoneyUtils.RemoveCash(buyer, cashDebit, reason);
 			if (removed != cashDebit)
 			{
 				if (removed > 0)
-					LF_MoneyUtils.AddCash(buyer, removed, "vehicle-purchase-rollback");
+					LF_MoneyUtils.AddCash(buyer, removed, reason + "-rollback");
 
-				Refund(null, account, 0, bankDebit);
-				LF_Debug.Log("Vehicle", "purchase rejected: cash could not be taken");
+				Refund(null, account, 0, bankDebit, reason);
+				LF_Debug.Log("Vehicle", string.Format("%1 rejected: cash could not be taken", reason));
 				return false;
 			}
 		}
@@ -1526,13 +1533,14 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void Refund(IEntity buyer, LF_BankAccount account, int cashDebit, int bankDebit)
+	//! \param[in] reason The ledger reason the payment was taken under; the refund books it plus "-rollback".
+	protected static void Refund(IEntity buyer, LF_BankAccount account, int cashDebit, int bankDebit, string reason)
 	{
 		if (bankDebit > 0 && account)
-			account.Deposit(bankDebit, "vehicle-purchase-rollback");
+			account.Deposit(bankDebit, reason + "-rollback");
 
 		if (cashDebit > 0 && buyer)
-			LF_MoneyUtils.AddCash(buyer, cashDebit, "vehicle-purchase-rollback");
+			LF_MoneyUtils.AddCash(buyer, cashDebit, reason + "-rollback");
 	}
 
 	//------------------------------------------------------------------------------------------------

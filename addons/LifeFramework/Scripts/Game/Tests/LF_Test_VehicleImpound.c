@@ -7,6 +7,9 @@
 // The impound-state check in CollectFromImpound skipped: `SUMMARY tier=only passed=1 failed=1 total=2`,
 // `- the car is collected only once`, `- the fee is charged once (expected 350, got 100)`.
 // Restored; green.
+// red-proof: observed 2026-11-27 with `tools\cli test --no-build --only LF_Test_VehicleImpound` with the impound
+// collect paying under REASON_PURCHASE (the old ledger reason): `passed=2 failed=1`, `- the ledger books the fee as
+// impound-release, not vehicle-purchase (expected 'impound-release', got 'vehicle-purchase')`. Restored; green.
 
 //! The ledger card lists the reader's vehicles: model, plate, and where each one is.
 [LF_TestInfo(LF_TestTier.LOGIC)]
@@ -143,6 +146,12 @@ class LF_Test_VehicleImpound : LF_Test
 			return;
 		}
 
+		// The fee lands in the ledger under its own reason, not as a car purchase (restart proof 2026-11-27).
+		array<ref LF_LedgerEntry> ledgerBefore = LF_Ledger.ExportAll();
+		LF_Ledger.ApplyAll(null);
+		LF_Ledger.EnsureSubscribed();
+		LF_MoneyUtils.SetUidForTests(owner, OWNER);
+
 		LF_MoneyUtils.AddCash(owner, fee - 1);
 		string reasonKey;
 		ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET, OWNER, owner, fee, LF_TestAnnex.IMPOUND_PAD_ID, reasonKey), "short cash does not release the car");
@@ -155,6 +164,17 @@ class LF_Test_VehicleImpound : LF_Test
 		ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET, "impound-stranger", owner, fee, LF_TestAnnex.IMPOUND_PAD_ID, reasonKey), "a stranger cannot collect the car");
 		ctx.True(LF_VehicleOwnership.CollectFromImpound(STREET, OWNER, owner, fee, LF_TestAnnex.IMPOUND_PAD_ID, reasonKey), "the owner pays and collects");
 		ctx.Equal(cashBefore - fee, LF_MoneyUtils.GetCash(owner), "the fee is taken from carried cash");
+		array<ref LF_LedgerEntry> feeRows = {};
+		LF_Ledger.Last(OWNER, LF_Ledger.ACCOUNT_CASH, 1, feeRows);
+		ctx.Equal(1, feeRows.Count(), "the fee is in the cash ledger");
+		if (feeRows.Count() == 1)
+		{
+			ctx.EqualStr(LF_VehicleOwnership.REASON_IMPOUND, feeRows.Get(0).m_sReason, "the ledger books the fee as impound-release, not vehicle-purchase");
+			ctx.Equal(-fee, feeRows.Get(0).m_iDelta, "the ledger row is the fee");
+		}
+
+		LF_MoneyUtils.SetUidForTests(null, "");
+		LF_Ledger.ApplyAll(ledgerBefore);
 		ctx.False(LF_VehicleOwnership.IsImpounded(STREET), "the collected car left the impound lot");
 		IEntity released = LF_VehicleOwnership.GetVehicle(STREET);
 		ctx.True(released != null, "the collected car is on the impound pad");
