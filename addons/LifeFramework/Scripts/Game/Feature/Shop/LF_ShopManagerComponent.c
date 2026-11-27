@@ -37,6 +37,9 @@ class LF_ShopManagerComponent : GameComponent
 
 	protected static LF_ShopManagerComponent s_Instance;
 
+	//! Row names for prefabs with no inventory name: a string key "#<prefix><prefab file name>" (ResolveDisplayName).
+	static const string NAME_KEY_PREFIX = "LF-ItemName_";
+
 	//------------------------------------------------------------------------------------------------
 	static LF_ShopManagerComponent GetInstance()
 	{
@@ -392,10 +395,22 @@ class LF_ShopManagerComponent : GameComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Best available name for the menu: the item's own UI display name (often a #key; text widgets
-	//! translate it), else the prefab file name without the folder or the .et extension.
+	//! Best available name for the menu: a string-table row keyed by the prefab's file name (a pack names a base-game
+	//! item that has no good name of its own: the entrenching tool, "Waterbottle"; #5080), else the item's own UI display
+	//! name (often a #key; text widgets translate it), else the prefab file name without the folder or the .et extension.
 	static string ResolveDisplayName(ResourceName prefab)
 	{
+		string path = prefab.GetPath();
+		int lastSlash = path.LastIndexOf("/");
+		if (lastSlash >= 0 && lastSlash < path.Length() - 1)
+			path = path.Substring(lastSlash + 1, path.Length() - lastSlash - 1);
+		if (path.EndsWith(".et"))
+			path = path.Substring(0, path.Length() - 3);
+
+		string fileKey = "#" + NAME_KEY_PREFIX + path;
+		if (WidgetManager.Translate(fileKey) != fileKey)
+			return fileKey;
+
 		UIInfo info = LF_UIInfoUtils.GetInfo(prefab);
 		if (info)
 		{
@@ -404,12 +419,6 @@ class LF_ShopManagerComponent : GameComponent
 				return name;
 		}
 
-		string path = prefab.GetPath();
-		int lastSlash = path.LastIndexOf("/");
-		if (lastSlash >= 0 && lastSlash < path.Length() - 1)
-			path = path.Substring(lastSlash + 1, path.Length() - lastSlash - 1);
-		if (path.EndsWith(".et"))
-			path = path.Substring(0, path.Length() - 3);
 		return path;
 	}
 };
