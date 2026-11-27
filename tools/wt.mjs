@@ -24,6 +24,7 @@ import { fileURLToPath } from "node:url";
 import { findReparsePoints, recycleWorktree, removeWorktree, safeRemoveTree } from "./link-safety.mjs";
 import { localSetting, wtParent } from "./lib/local-config.mjs";
 import { describeRun } from "./lib/git-retry.mjs";
+import { runGitHealing } from "./lib/stale-git-lock.mjs";
 import { commonDirFromFiles } from "./lib/git-common-dir.mjs";
 export { wtParent };
 import { ADDONS } from "./lib/addons.mjs";
@@ -71,8 +72,16 @@ export function run(cmd, args, opts = {}) {
 // error, a hook that only set an exit code), which left a CI failure with nothing to read.
 export { describeRun };
 
+// A killed git leaves `index.lock` / `HEAD.lock` behind and every later call in that tree fails with "File exists"
+// (the warm pool's claim and fill, the guard's run tree). A lock older than 5 min that no running git could hold is
+// removed and the call re-run once (tools/lib/stale-git-lock.mjs); the removal is one line in warm.log's hub.
 export function git(root, args) {
-  return run("git", ["-C", root, ...args]);
+  return runGitHealing(() => run("git", ["-C", root, ...args]), {
+    log: (line) => {
+      try { process.stderr.write(`${line}\n`); } catch { /* best effort */ }
+      try { writeFileSync(join(ensureHub(root), "warm.log"), `${new Date().toISOString()} [${process.pid}] ${line}\n`, { flag: "a" }); } catch { /* best effort */ }
+    },
+  });
 }
 
 export function gitOk(root, args) {

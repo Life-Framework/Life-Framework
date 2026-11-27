@@ -23,10 +23,11 @@ const repo = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 for (const p of g.GUARD_CODE) check(existsSync(join(repo, p)), `GUARD_CODE names a missing file: ${p}`);
 
 // 2. ls-tree parsing.
-const A = "a".repeat(40), B = "b".repeat(40), C = "c".repeat(40), D = "d".repeat(40);
-const lsTree = g.GUARD_CODE.map((p, i) => `100644 blob ${[A, B, C][i]}\t${p}`).join("\n") + "\n";
+const A = "a".repeat(40), B = "b".repeat(40), C = "c".repeat(40), D = "d".repeat(40), E = "e".repeat(40);
+const IDS = [A, B, C, E]; // one id per GUARD_CODE file
+const lsTree = g.GUARD_CODE.map((p, i) => `100644 blob ${IDS[i]}\t${p}`).join("\n") + "\n";
 const cur = g.parseLsTree(lsTree);
-check(g.GUARD_CODE.every((p, i) => cur[p] === [A, B, C][i]), `parseLsTree: got ${JSON.stringify(cur)}`);
+check(g.GUARD_CODE.every((p, i) => cur[p] === IDS[i]), `parseLsTree: got ${JSON.stringify(cur)}`);
 
 // 3. Drift: the 2026-11-18 case is the classifier file (tools/lib/main-guard.mjs) changing under a running worker.
 check(g.codeDrift({ ...cur }, cur).length === 0, "identical ids: no drift");

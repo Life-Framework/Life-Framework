@@ -406,7 +406,7 @@ export function issuesOf(body) {
 // falsely reverted #2881 (#2884) and #2887 (#2899) on `FAIL lock 'build' is held`. The worker records the blob ids of
 // the code it loaded, compares them with origin/main every tick, never reverts while they differ, and restarts itself
 // on the current code once the main checkout fast-forwards.
-export const GUARD_CODE = ["tools/main-guard.mjs", "tools/lib/main-guard.mjs", "tools/lib/guard-pin.mjs"];
+export const GUARD_CODE = ["tools/main-guard.mjs", "tools/lib/main-guard.mjs", "tools/lib/guard-pin.mjs", "tools/lib/stale-git-lock.mjs"];
 
 // Blob ids from `git ls-tree <ref> -- <paths>` output -> { path: id }.
 export function parseLsTree(text) {
