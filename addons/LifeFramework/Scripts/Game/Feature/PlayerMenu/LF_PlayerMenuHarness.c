@@ -1,6 +1,7 @@
 // Harness verb `playermenu open [person|progress]|pick <row>|close|state` (the personal file, client
-// side). `open` shows the file on a tab the way the F2 key does and asks the server; `pick <n>` reads
-// the n-th skill (person tab) or quest (progress tab) as its Read button does; `state` answers
+// side). `open` shows the file on a tab the way the F2 key does and asks the server; `pick <n>` clicks the
+// Read button of the n-th skill (person tab) or quest (progress tab), `widget_not_found <name>` when the row has
+// none (`pick <n> direct` calls the handler instead); `state` answers
 // `open=<0|1> tab=<n> data=<0|1> skills=<n> quests=<n> licences=<n>` so a proof waits for the answer.
 
 //------------------------------------------------------------------------------------------------
@@ -43,8 +44,23 @@ modded class LF_AgentHarnessVerbs
 			if (LF_PlayerMenuSheet.CurrentTab() == LF_PlayerMenuSheet.TAB_PROGRESS)
 				row = LF_PlayerMenuSheet.ROW_QUEST;
 
-			screen.Notify(row + cmd.Arg2.ToInt().ToString());
-			LF_AgentHarness.Answer(cmd.Id, "ok", "picked " + row + cmd.Arg2);
+			string part = row + cmd.Arg2.ToInt().ToString();
+			if (cmd.Arg3 == "direct" || cmd.Arg3 == "--direct")
+			{
+				screen.Notify(part);
+				LF_AgentHarness.Answer(cmd.Id, "ok", "picked " + part + " (direct)");
+				return true;
+			}
+
+			// The default presses the row's Read button like a click; no visible button is `widget_not_found <name>`.
+			string error = LF_AgentHarness.PressWidget(part + "_Action", 0);
+			if (!error.IsEmpty())
+			{
+				LF_AgentHarness.Answer(cmd.Id, "error", error);
+				return true;
+			}
+
+			LF_AgentHarness.Answer(cmd.Id, "ok", "picked " + part + " (ui)");
 			return true;
 		}
 
@@ -92,7 +108,7 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
-		LF_AgentHarness.Answer(cmd.Id, "error", "usage: playermenu open [person|progress|next]|pick <n>|seed|close|state");
+		LF_AgentHarness.Answer(cmd.Id, "error", "usage: playermenu open [person|progress|next]|pick <n> [direct]|seed|close|state");
 		return true;
 	}
 }

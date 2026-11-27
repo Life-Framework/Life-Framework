@@ -3248,23 +3248,34 @@ class LF_AgentHarness
 	//! widget handler the engine would call (shop row, ATM menu).
 	protected static void DoClick(LF_AgentCommand cmd)
 	{
+		string error = PressWidget(cmd.Arg1, cmd.Arg2.ToInt());
+		if (error.IsEmpty())
+			WriteResult(cmd.Id, "ok", cmd.Arg1);
+		else
+			WriteResult(cmd.Id, "error", error);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Presses the index-th visible, clickable widget named `name`, as a mouse click does. "" when it
+	//! was pressed, else the reason: `widget_not_found <name>` (no such visible button: the dead
+	//! button a proof exists to catch), `click_unhandled`, `no_workspace`. The verbs that drive a
+	//! sheet (`activities`, `playermenu`) press their rows through this, so a row with no widget fails.
+	static string PressWidget(string name, int index)
+	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)
-		{
-			WriteResult(cmd.Id, "error", "no_workspace");
-			return;
-		}
+			return "no_workspace";
 
-		s_sClickName = cmd.Arg1;
-		s_iClickIndex = cmd.Arg2.ToInt();
+		s_sClickName = name;
+		s_iClickIndex = index;
 		s_iClickSeen = 0;
 		s_wClickTarget = null;
 		FindClickTarget(workspace);
 
 		if (!s_wClickTarget)
 		{
-			WriteResult(cmd.Id, "error", "widget_not_found");
-			return;
+			LF_Debug.Warn(FEATURE, string.Format("click %1: no visible clickable widget by that name (index %2)", name, index));
+			return "widget_not_found " + name;
 		}
 
 		SCR_ButtonTextComponent textButton = SCR_ButtonTextComponent.Cast(s_wClickTarget.FindHandler(SCR_ButtonTextComponent));
@@ -3274,8 +3285,7 @@ class LF_AgentHarness
 		{
 			textButton.m_OnClicked.Invoke();
 			LF_Debug.Log(FEATURE, string.Format("click %1", s_sClickName));
-			WriteResult(cmd.Id, "ok", s_sClickName);
-			return;
+			return "";
 		}
 
 		// Debug menu buttons are plain ButtonWidgets. The menu class is not a
@@ -3287,8 +3297,7 @@ class LF_AgentHarness
 			if (debugMenu && debugMenu.OnClick(s_wClickTarget, 0, 0, 0))
 			{
 				LF_Debug.Log(FEATURE, string.Format("click %1", s_sClickName));
-				WriteResult(cmd.Id, "ok", s_sClickName);
-				return;
+				return "";
 			}
 		}
 
@@ -3299,14 +3308,13 @@ class LF_AgentHarness
 			if (handler && handler.OnClick(s_wClickTarget, 0, 0, 0))
 			{
 				LF_Debug.Log(FEATURE, string.Format("click %1", s_sClickName));
-				WriteResult(cmd.Id, "ok", s_sClickName);
-				return;
+				return "";
 			}
 
 			cursor = cursor.GetParent();
 		}
 
-		WriteResult(cmd.Id, "error", "click_unhandled");
+		return "click_unhandled";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -309,6 +309,32 @@ the game profile). Hooks:
   opens it and leaves it open, which is what a UI screenshot uses. `hide` closes
   it only when it is up.
 
+### Verbs that drive a screen press the real widget (#5099)
+
+The "What to do next" rows had no button for five days (2026-11-22 to 27) and no proof noticed, because `activities
+pick` called the sheet's handler instead of pressing the row. A verb that drives a screen now presses the widget a
+mouse presses, so a missing button, a hidden column or the wrong focus fails the proof as `error widget_not_found
+<widget name>`. Audit of every verb that touches a screen (2026-11-27):
+
+| Verb | Before | Now |
+|---|---|---|
+| `activities pick <n>` / `go` | handler (`LF_UIScreen.Notify`) | clicks `PlayerMenuNext_<n>_Action` / `PlayerMenuNextGo`; `pick <n> direct`, `go direct` keep the handler call |
+| `playermenu pick <n>` (skill, errand rows) | handler | clicks `PlayerMenuSkill_<n>_Action` / `PlayerMenuQuest_<n>_Action`; `pick <n> direct` keeps the handler call |
+| `click <widget> [index]` | widget | unchanged; answers `widget_not_found <widget>` (the name is in the answer now) |
+| `type`, `ui`, `ui text` | widget | unchanged |
+| `guide`, `chargesheet`, `pausemenu`, `kit`, `open` | open or close a screen, no row to press | unchanged: the buttons are pressed with `click` |
+| `use` / `interact` / `look` | the F-key action list | unchanged: that is the player's path for a world action and the ATM and car lot rows |
+| `dialogue pick <row>` | calls `PickRow` | the talk scene has no row widgets (a player presses a digit key or MenuSelect); `dialogue-keys-proof` measures the key path, `dialogue pick` stays a shortcut |
+| `levelset`, `repgrant`, `licence`, `bookcharge`, `exportorder`, `playermenu seed`, ... | server-side grants | not screens |
+
+The proof `session.mjs ui-click-smoke [fresh]` (`up --mission island --profile lowspec --hold 20`) opens each main
+screen in one session and presses its first actionable row or button through the UI path: the F2 Next list (every row
+must carry its button; last row, first row, Start; a new character takes the clerk's welcome talk first, the list is
+empty until it has papers), the F2 errands and skills, a shop's price list, the licence rows of the gun counter's list,
+the car lot sheet, the ATM rows (the in-world action list, no sheet) and the charge sheet's row action and Sign
+button. `PASS|FAIL|N/A <screen>: ...` per screen, then `ui-click-smoke proof: PASS|FAIL`. It fails on any
+`widget_not_found`. The pure helpers have a selftest, `tools/validation/ui-click-smoke-selftest.mjs`.
+
 Results come back on `result.txt` as `<id> ok ...` or `<id> error <reason>`.
 `error no_session` means play mode is not running, or this build does not
 contain `LF_AgentHarness` yet.
