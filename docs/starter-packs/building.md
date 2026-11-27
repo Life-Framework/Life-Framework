@@ -72,7 +72,7 @@ pass, the counts table, `## Manual testing`. No town layers, no `ws/town-maintai
   `"pack": true`, and the layer is committed like any other. Never keep a layer untracked, never put a pack prefab in
   `GridWorld_Layers/` (`validate-addon-boundary`). A layer already written there: `grid free <slug>`, then `grid place ... --again`.
   `look grid:<slug>`, `audit placement --grid` and `session up --mission grid` load it through the pack grid world.
-- A GUID is made once and kept (rule 2); typed coordinates only in a building-space row the script writes. `look` queues on the pool, never here. One price owner per item, mannequins wear what their outlet sells, an action prop has an `RplComponent` (`validate-shop-price-owners`, `-mannequin-outfits`, `-actions-have-rpl`).
+- A GUID is made once and kept (rule 2); typed coordinates only in a building-space row the script writes. `look` queues on the pool, never here. One price owner per item, mannequins wear what their outlet sells, an action prop has an `RplComponent` (`validate-shop-price-owners`, `-mannequin-outfits`, `-actions-have-rpl`). A session picture: `session.mjs pull <dir>` before `down` deletes it.
 
 ## Environment
 No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`tools\cli status` says which you are on). Never pin a machine. Run in the foreground (timeout up to 600000 ms) or `t3_background_wait`;

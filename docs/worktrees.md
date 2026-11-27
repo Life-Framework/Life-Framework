@@ -1304,6 +1304,14 @@ late-join path (`session join`) trims first when free RAM is under the floor plu
 reserve, then refuses with a one-line reason if it still would breach the floor (#563). The lane count (`lanes.session`) stays 2 here: raise it only after a run with three
 concurrent proofs holds the floor.
 
+**Pictures leave before `down` (2026-11-27).** `session down` deletes each client's screenshot folders (`el-captures`)
+with the session, and a `--profile full` round's pictures went with it more than once. Copy them out first:
+`node agent-box/session.mjs pull <dir>` (every client's newest `el-captures` and `console.log`, the server log), or
+`tools\cli evidence ...` for a PR picture. A UI, HUD or two-player proof that takes pictures (`clinic-bed-proof`,
+`lot-sheet-proof`, `crime-playtest-proof`, `downed-call`, `downed-flow-proof`) is `--profile full`; the log-reading
+proofs (`map-search-proof`, `jip-sweep-proof`) are lowspec. The list with their arguments is in `agent-box/README.md`
+("Proofs added 2026-11-27"). If `session up` fails with `GAME UPDATE PENDING`, do not retry it: see "Game update guard".
+
 ### Session boot time
 
 Where `session up` spends its time (lf-cloud, lowspec, 1 client, 2026-11-14, from the box's `up.log` and

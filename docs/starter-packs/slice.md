@@ -69,6 +69,10 @@ Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, then exactly
 - Harness: `hold weapon` re-draws the first slotted weapon and `itemdrop` cannot clear a weapon-slot item (fresh
   `session down` + `up` per tool); `input SwitchCameraType` does not reach third person (`agent-box/README.md`).
 
+- Proofs: look in `agent-box/README.md` ("Proofs added 2026-11-27") before writing one. `session down` deletes client
+  screenshots: `session.mjs pull <dir>` first. `GAME UPDATE PENDING` from `session up`: do not retry, `tools\cli game-update --check`.
+  `validate-no-escaped-quote-targets`: no `\"` inside a string-table Target.
+
 ## Environment
 No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`tools\cli status` says which you are on). Never pin a machine (`--local`, `--machine`). Run in the foreground (timeout up to
 600000 ms) or `t3_background_wait`; never end the turn with a run pending. Never `--force`, `rm -rf` or
