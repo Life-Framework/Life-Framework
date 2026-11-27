@@ -100,11 +100,15 @@ class LF_DutyAction : ScriptedUserAction
 
 		PlayPunch(pOwnerEntity, pUserEntity);
 
-		string statusKey = "#LF-Duty_OffDuty";
+		// Clock-in swaps the civilian inventory, cash included, into the duty locker (LF_DutyLocker): say so,
+		// or the cash readout drops to $0 with no reason given (medic playtest 2026-11-27).
 		if (clockingIn)
-			statusKey = "#LF-Duty_OnDuty";
+		{
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-Duty_ClockedIn", "#EL-Duty_Status", 6.0);
+			return;
+		}
 
-		LF_Utils.NotifyEntity(pUserEntity, "#EL-Duty_Status_Change", "#EL-Duty_Status", 3.0, statusKey);
+		LF_Utils.NotifyEntity(pUserEntity, "#EL-Duty_Status_Change", "#EL-Duty_Status", 3.0, "#LF-Duty_OffDuty");
 	}
 
 	//------------------------------------------------------------------------------------------------

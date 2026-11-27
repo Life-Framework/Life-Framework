@@ -469,7 +469,10 @@
   duty pay. The faction is the duty role: POLICE only while clocked in.
   Feedback: the vanilla pick-up gesture on the acting client, the range control
   panel button click (`SOUND_RANGECP_STARTBUTTON`) broadcast from the desk, then
-  a toast. Death on duty ends the shift: the body keeps the police gear, the
+  a toast. The clock-in toast (`#LF-Duty_ClockedIn`, 6 s, police and medic desks) says the
+  clothes, cash and things wait in the duty locker until clock-out: the carried cash goes into the
+  stash with the rest, and before 2026-11-27 the readout dropped to $0 with only "You are now on duty"
+  (medic playtest). Clock-out still reads "You are now off duty". Death on duty ends the shift: the body keeps the police gear, the
   civilian stash becomes the carried snapshot the respawn restores, and the
   next shift starts from the starter kit. Going on duty starts the rank clock;
   going off duty settles it. `PoliceStation_Debug` and `PoliceDutyNPC` no
