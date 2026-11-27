@@ -48,6 +48,9 @@ export const DEFAULTS = {
   sessionHoldMin: 10,
   sessionGraceMin: 2,
   sessionHoldMaxMin: 20,
+  // A session whose heartbeat says a proof or restart is running is not closed by the hold cap until this many
+  // minutes past cap plus grace (busyDefersClose); the idle rule never closes it (a running command is activity).
+  sessionBusyExtraMin: 20,
   // Session folders older than this many hours (not in use, not film) are removed; a session or
   // test refuses to start with less free disk than minFreeDiskGb (docs/worktrees.md "Disk hygiene").
   sessionKeepHours: 24,
@@ -472,6 +475,13 @@ export function clampHoldMin(v, { holdMin, maxMin }) {
   const n = Number(v);
   if (!Number.isFinite(n) || n <= 0) return holdMin;
   return Math.min(maxMin, Math.max(holdMin, Math.round(n)));
+}
+
+// A session whose heartbeat (tools/lib/session-heartbeat.mjs) is fresh is running a command right now: the hold cap
+// waits for it to finish, up to extraMin past cap plus grace so a hung proof cannot keep a lane for ever.
+export function busyDefersClose({ busyUntilMs, now, heldMs, capMin, graceMin, extraMin }) {
+  if (!Number.isFinite(busyUntilMs) || busyUntilMs <= now) return false;
+  return heldMs < (capMin + graceMin + extraMin) * 60000;
 }
 
 export function holdVerdict({ heldSinceMs, capMin, graceMin, warnedAtMs, waiting, now, capped = true }) {

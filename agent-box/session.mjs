@@ -43,6 +43,7 @@ import { tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { isTemplateMission, templateLaunch, templateVariant, variants as templateVariants } from "../tools/server-template/template.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { startHeartbeat } from "../tools/lib/session-heartbeat.mjs";
 import { extendLease, readReaped, sessionBase as leaseBase, sessionDirOf, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { EVERON_WORLD, GRID_MISSION, ISLAND_MISSION, PACK_ADDON, PACK_GRID_MISSION, hasPackGridLayers } from "../tools/lib/worlds.mjs";
 import { addonsArgs, CORE_PLAYTEST_MISSION, launchAddons, launchAddonsFor, playtestMission, townWorld } from "../tools/lib/addons.mjs";
@@ -1576,6 +1577,9 @@ async function relayToSession(cmd, rest, ptr) {
   return code;
 }
 
+// Commands that return at once or start/stop a session: no heartbeat (`up` is covered by the lock time and readyAt).
+const QUICK_COMMANDS = new Set(["up", "down", "status", "state", "lease", "selftest", "help", "pull", "reset"]);
+
 async function main(argv) {
   let [cmd, ...rest] = argv;
   if (rest.includes("--help") || rest.includes("-h") || cmd === "help" || cmd === "--help") {
@@ -1593,6 +1597,10 @@ async function main(argv) {
     touchLease(sessionDir(), cmd);
     const warn = takeHoldWarning(sessionDir());
     if (warn) console.log(warn);
+    // A proof, a restart or a wait can run minutes with no command to the clients (all its loops block this process,
+    // so no timer here could stamp the lease): a detached heartbeat says "busy" until this process ends, so the pool
+    // never closes the session under it (2026-11-27: sessions vanished a few minutes after `ready`).
+    if (!QUICK_COMMANDS.has(cmd) && !process.env.LF_NO_HEARTBEAT) startHeartbeat(sessionDir(), cmd);
   }
   if (cmd === "lease") {
     const min = Number(rest[0] ?? 30);
