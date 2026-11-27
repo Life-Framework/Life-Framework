@@ -22,7 +22,7 @@ You can also **talk to the teller** at the bank counter; it does the same thing.
 
 The three ATMs are on the bank wall, on the east side near the filling station, and on the dock; they are marked **ATM** on the [Saint-Philippe map](maps.md).
 
-**Transfers:** there is no bank-to-bank transfer in this build. To pay another player, look at them, press **F** to open the player menu and pick *Give cash*.
+**Transfers:** *Bank transfer* on the keypad opens the transfer page. It shows your own account number; key in the recipient's number and the amount and press SEND. There is no fee, and one account can send up to $50,000 a day. To hand over cash instead, look at the player, press **F** to open the player menu and pick *Give cash*.
 
 ## What things cost
 
@@ -48,7 +48,8 @@ Prices are the ones the alpha server charges. Full shop lists are in [Shops](05-
 | Rifle (permit needed) | $1,500 and up |
 | **Fuel** at the pumps | $2 per litre |
 | **Cheapest car** (T601) | $560 |
-| Other cars | $800 to $6,400 |
+| Other cars (car lot) | $800 to $3,200 |
+| Trucks (truck yard, truck licence $300) | $7,600 to $9,600 |
 | Extra key for a car | $25 |
 | **Cheapest home** (cottage) | $2,000 |
 | Dearest home (villa) | $10,000 |
@@ -56,8 +57,8 @@ Prices are the ones the alpha server charges. Full shop lists are in [Shops](05-
 | Beehive kit | $120 |
 | Reaper (harvest) | $1,200 (or a $300 rental deposit) |
 
-**Cars** (alpha price at 80 percent of the list): T601 $560, S105 $800, V2101 $1,440, UAZ469 $2,000, UAZ452 $2,800, S1203 van $3,200,
-M923A1 truck $6,400. You get **50 percent back** if you sell a car back.
+**Cars** (alpha price at 80 percent of the list): T601 $560, S105 $800, V2101 $1,440, UAZ469 $2,000, UAZ452 $2,800, S1203 van $3,200.
+The **truck yard** in the north-east sells the Ural 4320 for $7,600 and the M923A1 for $9,600. You get **50 percent back** if you sell a car back.
 
 **Fines and bills:** a police ticket is $50 to $800 and doubles after 30 minutes. A hospital stay after dying costs $150. A medic
 reviving you costs $100. A car in the impound costs $200 to get out; a tow costs $150.
