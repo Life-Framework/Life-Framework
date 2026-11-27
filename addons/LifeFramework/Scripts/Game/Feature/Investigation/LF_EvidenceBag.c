@@ -75,6 +75,14 @@ class LF_EvidenceBagComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The bag's read line: "#12 Shoplifting, Fuel Station, Saint Philippe, 4 min". The place goes through
+	//! LF_WantedBoard.ResolvePlace like every board, since a stored place can be "<site>^<town>" (#5156) or a grid square.
+	static string ReadLine(int report, string offence, string place, int minutes)
+	{
+		return string.Format("#%1 %2, %3, %4 min", report, WidgetManager.Translate(offence), LF_WantedBoard.ResolvePlace(place), minutes);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: writes the record on the bag.
 	void Stamp(int report, string offence, string place, string kind, int minutes, string note = "")
 	{
@@ -200,7 +208,7 @@ class LF_ReadEvidenceBagAction : ScriptedUserAction
 		if (!bag || !manager || !bag.IsStamped())
 			return;
 
-		string line = string.Format("#%1 %2, %3, %4 min", bag.GetReport(), WidgetManager.Translate(bag.GetOffence()), WidgetManager.Translate(bag.GetPlace()), bag.GetMinutes());
+		string line = LF_EvidenceBagComponent.ReadLine(bag.GetReport(), bag.GetOffence(), bag.GetPlace(), bag.GetMinutes());
 		manager.ShowNotificationToast("#LF-Evidence_Title", "#LF-Evidence_Read", 8.0, LF_ENotificationType.INFO, line);
 	}
 }
