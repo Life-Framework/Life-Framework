@@ -145,6 +145,8 @@ class LF_Jail
 	protected static int s_iMaxSeconds;
 	protected static int s_iWantedReduction;
 	protected static float s_fZoneRadius;
+	//! How many "Sentence served" toasts a release queued this session (tests read it).
+	protected static int s_iReleaseToasts;
 
 	//------------------------------------------------------------------------------------------------
 	protected static map<string, ref LF_JailSentence> Sentences()
@@ -313,7 +315,8 @@ class LF_Jail
 			return false;
 
 		LF_Debug.Info("Jail", string.Format("%1 released on bail remaining=%2", playerUid, GetRemaining(playerUid)));
-		Complete(playerUid);
+		// LF_JailBail's own toast says the bail was paid and they are free; "Sentence served" would contradict it.
+		Complete(playerUid, false);
 		return true;
 	}
 
@@ -368,6 +371,14 @@ class LF_Jail
 		s_iMaxSeconds = 0;
 		s_iWantedReduction = 0;
 		s_fZoneRadius = 0;
+		s_iReleaseToasts = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many "Sentence served" toasts releases have queued since the statics were reset.
+	static int ReleaseToastsQueued()
+	{
+		return s_iReleaseToasts;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1196,7 +1207,7 @@ class LF_Jail
 	//------------------------------------------------------------------------------------------------
 	//! Release in the world: the cell door swings open (its vanilla door sound), the prisoner
 	//! stands outside the cell, the slip is stamped, and the toast follows.
-	protected static void Release(string playerUid)
+	protected static void Release(string playerUid, bool servedToast = true)
 	{
 		LF_JailSentence sentence = Sentences().Get(playerUid);
 		if (sentence)
@@ -1218,8 +1229,11 @@ class LF_Jail
 			LF_Debug.Info("Jail", string.Format("released %1 with no body in the world", playerUid));
 		}
 
-		if (GetGame() && GetGame().GetCallqueue())
+		if (servedToast && GetGame() && GetGame().GetCallqueue())
+		{
+			s_iReleaseToasts++;
 			GetGame().GetCallqueue().CallLater(NotifyReleased, RELEASE_TOAST_DELAY_MS, false, playerUid);
+		}
 
 		LF_Debug.Info("Jail", string.Format("released %1 outside the cell", playerUid));
 	}
@@ -1333,7 +1347,7 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void Complete(string playerUid)
+	protected static void Complete(string playerUid, bool servedToast = true)
 	{
 		LF_JailSentence sentence = Sentences().Get(playerUid);
 		if (sentence)
@@ -1342,7 +1356,7 @@ class LF_Jail
 			sentence.m_fRemaining = 0;
 		}
 
-		Release(playerUid);
+		Release(playerUid, servedToast);
 
 		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
 		if (!accounts)

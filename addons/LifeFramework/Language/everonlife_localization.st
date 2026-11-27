@@ -9050,7 +9050,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{5EEAFA2D61673F01}" {
      Id "LF-JailBook_FirstArrest"
-     Target_en_us "Bring the suspect to the station booking desk at the jail (waypoint set). Escort them, put them in your car, then book them at the cell: full sentence, or reduced if they cooperated."
+     Target_en_us "Bring the suspect to the jail booking point (waypoint set). Escort them, or put them in your car, then book them there."
      Comment "First-arrest note to an officer, once per session."
     }
     CustomStringTableItem "{570E5C4A7E0D9CF9}" {
@@ -9803,6 +9803,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Level_TradeTier_5"
      Target_en_us "Master"
      Comment "Trade tier word for levels 28 to 30 (#4414)."
+    }
+    CustomStringTableItem "{FEB731F46AC70C21}" {
+     Id "LF-LicenceBarred_Driving"
+     Target_en_us "You cannot get a driver's license for %1 days."
+     Comment "Toast to the arrested player who held no driver's license: the conviction bars them from one. %1 = in-game days."
+    }
+    CustomStringTableItem "{ACF2B58E9F84E064}" {
+     Id "LF-LicenceBarred_Firearm"
+     Target_en_us "You cannot get a firearm permit for %1 days."
+     Comment "Toast to the arrested player who held no firearm permit: the conviction bars them from one. %1 = in-game days (agent playtest 2026-11-27)."
+    }
+    CustomStringTableItem "{709C605E471A9159}" {
+     Id "LF-LicenceBarred_Generic"
+     Target_en_us "You cannot get this license for %1 days."
+     Comment "Toast to the arrested player who did not hold the licence the conviction bars. %1 = in-game days."
     }
     CustomStringTableItem "{7782A81CDE1A5199}" {
      Id "LF-LicenceCounter_Applied"
@@ -16301,6 +16316,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 and %2 more"
      Comment "Seized list cut to three kinds; %1 is the named kinds, %2 how many more (#2154)."
     }
+    CustomStringTableItem "{FE96F6E326947DD1}" {
+     Id "LF-Search_TakenFromYou"
+     Target_en_us "The {police} took: %1"
+     Comment "Toast to the searched player: what the police search seized. %1 = the item list, \"A, B and 2 more\" (agent playtest 2026-11-27)."
+    }
+    CustomStringTableItem "{31401FB7D80A1637}" {
+     Id "LF-Search_TakenPlain"
+     Target_en_us "The {police} took goods you may not carry."
+     Comment "Toast to the searched player when the search took only chain goods, which have no item names."
+    }
     CustomStringTableItem "{5EA2C4A000000004}" {
      Id "LF-Search_Vehicle_Action"
      Target_en_us "Search vehicle"
@@ -18567,6 +18592,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Wanted_OnFoot"
      Target_en_us "on foot"
      Comment "Wanted poster: the suspect was not in a vehicle."
+    }
+    CustomStringTableItem "{7D1E5B0A94C2F368}" {
+     Id "LF-Wanted_PlaceAt"
+     Target_en_us "%1, %2"
+     Comment "A crime place inside a town (#5147): %1 is the site's own name (a sign title), %2 the town. e.g. Fuel Station, Saint Philippe."
     }
     CustomStringTableItem "{35F30778D3B26361}" {
      Id "LF-Wanted_PlaceGrid"

@@ -72,6 +72,10 @@ class LF_WantedReports
 	static const string OFFENCE_CHAIN_GOODS = "#LF-Offence_ChainGoods";
 	static const string OFFENCE_SHOPLIFTING = "#LF-Offence_Shoplifting";
 	static const string PLACE_GRID_KEY = "#LF-Wanted_PlaceGrid";
+	//! Joins a place's site and town in one stored string ("site^town", #5147); LF_WantedBoard.ResolvePlace reads it.
+	//! Not a separator the dispatch, pager, stolen-car or wanted lines already split on (| ; ~).
+	static const string PLACE_JOIN = "^";
+	static const string PLACE_AT_KEY = "#LF-Wanted_PlaceAt";
 	static const string CLOTHING_FACE_HIDDEN = "#LF-Wanted_FaceHidden";
 	static const string CLOTHING_BUILD_HIDDEN = "#LF-Wanted_BuildHidden";
 
@@ -558,9 +562,9 @@ class LF_WantedReports
 	//! station is not "seen at Wanted".
 	static string DescribePlace(vector origin)
 	{
-		string named = LF_NamedPlaces.Nearest(origin);
-		if (!named.IsEmpty())
-			return named;
+		// The town is the nearest settlement label, never a site label (#5147: a fuel station beside a factory
+		// label read "Factory"); the site is the nearest place sign's title, the name the place gives itself.
+		string town = LF_NamedPlaces.NearestSettlement(origin);
 
 		s_vPlaceOrigin = origin;
 		s_fPlaceBest = LF_PoliceConfig.PlaceRadius();
@@ -570,8 +574,19 @@ class LF_WantedReports
 
 		string title = s_sPlaceTitle;
 		s_sPlaceTitle = string.Empty;
+		if (!town.IsEmpty() && !title.IsEmpty())
+			return title + PLACE_JOIN + town;
+
+		if (!town.IsEmpty())
+			return town;
+
 		if (!title.IsEmpty())
 			return title;
+
+		// No settlement and no sign: a site label (a sawmill in open country) still beats a grid square.
+		string named = LF_NamedPlaces.Nearest(origin);
+		if (!named.IsEmpty())
+			return named;
 
 		return GridPlace(origin);
 	}

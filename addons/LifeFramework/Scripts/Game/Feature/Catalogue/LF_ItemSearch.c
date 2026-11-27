@@ -121,6 +121,23 @@ class LF_ItemSearch
 		if (lines.IsEmpty())
 			return string.Empty;
 
+		return WidgetManager.Translate("#LF-Search_SeizedFrom", suspectName, ListText(lines));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The searched player's toast text: "The police took: A, B, C and 2 more". Empty when nothing was seized.
+	static string TakenText(notnull array<string> lines)
+	{
+		if (lines.IsEmpty())
+			return string.Empty;
+
+		return LF_Terms.Text("#LF-Search_TakenFromYou", ListText(lines));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "A, B, C and 2 more": three kinds named, the rest folded into the count.
+	protected static string ListText(notnull array<string> lines)
+	{
 		string list;
 		for (int i = 0; i < lines.Count() && i < SEIZED_NAMED; i++)
 		{
@@ -133,7 +150,7 @@ class LF_ItemSearch
 		if (lines.Count() > SEIZED_NAMED)
 			list = WidgetManager.Translate("#LF-Search_SeizedMore", list, (lines.Count() - SEIZED_NAMED).ToString());
 
-		return WidgetManager.Translate("#LF-Search_SeizedFrom", suspectName, list);
+		return list;
 	}
 
 	//------------------------------------------------------------------------------------------------

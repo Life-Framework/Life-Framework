@@ -33,13 +33,27 @@ class LF_LicenceSeizure
 	static const string KEY_DRIVING = "#LF-LicenceSeized_Driving";
 	static const string KEY_GENERIC = "#LF-LicenceSeized_Generic";
 	static const string KEY_PLAIN = "#LF-LicenceSeized_Plain";
+	// A ban on a licence the player never held: nothing was seized, they are barred from getting it.
+	static const string KEY_BARRED_FIREARM = "#LF-LicenceBarred_Firearm";
+	static const string KEY_BARRED_DRIVING = "#LF-LicenceBarred_Driving";
+	static const string KEY_BARRED_GENERIC = "#LF-LicenceBarred_Generic";
 
 	protected static ref LF_LicenceSeizureSubscriber s_Subscriber;
+	//! The line last sent to an arrested player (tests read it).
+	protected static string s_sLastToldKey;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_Subscriber = null;
+		s_sLastToldKey = "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The key of the last line Tell sent, "" when none was sent since the statics were reset.
+	static string LastToldKey()
+	{
+		return s_sLastToldKey;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -112,11 +126,13 @@ class LF_LicenceSeizure
 		bool permitTaken;
 		foreach (LF_LicenceBan ban : bans)
 		{
+			// Read before the ban takes it: a player who never held the licence is told they are barred, not robbed of it.
+			bool held = Holds(uid, ban.m_eLicence, body);
 			LF_LicenceBans.Ban(uid, ban.m_eLicence, ban.m_iDays, body);
 			if (ban.m_eLicence == LF_LicenceDesk.PERMIT)
 				permitTaken = true;
 
-			Tell(body, ban);
+			Tell(body, ban, held);
 		}
 
 		if (permitTaken)
@@ -127,23 +143,48 @@ class LF_LicenceSeizure
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void Tell(IEntity body, notnull LF_LicenceBan ban)
+	//! True when the character holds the licence in the saved record or on the live body.
+	static bool Holds(string uid, LF_ELicenseType licence, IEntity body)
+	{
+		array<LF_ELicenseType> saved = {};
+		LF_Progression.GetLicenses(uid, saved);
+		if (saved.Contains(licence))
+			return true;
+
+		if (!body)
+			return false;
+
+		LF_LicenseManagerComponent manager = LF_LicenseManagerComponent.Cast(body.FindComponent(LF_LicenseManagerComponent));
+		return manager && manager.HasLicense(licence);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Tell(IEntity body, notnull LF_LicenceBan ban, bool held)
 	{
 		if (!body)
+			return;
+
+		string key = SeizedKey(ban.m_eLicence, ban.m_iDays, held);
+		if (key.IsEmpty())
 			return;
 
 		string arg;
 		if (ban.m_iDays > 0)
 			arg = ban.m_iDays.ToString();
 
-		LF_Utils.NotifyEntity(body, SeizedKey(ban.m_eLicence, ban.m_iDays), KEY_TITLE, 6.0, arg);
+		s_sLastToldKey = key;
+		LF_Utils.NotifyEntity(body, key, KEY_TITLE, 6.0, arg);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The player's line for a seized licence: "Your firearm permit has been seized for %1 days."
-	//! A seizure with no ban has no days to say.
-	static string SeizedKey(LF_ELicenseType licence, int days)
+	//! A seizure with no ban has no days to say. A ban on a licence the player did not hold says they
+	//! cannot get it for the days ("" with no days: nothing changed for them).
+	static string SeizedKey(LF_ELicenseType licence, int days, bool held = true)
 	{
+		if (!held)
+			return BarredKey(licence, days);
+
 		if (days <= 0)
 			return KEY_PLAIN;
 
@@ -154,6 +195,21 @@ class LF_LicenceSeizure
 			return KEY_DRIVING;
 
 		return KEY_GENERIC;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string BarredKey(LF_ELicenseType licence, int days)
+	{
+		if (days <= 0)
+			return "";
+
+		if (licence == LF_ELicenseType.FIREARM_PERMIT)
+			return KEY_BARRED_FIREARM;
+
+		if (licence == LF_ELicenseType.DRIVING_LICENCE)
+			return KEY_BARRED_DRIVING;
+
+		return KEY_BARRED_GENERIC;
 	}
 
 	//------------------------------------------------------------------------------------------------
