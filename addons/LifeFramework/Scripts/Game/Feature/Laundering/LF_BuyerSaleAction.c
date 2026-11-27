@@ -287,7 +287,7 @@ class LF_BuyerSaleAction : ScriptedUserAction
 		LF_EBuyerSale result = LF_BuyerSale.ServerSell(pUserEntity, pOwnerEntity, System.GetUnixTime(), now, paid);
 		if (result == LF_EBuyerSale.OK)
 		{
-			LF_Utils.NotifyEntity(pUserEntity, "#LF-BuyerSale_Sold", "#LF-BuyerSale_Title", 4.0, paid.ToString());
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-BuyerSale_Sold", "#LF-BuyerSale_Title", 4.0, LF_MoneyFormat.FormatMoney(paid));
 			return;
 		}
 

@@ -40,7 +40,9 @@ DebugWorld has two zones (`docs/architecture/world-zones.md`):
 7. **A session only for what Workbench play cannot capture**: a sheet, HUD or other UI widget, a
    second player or late joiner, motion, animation, sound, filming (a held item's hand pose is
    motion). One `session up --profile full`, the proof and the shots in it, `session down`. Keep those
-   shots with `tools\cli evidence <issue> after <png> --name <what>`.
+   shots with `tools\cli evidence <issue> after <png> --name <what>`. **`session down` deletes the client
+   screenshot folders: `session.mjs pull <dir>` (or `evidence`) before it.** A sheet has a proof that opens it and
+   shoots it already (`lot-sheet-proof` through `lotsheet open|rows|close`); look in `agent-box/README.md` first.
 
 ## Checklist
 

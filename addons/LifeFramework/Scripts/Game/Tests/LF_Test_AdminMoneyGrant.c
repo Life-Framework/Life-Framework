@@ -87,6 +87,6 @@ class LF_Test_AdminMoneyGrant : LF_Test
 		// The answer text.
 		ctx.True(LF_AdminMoney.Describe(500, 500, true, "Ana").Contains("Gave $500"), "the answer says what was given");
 		ctx.True(LF_AdminMoney.Describe(-500, -300, false, "Ana").Contains("Took $300"), "the answer says what was taken");
-		ctx.True(LF_AdminMoney.Describe(-500, -300, false, "Ana").Contains("asked for $-500"), "a partial move names the request");
+		ctx.True(LF_AdminMoney.Describe(-500, -300, false, "Ana").Contains("asked for -$500"), "a partial move names the request");
 	}
 }

@@ -397,19 +397,7 @@ class LF_NewspaperEdition
 	//! "$1,250".
 	static string Money(int amount)
 	{
-		string digits = LF_Utils.MaxInt(amount, 0).ToString();
-		string grouped;
-		int count;
-		for (int i = digits.Length() - 1; i >= 0; i--)
-		{
-			if (count > 0 && count % 3 == 0)
-				grouped = "," + grouped;
-
-			grouped = digits.Get(i) + grouped;
-			count++;
-		}
-
-		return "$" + grouped;
+		return LF_MoneyFormat.FormatMoney(LF_Utils.MaxInt(amount, 0));
 	}
 
 	//------------------------------------------------------------------------------------------------

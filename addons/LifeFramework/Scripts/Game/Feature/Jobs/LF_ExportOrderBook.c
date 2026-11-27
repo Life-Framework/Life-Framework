@@ -46,6 +46,8 @@ class LF_ExportOrderBook
 	static const string REFUSE_HOLDS_ONE = "#LF-ExportOrder_RefuseHoldsOne";
 	static const string REFUSE_NONE_HELD = "#LF-ExportOrder_RefuseNoneHeld";
 	static const string REFUSE_SHORT = "#LF-ExportOrder_RefuseShort";
+	//! The short-count refusal that names how many units are still missing (%1); REFUSE_SHORT stays for a short with no count.
+	static const string REFUSE_SHORT_COUNT = "#LF-ExportOrder_RefuseShortCount";
 
 	protected static ref array<ref LF_ExportOrder> s_aOrders;
 	protected static int s_iNextId = 1;

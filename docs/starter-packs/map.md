@@ -41,6 +41,9 @@ Read your card in everon-map.md and the `Feature.md` of the area it touches. Not
 - Core text is neutral: place names and flavour are pack strings. Core script never holds a world coordinate.
 - A test fixture names fake places; a real Everon name in core fails `validate-core-place-names`.
 - A new string is appended, then `tools\cli regen-localization`; a new test needs `tools\cli regen-tests`.
+- The map's "Find a place" has a proof: `session.mjs map-search-proof [--words a,b]` (`up --mission island --profile lowspec`)
+  types each word through `maplegend search <word>`, which answers `results=N names=A|B|C`. A place players are sent to
+  must be found by it (`agent-box/README.md`). `session down` deletes client screenshots: `session.mjs pull <dir>` first.
 
 ## Environment
 No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`tools\cli status` says which you are on). Never pin a machine. Run in the foreground (timeout up to 600000 ms) or

@@ -277,7 +277,8 @@ class LF_EvidenceLocker
 		for (int i = rows.Count() - 1; i >= 0; i--)
 		{
 			LF_EvidenceLockerRow row = rows[i];
-			string line = string.Format("#%1 %2 %3", row.m_iReport, row.m_sKind, row.m_sPlace);
+			// The place as every board reads it: a key, "<site>^<town>" or a grid square (LF_WantedBoard.ResolvePlace).
+			string line = string.Format("#%1 %2 %3", row.m_iReport, row.m_sKind, LF_WantedBoard.ResolvePlace(row.m_sPlace));
 			if (!row.m_sSerial.IsEmpty())
 				line = line + " " + row.m_sSerial;
 

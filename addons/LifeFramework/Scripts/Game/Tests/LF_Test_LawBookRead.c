@@ -113,7 +113,7 @@ class LF_Test_LawBookRead : LF_Test
 				if (entry.m_bJailOnly)
 					continue;
 
-				ctx.True(line.Contains(entry.m_iFine.ToString()), kind + " row " + index + " shows the fine " + entry.m_iFine + ": " + line);
+				ctx.True(line.Contains(LF_MoneyFormat.FormatMoney(entry.m_iFine)), kind + " row " + index + " shows the fine " + entry.m_iFine + ": " + line);
 			}
 		}
 

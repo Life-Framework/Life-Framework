@@ -36,6 +36,8 @@ LF_GameModeRoleplay {
   }
   SCR_SupportStationManagerComponent "{3C7A91E2D5B84F06}" {
   }
+  SCR_PossessingManagerComponent "{9A5625D5A6562E4B}" {
+  }
   SCR_HintManagerComponent "{59E8CC4E575D1802}" {
   }
   SCR_MapConfigComponent "{5BB3D4E08ABD6F70}" {

@@ -18,8 +18,9 @@ class LF_MoneyFormat
 	//! \return "$12,500", "$0" or "-$150".
 	static string FormatMoney(int amount)
 	{
+		// The digits are cut from the text, not negated: -amount of the lowest int overflows to itself.
 		if (amount < 0)
-			return "-" + Symbol() + GroupThousands(-amount);
+			return "-" + Symbol() + GroupAmountText(amount.ToString().Substring(1, amount.ToString().Length() - 1));
 
 		return Symbol() + GroupThousands(amount);
 	}
@@ -52,12 +53,51 @@ class LF_MoneyFormat
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The amount of a money argument already turned into text, grouped the way FormatMoney groups it
+	//! but with no symbol: LF_Terms.Text fills a `{currency:sym}%N` slot with this, so a caller that
+	//! passes `paid.ToString()` still shows "1,040" (the crane toast read "$1040" before).
+	//! Only plain integer text is touched ("1040", "-150"); anything else comes back unchanged.
+	//! \param[in] text The argument as the caller wrote it.
+	//! \return "1,040" for "1040", "-1,500" for "-1500", the input for "abc", "12.5" or "".
+	static string GroupAmountText(string text)
+	{
+		if (text.IsEmpty())
+			return text;
+
+		string digits = text;
+		string sign = "";
+		if (text.Get(0) == "-")
+		{
+			sign = "-";
+			digits = text.Substring(1, text.Length() - 1);
+		}
+
+		if (digits.IsEmpty() || digits.Length() > 11)
+			return text;
+
+		for (int i = 0; i < digits.Length(); i++)
+		{
+			if (!"0123456789".Contains(digits.Get(i)))
+				return text;
+		}
+
+		return sign + GroupDigits(digits);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Inserts a comma every three digits, counting from the right.
 	//! \param[in] value A non-negative amount.
 	//! \return The digits with separators, e.g. "12,500". "0" for zero.
 	protected static string GroupThousands(int value)
 	{
-		string digits = value.ToString();
+		return GroupDigits(value.ToString());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The comma grouping on a string of digits, so an int above 2^24 loses nothing (it is never
+	//! turned into a float on the way).
+	protected static string GroupDigits(string digits)
+	{
 		string result = "";
 		int length = digits.Length();
 		int placed = 0;

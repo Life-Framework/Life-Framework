@@ -152,3 +152,74 @@ At 15:03 every `session up` on lf-testbox failed with "Client uses unsupported p
 - The Miner's supply sheet shows "Pick a line from the list first." under the buttons before a row is chosen; pressing "Sell these" with no row chosen kept the same sheet and the same line ([picture](../../website/public/docs-images/playtest-1127-r3/miners_till_price_list.jpg) shows the sheet). I did not test it with a row chosen, so I do not know whether this till buys anything.
 - The Highstone mine has no desk and no pickaxe seller; the tools come from the hardware store in town, so a player at the mine sign cannot buy a pick there.
 - `itemgive` and `pickup` are verbs, not flow steps (`pickup` and `send itemgive` fail in a `.txt` flow); a node driver calling `sendCommand` is the way for a mining run.
+
+---
+
+# Round 4: hours 6 to 10 (bank, house, crew, outpost, fence, export crane)
+
+**Build played:** `ws/playtest-1127-r4` on `origin/main` `8df4e1d6` (`compiled-ok`), the 0.3.0 feature freeze. Game client 1.9.0.42.
+**Setup:** session 1, `up --mission island --clients 1 --profile full --hold 20`, one fresh account (rules quiz, form R-89), about 14 minutes up, `session down` straight after. Session 2 (`--hold 12`, same flow shape, 4 minutes) re-checked the three fixes below on the changed text. Both server and both client logs hold no `SCRIPT (E)`, `VME`, `Unable to find` or `Can't find` line.
+**Grants (what skipped grind, never the step under test):** `send checkpoint 6` (cash $200, bank $5,460, Miner 8, Delivery 6, `UNDERWORLD` 70, the driving licence) at the start; `send levelset DELIVERY 10` before the export board (the board asks Delivery level 10); `send repgrant UNDERWORLD 0` before the outpost, so the visit is at standing 0 (a checkpoint character holds 70); `send exportorder give short|rest` for the goods at the crane (40 iron bars do not fit the pockets, the harness fills them); two `itemgive` (car parts, moonshine). The harness has no walk, so every position is a `stand`; no distance was walked.
+**Route:**
+- **Bank.** The island ATM's in-world rows (withdraw $500, withdraw all), the teller's terminal sheet, a locker rental.
+- **House.** The sign's "For sale" sheet, the price in the prompt, the purchase with $5,620 cash (withdrawn at the ATM first).
+- **Crew.** The registry desk: found "Lantern" ($250), take the yard lease, the flag wall (12 "Fly the ... flag" rows offered to a founder), fly one.
+- **Underworld.** The north rebel outpost at standing 0: the gate guard's talk, the chalk board, the quartermaster's talk and crate (radio $60 sold, pistol refused in words).
+- **Fence.** Vince's talk ("what do you do"), the price list, car parts sold ($100).
+- **Export.** The dock board's take row, the crane spot hand-in: short count refused, full count paid $1,040.
+
+## Findings, ranked by what a player hits
+
+| # | Rank | Finding | Where | Picture | What I did |
+|---|---|---|---|---|---|
+| 1 | High | Every outpost sale and refusal toast is **cut to a single `"`**. The quartermaster's reply reads `Quartermaster: "` and nothing else after paying $60, so the player gets no word on what they bought or why a buy was refused. Ten en_us rows (`LF-OutpostBuyer_Full|FullNever|NoCrate|NoRun|Sold|Unavailable`, `LF-OutpostStock_Bought|NoCash|NotKnown|Unavailable`) were written with escaped quotes (`"\"Take it. ...\" You paid %1."`) and the string table cuts the text there. They are the only rows of 5,600 that held an escaped quote | Outpost quartermaster and buyer | [before](../../website/public/docs-images/playtest-1127-r4/outpost-toast-bare-quote-before.png) | **Fixed in this PR**: the quote marks are gone (the toast title names the speaker). After: [sale](../../website/public/docs-images/playtest-1127-r4/outpost-toast-fixed-after.png) reads "Take it. Don't tell anyone where you got it. You paid $60.", [refusal](../../website/public/docs-images/playtest-1127-r4/outpost-refusal-fixed-after.png) reads "I don't know you well enough for that one. Come back when people talk about you.". New check `validate-no-escaped-quote-targets` (red on the ten old rows) |
+| 2 | Medium | The house purchase toast shows the **internal house id**: "You bought house saint-philippe.home.sp-b83. The key is in your inventory." (the id is the `m_sDebugIdentifier`) | House for-sale sign (`LF-Property_HouseBought`) | [before](../../website/public/docs-images/playtest-1127-r4/house-bought-raw-id-before.png) | **Fixed in this PR**: "You bought the house. The key is in your inventory." ([after](../../website/public/docs-images/playtest-1127-r4/house-bought-fixed-after.png)) |
+| 3 | Medium | The org ledger names the lease "**Alley yard lease**" and its toasts say "The alley yard is yours", the old playtest village's name, while the same page's "Held ground" line lists "Farm Compound, Base lease". Two names for one place on one page; core text must keep no place names | Registry ledger (`LF-Org_*` rows) | [before](../../website/public/docs-images/playtest-1127-r4/ledger-alley-yard-before.png) | **Fixed in this PR**: "Yard lease", "The yard is yours. Members open its gate.", "You gave the yard back. Its gate is shut." ([after](../../website/public/docs-images/playtest-1127-r4/ledger-yard-fixed-after.png)) |
+| 4 | Low | The crane's payout toast reads "The shipper paid you **$1040**." while the HUD beside it reads "+$1,040 $7,620" | Crane spot (`LF-ExportCrane_Paid`) | [paid](../../website/public/docs-images/playtest-1127-r4/crane-paid.png) | Noticed (the cap on fixes this round was three; one row) |
+| 5 | Low | The short-count refusal says "That is not the full order. Bring every unit, then hand it in." but not how many are still missing | Crane spot (`LF-ExportOrder_RefuseShort`) | [short](../../website/public/docs-images/playtest-1127-r4/crane-short-refusal.png) | Noticed |
+
+Findings 1 to 3 are core strings in `everonlife_localization.st` (en_us rows; `regen-localization` rewrote the other six language tables, which carried the same English). They have no logic test: a string has no cheap game test, and the new validation guards the one structural cause (finding 1). Session 2 re-read all three on screen; the pictures above are from it. No money logic changed, so no `interrogate` file.
+
+## Money checks
+
+| What | Read | Verdict |
+|---|---|---|
+| House `sp-b83` | $4,000 for sign `sp-b83` (the only one bought); hours-6 pocket $200 plus $5,460 in the bank; about 9 hours of lumber by hand (round 3) | A long goal, as intended; the ATM step is spelled out by round 3's refusal text |
+| Org founding | $250 fee in cash, then the yard lease free; "Processing upgrade" $250 | Fine for hour 7 to 8 pay |
+| Locker | $40 at the bank | Cheap and clear ("You rented a locker here.") but the toast does not say the price or that it is a one-off |
+| Outpost crate | radio $60 at standing 0; pistol refused until the standing is up | Fine; the refusal is now readable (finding 1) |
+| Fence | car parts "We pay $100"; lockpick $250, scanner $900, keycard $1,500, drill $2,500, breaching charge $4,000 | Sensible for crime's high-swing band: the dearest tool (a $4,000 breaching charge) costs the same as the house |
+| Export order | 40 iron bars, $1,040 (wholesale + 15%) at about an hour of mining and smelting | About $1,000/h, over the police rung ($350 to $450/h) and in the high-tier rung the order intends |
+| Pay ladder | police $350 to $450/h stays lowest: the order, a lumber run ($587/h, round 3) and the fence's parts all pay above it | OK |
+
+## What read well
+
+- **The ATM.** The in-world rows (withdraw $20 to $500, all, deposit all) move exact amounts and the cash HUD shows "-$500"-style flashes; the teller opens the same green terminal, "FIRST BANK OF EVERON", keypad, Deposit, Withdraw, **Transfer**, Exit ([sheet](../../website/public/docs-images/playtest-1127-r4/teller-sheet.png), [rows](../../website/public/docs-images/playtest-1127-r4/atm-withdraw500.png)).
+- **The locker.** "You rented a locker here." and the prompt turns into "Open your locker" with a greyed "Rent a locker" ([picture](../../website/public/docs-images/playtest-1127-r4/locker-rented.png)).
+- **Founding a crew.** The register's one page: name, "$250 fee in cash", "Sign and pay $250" ([picture](../../website/public/docs-images/playtest-1127-r4/org-register-open.png)); after signing the ledger shows rank, fund, members, "Held ground (1): Farm Compound, Base lease". The flag wall offers 12 flags to a founder only and "Your gang now flies the new flag." appears ([picture](../../website/public/docs-images/playtest-1127-r4/flag-flown.png)). The name rule's notice ("Use letters, digits, spaces, - ' & and . only.") appeared when the harness typed an underscore, which is the rule working.
+- **The outpost at standing 0.** The gate guard stops you in character ("Hold it there. This is not a public road. State your business or turn around.", replies "I'm here to trade" and "Who are you keeping out?") ([picture](../../website/public/docs-images/playtest-1127-r4/outpost-guard-talk.png)); the quartermaster ("I keep the crate and I keep the count. Nothing leaves this camp without a price on it.") ([picture](../../website/public/docs-images/playtest-1127-r4/quartermaster-talk.png)). The tent and the camp props sit on the ground.
+- **The fence.** A three-reply greeting, "what do you do", the list "The Fence" with five tools and a "Car parts, We pay $100" line, a receipt "Sold for $100." ([list](../../website/public/docs-images/playtest-1127-r4/fence-price-list.png), [sold](../../website/public/docs-images/playtest-1127-r4/fence-sold-parts.png)).
+- **The export order.** The board's take row, a refused short count and a full count paid $1,040, a plain "Order handed in." ([picture](../../website/public/docs-images/playtest-1127-r4/crane-paid.png)).
+
+## Not reached (say so, do not read it as a pass)
+
+- **The truck leg.** The brief asked for the crane order *with a truck*. The truck check, the $12,000 truck and the truck-backed hand-in were not completed: my driver stood away from the lent truck and the examiner failed the course ("#LF-TruckCheck_FailedLeft", then `no_lent_truck` at gate 3). That is my driver (the proof stands beside the start first), not a game finding. Round 2026-11-27 flows covered the truck hand-in ($1,040 paid from a truck's storage); here the order was filled from the pockets by the harness.
+- **A house's door, key and storage.** The purchase and its toast were read; the key in the pocket, the door lock, and the house's storage were not tried (the session's hold ran out first, and the sold sign's rows `look` listed show "Sold" by design). Not a pass.
+- **A dirty-money run.** The informant and buyer loop (`dirty-money-island`) was not run; the fence was the dirty-goods leg (car parts only; no moonshine sold). Crew robbery, hideout stash and the gang radio were not driven; the ledger and flag wall were.
+- **A loan or the bank vault.** The teller offers withdraw, deposit and transfer; no loan. The vault door's only action is the heist (`LF_BankRobAction`), so a civilian is not offered a vault. Neither was used.
+- **Walking, sound and a second player.** Every position is a `stand`; the session runs without sound; one client.
+
+## Noticed (no action)
+
+- The cash HUD readout and the HUD "Next: New in town" with a "The town clerk 3,940 m" waypoint stay on screen at the outpost: the checkpoint jumped the character past the clerk, as in round 3.
+- In session 2 the quartermaster and the tent drew as chrome for the first frames after the teleport (streaming at 29 fps), gone in the next picture; it did not show in session 1.
+- The ATM's "deposit all" moved $5,620 of a harness-granted $12,000: the quick row reads the replicated cash, which `resetplayer` does not refresh. A real player's pockets replicate, so I read it as a harness artifact, not a bug.
+- The chalk board at the outpost is large white-on-grey text read from the camp; from the gate the lower lines are cut off by the frame. The board's reading action returns "none" in `ui text` (it is a sheet-less prompt).
+- The Saint-Philippe house sign's `look` still lists the "Sold" row after a purchase, as designed (`LF_HouseSaleBuyAction` shows "Sold" once owned).
+
+## Tooling notes
+
+1. `stand <entity> <side>` takes `e`, `w`, `n`, `s`, `n2` or `e7`; `itemgive` and `resetplayer cash=N` need a node driver (`sendCommand({verb, prefab|cash})`), `send itemgive` fails in a flow.
+2. `use LF_ATMQuickAction__<n>`: 0 to 3 withdraw $20, $50, $100, $500, 4 withdraw all, 5 deposit all.
+3. The org name field takes only one plain token from `type` (letters, digits): no space, `_` or `-`.
+4. `harness.mjs flow <name> --verbose` prints each `look`, `state` and `ui text` answer; the compact run hides them.

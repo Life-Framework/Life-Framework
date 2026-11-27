@@ -86,6 +86,27 @@ Sessions on this PC from `ws/proof-health-1127-r2`, `--mission island --profile 
 
 8. **`ui-click-smoke` goes first, right after the first-two-hours flow and before the gated proofs** (one lowspec island session, `up --mission island --profile lowspec --hold 20`, then `session.mjs ui-click-smoke`, about 4 min). It presses the first actionable row or button of the F2 Next, errand and skill lists, a shop, the licence desk, the car lot, the ATM and the charge sheet through the real widgets, and fails on any `widget_not_found` (the #5099 class: a row with no button, found by no proof for five days). It buys one cheap row at a till and the lot and runs `checkpoint 10`, so give it its own session: later proofs that want a fresh character (`starter-gates-proof`, `island-cop-proof`) must not follow it in the same session (`ui-click-smoke fresh` keeps the new character). A red smoke is a dead button: file the issue before the rest of the run.
 
+### Proofs added the evening of 2026-11-27 (placed in the run order)
+
+Docs only: this branch ran none of them; each was run by the PR that added it (arguments and what each reads are in
+`agent-box/README.md`, "Proofs added 2026-11-27"). Where they go:
+
+9. **`map-search-proof`** and **`lot-sheet-proof`** are read-only (neither buys or changes the character), so they go
+   right after `ui-click-smoke`, in any order: `map-search-proof` in a lowspec session, `lot-sheet-proof` (hour 10, the
+   car lot and truck yard sheets) in a full one because it takes `ui` pictures.
+10. **`downed-call`, `downed-flow-proof` and `clinic-bed-proof`** (hour 8, the medic side) in one two-client full session
+    before the police proofs of step 5: each clocks one client in at the clinic desk and downs the other, and each
+    (the default for a proof) runs the harness reset first, so the order inside the session does not matter. After
+    `down`, grep the three console logs for `GetCharacterControlType` (`downed-flow-proof` prints their directory).
+11. **`crime-playtest-proof`** (hour 8, the police and crime loop played through) in its own fresh two-client full
+    session next to step 5: the cop signs up at the duty desk and the civilian robs the fuel till, as in
+    `island-cop-proof`, so it follows the same rule, a fresh session or characters that have not used the cop kit. It
+    books the suspect and the civilian pays bail at the cell phone, so it ends with the suspect free.
+12. **`jip-sweep-proof`** goes last of the two-client proofs, in a fresh lowspec session with `up --clients 2`: client 1
+    buys a car and a house and is cuffed, and the proof does not reset the character (`noReset`), so no later proof
+    in that session wants it. It joins client 3 itself. `--selftest` runs its token parsers with no game.
+13. Before every `session down` in this run: `session.mjs pull <dir>`. `down` deletes the client screenshot folders.
+
 ## Files changed
 
 Harness UI paths (2026-11-27): `activities pick|go` and `playermenu pick` press the row's widget (`direct` keeps the handler call), the new `ui-click-smoke` proof (one lowspec island session, 14 checks, all pressed) and its selftest. `agent-box/proofs/`: `clothing-till-proof`, `export-crane-proof`, `island-cop-proof`, `island-vault-proof`, `island-bank-door-clear-proof`, `island-bank-heist-proof`, `patrol-island-proof`, `resident-island-proof` (with selftest cases), `truck-yard-proof`, and the new `_grace.mjs`. Second pass (#5047): `square-harbor-life-proof`, `dirty-money-island`, `patrol-island-proof`, `island-jail-breach-proof`, `postal-van-proof` (each with a selftest case for its new pure helper).
