@@ -55,6 +55,20 @@ function fakes(over = {}) {
   check(r.code === 0, "behind: exit 0 after the retry");
   check(d.calls.join(",") === "mergeTree,validate,push,findPr,createPr,autoMerge,mergeBase,push,autoMerge", "behind: main merged in and pushed again");
 }
+// 2b. The auto-heal workflow merged main into the PR branch after the last ship: the push is refused as
+// non-fast-forward, ship merges the remote branch in once and pushes again.
+{
+  let n = 0;
+  const d = fakes({
+    push: () => (d.calls.push("push"), ++n === 1 ? { status: 1, stderr: " ! [rejected]        ws/x -> ws/x (fetch first)\nerror: failed to push some refs" } : { status: 0 }),
+    pullBranch: () => d.calls.push("pullBranch"),
+  });
+  const r = await lib.shipDirect(d, { slug: "x" });
+  check(r.code === 0, "remote ahead: exit 0 after merging the remote branch");
+  check(d.calls.join(",") === "mergeTree,validate,push,pullBranch,push,findPr,createPr,autoMerge", `remote ahead: order was ${d.calls.join(",")}`);
+  const other = fakes({ push: () => ({ status: 1, stderr: "fatal: unable to access: Could not resolve host" }), pullBranch: () => other.calls.push("pullBranch") });
+  check((await lib.shipDirect(other, { slug: "x" })).code === 1 && !other.calls.includes("pullBranch"), "a network failure is not a remote-ahead refusal");
+}
 // 3. Auto-merge on but the PR is BEHIND: same heal, once.
 {
   let n = 0;

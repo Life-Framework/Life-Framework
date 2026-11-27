@@ -66,6 +66,19 @@
       "request_id": "Md1NnvqzpEYbE9aiKd9i",
       "seconds": 1.21,
       "mouth": "0362239988842599752121000"
+    },
+    "show_goods_reply": {
+      "hash": "12fec48b15bd45eb",
+      "date": "2026-11-26",
+      "voice_id": "K8nDX2f6wjv6bCh5UeZi",
+      "voice_name": "Jamie - French Accent & Charismatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Take a look. Cash only.",
+      "chars": 23,
+      "chars_total": 9,
+      "request_id": "1I4QDralHTuZYYl5k0vS",
+      "seconds": 1.57,
+      "mouth": "67269899822100028943269877531000"
     }
   },
   "voice": {

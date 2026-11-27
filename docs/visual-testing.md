@@ -226,6 +226,16 @@ the server last showed and this one decides how:
 | any file under `addons/` (a `.layer`, an `.et`, a `.c`, a `.meta`, an asset, an added, deleted or renamed file), or the look plugin | `server-restart`: the server Workbench is stopped, the viewer checked out, a new one started |
 | no server up, or it is dead, hung or crashed | `fresh`: a Workbench of the caller's own, as before |
 
+Requests from every worktree on the box take the hub's `build` lock one at a time. While a request still holds
+the lock, its answer (the PNGs, `status.txt`, the dumps) moves out of the server's shared `lf-visual` folder
+into a folder of its own, `lf-visual-answers/<request id>` (`claimAnswer`). `look` then collects from there
+after it drops the lock. Before 2026-11-27 it collected from the shared folder after dropping the lock, so the
+next worktree's request cleared it or restarted the server mid-collect, and the villages sweep got 70 of 70
+shots missing twice. The full 70 of 70 came from a second cause: the viewer sits on `C:` and worktrees on `D:`,
+where the collect's `rename` fails with EXDEV. Every served look from a `D:` worktree lost all its shots (5 of 5
+on 2026-11-26/27), so collect now copies across drives (`moveFile`). Answer folders that nobody collected are
+removed after 6 h. The proof is `look-serve-overlap-selftest`.
+
 No addon file is on the fast path. A probe on 2026-11-14 reopened fine after editing a `.layer` or an
 `.et` in place, but through the viewer, where git checkout rewrites the file, reopening after a moved
 entity in a `.layer` crashed the server Workbench (access violation in `SetOpenedResource`) 4 of 4
@@ -326,7 +336,13 @@ files, never a typed coordinate (`tools/visual/look-place.mjs`):
 - **Front:** the first known entrance seen from the footprint centre, else the building's local +z (its yaw). The wide
   tries eye level on that side first, then look's usual fan.
 - **Ground:** the plugin's `GetSurfaceY` on the island terrain (`ty -`), so cameras stand on the street, not under it.
-- **Inside:** `--interior auto` stands on the ground floor (footprint centre, the dossier's floor height), four views.
+- **Inside:** `--interior auto` stands on the ground floor at the slot's own business row: the first counter, till, desk,
+  clerk or bar row of its kit within the footprint and on the dossier's floor height, moved up to 2 m toward the middle
+  of the ground-floor kit. With no business row it uses that middle, and with no ground-floor kit row the footprint
+  centre. The footprint centre put the 2026-11-25 sweep's cameras in the clinic stairwell, on roofs and in a neighbour's
+  flat. `--interior <row>` stands at one named row of the slot's layer, on its own floor: the full `Fit_...` name or a
+  unique suffix (`--interior lf_medic_duty_desk`, `--interior upstairs_bed`). An unknown name is refused with the row
+  list. `look` prints the pick: `look: interior camera at x,y,z r R (kit anchor Fit_..._counter)`. Four views.
 - **Close-ups:** the entities of the island's `Place_*` layers within the radius (the fitted kit rows).
 - `--world island` does the same for a bare `x,z`. A place: target and a town or grid area cannot share one run.
 
@@ -383,6 +399,13 @@ not load ...` and keeps no pictures. The asset verify/states clothing shots use 
 
 ### What it does not show
 
+- **Sign faces** (#4940). A sign's face is a render target that `LF_SignComponent` paints at runtime, and a
+  Workbench `look` never draws it: every sign plate shows blank white, and a blank plate in a `look` picture is NOT a
+  defect. The 2026-11-25 sweep first graded 21 working signs BELOW for it; a session then read 9 of 9. When the
+  area holds a sign prefab, `look` prints `NOTE <n> sign(s) here: sign faces are not drawn in look ...` under the
+  contact sheet path, tags the first tile `[SIGN FACES NOT DRAWN: check in a session]` and writes the note to
+  `index.json` `notes`. Grade sign text in a full-profile session: `node agent-box/harness.mjs --client 1 stand ...`
+  at eye height, then `shot world`. Placement, size and what blocks the sign are still judged from `look`.
 - **UI.** A Workbench play capture is the 3D view only.
 - **Anything a dedicated server does differently**, a second player, or late join.
 - **Red fans and lines on the ground.** A Workbench debug overlay that the game client does not

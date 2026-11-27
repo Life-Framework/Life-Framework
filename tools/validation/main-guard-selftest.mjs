@@ -5,6 +5,8 @@
 //   with bisect's `hi = mid` swapped for `lo = mid` the run never finished (killed by `timeout 10`).
 // red-proof #2052: with setHits returning every failed test (red/green again) this printed "FAIL same set: blame m3, got
 //   m1111111" and "FAIL different set: no blame".
+// red-proof 2026-11-27 (flake evidence): with rawLogPaths returning [] this printed "FAIL rawLogPaths: []" and with flakeLine's
+//   ` | ` tail removed "FAIL flakeLine: ..." (the flake log kept only the names, so 8 of 10 suite flakes could not be traced).
 // red-proof 2026-11-22 (newest first, revert caution): with newestFirst's `p.verdict === "ok"` return removed this printed "FAIL
 //   newer head passes: fixed, old head never judged"; with isLargePr's `>` flipped to `<` "FAIL a large merge is not reverted for a suite
 //   red"; with newerFixes returning null "FAIL newerFixes: a newer head that passes the set".
@@ -137,6 +139,14 @@ check(/off/.test(g.statusLine({}, { alive: 1, off: true })), "status off");
   // FAIL lines recorded beside the names.
   const fl = g.failLines("ok\n12:28:33.241 SCRIPT : [LFTEST] FAIL LF_Test_ShopBuy (2 assertions)\nFAIL  LF_Test_Other: boom\n[LFTEST] START LF_Test_X");
   check(fl.length === 2 && /LF_Test_ShopBuy/.test(fl[0]), `failLines: ${fl}`);
+  // Flake evidence (2026-11-27 audit): the raw transcript a compact run names is kept, and the flake line says what failed.
+  const compact = "SUMMARY test fail exit=1 107.2s lines=34 failures=2 warnings=0 log=tmp\\logs\\test-20261122-210450.log\n  21:05:15.863 SCRIPT       : [LFTEST] FAIL lockers/lost-and-found\nSUMMARY validate ok log=tmp\\logs\\validate-1.log";
+  const raw = g.rawLogPaths(compact);
+  check(raw.length === 2 && raw[0] === "tmp\\logs\\test-20261122-210450.log" && raw[1] === "tmp\\logs\\validate-1.log", `rawLogPaths: ${JSON.stringify(raw)}`);
+  check(g.rawLogPaths("no summary here").length === 0 && g.rawLogPaths(compact + "\n" + compact).length === 2, "rawLogPaths: nothing without a log= and no repeats");
+  const line = g.flakeLine({ at: "T", h8: "abcd1234", step: "suite", what: "lockers/lost-and-found", log: "L.log", text: compact, kept: ["tmp/logs/flakes/x.log"] });
+  check(line.startsWith("T abcd1234 suite: lockers/lost-and-found failed once, passed on recheck (L.log)") && line.includes(" raw: tmp/logs/flakes/x.log") && line.includes(" | ") && line.includes("lost-and-found"), `flakeLine: ${line}`);
+  check(g.flakeLine({ at: "T", h8: "h", step: "build", what: "build", log: "L" }) === "T h build: build failed once, passed on recheck (L)", "flakeLine with nothing to add keeps the old shape");
 }
 
 // Wiring: the worker bisects the suite by the recorded set, stops on a mixed-causes verdict without reverting, and

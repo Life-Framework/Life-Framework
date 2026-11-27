@@ -17,10 +17,16 @@
 //   "SILENT-GIT lf-git: git rev-parse -q --verify failed 3 times" (the CI log of main run 19f958076).
 // red-proof (2026-11-19): with the retry loop cut to one attempt this selftest FAILS on cases 1, 3 and 5 ("1 silent
 //   failure(s) were not retried to a pass", "a silent failure ran 1 times, expected 3", runGit and the merge driver's
-//   runner likewise); with the loop in it passes. A helper that retried every failure fails case 3 (stub ran 3, not 1).
+//   runner likewise); with the loop in it passes.
+//   7. a launch failure (the OS could not start git: "The paging file is too small", "Insufficient system resources",
+//      exit 0xC0000142; main-ff-heal, main-guard-validate and world-sync selftests on 2026-11-22/23) is re-run once the
+//      memory comes back.
+// red-proof (2026-11-27, case 7): before isLaunchFailure the stub's "error launching git: ..." exit 1 came back at once
+//   ("launch failure 1 ... ran 1 times and ended exit 1, expected one re-run to a pass"), which is how main-ff-heal-selftest
+//   died with "git push origin main ... error launching git: The paging file is too small". A helper that retried every failure fails case 3 (stub ran 3, not 1).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { GIT_ATTEMPTS, FAIL_SILENTLY_ENV, describeRun, execGit, expectedGitExits, gitSync, spawnRetrying } from "../lib/git-retry.mjs";
+import { GIT_ATTEMPTS, FAIL_SILENTLY_ENV, describeRun, execGit, expectedGitExits, gitSync, isLaunchFailure, spawnRetrying } from "../lib/git-retry.mjs";
 import { runBounded } from "../merge/regen-generated.mjs";
 import { removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
@@ -163,6 +169,35 @@ process.exit(2);
   // expectedGitExits knows the probes and leaves the real commands alone.
   check(expectedGitExits(["-C", "x", "rev-parse", "-q", "--verify", "r"]).join() === "1", "expectedGitExits missed rev-parse -q --verify behind -C");
   check(expectedGitExits(["rev-parse", "HEAD"]).length === 0 && expectedGitExits(["commit", "-q", "-m", "x"]).length === 0 && expectedGitExits(["init", "-q"]).length === 0, "expectedGitExits treated a plain command as a probe");
+  // 7. A launch failure (the OS could not start git: memory pressure) is re-run until it starts, behind a longer
+  //    backoff; a spawn error that is not resource exhaustion (ENOENT) and a plain "fatal:" are still not.
+  //    The stub fails its first run the way Windows reports it and passes the second.
+  const launchStub = join(root, "launch-stub.mjs");
+  const launchTexts = ["error launching git: The paging file is too small for this operation to complete.", "error launching git: Insufficient system resources exist to complete the requested service."];
+  for (const [i, text] of launchTexts.entries()) {
+    writeFileSync(counter, "");
+    writeFileSync(launchStub, `import { appendFileSync, readFileSync } from "node:fs";
+const n = readFileSync(${JSON.stringify(counter)}, "utf8").length;
+appendFileSync(${JSON.stringify(counter)}, "x");
+if (n === 0) { console.error(${JSON.stringify(text)}); process.exit(1); }
+console.log("started");
+`);
+    const r = quietly(() => spawnRetrying(process.execPath, [launchStub], { encoding: "utf8", windowsHide: true }));
+    check(r.status === 0 && runs() === 2 && /started/.test(r.stdout), `launch failure ${i + 1} (${text.slice(0, 40)}) ran ${runs()} times and ended exit ${r.status}, expected one re-run to a pass`);
+  }
+  if (process.platform === "win32") {
+    writeFileSync(counter, "");
+    writeFileSync(launchStub, `import { appendFileSync, readFileSync } from "node:fs";
+const n = readFileSync(${JSON.stringify(counter)}, "utf8").length;
+appendFileSync(${JSON.stringify(counter)}, "x");
+if (n === 0) process.exit(3221225794);
+console.log("started");
+`);
+    const r = quietly(() => spawnRetrying(process.execPath, [launchStub], { encoding: "utf8", windowsHide: true }));
+    check(r.status === 0 && runs() === 2, `exit 0xC0000142 ran ${runs()} times and ended exit ${r.status}, expected one re-run to a pass`);
+  }
+  check(isLaunchFailure({ error: Object.assign(new Error("x"), { code: "EAGAIN" }) }) && !isLaunchFailure({ error: Object.assign(new Error("x"), { code: "ENOENT" }) }), "isLaunchFailure: EAGAIN is a launch failure, ENOENT is not");
+  check(!isLaunchFailure({ status: 128, stderr: "fatal: not a git repository" }) && !isLaunchFailure({ status: 0, stderr: "" }), "isLaunchFailure treated a real git error as a launch failure");
 } catch (e) {
   failures.push(`selftest threw: ${e.stack || e.message}`);
 } finally {

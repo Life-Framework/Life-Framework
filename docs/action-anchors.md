@@ -45,11 +45,20 @@ reproduces it.
 ## Check
 
 `--check`, run by `validate-action-reach`, looks at every context written on an
-entity with a known mesh. WARN: the point is more than 0.5 m outside the mesh
-bounds, or the radius does not reach a player standing 0.5 m off the footprint
-at chest height (1.0 m). ERROR (fails validate): the point is more than 3 m
-outside the bounds. Tune with `--tolerance` and `--fail-gap`. Character meshes
-(NPC talk points) show up as reach warnings; they are known and harmless.
+entity with a known mesh and fails validate (it was a warning until 2026-11-27) when the point is more than
+0.5 m outside the mesh bounds, the radius is under 0.1 m, or the radius does not touch the mesh bounds.
+Tune with `--tolerance`. An entity whose points are on something it spawns, not on its mesh, is listed in
+`OFF_MESH_OK` in `action-anchor.mjs` with the reason (the org flag wall: its points sit on the sample flags; the frozen DebugWorld annex garage counter).
+
+The check does not model "a player stands 0.5 m off the mesh and must be inside the sphere". The engine picks a
+context by the aim ray hitting its sphere, so a small sphere is fine when the player looks at it.
+`session.mjs npc-talk-reach-proof` shows a 0.6 m resident offering Talk on all four sides at 1 m and 2 m.
+`session.mjs prop-reach-proof` does the same for props on `up --mission island`: standing 1 m off a live instance and sweeping
+the view pitch, the plate sign (r 0.9), small plate (0.8), pole plate (0.8), pub board (0.34), ATM (0.17), seed crate (0.6)
+and farm plot (1.2) each offer their own action from their front side (a sign has one face). Three of six pole plates tried offered it (carlot, orchard, pond). The other three (blacklake, coalmans-brow mine, shooting range)
+missed on all four sides: `stand` could not take a 1 m spot there (the coalmans one landed 2.6 m off), which is past the interact
+range. That is the proof's spot, not the prefab (not investigated further). Furniture items, the hideout stash, the piles and the vault
+door live in DebugWorld and the grid, which the island session does not load; the same engine rule applies.
 
 Bounds say where the mesh is, not which side faces the street. Choose `--front`
 by looking at the entity in the world, or use `center`.

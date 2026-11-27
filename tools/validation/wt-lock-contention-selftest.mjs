@@ -3,7 +3,7 @@
 // stale-lock thief is deleting fails with EPERM (or EACCES/EBUSY) for a few milliseconds; the code
 // rethrew it, so a build, test or session start under load died with "EPERM: operation not permitted,
 // open '...server-2001.lock'" instead of queuing, and flaked every check that takes a machine-wide lock
-// (wb-lock-selftest under load). Four processes churn one lock for 3 s on a scratch hub.
+// (wb-lock-selftest under load). Four processes churn one lock (1500 tries each) on a scratch hub.
 // inputs: tools/wt.mjs, tools/validation/wt-lock-contention-selftest.mjs
 // red-proof: 2026-11-15, with tryTakeLock rethrowing every non-EEXIST error (HEAD's wt.mjs) this selftest failed
 // 'acquireLock threw under contention (not "held"): {"EPERM":5}'; a longer 5 s probe of the same loop printed
@@ -11,12 +11,14 @@
 
 import { spawn } from "node:child_process";
 import { gitSync } from "../lib/git-retry.mjs";
-import { } from "node:fs";
+import { readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { safeRemoveTree } from "../link-safety.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
+const ATTEMPTS = 1500;
+const WORKERS = 4;
 const wtUrl = pathToFileURL(join(import.meta.dirname, "..", "wt.mjs")).href;
 
 if (process.argv[2] === "worker") {
@@ -24,8 +26,15 @@ if (process.argv[2] === "worker") {
   const root = process.argv[3];
   const errors = {};
   let got = 0;
-  const end = Date.now() + 3000;
-  while (Date.now() < end) {
+  // Work-based, not a fixed 3 s window: on a loaded box (validate beside ~20 agents) a worker was scheduled for
+  // a few hundred ms of its 3 s and took the lock only 4 or 7 times (main guard 2026-11-22/23, 4 flakes). Each
+  // worker makes ATTEMPTS tries; the 60 s cap only ends a lock that is truly stuck.
+  // A start barrier keeps the churn overlapping: a worker that imported wt.mjs late would otherwise run alone.
+  writeFileSync(join(root, `ready-${process.pid}`), "");
+  const barrierEnd = Date.now() + 30000;
+  while (readdirSync(root).filter((n) => n.startsWith("ready-")).length < WORKERS && Date.now() < barrierEnd) await new Promise((r) => setTimeout(r, 20));
+  const end = Date.now() + 60000;
+  for (let i = 0; i < ATTEMPTS && Date.now() < end; i++) {
     try {
       wt.acquireLock(root, "probe", { waitMs: 0 });
       got++;
@@ -43,7 +52,7 @@ const failures = [];
 const root = scratchDir("lf-lockcontention-");
 try {
   gitSync(["init", "-q", root], { windowsHide: true });
-  const outs = await Promise.all(Array.from({ length: 4 }, () => new Promise((res) => {
+  const outs = await Promise.all(Array.from({ length: WORKERS },() => new Promise((res) => {
     const c = spawn(process.execPath, [import.meta.filename, "worker", root], { stdio: ["ignore", "pipe", "inherit"], windowsHide: true });
     let o = "";
     c.stdout.on("data", (d) => (o += d));

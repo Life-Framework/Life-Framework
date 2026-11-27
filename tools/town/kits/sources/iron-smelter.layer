@@ -68,3 +68,27 @@ GenericEntity Smelter_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_Pole
  coords -1 0 18
  angleY 0
 }
+GenericEntity Smelter_Stool_A : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords -1 0 14.5
+ angleY 20
+}
+GenericEntity Smelter_Glow_A : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords -1 0 14.5
+}
+GenericEntity Smelter_Stool_B : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 10 0 11
+ angleY -30
+}
+GenericEntity Smelter_Glow_B : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 10 0 11
+}
+GenericEntity Smelter_Stool_Sign : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords -4.9 0 16.9
+ angleY -40
+}
+GameEntity Smelter_Lamp_Sign : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords -4.9 0 16.9
+}
+GenericEntity Smelter_Glow_Sign : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords -4.9 0 16.9
+}

@@ -43,14 +43,17 @@ async function run() {
   // The welcome guide stands over the sheet until it is dismissed.
   if (/WelcomeGuideDismissButton/.test(String(on(1, { verb: "ui" }).detail))) on(1, { verb: "click", widget: "WelcomeGuideDismissButton" });
   wait(1000);
+  // A truck the same session bought earlier (truck-check-proof) is in the log already: count the sales this proof causes.
+  const soldBefore = (serverLog().match(/from the lot sheet for/g) || []).length;
   on(1, { verb: "stand", entityName: LOT });
   wait(2500);
-  const open = on(1, { verb: "use", className: BUY_ACTION, entityName: LOT }, 10000);
+  const open =on(1, { verb: "use", className: BUY_ACTION, entityName: LOT }, 10000);
   expect(open.status === "ok", `the hut counter opens the lot sheet (${open.status})`);
   wait(1500);
   on(1, { verb: "capture", mode: "ui", name: "truck_yard_sheet" }, 20000);
   // A buyer with $2,000 in the bank sees both trucks as "needs $X" rows with no Buy button, so nothing sells.
-  expect(!/from the lot sheet for/.test(serverLog()), "no truck was sold to a buyer who cannot pay");
+  // (Opening the sheet alone never sells: only the Buy button does, and the proof never presses it.)
+  expect((serverLog().match(/from the lot sheet for/g) || []).length === soldBefore, "opening the lot sheet sold no truck");
   wait(1000);
 
   for (const sign of SIGNS) {

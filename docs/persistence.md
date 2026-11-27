@@ -307,6 +307,13 @@ a scratch repo; two legacy appends conflict there).
 `ReadSection`, run `--update`. The record-shapes check fails a locked section whose record
 changed without the raise. A save whose section is newer than the build is not read.
 
+**Size.** `perf/budget-128` (`tools\cli test --no-build --tier perf`) holds the save under 1000
+bytes per player with the shared logs empty and prints `section-bytes-<name>` for every section
+(the store minus the store written without it), so a budget miss names the section that grew. A
+section that keeps a server-wide log capped whatever the player count (the Courier's facts and
+back issues) is emptied for the per-player measure, like the ledger and incident log; its size is
+bounded by its cap, not by the player count. A section that grows per player counts in the per-player figure.
+
 **Loads.**
 
 | Save | This build |

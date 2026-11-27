@@ -7,7 +7,7 @@
 #   - every registered worktree's directory and branch still exist
 #   - no two worktrees share a port pair (parallel test runs would collide)
 #   - every registered worktree carries its tmp/wt.json marker
-#   - merged / orphaned worktrees are flagged so they get pruned
+#   - orphaned worktrees are flagged; merged-by-ancestry ones are one INFO count (ancestry also matches a fresh worktree)
 #   - warns when run inside the main checkout (the world-editor copy)
 #
 # Cost (#3126): the registry checks above run for every registered worktree (file tests only). The git reads
@@ -42,6 +42,11 @@ $errors = @()
 $warnings = @()
 $seenPorts = @{}
 $registered = @{}
+# Worktrees whose branch is an ancestor of origin/<base>. That is ancestry, not a merged PR: a worktree created
+# a minute ago has no commit of its own and looks merged too. So these are counted in one INFO line, never a
+# WARN each; `cli lead prune-safe` asks GitHub which PRs are MERGED and prunes only those.
+$mergedClean = 0
+$mergedDirty = 0
 
 # The current worktree is checked in full whatever its age.
 $currentFull = [IO.Path]::GetFullPath(([string]$root).Replace('/', '\')).TrimEnd('\').ToLowerInvariant()
@@ -59,6 +64,12 @@ try {
   $cache = @{}
 }
 $cacheNext = @{}
+
+# Seconds this scan may spend on per-worktree `git status` calls (LF_VALIDATE_WORKTREES_GIT_BUDGET_S overrides).
+$gitBudgetSec = 240.0
+if ($env:LF_VALIDATE_WORKTREES_GIT_BUDGET_S -match '^\d+(\.\d+)?$') { $gitBudgetSec = [double]$env:LF_VALIDATE_WORKTREES_GIT_BUDGET_S }
+$gitClock = [System.Diagnostics.Stopwatch]::StartNew()
+$budgetSkipped = 0
 
 # Other agents prune worktrees while this runs (`lead prune-safe`, `wt prune`), and git can refuse a ref read
 # for a moment while another git rewrites packed-refs or a lock ("couldn't read .git/packed-refs: Permission
@@ -214,22 +225,26 @@ foreach ($p in $state.worktrees.PSObject.Properties) {
     $key = "$($stamp.Head)|$($stamp.IndexTicks)|$($baseShaByBase[$baseBranch])"
     if (-not $isCurrent -and $cache.ContainsKey($slug) -and $cache[$slug] -eq $key) {
       $cacheNext[$slug] = $key
-      $warnings += "worktree '$slug' is merged into origin/$baseBranch and clean - prune it (cli wt prune $slug)"
+      $mergedClean++
       continue
     }
+    # Time cap: with hundreds of merged worktrees and a cold cache this loop ran one `git status` each and passed the
+    # runner's 600 s per-check budget three times (main guard 2026-11-24). The "merged and clean, prune it" warning is
+    # advice, so past the budget the rest are counted in one INFO line and read on a later run (the cache fills up).
+    if (-not $isCurrent -and $gitClock.Elapsed.TotalSeconds -ge $gitBudgetSec) { $budgetSkipped++; continue }
     $st = Invoke-Git @('-C', [string]$w.path, 'status', '--porcelain')
     if ($st.Code -ne 0) { continue }   # the worktree vanished or is locked right now; not a finding
     $dirty = @($st.Out | Where-Object { $_ }).Count
     if ($dirty -eq 0) {
-      $warnings += "worktree '$slug' is merged into origin/$baseBranch and clean - prune it (cli wt prune $slug)"
       if (-not $isCurrent) {
+        $mergedClean++
         # Keyed after the status call: git may refresh the index while it reads, and that write is the baseline.
         $after = Get-WorktreeStamp $gitDir
         $cacheNext[$slug] = "$($after.Head)|$($after.IndexTicks)|$($baseShaByBase[$baseBranch])"
       }
     } elseif (-not $isCurrent) {
       # The current worktree is the one being worked on: its edits are expected, not a finding.
-      $warnings += "worktree '$slug' is merged into origin/$baseBranch but has $dirty uncommitted change(s) (not pruned)"
+      $mergedDirty++
     }
   }
 }
@@ -269,6 +284,14 @@ if ($commonDir -eq ".git") {
 
 if ($staleSkipped -gt 0) {
   Write-Host ("INFO  {0} worktree(s) with no change in 24 h not checked (index and HEAD older than that; cli wt list shows them)" -f $staleSkipped) -ForegroundColor DarkGray
+}
+
+if ($mergedClean -gt 0 -or $mergedDirty -gt 0) {
+  Write-Host ("INFO  worktree hygiene: {0} clean and {1} edited worktree(s) are ancestors of origin/main (a fresh worktree counts too); ``cli lead prune-safe --dry-run`` lists those whose PR is MERGED" -f $mergedClean, $mergedDirty) -ForegroundColor DarkGray
+}
+
+if ($budgetSkipped -gt 0) {
+  Write-Host ("INFO  {0} merged worktree(s) not status-checked: the {1:N0} s git budget ran out (they are read on the next run)" -f $budgetSkipped, $gitBudgetSec) -ForegroundColor DarkGray
 }
 
 # Persist the clean-status cache for the next run (only worktrees visited and clean this run are kept).

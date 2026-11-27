@@ -66,6 +66,32 @@
       "request_id": "9h6NlVnGVL1WdPvEVHYr",
       "seconds": 0.92,
       "mouth": "1673799534557865000"
+    },
+    "rumor_nothing_new": {
+      "hash": "76d52b265f17bed9",
+      "date": "2026-11-26",
+      "voice_id": "SF4mnzAUghHAXQCNqFsU",
+      "voice_name": "James - French Podcast",
+      "model": "eleven_multilingual_v2",
+      "text": "Nothing new. Ask me tomorrow.",
+      "chars": 29,
+      "chars_total": 12,
+      "request_id": "SzvgzffgBbI3BYOuvEKP",
+      "seconds": 1.67,
+      "mouth": "4727769998300003884375496886432000"
+    },
+    "rumor_asked_today": {
+      "hash": "234dc1c5378bb752",
+      "date": "2026-11-26",
+      "voice_id": "SF4mnzAUghHAXQCNqFsU",
+      "voice_name": "James - French Podcast",
+      "model": "eleven_multilingual_v2",
+      "text": "I have told you what I know today. Ask again tomorrow.",
+      "chars": 54,
+      "chars_total": 22,
+      "request_id": "4Lu3GTidcFfr4H5z0jdW",
+      "seconds": 2.99,
+      "mouth": "679623999668789797789635767421010058644948976468854321000000"
     }
   },
   "voice": {

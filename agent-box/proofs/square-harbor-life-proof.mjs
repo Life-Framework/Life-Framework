@@ -28,6 +28,16 @@ export function liveAfter(lines, name, from = 0) {
   return lines.slice(from).some((l) => l.includes(name) && (/^start\b/.test(l) || /is in range at/.test(l)));
 }
 
+// Pure: `liveAfter`, or, in a session that already ran this proof or any night proof, the emitter's window opening again after
+// `from`. A session without sound says `is in range ... got no voice` once per emitter for good (m_bRefusalSaid), so a second
+// look at the same bed logs only `window open <name>`; that line counts when an earlier line already showed the bed chosen
+// (#5047: the harbor night and village-night beds "did not start" in a used session).
+export function liveOrReopened(lines, name, from = 0) {
+  if (liveAfter(lines, name, from)) return true;
+  const reopened = lines.slice(from).some((l) => /^window open\b/.test(l) && l.includes(name));
+  return reopened && liveAfter(lines.slice(0, from), name, 0);
+}
+
 // Pure: whether the `flocks` reply (client side) counts birds and some are visible: a placed flock the server never
 // activated keeps all its birds hidden (#4403).
 export function birdsShown(detail) {
@@ -101,7 +111,7 @@ async function main(args) {
   let mark = lines().length;
   on({ verb: "time", hour: 23 }, 15000);
   wait(8000);
-  expect(liveAfter(lines(), QUAY.night, mark), "23:00 on the quay: the harbor night bed starts");
+  expect(liveOrReopened(lines(), QUAY.night, mark), "23:00 on the quay: the harbor night bed starts");
   shot("quay_night", quay, 8, 3, 8, 23);
 
   // 3. The square at noon: from the bank's side the flocks sleep, then up to them (within 40 m they burst up).
@@ -122,7 +132,7 @@ async function main(args) {
   wait(8000);
   const night = lines();
   expect(!liveAfter(night, SQUARE.bed, mark), "23:00: the square bed is silent (outside its hours)");
-  expect(liveAfter(night, SQUARE.night, mark), "23:00: the village-night bed starts");
+  expect(liveOrReopened(night, SQUARE.night, mark), "23:00: the village-night bed starts");
 
   for (const l of lines().slice(-12)) console.log(`    ${l.slice(0, 200)}`);
   console.log(fails.length ? `square-harbor-life: FAIL (${fails.join("; ")})` : "square-harbor-life: PASS");
@@ -135,8 +145,14 @@ function selftest() {
   const ok = liveAfter(lines, "Fit_sq") && !liveAfter(lines, "Fit_sq", 1) && stoppedAfter(lines, 0) && !stoppedAfter(lines, 2)
     && liveAfter(lines, "Fit_vn", 2) && !liveAfter(lines, "Fit_ha") && coordsOf(layer, "Fit_a")?.z === 3 && coordsOf(layer, "Nope") === null
     && birdsShown("world=SCR_AIWorld flocks=2 birds=11 birdsVisible=11 | x") && !birdsShown("world=SCR_AIWorld flocks=2 birds=11 birdsVisible=0 | x") && !birdsShown("error no_character");
-  console.log(ok ? "square-harbor-life-proof selftest: OK" : "square-harbor-life-proof selftest: FAIL");
-  return ok ? 0 : 1;
+  // #5047: a reused session logs `in range` once per emitter, then only `window open`.
+  const used = ["Fit_hn is in range at 5 m (radius 42) and got no voice for 5 s: x", "window closed Fit_hn (hour 12.00)", "window open Fit_hn (hour 23.00)"];
+  const reopen = liveOrReopened(used, "Fit_hn", 2) && !liveOrReopened(used, "Fit_hn", 3)
+    && !liveOrReopened(["window closed Fit_hn (hour 12.00)", "window open Fit_hn (hour 23.00)"], "Fit_hn", 1)
+    && !liveOrReopened(["Fit_hn is in range at 5 m x", "window closed Fit_hn (hour 12.00)"], "Fit_hn", 1)
+    && liveOrReopened(["window open Fit_hn (hour 23.00)", "Fit_hn is in range at 5 m x"], "Fit_hn", 0);
+  console.log(ok && reopen ? "square-harbor-life-proof selftest: OK" : "square-harbor-life-proof selftest: FAIL");
+  return ok && reopen ? 0 : 1;
 }
 
 export default {

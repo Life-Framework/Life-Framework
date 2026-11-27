@@ -47,24 +47,32 @@ DebugWorld has two zones (`docs/architecture/world-zones.md`):
 Tick each line from the pictures. A line that cannot hold gets one sentence in the PR saying why.
 
 **Place**
-- [ ] It sits on its surface: nothing floats, sinks, tilts, or hangs off an edge.
+- [ ] It sits on its surface: nothing floats, sinks (a few cm into the ground counts), tilts, or stands on a
+      slope. The audit passes a car on a tilted lawn; the picture shows the lean.
 - [ ] It is where that kind of thing belongs (style guide "Where things go"): boards on walls,
       furniture under a roof, illegal things out of sight.
 - [ ] It touches its group: a wall, a counter, a kerb, a neighbour. Not alone on a lawn.
-- [ ] It does not block a door, a path, a road, or the view of a sign.
+- [ ] It does not block a door, a path, a road, or the view of a sign, and no sign stands behind a door, a
+      wall or a hedge from where a player faces it.
 - [ ] Interactables face the side players come from and can be reached on foot.
 
 **Thing**
 - [ ] It is what it claims to be, at its real size beside its neighbours (the bounds are under
       each close-up). A stand-in is in `docs/asset-inventory.md` and named in the PR.
-- [ ] No white, magenta or mirror-chrome surface; no blank sign.
-- [ ] Nothing debug-looking: no `*_Debug` entity or `/Debug/` prefab in a village layer.
+- [ ] No white, magenta or mirror-chrome surface (a blank sign face is expected in `look`: see below).
+- [ ] Nothing debug-looking: no `*_Debug` entity or `/Debug/` prefab in a village layer, no placeholder-bright
+      box (flat white or saturated colour), no vanilla kitchen unit or indoor fixture standing outdoors, no traffic cones.
+- [ ] A shop or counter is stocked: no empty shelf run, and goods stand singly on the shelf, never in a pile
+      (11-25 sweep: gun store, hardware, general store, Chotain bar).
+- [ ] A light has a visible source (lamp, window, flame, fixture); no glow hangs in mid-air.
 - [ ] It fits 1989 Everon: period, material, wear.
 
 **Sign or text**
 - [ ] The right sign type and paint for the job; capitals; two or three words.
-- [ ] Readable from where the player stands; not clipped by a roof, a wall or another sign.
-- [ ] Every string is a key in the string table and reads like printed matter.
+- [ ] Readable from where the player stands; not clipped by a roof, a wall or another sign. The text is read in a
+      session shot, by day and at 22:00 (below).
+- [ ] Every string is a key in the string table and reads like printed matter: US English, no raw id, repo
+      path, stray placeholder or `...` cut-off (#4993).
 
 **Sheet, HUD, face** (needs a session shot: Workbench captures no UI)
 - [ ] Built from UI kit parts; no colour, font or size set by the feature.
@@ -80,6 +88,37 @@ Tick each line from the pictures. A line that cannot hold gets one sentence in t
 - [ ] The wide still reads at a glance as what the place is, and the new thing does not make it
       busier than it has to be.
 - [ ] Nothing you did not mean to change moved: compare the before and after wides.
+
+## What `look` cannot show
+
+- **Sign faces.** A face is a render target painted at runtime; a `look` picture shows a blank plate and prints a
+  `NOTE`. That is not a defect (the 11-25 sweep graded 21 working signs BELOW for it). Placement, size and what
+  blocks the sign are judged from `look`; the text only in a session (`harness stand` + `shot world`).
+- **The right room.** `--interior auto` stands at the slot's counter or desk row. When the camera lands in a
+  stairwell, on a roof or in a neighbour's flat, `--interior <kit row>` (a `Fit_...` name or a unique suffix such as
+  `lf_medic_duty_desk`) anchors on that row; an unknown name lists the rows.
+- **Lights at night, UI, motion, sound, a second player:** a session (next section, and step 7).
+
+## Night (22:00)
+
+Every player-facing site is graded at 22:00 as well as by day. The 11-25 night sweep found 17 of 42 stops BELOW
+(dark fascias, interiors with no lamp, fronts with no street light); the 11-27 east sweep found 4 of 6 work sites
+pitch black that were all OK by day. Pass: from where a player stands, the door, the counter or ore or furnace,
+and the sign plate can be found without a torch. Light a new work site in the same PR; do not wait for a sweep.
+
+| The thing | Use |
+|---|---|
+| A used building's windows, a street-lamp head, a dark front | `node tools/town/nightlights.mjs <place>` writes `Lights_<place>.layer` (generated: rerun, never hand-edit; a dark front is a row in its `FRONTS`) |
+| A lamp, lantern or flood-lamp mesh with no light | `LF_LanternGlow.et` on it (warm, 7 m, no shadow, 18:00 to 06:00); lift one lying in grass onto a stool so its pool falls on the ground and the ore |
+| A camp or fire | `LF_CampFlame.et` (flame plus orange light) |
+| A shop sign | `LF_Sign_Fascia` lights itself (spot 2.2 m in front); a pole plate needs a lamp beside it |
+| A room with no lamp | a ceiling lamp or pack `LF_LightInteriorFill` row in its kit (vanilla ceiling lamps are dead meshes) |
+
+All run on `LF_NightLightComponent` (`Feature/Atmosphere/Feature.md`). Each is a dynamic light: one per spot, short
+range, no shadow (`docs/architecture/performance.md`). A kit change goes in the kit and its slot layer together.
+Grade it in one full-profile island session: pin the clock with the harness `time` verb (22; pin again every few
+shots, the lights need about 35 s), `stand` at the site, `capture world` at eye height, `session down` straight
+after. `agent-box/east-night-shots.mjs` is the model; its `before` and `after` modes give the PR pair.
 
 ## What the PR carries
 

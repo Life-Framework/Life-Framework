@@ -11,17 +11,22 @@
 // red-proof (2026-11-08): without `git merge --abort` in healMerge's abort path
 //   it printed "real-conflict: merge left in progress"; with the registry
 //   unclassified it printed "registry-only: expected healed, got needs-human".
-import { mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+// red-proof (2026-11-27): with the hand-off not honoured (a fresh tmp/ log counted as dirty) "a shipped, clean worktree
+//   with fresh tmp/ logs should read as done" and "heal's own pushed merge should hand the worktree off again" failed.
+import { appendFileSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { gitSync } from "../lib/git-retry.mjs";
-import { conflictKind, healMerge, isLive, predictConflicts, pushBranch, LIVE_MS } from "../prs.mjs";
+import { autoMergeWithRetry, conflictKind, healMerge, isLive, markHandoff, predictConflicts, pushBranch, readHandoff, LIVE_MS } from "../prs.mjs";
 import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
+import { sections } from "../lib/selftest-sections.mjs";
 
 useHermeticGit(); // no machine git config, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
-const failures = [];
-const fail = (m) => failures.push(m);
+// Each scenario below is a section that runs in its own process, in parallel (tools/lib/selftest-sections.mjs).
+const S = sections(import.meta.url);
+let failed = 0;
+const fail = (m) => { failed++; console.log(`  - ${m}`); };
 const TESTS = "addons/LifeFramework/Scripts/Game/Tests";
 // A generated file both sides regenerate: the core language conf stands in for it (conflictKind "regen-localization").
 const REGISTRY = "addons/LifeFramework/Language/everonlife_localization.en_us.conf";
@@ -59,6 +64,7 @@ const regenerate = (dir, kind) => {
 };
 
 // Classification.
+S.add("classification", () => {
 for (const [p, k] of [
   [REGISTRY, "regen-localization"],
   ["addons/LifeFramework/Language/everonlife_localization.st", "string-table"],
@@ -80,15 +86,23 @@ for (const [p, k] of [
   if (conflictKind(p) !== k) fail(`conflictKind(${p}) = ${conflictKind(p)}, expected ${k}`);
 }
 
+});
+
+// Identity and pinned settings as config text: five `git config` spawns per repo become none.
+const REPO_CONFIG = (temp) => [
+  "[user]", "\temail = pr-keeper@example.com", "\tname = pr-keeper",
+  "[core]", "\tautocrlf = false", `\thooksPath = ${join(temp, "no-hooks").split("\\").join("/")}`,
+  "[commit]", "\tgpgsign = false", "",
+].join("\n");
+
+S.add("heal: registry-only, real and mixed conflicts, legacy worktree", () => {
 const temp = scratchDir("lf-pr-keeper-");
 try {
   const origin = join(temp, "origin.git");
   const seed = join(temp, "seed");
   must(temp, ["init", "-q", "--bare", "-b", "main", origin]);
   must(temp, ["clone", "-q", origin, seed]);
-  for (const [k, v] of [["user.email", "pr-keeper@example.com"], ["user.name", "pr-keeper"], ["core.autocrlf", "false"], ["commit.gpgsign", "false"], ["core.hooksPath", join(temp, "no-hooks")]]) {
-    must(seed, ["config", k, v]);
-  }
+  appendFileSync(join(seed, ".git", "config"), REPO_CONFIG(temp));
   must(seed, ["checkout", "-q", "-b", "main"]);
   addTest(seed, "LF_Test_A");
   write(seed, SCRIPT, "void Foo()\n{\n\tint x = 1;\n}\n");
@@ -160,7 +174,7 @@ try {
   {
     const legacy = join(temp, "legacy");
     must(temp, ["clone", "-q", origin, legacy]);
-    for (const [k, v] of [["user.email", "pr-keeper@example.com"], ["user.name", "pr-keeper"], ["core.autocrlf", "false"], ["commit.gpgsign", "false"], ["core.hooksPath", join(temp, "no-hooks")]]) must(legacy, ["config", k, v]);
+    appendFileSync(join(legacy, ".git", "config"), REPO_CONFIG(temp));
     const INV = "docs/asset-inventory.md", GAL = "website/content/gallery.json", AREAS = "agent-box/areas.json";
     const NL = String.fromCharCode(10);
     const doc = (lines) => lines.join(NL) + NL;
@@ -192,6 +206,23 @@ ${t}`);
     }
   }
 
+} catch (e) {
+  fail(`scenario threw: ${e.message}`);
+} finally {
+  removeScratch(temp);
+}
+});
+
+S.add("liveness, hand-off marker, auto-merge retry", () => {
+const temp = scratchDir("lf-pr-keeper-");
+try {
+  // A fresh worktree with one commit stands in for the healed one.
+  const a = join(temp, "fresh");
+  mkdirSync(a);
+  must(a, ["init", "-q", "-b", "ws/fresh"]);
+  write(a, "docs/a.md", "a\n");
+  must(a, ["add", "-A"]);
+  git(a, ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "base"]);
   // Liveness: a fresh change is live now and idle 15 min later.
   write(a, "tmp/note.txt", "agent scratch\n");
   if (!isLive(a).live) fail("a worktree changed just now should be live");
@@ -228,15 +259,38 @@ ${t}`);
   if (isLive(stale).live) fail("a reverted worktree with an old commit should be idle");
   git(stale, ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "fresh"]);
   if (!isLive(stale).live) fail("a fresh commit should read as LIVE");
+
+  // 2026-11-27: the hand-off marker. A shipped (or healed) worktree whose HEAD is still the handed-off commit and whose
+  // tree is clean is done, even with fresh logs in tmp/ and a fresh reflog entry (heal's own merge commit on 2026-11-25).
+  const headNow = must(stale, ["rev-parse", "HEAD"]);
+  markHandoff(stale, headNow, "ship");
+  write(stale, "tmp/logs/wt-ship.log", "fresh ship log\n");
+  const h1 = isLive(stale);
+  if (h1.live || h1.done !== "ship") fail(`a shipped, clean worktree with fresh tmp/ logs should read as done, got ${JSON.stringify(h1)}`);
+  if (readHandoff(stale)?.head !== headNow) fail("readHandoff should return the recorded head");
+  write(stale, "docs/a.md", "agent keeps going\n");
+  if (!isLive(stale).live) fail("an edit after the hand-off should read as LIVE again");
+  must(stale, ["checkout", "-q", "--", "docs/a.md"]);
+  git(stale, ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "after ship"]);
+  if (!isLive(stale).live) fail("a commit after the hand-off should read as LIVE again");
+  markHandoff(stale, must(stale, ["rev-parse", "HEAD"]), "heal");
+  if (isLive(stale).done !== "heal") fail("heal's own pushed merge should hand the worktree off again");
+  writeFileSync(join(stale, "tmp", "wt", "handoff.json"), "{ not json");
+  if (!isLive(stale).live) fail("a broken marker falls back to the mtime rule (fresh commit: LIVE)");
+
+  // Transient GraphQL answers are retried; a real refusal is not.
+  const calls = [];
+  const flaky = [{ status: 1, stdout: "", stderr: "GraphQL: Something went wrong while executing your query on 2026-11-25T15:44:25Z." }, { status: 0, stdout: "", stderr: "" }];
+  const am1 = autoMergeWithRetry(".", 4972, { run: (a) => { calls.push(a); return flaky[calls.length - 1]; }, wait: () => {} });
+  if (am1.status !== 0 || calls.length !== 2) fail(`a transient GraphQL error should be retried once and succeed, got ${calls.length} call(s)`);
+  let n = 0;
+  const am2 = autoMergeWithRetry(".", 1, { run: () => { n++; return { status: 1, stdout: "", stderr: "Pull request is in clean status" }; }, wait: () => {} });
+  if (am2.status === 0 || n !== 1) fail(`a real refusal should not be retried, got ${n} call(s)`);
 } catch (e) {
   fail(`scenario threw: ${e.message}`);
 } finally {
   removeScratch(temp);
 }
+});
 
-if (failures.length) {
-  console.log("pr-keeper-selftest: FAIL");
-  for (const f of failures) console.log(`  - ${f}`);
-  process.exit(1);
-}
-console.log("pr-keeper-selftest: OK (registry-only conflict healed and pushed; legacy worktree appends to inventory, gallery and areas merged by the hub drivers; real and mixed conflicts aborted, HEAD and origin untouched; liveness window)");
+process.exit(await S.run({ failed: () => failed, summary: (n) => (n ? "pr-keeper-selftest: FAIL" : "pr-keeper-selftest: OK (registry-only conflict healed and pushed; legacy worktree appends to inventory, gallery and areas merged by the hub drivers; real and mixed conflicts aborted, HEAD and origin untouched; liveness window)") }));

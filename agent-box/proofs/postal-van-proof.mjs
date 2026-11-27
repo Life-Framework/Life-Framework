@@ -11,6 +11,14 @@ import { arrive, clientBox, newestLog, sessionDir, sessionPaths } from "../sessi
 const DROP = "Fit_saint_philippe_postal_drops_drop_b21";
 const DEPOT = "Fit_saint_philippe_parcel_job_depot";
 
+const VAN_REACH = 5.8; // the harness seats from within 6 m
+// Pure: the distance of the nearest postal van in a `seen` reply (`<prefab>PostalVan<...>:d=<m>:`), or Infinity.
+export function vanDistance(detail) {
+  let best = Infinity;
+  for (const m of String(detail).matchAll(/\S*PostalVan\S*?:d=([\d.]+)/gi)) best = Math.min(best, Number(m[1]));
+  return best;
+}
+
 async function runProof() {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
@@ -47,15 +55,23 @@ async function runProof() {
   const waypoint = /waypoint=([^ ]*)/.exec(seen2)?.[1] ?? "-";
   console.log(`waypoint after the start: ${waypoint}`);
 
-  // Client 1 has no key: it stands at the van and is put out of the driver seat.
-  on(1, { verb: "stand", entityName: DEPOT, side: "e" });
-  wait(5000);
-  const seen1 = String(on(1, { verb: "seen", radius: 25 }).detail);
+  // Client 1 has no key: it stands beside the van and is put out of the driver seat. `engine seat` takes the nearest vehicle
+  // within 6 m, which at the depot stand is the parked police UAZ (the van lies 7 to 22 m from the stand, LF_PostalRun.FindVanSpot),
+  // so the character walks round the stand until the van is within reach and the seat is asked for by prefab (`veh_PostalVan`, #5047).
+  let seen1 = "";
+  let vanAt = Infinity;
+  for (const side of ["e", "w", "n", "s", "e4", "w4", "n4", "s4", "e8", "w8", "n8", "s8", "e14", "w14", "n14", "s14", "e20", "w20", "n20", "s20"]) {
+    on(1, { verb: "stand", entityName: DROP, side }, 20000);
+    wait(2500);
+    seen1 = String(on(1, { verb: "seen", radius: 12 }).detail);
+    vanAt = vanDistance(seen1);
+    if (vanAt <= VAN_REACH) break;
+  }
   const before = (serverLog().match(/entry refused/g) ?? []).length;
-  const seat = on(1, { verb: "engine", entityName: "seat" }, 10000);
+  const seat = on(1, { verb: "engine", entityName: "veh_PostalVan" }, 10000);
   wait(4000);
   const after = on(1, { verb: "engine" }, 10000);
-  step("a second player without the key is put out of the van", after.status !== "ok" && (serverLog().match(/entry refused/g) ?? []).length > before, `seen: ${seen1.slice(0, 200)}; seat=${seat.status} ${seat.detail}; engine=${after.status} ${after.detail}`);
+  step("a second player without the key is put out of the van", after.status !== "ok" && (serverLog().match(/entry refused/g) ?? []).length > before, `van ${vanAt} m away; seen: ${seen1.slice(0, 200)}; seat=${seat.status} ${seat.detail}; engine=${after.status} ${after.detail}`);
   if (after.status === "ok") on(1, { verb: "engine", entityName: "out" }, 10000);
 
   // Four sacks: the SACK row of the stand, one toast each, then the waypoint moves to Meaux.
@@ -82,8 +98,14 @@ async function runProof() {
   return failed.length ? 1 : 0;
 }
 
+function selftest() {
+  const ok = vanDistance("x veh=LF_UAZ469_Police:d=3:eng=0 | LF_PostalVan_Ford:d=4.5:eng=0 | LF_PostalVan_Ford:d=9:eng=0 door=") === 4.5 && vanDistance("veh=LF_UAZ469_Police:d=3:eng=0") === Infinity && vanDistance("") === Infinity;
+  console.log(ok ? "postal-van-proof selftest: OK" : "postal-van-proof selftest: FAIL");
+  return ok ? 0 : 1;
+}
+
 export default {
   name: "postal-van-proof",
   usage: "postal-van-proof",
-  run: () => runProof(),
+  run: (ctx) => ((ctx?.args ?? process.argv.slice(2)).includes("--selftest") ? selftest() : runProof()),
 };

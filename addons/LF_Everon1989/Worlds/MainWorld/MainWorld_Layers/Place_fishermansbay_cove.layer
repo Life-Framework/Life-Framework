@@ -26,6 +26,9 @@ GenericEntity Fit_fishermansbay_cove_bench : "{BE839ACB6CB2726A}Prefabs/Props/Se
 GenericEntity Fit_fishermansbay_cove_lantern : "{57354E1D82BCF650}Prefabs/Props/Fishing/LF_LakeLantern.et" {
  coords 4018.3 0.923 10698
 }
+GenericEntity Fit_fishermansbay_cove_lantern_glow : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 4018.3 1.55 10698
+}
 GenericEntity Fit_fishermansbay_cove_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {

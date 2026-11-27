@@ -96,6 +96,8 @@
     { "id": "anniversary_letter_secret", "line": "anniversary_letter_secret", "options": [{ "text": "bye", "next": "bye" }] }
   ],
   "lines": {
+    "letter_desc": { "for_key": "#LF-Quest_AnniversaryLetter_Desc", "key_pin": "96fd92be", "text": "The letter in the memorial's flowers is addressed to me. Bring it here, if you would." },
+    "letter_turn_in": { "for_key": "#LF-Quest_AnniversaryLetter_TurnIn", "key_pin": "1698db7d", "text": "Let me read it twice. Then sit with me a while." },
     "greet_refuses": { "text": "I saw what you did. Keep walking." },
     "greet_wary": { "text": "Hm. You again. Say what you want, and be quick." },
     "greet_friendly": { "text": "Ah, there you are. A friendly face is good to see. Sit a moment." },

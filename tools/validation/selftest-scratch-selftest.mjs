@@ -7,10 +7,13 @@
 //   * dynamic: a sample of real selftests runs with TMP/TEMP/TMPDIR pointed at an empty folder, and nothing may remain in it;
 //   * scratchDir itself leaves nothing after a throw or a process.exit(3) and keeps the exit code;
 //   * tmp-sweep only plans `lf-*` folders older than the cutoff.
+// Speed (2026-11-27): the sample ran promote-selftest in full (about 140 s under load); it is now save-sections-merge-selftest
+// (a real selftest that uses useHermeticGit, 4 s) plus a fixture that runs the promote shape (hermetic git, scratch repos,
+// sections in child processes) under the private TMP. Same property: nothing is left in the OS temp dir.
 // red-proof: 2026-11-17, on the code before the fix (bare mkdtempSync in 145 selftests, no scratch.mjs): the static check
 // named 145 bare callers and promote-selftest left lf-gitcfg-* in the private temp dir (2 FAIL, exit 1); green after.
 
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, relative } from "node:path";
@@ -31,7 +34,18 @@ const check = (name, ok, detail = "") => {
 // A private temp root for the child runs. It is made with a bare mkdtempSync on purpose (the guard cannot depend on
 // the helper it checks) and removed in the finally.
 const priv = mkdtempSync(join(tmpdir(), "lf-scratch-guard-"));
-const runIn = (tmp, args) => spawnSync(process.execPath, args, { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 900000, env: { ...process.env, TMP: tmp, TEMP: tmp, TMPDIR: tmp } });
+// The child runs are independent, so they run at the same time (promote-selftest alone takes most of the time).
+const runIn = (tmp, args) =>
+  new Promise((resolveRun) => {
+    let stdout = "";
+    const child = spawn(process.execPath, args, { cwd: ROOT, windowsHide: true, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, TMP: tmp, TEMP: tmp, TMPDIR: tmp } });
+    const timer = setTimeout(() => child.kill(), 900000);
+    child.stdout.on("data", (d) => { stdout += d; });
+    child.stderr.on("data", () => {});
+    child.on("error", () => { clearTimeout(timer); resolveRun({ status: 1, stdout }); });
+    child.on("close", (code) => { clearTimeout(timer); resolveRun({ status: code ?? 1, stdout }); });
+  });
+const pending = [];
 
 try {
   // ---- static: no selftest uses a bare mkdtempSync under the OS temp dir
@@ -48,7 +62,7 @@ try {
   check("no selftest makes a temp folder with a bare mkdtempSync(join(tmpdir(), ...)): use scratchDir() from tools/lib/scratch.mjs", bare.length === 0, `${bare.length}: ${bare.slice(0, 8).map((f) => relative(ROOT, f).replace(/\\/g, "/")).join(", ")}${bare.length > 8 ? ", ..." : ""}`);
 
   // ---- dynamic: a sample of real selftests leaves nothing in its temp dir
-  const SAMPLE = ["disk-guard-selftest", "features-index-selftest", "gpu-session-selftest", "guid-paths-selftest", "promote-selftest"];
+  const SAMPLE = ["disk-guard-selftest", "features-index-selftest", "gpu-session-selftest", "guid-paths-selftest", "save-sections-merge-selftest"];
   for (const name of SAMPLE) {
     const file = `tools/validation/${name}.mjs`;
     if (!existsSync(join(ROOT, file))) {
@@ -57,10 +71,11 @@ try {
     }
     const tmp = join(priv, name);
     mkdirSync(tmp);
-    const r = runIn(tmp, [file]);
-    const left = readdirSync(tmp);
-    check(`${name} still passes`, r.status === 0, `exit ${r.status}: ${String(r.stdout ?? "").trim().split("\n").slice(-2).join(" | ")}`);
-    check(`${name} leaves no folder in the OS temp dir`, left.length === 0, `left: ${left.slice(0, 5).join(", ")}${left.length > 5 ? ` (+${left.length - 5})` : ""}`);
+    pending.push(runIn(tmp, [file]).then((r) => {
+      const left = readdirSync(tmp);
+      check(`${name} still passes`, r.status === 0, `exit ${r.status}: ${String(r.stdout ?? "").trim().split("\n").slice(-2).join(" | ")}`);
+      check(`${name} leaves no folder in the OS temp dir`, left.length === 0, `left: ${left.slice(0, 5).join(", ")}${left.length > 5 ? ` (+${left.length - 5})` : ""}`);
+    }));
   }
 
   // ---- scratchDir cleans up however the process ends
@@ -68,9 +83,15 @@ try {
     check("tools/lib/scratch.mjs exists", false);
   } else {
     const helper = JSON.stringify(pathToFileURL(join(TOOLS, "lib", "scratch.mjs")).href);
+    const gitLib = JSON.stringify(pathToFileURL(join(TOOLS, "lib", "selftest-git.mjs")).href);
+    const sectionsLib = JSON.stringify(pathToFileURL(join(TOOLS, "lib", "selftest-sections.mjs")).href);
     const cases = [
       ["a throw", `import { scratchDir } from ${helper}; import { writeFileSync } from "node:fs"; const d = scratchDir("lf-guard-a-"); writeFileSync(d + "/x", "1"); throw new Error("boom");`, 1],
       ["process.exit(3)", `import { scratchDir } from ${helper}; import { mkdirSync, writeFileSync } from "node:fs"; const d = scratchDir("lf-guard-b-"); mkdirSync(d + "/deep/er", { recursive: true }); writeFileSync(d + "/deep/er/x", "1"); process.exit(3);`, 3],
+      // The shape of promote-selftest (it used to be in SAMPLE and took most of this check's time): hermetic git with its
+      // own lf-gitcfg-* folder, scratch repos, and the sections of one selftest in child processes that inherit TMP.
+      // promote-selftest still runs on its own in `validate`, where it asserts its own result.
+      ["a hermetic-git selftest run in sections", `import { useHermeticGit, runGit, removeScratch, FastStream, fastImport } from ${gitLib}; import { sections } from ${sectionsLib}; import { scratchDir } from ${helper}; useHermeticGit(); let failed = 0; const S = sections(import.meta.url); for (const n of ["a", "b"]) S.add(n, () => { const d = scratchDir("lf-guard-" + n + "-"); if (runGit(d, ["init", "-q", "--bare"]).status !== 0) failed++; fastImport(d, new FastStream().commit("refs/heads/main", { mark: 1, message: "m", files: { f: "x" } })); if (n === "b") removeScratch(d); }); process.exit(await S.run({ failed: () => failed }));`, 0],
       ["a chdir into the folder", `import { scratchDir } from ${helper}; process.chdir(scratchDir("lf-guard-c-"));`, 0],
     ];
     cases.forEach(([label, code, exit], i) => {
@@ -79,11 +100,13 @@ try {
       mkdirSync(sub, { recursive: true });
       const file = join(tmp, "case.mjs");
       writeFileSync(file, code);
-      const r = runIn(sub, [file]);
-      check(`scratchDir: after ${label} the exit code is kept`, r.status === exit, `exit ${r.status}, wanted ${exit}`);
-      check(`scratchDir: after ${label} nothing is left behind`, readdirSync(sub).length === 0, readdirSync(sub).join(", "));
+      pending.push(runIn(sub, [file]).then((r) => {
+        check(`scratchDir: after ${label} the exit code is kept`, r.status === exit, `exit ${r.status}, wanted ${exit}`);
+        check(`scratchDir: after ${label} nothing is left behind`, readdirSync(sub).length === 0, readdirSync(sub).join(", "));
+      }));
     });
   }
+  await Promise.all(pending);
 
   // ---- tmp-sweep plans only old lf-* folders
   {

@@ -37,6 +37,7 @@ docs/features/*.md merge=lf-markdown
 docs/debug-log-triage.md merge=lf-markdown
 docs/architecture/events.md merge=lf-markdown
 tools/validation/enforce-lint-baseline.json merge=lf-lint-baseline
+tools/place/island-baseline.json merge=lf-island-baseline
 
 # NOTE: Git LFS is NOT enabled yet. Binary assets are committed as plain blobs.
 # To migrate to LFS later (recommended once the repo is stable):

@@ -39,6 +39,7 @@
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { areaConcurrency, registerValidate, shareConcurrency } from "./lib/validate-concurrency.mjs";
+import { loadSeed, orderJobs } from "./lib/validate-order.mjs";
 import "./lib/quiet-gate.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -67,7 +68,7 @@ import { addonsArgs, addonsDirArgs, addonDir, flagshipMission, gprojOf, launchAd
 import { runPerf } from "./perf/perf-report.mjs";
 import { newestSummaryLine, suiteValidCode, isSuiteSafePath, selftestSuiteStamp } from "./suite-stamp.mjs";
 import { runScopeCli } from "./scope/scaffold.mjs";
-import { cmdPrs, healMerge as healMergeSync } from "./prs.mjs";
+import { cmdPrs, healMerge as healMergeSync, markHandoff } from "./prs.mjs";
 import { cmdPromote } from "./promote.mjs";
 import { runRelease } from "./release/release.mjs";
 import { runDiscordCli } from "./discord-mcp/relay-ctl.mjs";
@@ -672,6 +673,11 @@ const SLOW_CHECK_S = new Map([
   ["selftest-scratch-selftest.mjs", 1200],
   ["merge-drivers-selftest.mjs", 1200],
   ["promote-selftest.mjs", 1200],
+  // The same wall on 2026-11-22 for the other scratch-repo selftests: main-ff-heal (600 s, twice), main-guard-validate
+  // (602 s) and pool-selftest (486 s, reaping 30-minute-old leases) were red on 600 s with a green recheck.
+  ["main-ff-heal-selftest.mjs", 1200],
+  ["main-guard-validate-selftest.mjs", 1200],
+  ["pool-selftest.mjs", 1200],
 ]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
@@ -767,9 +773,8 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     if (inc?.get(s)?.unchanged) return { s, skipped: inc.get(s).why, incremental: true };
     return { s };
   });
-  // Longest first (from the last recorded times) so one slow check never starts last.
-  const lastSecs = (j) => state?.checks[j.s]?.secs ?? 0;
-  const queue = jobs.filter((j) => !j.skipped).sort((a, b) => lastSecs(b) - lastSecs(a));
+  // Longest first (this worktree's last times, else the committed seed) so one slow check never starts last.
+  const queue = orderJobs(jobs.filter((j) => !j.skipped), state, loadSeed());
   const env = toolEnv();
   // Per-check budget (tools/lib/check-budget.mjs): a check over it is killed and fails by name. Times
   // leave out any freeze of this process, which is reported once below instead of blamed on a check.
@@ -4713,8 +4718,9 @@ function wtNewCmd(args) {
     console.log("");
     console.log(`  cd ${r.path}`);
     console.log(`  tools\\cli dev --tier fast        # iterate (no build)`);
-    console.log(`  tools\\cli wt gate ${r.slug}      # validate + build + test`);
-    console.log(`  tools\\cli wt ship ${r.slug}      # gate, PR, auto-merge`);
+    console.log(`  tools\\cli validate                # cheap checks, run it often`);
+    console.log(`  tools\\cli wt ship ${r.slug}      # PR + auto-merge (GitHub validate is the gate)`);
+    console.log(`  Run git and tools\\cli from this worktree only; git writes in the main checkout are refused.`);
     return 0;
   } catch (e) {
     console.log(`FAIL  ${e.message}`);
@@ -5444,6 +5450,11 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
       return (await import("./lib/placement-gate.mjs")).runIslandGate(files, (a) => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "audit", "placement", ...a], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1);
     },
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
+    pullBranch: () => {
+      const f = wt.git(wtRoot, ["fetch", "origin", e.branch]);
+      if (f.status !== 0) throw new Error((f.stderr || f.stdout).trim());
+      shipMergeBase(wtRoot, e.branch, healMergeSync, (l) => console.log(l));
+    },
     findPr: () => wt.findOpenPrGh(wtRoot, e.branch),
     createPr: (o) => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base, draft: o?.draft === true }),
     autoMerge: (n) => gh(["pr", "merge", String(n), "--auto", "--merge"]),
@@ -5454,8 +5465,11 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
   const head = wt.git(wtRoot, ["rev-parse", "HEAD"]).stdout.trim();
   console.log(`SUMMARY ship ${r.code === 0 ? "ok" : "fail"} ${slug}${r.pr ? ` PR #${r.pr.number}` : ""} auto-merge ${r.code === 0 && !draft ? "on" : "off"}${draft ? " (draft)" : ""}`);
   if (r.pr) console.log(`PR ${r.pr.url}, head ${head}`);
+  // The hand-off: `prs heal` may merge main into this worktree as soon as GitHub calls the PR CONFLICTING, without
+  // waiting out the 15-minute LIVE window the ship's own logs would start. A later edit or commit here ends it.
+  if (r.code === 0 && !draft) markHandoff(wtRoot, head, "ship");
   if (r.code === 0 && draft) console.log(`ship: draft PR left open for review. Prune after it merges: 'cli wt prune ${slug}'`);
-  else if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
+  else if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. A CONFLICTING state from driver-merged files heals itself (pr-autoheal workflow); for any other conflict re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
   return r.code;
 }
 

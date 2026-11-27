@@ -190,8 +190,13 @@ export function lint({ addonDir, scriptsDir, includeData = true }) {
       withStrings: mask(raw, true),
     };
   });
-  const add = (rule, src, line, message) =>
+  // `// lf-lint-ok: <why>` on the finding's line, or one or two lines above it (above its [Attribute] line), allows
+  // one reviewed false positive. The reason is required; the marker is a comment, so Enforce Script ignores it.
+  const allowed = (src, line) => [line - 1, line - 2, line - 3].some((i) => /\blf-lint-ok:\s*\S/.test(src.lines[i] ?? ""));
+  const add = (rule, src, line, message) => {
+    if (allowed(src, line)) return;
     findings.push({ rule, file: src.rel, line, text: norm(src.lines[line - 1] ?? ""), message });
+  };
 
   const nullable = nullableSingletons(sources);
   const metas = indexMetas(addonDir);

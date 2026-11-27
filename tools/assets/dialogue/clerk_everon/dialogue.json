@@ -17,8 +17,24 @@
       "speed": 0.95
     }
   },
-  "budget_chars": 3000,
+  "budget_chars": 4500,
   "lines": {
+    "papers_first": { "for_key": "#LF-Quest_ArrivalRegister_Desc", "key_pin": "6a4d7763", "text": "Papers first. Tell me you are new in town, and I will write your name in the register." },
+    "market_done": { "for_key": "#LF-Quest_EveronMarket_TurnIn", "key_pin": "86c24241", "text": "You are on your way. For steady pay, take a job: the town board lists who is hiring, and I have more errands for you. Your errands and jobs are in your player menu." },
+    "settle_parcels": { "for_key": "#LF-Quest_SettleParcels_Desc", "key_pin": "c3073fc1", "text": "Now run five parcels for the post office. Five runs will earn you the level for the fuel run, which comes next." },
+    "settle_fuel": { "for_key": "#LF-Quest_SettleFuel_Desc", "key_pin": "935894d0", "text": "Fuel runs are open to you now. Take a jerry can job from the dispatch board and deliver it." },
+    "settle_wheels": { "for_key": "#LF-Quest_SettleWheels_DescLicence", "key_pin": "51d198bd", "text": "Get your driver's license at the town hall desk first, then buy any car at the car lot. The town board shows where it is." },
+    "settle_permit": { "for_key": "#LF-Quest_SettlePermit_Desc", "key_pin": "62aca4b4", "text": "Apply for a firearm permit at the gun store counter, and collect it when it is ready." },
+    "settle_fish": { "for_key": "#LF-Quest_SettleFish_Desc", "key_pin": "aee9f54d", "text": "Catch a fish and sell it at the fish counter." },
+    "settle_plot": { "for_key": "#LF-Quest_SettlePlot_Desc", "key_pin": "76d2621e", "text": "Find a plot for sale and read its sign. It says what the plot costs and how to buy it." },
+    "settle_plot_done": { "for_key": "#LF-Quest_SettlePlot_TurnIn", "key_pin": "65f62b06", "text": "That is how land is bought here. Save up, and the plot is yours." },
+    "settle_foundation": { "for_key": "#LF-Quest_SettleFoundation_Desc", "key_pin": "6c755fdf", "text": "Lay the foundation of your cottage. The general store sells gravel and cement." },
+    "card_replaced": { "for_key": "#LF-IdCard_ClerkReplaced", "key_pin": "a2f15c4c", "text": "Here is your new card, with a new photograph. The old one is void now." },
+    "card_still_carried": { "for_key": "#LF-IdCard_ClerkStillCarried", "key_pin": "4cc22075", "text": "You have your card with you. I cannot issue a second one." },
+    "card_no_cash": { "for_key": "#LF-IdCard_ClerkNoCash", "key_pin": "7896b9da", "text": "A new card costs the fee, in cash. Come back when you have it." },
+    "card_never_issued": { "for_key": "#LF-IdCard_ClerkNeverIssued", "key_pin": "f85e4024", "text": "You are not in the register yet. Tell me you are new in town." },
+    "switch_no": { "for_key": "#LF-CharSwitch_ClerkNo", "key_pin": "36de2fc0", "text": "I cannot change your papers right now." },
+    "switch_yes": { "for_key": "#LF-CharSwitch_ClerkYes", "key_pin": "f581f200", "text": "Of course. Which of your files shall I pull?" },
     "greet": {
       "text": "Good day. This is the town clerk's desk. What can I do for you?"
     },
@@ -60,23 +76,23 @@
     },
     "welcome_pack": {
       "text": "There. Your name is in the register, and this is your identity card. Keep it on you. And here is the welcome pack the town gives every newcomer: bread, a sausage, a bottle of water and some cash to start with.",
-      "for_key": "#LF-Quest_EveronWelcomePack_TurnIn"
+      "for_key": "#LF-Quest_EveronWelcomePack_TurnIn", "key_pin": "9c1c86ed"
     },
     "starter_car": {
       "text": "Your new car waits at the garage counter of the car lot, next to the town hall: take it out there.",
-      "for_key": "#LF-Quest_EveronGarage_Desc"
+      "for_key": "#LF-Quest_EveronGarage_Desc", "key_pin": "9f52323d"
     },
     "apples": {
       "text": "Drive to the orchard east of the town and pick six apples from the trees.",
-      "for_key": "#LF-Quest_EveronApples_Desc"
+      "for_key": "#LF-Quest_EveronApples_Desc", "key_pin": "8691f88b"
     },
     "juice": {
       "text": "Press your six apples into two bottles of juice at the juice press on the orchard stall.",
-      "for_key": "#LF-Quest_EveronJuice_Desc"
+      "for_key": "#LF-Quest_EveronJuice_Desc", "key_pin": "69b52f1c"
     },
     "market": {
-      "text": "Drive back to the market in the town center and sell your apple juice to the trader.",
-      "for_key": "#LF-Quest_EveronMarket_Desc"
+      "text": "Drive back to the market in the town center and sell your apple juice to the trader. Scroll to the juice row, the last one, and press F.",
+      "for_key": "#LF-Quest_EveronMarket_Desc", "key_pin": "c9b92f43"
     },
     "papers": {
       "text": "Your papers. Tell me what you need."

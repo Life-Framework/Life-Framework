@@ -22,7 +22,7 @@
 // no client, no session lane. tools/visual/wb/LF_VisualShotsPlugin.c does the engine side;
 // docs/visual-testing.md says what this does and does not prove.
 
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { freemem, tmpdir } from "node:os";
@@ -35,7 +35,7 @@ import { townWorld } from "../lib/addons.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
 import { GRID_WORLD, ISLAND_WORLD, PACK_GRID_WORLD, gridLayerDirs, gridWorldFor, islandLayersDir } from "../lib/worlds.mjs";
-import { PLACE_RX, resolvePlace } from "./look-place.mjs";
+import { PLACE_RX, anchorRoom, resolvePlace } from "./look-place.mjs";
 import { lookStartVerdict, lookSummaryLine, phaseText, renderProblem, requestNeedsRam, timeline } from "../lib/look-job.mjs";
 import * as poolRam from "../lib/pool-ram.mjs";
 import { SEED_PEAKS_MB } from "../lib/pool-ram.mjs";
@@ -142,9 +142,15 @@ export function resolveInterior(area, spec, radius) {
   // auto: the room a place: target carries (its ground floor, from the dossier).
   if (String(spec) === "auto" || spec === true) {
     if (!area.room) throw new Error("--interior auto needs a place:<place>/<slot> target (it reads the room from the dossier); else give x,y,z");
-    return { ...area, name: `${area.name}-interior`, x: area.room.x, y: area.room.y, z: area.room.z, radius: radius ?? area.room.radius, interior: true };
+    return { ...area, name: `${area.name}-interior`, x: area.room.x, y: area.room.y, z: area.room.z, radius: radius ?? area.room.radius, interior: true, interiorFrom: area.room.from ?? "footprint centre" };
   }
-  const m = /^\s*(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)\s*$/.exec(String(spec));
+  // --interior <Fit_row>: stand at one named row of the slot's kit (a counter, a clerk, a bed), any floor.
+  if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(String(spec))) {
+    if (!area.kit) throw new Error(`--interior ${spec} names a kit row, which needs a place:<place>/<slot> target; else give x,y,z`);
+    const r = anchorRoom(area.kit, spec, radius ?? 5);
+    return { ...area, name: `${area.name}-interior`, x: r.x, y: r.y, z: r.z, radius: r.radius, interior: true, interiorFrom: r.from };
+  }
+  const m =/^\s*(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)[, ]+(-?\d+(?:\.\d+)?)\s*$/.exec(String(spec));
   if (!m) throw new Error(`--interior wants x,y,z (the room's centre on its floor), got "${spec}"`);
   return { ...area, name: `${area.name}-interior`, x: Number(m[1]), y: Number(m[2]), z: Number(m[3]), radius: radius ?? 6, interior: true };
 }
@@ -453,6 +459,17 @@ export function tileLabel(shot, st, flags) {
   return bits.join("  ");
 }
 
+// Sign faces (#4940). A sign plate's face is a render target LF_SignComponent paints at runtime; a Workbench look never
+// draws it, so every sign in a look picture shows a blank white plate. The 2026-11-25 sweep graded 21 working signs as
+// BELOW for that. A look whose area holds a sign prefab says so on the summary, in index.json and on the sheet itself.
+const SIGN_PREFAB = /^(LF|EL)_(Sign|SignQuad|SignFace|BoardFace|TownBoard|HouseSaleSign|PlotSign|RaceStartSign|MiningSign|WhitelistSign|SpeedLimit|ClinicShortageNotice)/i;
+export const SIGN_FACE_NOTE = "sign faces are not drawn in look (a runtime render target), so a blank plate here is not a defect; read the text in a session (harness stand + shot world, docs/visual-testing.md \"Sign faces\")";
+
+export function signsInArea(world, area) {
+  if (!Array.isArray(world) || !area) return [];
+  return world.filter((e) => SIGN_PREFAB.test(baseOf(e)) && Math.hypot(e.x - area.x, e.z - area.z) <= (area.radius ?? 0));
+}
+
 export function sheetLayout(count) {
   const cols = count <= 6 ? 3 : 4;
   return { cols, rows: Math.ceil(count / cols) };
@@ -614,6 +631,19 @@ export function skipOutcome(code, { elapsedMs = 0, waitS = 1200 } = {}) {
 // as for the rdb refresh. On 2026-11-18 the hub-wide lock ran every look on the PC one at a time: 51 of 90 looks
 // queued on it, 44 of them beside a free slot, 7 gave up after 20 min (agent-efficiency pass 2). A request to
 // the shared look server keeps the `build` lock, which still serializes the requests that server takes.
+// Moves a shot out of the raw folder. The look server's folder sits in the viewer beside the main checkout (C:) and
+// worktrees now live on D:, where a rename fails with EXDEV: every served look from a D: worktree came back with all
+// its shots missing (the 2026-11-27 villages sweep, 70 of 70). Across drives it copies, then deletes the source.
+export function moveFile(from, to, { rename = renameSync } = {}) {
+  try {
+    rename(from, to);
+  } catch (e) {
+    if (e?.code !== "EXDEV") throw e;
+    copyFileSync(from, to);
+    rmSync(from, { force: true });
+  }
+}
+
 export function lookLockName(root, { server = false } = {}) {
   if (server) return "build";
   return `look-${String(root).replace(/\\/g, "/").split("/").pop().replace(/[^A-Za-z0-9._-]/g, "_")}`;
@@ -743,6 +773,7 @@ async function run(args) {
       if (args.flags.interior !== undefined) {
         if (areas.length !== 1) throw new Error("--interior shoots one room: give exactly one area");
         areas = [resolveInterior(areas[0], args.flags.interior, radius)];
+        console.log(`look: interior camera at ${areas[0].x},${areas[0].y},${areas[0].z} r ${areas[0].radius} (${areas[0].interiorFrom ?? "given x,y,z"})`);
       }
       worldOfAreas(areas); // refuses grid: and town targets in one run before anything starts
     }
@@ -914,7 +945,7 @@ async function run(args) {
     for (const f of readdirSync(dir)) if (/\.(png|jpg|json)$/.test(f)) rmSync(join(dir, f), { force: true });
     // tools\cli scout: the plugin's entity rows for this area stay beside its pictures.
     const dumpRaw = join(raw, `dump-${safe(area.name)}.txt`);
-    if (opts.dump && existsSync(dumpRaw)) renameSync(dumpRaw, join(dir, "dump.txt"));
+    if (opts.dump && existsSync(dumpRaw)) moveFile(dumpRaw, join(dir, "dump.txt"));
     const rows = [];
     for (const shot of list) {
       const st = status.shots[shot.name] ?? null;
@@ -922,7 +953,7 @@ async function run(args) {
       let px = null;
       if (st) {
         try {
-          renameSync(join(raw, st.file), file);
+          moveFile(join(raw, st.file), file);
           const bytes = readFileSync(file);
           frameHashes.push(createHash("md5").update(bytes).digest("hex"));
           px = pixelStats(decodePng(bytes));
@@ -936,21 +967,26 @@ async function run(args) {
       else if (flags.length) flagged++;
       rows.push({ kind: shot.kind, label: shot.label, file: st && st.file ? file : null, flags, clear: st?.clear ?? null, size: st?.size ?? null, cam: st?.cam ?? null, px, entity: shot.entity ?? null, contact: st?.contact ?? null, tile: shot.contact ? (await import("./look-contact.mjs")).contactLabel(shot, st) : tileLabel(shot, st, flags) });
     }
+    const signs = signsInArea(world, area);
     const tiles = rows.map((r) => ({ file: r.file, label: r.tile, marks: [] }));
+    if (signs.length && tiles.length) tiles[0].label = `${tiles[0].label}  [SIGN FACES NOT DRAWN: check in a session]`;
     const { cols } = area.sheetCols ? { cols: area.sheetCols } : sheetLayout(tiles.length);
     const contact = join(dir, "contact.jpg");
     image({ op: "sheet", tiles, out: contact, cols, maxWidth: cols * 480, quality: 74 });
-    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, inputs: { addons: askedTree, rendered: renderedTree }, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows }, null, 2) + "\n");
+    writeFileSync(join(dir, "index.json"), JSON.stringify({ area: area.name, mode: opts.edit ? "edit" : "play", hour: opts.hour, at: new Date().toISOString(), served, snapshot: sha, inputs: { addons: askedTree, rendered: renderedTree }, timing: { ...TL.get(), collect: Math.round((Date.now() - collectT0) / 100) / 10 }, contact, shots: rows, ...(signs.length ? { notes: [`${signs.length} sign(s): ${SIGN_FACE_NOTE}`] } : {}) }, null, 2) + "\n");
     const bad = rows.filter((r) => r.flags.length);
-    summaries.push({ area: area.name, contact, bad, count: rows.length });
+    summaries.push({ area: area.name, contact, bad, count: rows.length, signs: signs.length });
     if (rows[0].file) overview.push({ file: rows[0].file, label: `${area.name}${bad.length ? `  [${bad.length} flagged]` : ""}`, marks: [] });
   }
   if (perArea.length > 1 && overview.length) {
     const { cols } = sheetLayout(overview.length);
     image({ op: "sheet", tiles: overview, out: join(outRoot, "overview.jpg"), cols, maxWidth: cols * 480, quality: 74 });
   }
-  // A server's raw folder also holds serve.txt and alive.txt, which are the server's; only request files go.
-  if (!args.flags.keep) for (const f of readdirSync(raw)) if (served === "fresh" || serve.REQUEST_FILES.test(f)) rmSync(join(raw, f), { force: true });
+  // A served answer is a folder of its own request (serve.claimAnswer), so it goes whole.
+  if (!args.flags.keep) {
+    if (served === "fresh") for (const f of readdirSync(raw)) rmSync(join(raw, f), { force: true });
+    else rmSync(raw, { recursive: true, force: true });
+  }
 
   const stale = renderProblem({ expected: askedTree, rendered: renderedTree });
   if (stale) {
@@ -972,6 +1008,7 @@ async function run(args) {
   console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} addons=${renderedTree ? renderedTree.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
   for (const s of summaries) {
     console.log(`  ${s.area}: ${s.contact}`);
+    if (s.signs) console.log(`    NOTE ${s.signs} sign(s) here: ${SIGN_FACE_NOTE}`);
     for (const b of s.bad) console.log(`    ${b.flags.join(",")}: ${b.kind} ${b.label}${b.size ? ` ${sizeText(b.size)}` : ""}`);
   }
   if (perArea.length > 1) console.log(`  overview: ${join(outRoot, "overview.jpg")}`);
@@ -1034,6 +1071,12 @@ export async function selftest() {
   ok(shots.every((s) => /^[A-Za-z0-9_-]+$/.test(s.name) && s.line.includes(s.name)), "a shot name is not file-safe or not in its line");
   ok(shots[0].line.startsWith("shot test_area__wide 100 - 200 1.2 0.85 90:10:2.2,"), `wide line: ${shots[0].line.slice(0, 60)}`);
   ok(shots[5].line === "close test_area__c01_Till_Test Till_Test 101 1 201 90", `close line: ${shots[5].line}`);
+  // #4940: an area with a sign prefab gets the "sign faces are not drawn" note; one without, or a sign out of range, does not.
+  ok(signsInArea(world, area).length === 0, "an area with no sign prefab carries no sign note");
+  const signed = [...world, { name: "", layer: "Signs.layer", actions: [], x: 102, y: 0, z: 199, anonPrefab: "{AB}Prefabs/Signs/LF_Sign_PolePlate.et" }, { name: "Plate", layer: "Signs.layer", actions: [], x: 99, y: 2, z: 201, prefab: "Prefabs/Signs/LF_SignQuad_2x1.et" }, { name: "", layer: "Signs.layer", actions: [], x: 400, y: 0, z: 200, prefab: "Prefabs/Signs/LF_Sign_Fascia.et" }];
+  ok(signsInArea(signed, area).length === 2, `two sign prefabs in range are found (got ${signsInArea(signed, area).length})`);
+  ok(signsInArea(null, area).length === 0, "no world (an item look) is no sign");
+  ok(/not drawn in look/.test(SIGN_FACE_NOTE) && /session/.test(SIGN_FACE_NOTE), "the sign note says faces are not drawn and to check in a session");
   ok(shots[6].line === "close test_area__c02_Commercial_Sack - 104 0 200 -90", `unnamed close line: ${shots[6].line}`);
   ok(shotsFor(area, world, { close: 0 }).length === 5, "--close 0 still planned a close-up");
   const plan = planText(shots, [area], { hour: 9 });
@@ -1089,6 +1132,35 @@ export async function selftest() {
       }
       const inside = resolveInterior(arr, "auto");
       ok(inside.interior && inside.y === 12.4 && inside.x === 1012 && inside.radius >= 4 && inside.radius <= 8, `--interior auto: ${JSON.stringify(inside)}`);
+      // 2026-11-27: --interior auto stands at the slot's own counter (the footprint centre put it in the clinic's stairwell),
+      // and --interior <row> at a named kit row. red-proof: with kitRoom returning null the "auto stands at the counter" check failed.
+      {
+        const { kitRoom, anchorRoom } = await import("./look-place.mjs");
+        const kit = [
+          { name: "Fit_s_a_clear", x: 1012, y: 12.1, z: 2018 },
+          { name: "Fit_s_a_house_furniture_01", x: 1012, y: 12.05, z: 2018 },
+          { name: "Fit_s_a_lf_medic_duty_desk", x: 1006, y: 12.4, z: 2015 },
+          { name: "Fit_s_a_lf_hospital_bed", x: 1009, y: 12.4, z: 2016 },
+          { name: "Fit_s_a_upstairs_bed", x: 1013, y: 15.6, z: 2019 },
+          { name: "Fit_s_a_far_sign", x: 1080, y: 12.4, z: 2018 },
+        ];
+        const g = { cx: 1012, cz: 2018, floorY: 12.4, reach: 9, radius: 6 };
+        const kr = kitRoom(kit, g);
+        ok(kr && /duty_desk/.test(kr.from) && Math.hypot(kr.x - 1006, kr.z - 2015) <= 2.01 && kr.y === 12.4 && kr.radius <= 5, `auto stands at the counter, not the footprint centre: ${JSON.stringify(kr)}`);
+        const mid = kitRoom(kit.filter((r) => !/desk/.test(r.name)), g);
+        ok(mid && mid.x === 1009 && mid.z === 2016 && /middle/.test(mid.from), `no business row: the middle of the ground-floor kit (upstairs and far rows left out): ${JSON.stringify(mid)}`);
+        ok(kitRoom([kit[0], kit[1], kit[4]], g) === null, "only the clear volume, the furniture kit and an upper floor: no kit room (footprint centre stays)");
+        const named = anchorRoom(kit, "upstairs_bed");
+        ok(named.y === 15.6 && named.x === 1013 && /upstairs_bed/.test(named.from), `--interior <suffix> stands at that row on its own floor: ${JSON.stringify(named)}`);
+        let why = "";
+        try { anchorRoom(kit, "nothing_here"); } catch (e) { why = e.message; }
+        ok(/no kit row/.test(why) && /duty_desk/.test(why) && !/_clear/.test(why), `an unknown row name is refused with the row names: ${why}`);
+        const viaFlag = resolveInterior({ ...inside, kit }, "lf_medic_duty_desk");
+        ok(viaFlag.interior && viaFlag.x === 1006 && viaFlag.z === 2015 && /anchor/.test(viaFlag.interiorFrom), `--interior lf_medic_duty_desk: ${JSON.stringify(viaFlag)}`);
+        let noKit = false;
+        try { resolveInterior(area, "lf_medic_duty_desk"); } catch { noKit = true; }
+        ok(noKit, "--interior <row> off a place target refuses");
+      }
       let refused = 0;
       for (const bad of [() => placeArea(placeData, "sample-square", "nope"), () => resolveInterior(area, "auto"), () => worldOfAreas([arr, area])]) {
         try {
@@ -1315,7 +1387,7 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | town:<area> | place:<place>/<slot> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--world <path|island>] [--edit] [--close N] [--radius m] [--interior x,y,z|auto] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look stats [--hours 24] | look selftest";
+const USAGE = "usage: tools\\cli look <area | town:<area> | place:<place>/<slot> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--world <path|island>] [--edit] [--close N] [--radius m] [--interior x,y,z|auto|<kit row>] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look stats [--hours 24] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);

@@ -188,7 +188,7 @@ toolscli main-guard start | stop | status | watch   # status is also a line in `
 ```
 
 0. **Stage 0, validate (#2889).** On a new head (batched to one run per 3 min, retried at ~10 min after a no-verdict) the guard
-   runs `validate --all` (about 3 min, no Workbench) in the compile worktree before the compile; it never holds the
+   starts `validate --all` (about 3 min, no Workbench) in its own worktree, in the background, before the compile; it never holds the
    compile or stage 2 and never marks the head red on GitHub. A failure reruns just the failing checks at the same
    head (`LF_VALIDATE_ONLY=<script,...>`, read by `validate`); green on the rerun is a flake
    (`main-guard-flakes.log`). Red twice bisects the merges since the last green validate by the failing check set
@@ -293,6 +293,17 @@ toolscli main-guard start | stop | status | watch   # status is also a line in `
    the lease is over 15 min old: `lead` prints `!! MAIN GUARD DOWN: main-guard down for N min; you are X commit(s)
    behind main` and `wt new` prints the same as `WARNING:` (a live local worker with a late lease is only a warning
    past 45 min). `main-guard-watch-selftest` proves the rule.
+   **Stall watchdog (2026-11-27).** On 2026-11-26 a stage-0 validate wrote nothing for 37 min while the tick awaited it,
+   so four merges sat unchecked under a "watching" worker with a fresh heartbeat until a stop and start. Stage 0 now runs
+   in the background in `Life-Framework-ws-main-guard-validate` with a 30-min budget (`VALIDATE_BUDGET_MS`; killed with its
+   tree, no verdict, retried), and the tick's fetch has a 2-min timeout and records `fetchErr`/`fetchOkAt`. Each tick the
+   worker notes since when origin/main has been unchecked (`uncheckedSince`; checked = a stage-1 verdict). Unchecked over
+   30 min (`LF_MAIN_GUARD_STALL_MIN`) with no compile started in that window, or a fetch failing that long, is a stall
+   (`stallCheck`): the worker logs `STALL:` and a staff line, fetches again and drops the batching clocks (a kick); past
+   60 min with no stage 0 or 2 running it restarts its own loop, at most once per 2 h (`stallAction`). A loop that has not
+   ticked for 30 min under a stall is restarted by `watch` (`restart-stalled`, stop then start, never under a running stage
+   2, inside the restart cap). `main-guard status` prints `STALLED: ...` for it. `main-guard-stall-selftest` replays the
+   incident.
 4. **Reverts.** `git revert -m 1` on `ws/revert-pr<N>-guard`, a PR `Revert #N (main guard: <what>)` with auto-merge, a
    comment on #N, its issues reopened as `regression`, one line to the staff webhook (`LF_STAFF_WEBHOOK_URL` or
    `"mainGuard": { "webhookUrl" }` in `lf.local.json`).
@@ -352,8 +363,50 @@ tools\cli prs heal [<n>...]              # do it (maintainer/lead)
 `prs status` lists number, state, auto-merge on/off, checks, age, and the
 worktree: `LIVE` when an edit, commit or session log landed in the last 15 minutes (directory and git-metadata touches from prune or fetch do not count)
 (modified or untracked files, the worktree's git index/HEAD/reflog, `tmp/`,
-server logs), `idle`, or `none`. An `UNKNOWN` state is re-read through the REST
+server logs), `done (ship)` / `done (heal)`, `idle`, or `none`. An `UNKNOWN` state is re-read through the REST
 API, which makes GitHub compute it.
+
+### Auto-heal on GitHub (`pr-autoheal`)
+
+GitHub runs no custom merge driver, and it ignores `merge=union` too (tested 2026-11-27, PRs #5030-#5033: the union
+file went CONFLICTING like the control). So every merge to main turned the other PRs that append rows to a
+driver-merged file CONFLICTING, and each one cost a `prs heal` (about 15 sweep PRs on the night of 2026-11-26).
+
+`.github/workflows/pr-autoheal.yml` runs `tools/pr-autoheal.mjs` on every push to main, every 20 minutes and by hand.
+For each open, non-draft, same-repo PR into main with no `no-autoheal` label:
+
+1. `git merge-tree` with no drivers (GitHub's view). Clean: skipped.
+2. Every conflicted path must carry a `merge=lf-*` attribute at the PR head. Any other conflict is left for a human.
+3. Merges `origin/main` into the PR head with `tools/merge/drivers.gitconfig` included and pushes the merge commit,
+   never forced. A push that lost a race with the agent, or that would change a workflow file (GITHUB_TOKEN may not),
+   is skipped and logged.
+4. GitHub parks the `pull_request` runs that a GITHUB_TOKEN push starts as `action_required` (the bot counts as a
+   first-time contributor), so the required `validate` check never reports. The script approves the parked runs on
+   the exact head it pushed (`POST /actions/runs/<id>/approve`). A `workflow_dispatch` validate run does not work: its
+   check suite is not linked to the PR, which stays BLOCKED (PR #5038).
+
+Proof, 2026-11-27: two scratch PRs appended to `docs/features/atmosphere.md` on a scratch base. After one merged, the
+other went CONFLICTING, the workflow healed it and it read MERGEABLE (#5034, #5035). A PR into main CONFLICTING on the
+same file was healed, its validate run approved by the workflow's own token, and it read MERGEABLE with `validate`
+green and `mergeStateStatus` CLEAN (#5040). The island baseline (`tools/place/island-baseline.json`) got its own driver
+(`lf-island-baseline`, a three-way row-set merge) in the same change, so two shrinks no longer conflict.
+
+The agent's side: the remote branch now has a commit the worktree lacks. `wt ship` treats a non-fast-forward push
+refusal as that case: it fetches the branch, merges it with the drivers and pushes again (`ship-direct-selftest`).
+A plain `git push` from the worktree needs `git pull --no-rebase` first. `prs heal` stays the fallback for what the
+workflow skips.
+
+### Healing by hand (`prs heal`)
+
+**Hand-off marker (2026-11-27).** On 2026-11-25 six night-light PRs that appended to `docs/features/*.md` sat
+CONFLICTING for about an hour. Each agent had shipped and stopped. The ship's own logs in `tmp/`, and then heal's own
+merge commit (a fresh reflog entry), read as `LIVE 7m`, so every pass skipped the PR it had just healed while main
+moved again. GitHub runs no custom merge driver, so a both-sides append to the same area file always goes CONFLICTING
+there. The fix is to heal it fast, not to wait. A successful `wt ship` and every heal push write
+`tmp/wt/handoff.json` with the head they left. While HEAD is still that commit and nothing outside `tmp/` is modified
+or untracked, the worktree reads as `done` and heal merges at once. A new edit or commit makes it LIVE again. A
+`gh pr merge --auto` that fails with a transient GitHub answer (GraphQL "Something went wrong", 502/503/504, timeout)
+is retried twice, 5 s apart (`autoMergeWithRetry`). `pr-keeper-selftest` covers both.
 
 `prs heal`, per PR:
 
@@ -1106,7 +1159,7 @@ on the laptop's desktop. Everything that drives them follows the session there: 
 state`, `reset`, `join`, `roster`, `film` and every proof verb run in the run folder over ssh (`--local` keeps
 one on this PC), and a path of this worktree among a proof's arguments (an out dir) is mapped into the run folder
 and copied home afterwards. `asset states <slug> --shots` follows the session the same way; `--local` pins it here.
-`session pull` copies other evidence back. Filming there is #482.
+`session pull` copies other evidence back (a session on this PC: each client's newest `console.log` and `el-captures` and the server log into `tmp/session-pull/local-<time>/`). Filming there is #482.
 
 **A machine that goes away.** A remote test or e2e run whose slot holder drops, or whose ssh fails while the machine
 stops answering, is not a verdict: the machine is marked down for the health window and the run queues again
@@ -1673,7 +1726,22 @@ fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/r
   worktree: a fresh worktree skips each check another worktree passed on identical inputs (2026-11-17: 318 of 361
   checks skipped on a fresh worktree; before, each slice's first validate ran all of them, ~4-6 min under load).
   `always` and `ttl=` checks never use it. Delete the file to stop sharing.
-- Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
+- Checks start longest first and every run ends with `slowest: ...`. The time of a check comes from this worktree's last
+  green run, else from `tools/lib/validate-order-seed.json` (`tools/lib/validate-order.mjs`): a fresh worktree and every CI run
+  (a fresh checkout, only the green fingerprints cached) used to start in file-name order, so `world-sync-selftest` and
+  `merge-drivers-selftest` began last and ran alone (2026-11-27: 486 s wall for 308 s of work per worker). Refresh the seed after
+  a `validate --all` with `node tools/lib/validate-order.mjs --write`; it only orders, a stale seed costs nothing.
+- GitHub already caches a green set (`actions/cache`, .github/workflows/validate.yml: #3189), so a PR runs only the checks whose
+  inputs changed; a push to main runs every check and refreshes it. A PR that touches `tools/lib/` re-runs every selftest
+  that imports it, so keep the slow selftests fast: see below.
+- **A git-heavy selftest is split into sections** (`tools/lib/selftest-sections.mjs`): `S.add("name", () => {...})` per scene,
+  `process.exit(await S.run({ failed: () => failed, summary }))` at the end. The parent re-runs the file once per section
+  (`LF_SELFTEST_SECTION`), up to `LF_SELFTEST_JOBS` (default half the CPUs, 2-4) at a time, replays the output in order and
+  adds up the failures; every assertion still runs once, in the same code. spawnSync blocks the event loop, so scenes in one
+  process only ever added up. Used by world-sync, merge-drivers, pr-keeper and output-budget (84 to 28 s, 93 to 15 s in isolation,
+  2026-11-27). A section builds its own scratch repo; sections share nothing. Setup spawns are the other cost (about 45-80 ms
+  each on Windows): write a scratch repo's identity into `.git/config` instead of five `git config` calls, and `commit -a`
+  instead of `add -A` + `commit` after the first commit. `selftest-sections-selftest.mjs` proves the helper and the ordering.
 - Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile and `world-sync-selftest` and `selftest-scratch-selftest` (`SLOW_CHECK_S in `tools/cli.mjs`; it spawns ~500 git processes). A check over it
   prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the
   validate process itself was frozen (a synchronous call beside the checks, as `ci` runs validate beside the build);
@@ -1721,6 +1789,8 @@ On 2026-11-17/18 three agents wrote a localization diff and several `LF_Test_*.c
 - **`tools\cli lead stray [--dry-run]`**, also run by the lead view (`STRAY` line; `LF_LEAD_STRAY=0` turns it off): in the main checkout on branch `main`, untracked files under those folders older than 2 minutes are moved to `C:\LF\lead\stray\<timestamp>\<same relative path>` (`LF_LEAD_STRAY_DIR` overrides; `tmp/stray` when there is no `C:\LF\lead`). Tracked files an agent modified are listed with the `git diff` hint, never reverted.
 
 **Shell writes (#3700).** The same hook now runs for Bash and PowerShell. `shellWriteTargets` reads the command line (quotes respected, `;` `&&` `|` split, `cd`/`Set-Location` followed) and denies a `>`/`>>` redirect, `tee`, `sed -i`/`perl -i`, `Set-Content`/`Add-Content`/`Out-File`/`New-Item`/`Remove-Item`/`Move-Item`, `rm`, `mv`, `touch` or a `cp` destination that lands in the guarded folders of the main checkout, from the same agent sessions and with the same exceptions (own worktree, main `tmp/`, `lf.local.json`, the lead, `LF_ALLOW_MAIN_WRITE=1`). Reads, a `cp` source and `/dev/null` are never denied. A script that writes by itself (`node x.mjs`) is still invisible to it; the stray pass and the stash below are the net.
+
+**Git writes (2026-11-27).** Three agents ran `git pull` in the main checkout before `wt new` in the week of 2026-11-24. The write guard could not catch it: before `wt new` an agent has no session claim and looks like the lead. Nobody needs a shell git write there (`wt new` fetches and branches from `origin`; the lead view and the main guard fast-forward through node, which the hook never sees), so `shellGitWrites` refuses `git pull`, `merge`, `rebase`, `reset`, `checkout`, `switch`, `commit`, `stash` (not `stash list`/`show`), `cherry-pick`, `revert`, `clean`, `restore`, `add`, `rm`, `mv`, `push`, `tag`, a branch delete or move and `worktree remove`/`prune`/`move` whose git dir is the main checkout (the cwd followed through `cd`, or `git -C <dir>`), for every session. Reads (`status`, `log`, `diff`, `show`, `fetch`, `branch --list`, `worktree list`) and any git in a worktree or another repository stay open. `LF_ALLOW_MAIN_GIT=1`, in the environment or as an inline prefix (`LF_ALLOW_MAIN_GIT=1 git pull`, `$env:LF_ALLOW_MAIN_GIT=1; git pull`), is the human override. `main-write-guard-selftest` section 7 proves it.
 
 **A blocked fast-forward heals itself (#3700).** On 2026-11-19 a stray tracked edit (`docs/features/sites.md`, then `tools/town/drops.mjs`) stalled the main guard ~2 h and left the checkout 173 commits behind. The guard's `freshenMainCheckout` and `lead` (when `origin/main` is ahead and a tracked file is modified) call `healBlockedFastForward` (`tools/lib/main-ff-heal.mjs`): when `merge --ff-only origin/main` fails because of tracked edits, every modified file that is not under a `Worlds/` folder goes to `git stash push` with a label naming the files (`lf-main-ff-heal <time>: stray tracked edits ...`; never discarded, `git stash pop` in the main checkout restores it), the fast-forward is retried, and one alert line goes to `tmp/logs/main-guard.log` (`ALERT ...`) and to `<hub>/main-ff-alert.json`, which the lead view prints as a `MAINFF` line for 12 h. A `Worlds/` file is the maintainer's hand work (see "Maintainer world edits"): it is never stashed, and the alert names it. An untracked file in the way is left to `lead stray`. `main-ff-heal-selftest` proves it on throwaway repos.
 

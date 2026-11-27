@@ -12,9 +12,10 @@ while `test`, `e2e` or `session` runs in the background ends the task
 unfinished. Run it in the foreground (timeout up to 600000 ms) or call
 `t3_background_wait` before ending the turn.
 
-1. **Worktree.** `tools\cli wt new <slug>`, then work only in
-   `..\Life-Framework-ws-<slug>` on `ws/<slug>`. Never write into the main
-   checkout. Scratch goes in `<worktree>\tmp\` with names unique to your task
+1. **Worktree.** `tools\cli wt new <slug>` is your FIRST command: no `git pull`
+   before it (it fetches origin itself). Then work only in the path it prints, on
+   `ws/<slug>`. Never run git in the main checkout and never write into it; the
+   hook refuses both. Scratch goes in `<worktree>\tmp\` with names unique to your task
    (`tmp\pr-body.md`), never a shared session dir.
 2. **Read.** The issue (`gh issue view <n>`) or PR, `AGENTS.md`, the
    `docs/decisions.md` entries for your area, and the area's `Feature.md`.
@@ -37,23 +38,15 @@ unfinished. Run it in the foreground (timeout up to 600000 ms) or call
    (`docs/agent-budget.md` "Compact command output").
 4. **Main.** Merge `origin/main` only when GitHub says `CONFLICTING` or you need
    code from it. `wt ship` handles the rest.
-5. **Ship.** Commit (message ends with
-   `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`), write the PR body
-   to `tmp\pr-body.md`, then
-   `tools\cli wt ship <slug> --refs <n> --body-file tmp\pr-body.md`. It
-   checks the tree, runs a preflight (merge-tree conflicts, `validate` of the
-   changed inputs), pushes, opens the PR with auto-merge off and puts it in
-   the ship queue, then **returns** (`SUMMARY ship queued ...`, a minute or two).
-   The queue merges main once and runs the tiered `ci --remote` on pool machines
-   (15-90 min); only a pass turns auto-merge on, and a fail comments on the PR
-   and sets the `ship-gate` status red (`docs/worktrees.md` "Async ship").
-   While it runs you may start the next stacked PR. `tools\cli wt ship-status <slug>`
-   prints one line (queued|running|passed|failed); `tools\cli wait ship <slug>`
-   blocks up to 540 s in the foreground and prints one SUMMARY line (exit 2 =
-   still going: run it again). Never wait in your own loop. Before the final
-   report, check it once more: "shipped, gate running" if it still runs,
-   "merged, in-dev" after a pass, fix and `wt ship` again after a fail.
-   Ship checks the body before the gate and refuses: an `addons/` change with no
+5. **Ship.** Commit (end the message with the attribution line your session
+   gives), write the PR body to `tmp\pr-body-<slug>.md`, then
+   `tools\cli wt ship <slug> --refs <n> --body-file tmp\pr-body-<slug>.md`. It
+   checks the tree, runs a seconds-long preflight (merge-tree conflicts,
+   `validate` of the changed inputs), pushes, opens the PR and turns auto-merge
+   on at once. There is no pre-merge gate: GitHub's `validate` is the check and
+   the main guard compiles and tests `main` afterwards (`docs/worktrees.md`
+   "Ship"). Do not poll for the merge; `tools\cli prs status` once. The async
+   ship queue is retired. Ship checks the body and refuses: an `addons/` change with no
    body file, a `TODO(scaffold)` left in it, no `## Manual testing` section, a
    player-visible change with no embedded picture (`look`, `look item` or
    `wb_preview` pictures kept with `tools\cli evidence`, which prints the
@@ -89,7 +82,23 @@ unfinished. Run it in the foreground (timeout up to 600000 ms) or call
    `RESUME <worktree>\tmp\handoff-<slug>.md`. A fresh agent that only ships gets the
    ship-only brief in `docs/agent-budget.md`.
 10. **Report.** Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, and
-   last exactly `PR <full URL>, head <SHA>, checks and reviews <state>` (the
-   state includes the `wt ship-status` phase, e.g. `ship gate running`)
+   last exactly `PR <full URL>, head <SHA>, checks and reviews <state>`
    (`gh pr view <n> --json statusCheckRollup,reviewDecision,mergeStateStatus`),
    or the `RESUME` line.
+
+## Lessons from the 0.3.0 weeks (2026-11-24 to 27)
+
+- **A string edit updates every test that pins the old text.** #4993 (a US English pass) turned `main` red: a
+  reworded row, and `LF_Test_ChargeSheetScreen` still asserted the old words. Before shipping one, grep the old text
+  in `addons/*/Scripts/Game/Tests` and `tools/validation`, fix the hits, then `test --no-build --only` those tests.
+  Assert through `LF_Terms.Text("#Key")` where you can, not a copy of the words.
+- **One slot per island-layer branch.** A `Place_*.layer` changes only in a `town-draft-<place>-<slot>` worktree (a
+  follow-up on a slot with an open PR: `...-<slot>-<word>`), one slot per PR (`brief town`). PRs that append to the
+  same `docs/features/<area>.md` go CONFLICTING on GitHub (no merge driver there); the `pr-autoheal` workflow merges
+  main in within minutes, `prs heal` is the fallback (six night-light PRs, 11-25). Do not hand-merge the append.
+- **Sessions.** Prepare every edit first. A proof over about 10 minutes needs `session up --hold 20` (the pool closes a
+  session at 10 to 12 minutes when anyone waits). Proof and shots in that one session, `session down` straight after.
+  In a proof's `SUMMARY`, `failures=` counts failed steps; `verb-errors=` counts harness answers retried by design
+  (`widget_not_found`, `not_carried`); the verdict is the `PASS` or `FAIL` line. Never run a proof twice inside 5
+  minutes without a restart (rocks and smelters do not reset). A proof failing on a stale expectation (a changed first
+  lot row, a character who already holds the licence) is a proof to fix, not a feature bug.

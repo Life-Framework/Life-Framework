@@ -1,4 +1,5 @@
 // tools/validation/term-sinks-selftest.mjs
+// inputs: tools/validation/validate-term-sinks.mjs, tools/lib/**
 // red-proof for validate-term-sinks.mjs: a raw sink given a placeholder key fails, the routed one and a
 // plain key pass; a prefab Name or Description on a placeholder key fails.
 import { placeholderKeys, rawSinkHits, prefabHits } from "./validate-term-sinks.mjs";

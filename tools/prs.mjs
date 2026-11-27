@@ -17,7 +17,7 @@
 // (not a directory or git-metadata touch, #698) belongs to a live agent and is never touched.
 
 import { spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, join, normalize, resolve } from "node:path";
@@ -26,6 +26,7 @@ import { removeWorktree, safeRemoveTree } from "./link-safety.mjs";
 import { mergeStringTables } from "./merge/union-string-table.mjs";
 import { mergeLines } from "./merge/merge-markdown.mjs";
 import { mergeLintBaselines } from "./merge/union-lint-baseline.mjs";
+import { mergeIslandBaselines } from "./merge/merge-island-baseline.mjs";
 import { safetyCheck } from "./prs-safety.mjs";
 import { cmdSchedule } from "./prs-schedule.mjs";
 import * as shipQ from "./lib/ship-queue.mjs";
@@ -66,13 +67,15 @@ export function conflictKind(path) {
   // Per-area Feature.md (#1371 failed on Ops/Feature.md): appended sections merge like the docs above.
   if (/^addons\/[^/]+\/Scripts\/Game\/Feature\/[^/]+\/Feature\.md$/.test(p)) return "markdown";
   if (p === "tools/validation/enforce-lint-baseline.json") return "lint-baseline";
+  // Shrink-only row set; two branches that each drop rows conflict in a line merge.
+  if (p === "tools/place/island-baseline.json") return "island-baseline";
   // Generated from the Feature/ scan: rewritten from the merged sources.
   if (p === "docs/config-inventory.md") return "regen-config-inventory";
   return null;
 }
 
 // Resolution order: sources before what is generated from them.
-const KIND_ORDER = ["string-table", "markdown", "lint-baseline", "regen-localization", "regen-config-inventory"];
+const KIND_ORDER = ["string-table", "markdown", "lint-baseline", "island-baseline", "regen-localization", "regen-config-inventory"];
 
 // The CLI command that rewrites each regen- kind (credits also rewrites the string tables).
 const REGEN_COMMANDS = {
@@ -130,7 +133,40 @@ export function lastActivity(wtPath) {
   return Math.max(newestMtime(paths), lastReflogTime(wtPath));
 }
 
+// The hand-off marker (2026-11-27). On 2026-11-25 six night-light PRs sat CONFLICTING for an hour: each agent had shipped
+// and stopped, but the ship's own logs in tmp/ and then heal's OWN merge commit (a fresh reflog entry) read as "LIVE 7m",
+// so every 10-minute pass skipped the PR it had just healed while main moved again. `wt ship` and a heal push now write
+// tmp/wt/handoff.json with the head they left. While HEAD is still that commit and the tree is clean (tmp/ is ignored),
+// nobody is working there: the worktree is "done", whatever its mtimes say. A new edit or commit ends it at once.
+export const HANDOFF_FILE = join("tmp", "wt", "handoff.json");
+
+export function markHandoff(wtPath, head, by, now = Date.now()) {
+  try {
+    mkdirSync(join(wtPath, "tmp", "wt"), { recursive: true });
+    writeFileSync(join(wtPath, HANDOFF_FILE), JSON.stringify({ head, by, at: new Date(now).toISOString() }) + "\n");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function readHandoff(wtPath) {
+  try {
+    const h = JSON.parse(readFileSync(join(wtPath, HANDOFF_FILE), "utf8"));
+    return h && typeof h.head === "string" ? h : null;
+  } catch {
+    return null;
+  }
+}
+
 export function isLive(wtPath, now = Date.now()) {
+  const h = readHandoff(wtPath);
+  if (h) {
+    const head = wt.git(wtPath, ["rev-parse", "HEAD"]).stdout.trim();
+    // tmp/ is scratch (gitignored in the repo; skipped here too, so the marker and post-ship logs never count).
+    const dirty = wt.git(wtPath, ["status", "--porcelain", "-uall"]).stdout.split(/\r?\n/).filter((l) => l.length > 3 && !/^"?tmp\//.test(l.slice(3))).length > 0;
+    if (head === h.head && !dirty) return { live: false, last: Date.parse(h.at) || 0, done: h.by || "ship" };
+  }
   const last = lastActivity(wtPath);
   return { live: last > 0 && now - last < LIVE_MS, last };
 }
@@ -154,6 +190,7 @@ function resolveByStages(wtPath, path, kind) {
   let merged;
   if (kind === "string-table") merged = mergeStringTables(base, ours, theirs);
   else if (kind === "markdown") merged = mergeLines(base, ours, theirs);
+  else if (kind === "island-baseline") merged = mergeIslandBaselines(base, ours, theirs);
   else merged = mergeLintBaselines(base, ours, theirs);
   if (!merged.ok) return { ok: false, error: merged.error ?? `${path}: both sides changed the same lines` };
   writeFileSync(join(wtPath, path), merged.text);
@@ -222,7 +259,18 @@ export function driverGitArgs() {
   if (existsSync(HUB_ATTRIBUTES)) {
     const merges = readFileSync(HUB_ATTRIBUTES, "utf8").split(/\r?\n/).filter((l) => /\bmerge=lf-/.test(l));
     const out = join(tmpdir(), "lf-heal-attributes");
-    writeFileSync(out, merges.join("\n") + "\n");
+    // One shared file, read by every git a heal starts: two heals (or the sections of a selftest) at once must never see
+    // it truncated. Same content: leave it alone; otherwise write a private copy and move it over (a refused move means
+    // another heal holds it open, and it already has this content).
+    const text = merges.join("\n") + "\n";
+    let same = false;
+    try { same = readFileSync(out, "utf8") === text; } catch { /* not there yet */ }
+    if (!same) {
+      const mine = `${out}.${process.pid}`;
+      writeFileSync(mine, text);
+      try { renameSync(mine, out); } catch { if (!existsSync(out)) writeFileSync(out, text); }
+      try { rmSync(mine, { force: true }); } catch { /* a leftover is one small file */ }
+    }
     args.push("-c", `core.attributesFile=${out.replace(/\\/g, "/")}`);
   }
   return args;
@@ -369,8 +417,9 @@ function worktreeFor(root, branch) {
 function describeWorktree(root, branch, now) {
   const w = worktreeFor(root, branch);
   if (!w) return { w: null, live: false, label: "none" };
-  const { live, last } = isLive(w.path, now);
-  return { w, live, label: `${live ? "LIVE" : "idle"} ${last ? age(now - last) : "?"}` };
+  const { live, last, done } = isLive(w.path, now);
+  const state = done ? `done (${done})` : live ? "LIVE" : "idle";
+  return { w, live, label: `${state} ${last ? age(now - last) : "?"}` };
 }
 
 // ---------------------------------------------------------------- commands
@@ -403,7 +452,7 @@ export function prsStatus(root) {
     ];
   });
   table(rows, ["PR", "STATE", "AUTO", "CHECKS", "AGE", "WORKTREE", "TITLE"]);
-  console.log("prs: LIVE = an edit, commit or log write in the worktree within 15 min; heal never touches it. Heal: tools\\cli prs heal [--dry-run] [<n>...]");
+  console.log("prs: LIVE = an edit, commit or log write in the worktree within 15 min; heal never touches it. done = shipped or healed and untouched since (tmp/wt/handoff.json); heal may merge. Heal: tools\\cli prs heal [--dry-run] [<n>...]");
   return 0;
 }
 
@@ -492,9 +541,11 @@ function healOne(root, pr, { dryRun, log, validateOnly = false }) {
       if (push.status !== 0) return { kind: "attention", msg: `push failed (not forced): ${wt.describeRun(push)}` };
     }
     const head = wt.git(dir, ["rev-parse", "HEAD"]).stdout.trim();
+    // Our own merge commit is not an agent at work: without this the next pass read it as LIVE and skipped (2026-11-25).
+    if (!temp) markHandoff(dir, head, "heal");
     // Re-queue only what was queued: a PR left for review (auto-merge off, REVIEW-NEEDED) stays off (#2940).
     if (!pr.autoMergeRequest) return { kind: "healed", msg: `healed: ${m.status}, gate ${g.tier} green, pushed ${head.slice(0, 7)}, auto-merge stays off (left for review)` };
-    const am = gh(root, ["pr", "merge", String(pr.number), "--auto", "--merge"]);
+    const am = autoMergeWithRetry(root, pr.number);
     const amOut = (am.stdout + am.stderr).trim();
     if (am.status !== 0 && !/already/i.test(amOut)) return { kind: "attention", msg: `pushed, but auto-merge failed: ${amOut}` };
     return { kind: "healed", msg: `healed: ${m.status}, gate ${g.tier} green, pushed ${head.slice(0, 7)}, auto-merge queued` };
@@ -503,6 +554,22 @@ function healOne(root, pr, { dryRun, log, validateOnly = false }) {
   } finally {
     if (temp && dir) dropTempWorktree(root, dir);
   }
+}
+
+// GitHub's GraphQL answers "Something went wrong while executing your query" (a 502) now and then; twice on 2026-11-25 a
+// healed PR was left with auto-merge off because of one. A transient answer is retried twice, 5 s apart.
+export function isTransientGhError(text) {
+  return /something went wrong while executing your query|\b50[234]\b|timed? ?out|connection reset|EOF/i.test(String(text));
+}
+
+export function autoMergeWithRetry(root, number, { run = (a) => gh(root, a), wait = sleepMs, tries = 3 } = {}) {
+  let am;
+  for (let i = 0; i < tries; i++) {
+    am = run(["pr", "merge", String(number), "--auto", "--merge"]);
+    if (am.status === 0 || !isTransientGhError(`${am.stdout ?? ""}${am.stderr ?? ""}`)) return am;
+    if (i < tries - 1) wait(5000);
+  }
+  return am;
 }
 
 function mergeStuck(root, pr, { dryRun }) {
