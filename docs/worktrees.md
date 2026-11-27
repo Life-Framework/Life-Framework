@@ -233,6 +233,9 @@ and every other lock file are left alone (`tools/lib/stale-git-lock.mjs`, `stale
    `main-guard-validate-selftest.mjs`. A running worker needs a restart (`main-guard stop`, `start`) to load it.
 1. **Stage 1, compile first.** On a new `origin/main` head (batched to one run per 3 min) it runs the Workbench compile
    (`ci --wb-only --compile-only`, on a pool machine with the `workbench` cap) in `Life-Framework-ws-main-guard-compile`.
+   The same step then compiles on the dedicated server with the session defines (`-scrDefine LF_SESSION_IDENTITY
+   -scrDefine LF_HARNESS`, `tools/lib/server-compile.mjs`, about 8 s): that compiler crashed on a long test method that
+   Workbench validate and the suite compiled, and no harness session booted (#5180). Its crash prints `does not compile`.
    Pass: the head is `compiled-ok`. Fail: no recheck (a compile error is deterministic); it bisects the first-parent
    PR merges since the last `compiled-ok` head and reverts the culprit at once. Exit 3 or 4 (no machine, Workbench died
    short of RAM) is no verdict; it tries again next tick.
