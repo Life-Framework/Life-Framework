@@ -243,12 +243,14 @@ function revertLanded(dir, pr) {
   return r.status === 0 && !!r.stdout.trim();
 }
 // The follow-up of a reverted PR (lib explainedByEarlierRevert): merged after it, touching its files.
-function earlierRevertFor(dir, c, state) {
+// range: the shas of the bisect's merges, for the test-only follow-up rule (a test fix needs no shared file).
+function earlierRevertFor(dir, c, state, range = null) {
   const filesOf = (sha) => { const r = git(dir, ["diff", "--name-only", `${sha}^1`, sha]); return r.status === 0 ? r.stdout.split(/\r?\n/).filter(Boolean) : []; };
   return mg.explainedByEarlierRevert(c, state, {
     landed: (pr) => revertLanded(dir, pr),
     isAfter: (revertedSha, sha) => revertedSha !== sha && git(dir, ["merge-base", "--is-ancestor", revertedSha, sha]).status === 0,
     filesOf,
+    range,
   });
 }
 
@@ -387,8 +389,13 @@ async function redAt(root, dir, step, cur, r, set, guard, probeOnce, { pinned, r
   }
   // Reproduced twice: find the merge that broke it.
   const rerun = step.recheck(failing);
-  const list = mg.candidates(mergesSince(dir, state.lastGreen ?? state.startHead, cur, state.startHead));
-  log(root, `${h8} ${step.name} reproduced (${what}); bisecting ${list.length} merge(s) since ${(state.lastGreen ?? state.startHead ?? "").slice(0, 8)}`);
+  // A test-only merge right after another is that merge's test fix: they are one unit, probed at the fix (mg.groupFollowUps).
+  const merges = mg.candidates(mergesSince(dir, state.lastGreen ?? state.startHead, cur, state.startHead));
+  const list = mg.groupFollowUps(merges, (c) => mg.isTestOnly(mergeFiles(dir, c.sha)));
+  const range = new Set(merges.map((c) => c.sha));
+  const grouped = list.filter((u) => u.followers.length).map((u) => `#${mg.prOfMerge(u.subject)}+${u.followers.map((f) => `#${mg.prOfMerge(f.subject)}`).join("+")}`);
+  log(root, `${h8} ${step.name} reproduced (${what}); bisecting ${list.length} merge(s) since ${(state.lastGreen ?? state.startHead ?? "").slice(0, 8)}${grouped.length ? `; test-only follow-ups probed with the merge they follow: ${grouped.join(", ")}` : ""}`);
+  const texts = [r.text, again.text];
   writeState(root, { running: { head: cur, step: `bisect ${step.name}`, at: now() } });
   // The recorded red set (#2052): the failing tests and FAIL lines at this head. The suite bisect treats a commit as
   // red only when it fails one of these tests; other steps (build, audit, e2e) have no test set and stay red/green.
@@ -400,7 +407,7 @@ async function redAt(root, dir, step, cur, r, set, guard, probeOnce, { pinned, r
   } else if (step.name === "suite") {
     b = await mg.bisectBySet(list, failing, async (c) => {
       await guard();
-      checkout(dir, c.sha);
+      checkout(dir, c.probeSha ?? c.sha);
       const x = await runCli(root, dir, rerun, `bisect-${c.sha.slice(0, 8)}`, mg.RECHECK_ENV, true);
       const failed = mg.failingTests(x.text, testSources(dir));
       const xv = mg.classifyStep(step.name, x.code, x.text, failed);
@@ -412,13 +419,23 @@ async function redAt(root, dir, step, cur, r, set, guard, probeOnce, { pinned, r
   } else {
     b = await mg.bisect(list, async (c) => {
       await guard();
-      checkout(dir, c.sha);
+      checkout(dir, c.probeSha ?? c.sha);
       const x = await runCli(root, dir, rerun, `bisect-${c.sha.slice(0, 8)}`, mg.RECHECK_ENV, true);
       const xv = mg.classifyStep(step.name, x.code, x.text);
       if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
       log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);
+      texts.push(x.text);
       return x.code !== 0;
     });
+    // Several merges red and no compiler output anywhere: the machine, not a merge (mg.infraRun). Nothing is reverted.
+    const why = mg.infraRun({ step: step.name, n: list.length, tested: b.tested, texts });
+    if (why) {
+      checkout(dir, cur);
+      log(root, `${h8} ${step.name} red, INFRA, no revert: ${why} (log ${r.log})`);
+      if (readState(root).infraAlertHead !== cur) await staffLine(root, `main guard: ${step.name} is red at ${h8} but looks like infra, nothing reverted: ${why}`);
+      writeState(root, { running: null, infraAlertHead: cur, lastResult: { head: cur, verdict: "infra", step: step.name, what: why, at: now() } });
+      return "done";
+    }
   }
   checkout(dir, cur);
   // Stale guard code judged this run (2026-11-18, #2884, #2899): no red mark, no revert; the restart rechecks the head.
@@ -430,7 +447,7 @@ async function redAt(root, dir, step, cur, r, set, guard, probeOnce, { pinned, r
   }
   // The size of the culprit (mg.isLargePr): a feature-sized merge gets a fix card, not a revert.
   if (b.culprit && !b.stop) b.culprit.files = mg.countFiles(mergeFiles(dir, b.culprit.sha));
-  const earlier = b.culprit && !b.stop ? earlierRevertFor(dir, b.culprit, readState(root)) : null;
+  const earlier = b.culprit && !b.stop ? earlierRevertFor(dir, b.culprit, readState(root), range) : null;
   const refusal = b.stop ?? mg.revertRefusal(b.culprit, readState(root), { step: step.name, needsSkip }) ?? (earlier ? mg.earlierRefusal(mg.prOfMerge(b.culprit.subject), earlier) : null);
   if (refusal) {
     log(root, `${h8} ${step.name} red, no revert: ${refusal}`);

@@ -219,7 +219,7 @@ export async function bisectBySet(list, set, probe, { head = null } = {}) {
   const none = (stop) => ({ culprit: null, tested: [], hits, missing: [...set], stop });
   if (!list.length) return none("no merge since the last green head to blame");
   const last = list[list.length - 1];
-  if (head && last.sha !== head) {
+  if (head && (last.probeSha ?? last.sha) !== head) {
     const h = setHits(set, await probe(last));
     hits.set(last.sha, h);
     if (!h.length) return none(`mixed causes: none of the failing tests (${set.slice(0, 3).join(", ")}) fail at the newest merge ${last.sha.slice(0, 8)}`);
@@ -322,23 +322,74 @@ export function revertRefusal(c, state, { step, needsSkip: skip = false, codeDri
 const SHARED_FILE = /^(docs\/features(\/|\.md)|docs\/debug-log-triage|tools\/validation\/record-shapes)|\/Language\/|enforce-lint/;
 // c: the culprit merge; state.reverted: [{ pr, sha }]; landed(pr): that PR's revert is on main; isAfter(revertedSha,
 // cSha): c descends from the reverted merge; filesOf(sha): the files one merge changed. -> { pr, revertPr, files } | null
-export function explainedByEarlierRevert(c, state, { landed, isAfter, filesOf }) {
+//
+// A test-only follow-up needs no shared file (2026-11-27 revert audit, class D, #3017): it fixes the TEST for the data
+// the reverted PR added, so it touches the test file and not the data, and the file rule above never matched it. It
+// fails against the reverted data by construction. When `range` (the shas of the bisect's merges since the last green
+// head) is given, a test-only c that follows a landed revert of a PR inside that range is explained too.
+// range: Set of shas | null.
+export function explainedByEarlierRevert(c, state, { landed, isAfter, filesOf, range = null }) {
   const pr = prOfMerge(c?.subject);
   if (!pr || !c?.sha) return null;
   let mine = null;
+  let mineAll = null;
   for (const r of state?.reverted ?? []) {
     if (!r?.sha || !r.pr || r.pr === pr || r.sha === c.sha) continue;
     if (!landed(r.pr) || !isAfter(r.sha, c.sha)) continue;
-    mine ??= (filesOf(c.sha) ?? []).filter((f) => !SHARED_FILE.test(f));
+    mineAll ??= filesOf(c.sha) ?? [];
+    mine ??= mineAll.filter((f) => !SHARED_FILE.test(f));
     const theirs = new Set((filesOf(r.sha) ?? []).filter((f) => !SHARED_FILE.test(f)));
     const files = mine.filter((f) => theirs.has(f));
     if (files.length) return { pr: r.pr, revertPr: r.revertPr ?? null, files: files.slice(0, 3) };
+    if (range && range.has(r.sha) && isTestOnly(mineAll)) return { pr: r.pr, revertPr: r.revertPr ?? null, files: [], testOnly: true };
   }
   return null;
 }
 
 export function earlierRefusal(pr, earlier) {
-  return `#${pr} changes the same files as #${earlier.pr}, which the guard already reverted${earlier.revertPr ? ` (${earlier.revertPr})` : ""} and whose revert is on main: this red is explained by that revert, so #${pr} is not reverted. It ships together with the re-land of #${earlier.pr}`;
+  const how = earlier.testOnly ? `is a test-only change that follows #${earlier.pr}` : `changes the same files as #${earlier.pr}`;
+  return `#${pr} ${how}, which the guard already reverted${earlier.revertPr ? ` (${earlier.revertPr})` : ""} and whose revert is on main: this red is explained by that revert, so #${pr} is not reverted. It ships together with the re-land of #${earlier.pr}`;
+}
+
+// ---- Test-only follow-ups (2026-11-27 revert audit, class D). A test-only merge directly after a merge is the fix for the
+// test that merge broke (#3008 data, #3017 its test). Bisecting them one by one probes the state between them, where the
+// test fails, and blames the data PR (and, once that is reverted, the fix). The unit of the bisect is the merge plus the
+// test-only merges that follow it, probed at the LAST of them: when the fix repairs the test the unit is green and nothing
+// is blamed. A red unit blames its first merge (the follow-up is test-only and is not reverted with it).
+export const TEST_FILE = /(^|\/)Tests\/[^/]+\.c$|^tools\/validation\/[^/]*selftest[^/]*\.mjs$|^tools\/test\/[^/]+$/;
+// files: one merge's changed files (git diff --name-only M^1 M). Append-only shared files do not count.
+export function isTestOnly(files) {
+  const f = (files ?? []).filter((x) => x && !SHARED_FILE.test(x));
+  return f.length > 0 && f.every((x) => TEST_FILE.test(x));
+}
+
+// list: candidates, oldest first. testOnly(c) -> true when that merge changed only tests. -> units, oldest first:
+// { ...firstMerge, followers: [merges], probeSha }. A revert merge or a test-only merge with nothing before it starts a unit.
+export function groupFollowUps(list, testOnly) {
+  const units = [];
+  for (const c of list) {
+    const prev = units[units.length - 1];
+    if (prev && !isRevert(prev.subject, prev.branch) && !isRevert(c.subject, c.branch) && testOnly(c) && !testOnly(prev)) {
+      prev.followers.push(c);
+      prev.probeSha = c.sha;
+      continue;
+    }
+    units.push({ ...c, followers: [], probeSha: c.sha });
+  }
+  return units;
+}
+
+// ---- Several merges red, and the cause is the machine (2026-11-27 revert audit, class D, #2369: `build` was red for six
+// merges in a row and the bisect reverted the oldest, a layer-only PR). A `build` that is red at a compiled-ok head
+// (stage 1 compiled it) can only be blamed on a merge by the compiler's own words. When the range holds several merges,
+// every run (first, recheck, each probe) was red, and none of them printed a compile error or a named failure, the
+// build failed before it compiled or tested anything: that is infra, nothing is reverted and the lead is told.
+// tested: bisect's [{ sha, failed }]; texts: the transcripts of every run; n: merges in the range. -> reason | null
+export function infraRun({ step, n, tested = [], texts = [] }) {
+  if (step !== "build" || n < 2) return null;
+  if (!tested.every((t) => t.failed)) return null;
+  if (!texts.length || texts.some((t) => REAL_FAILURE.test(String(t ?? "")))) return null;
+  return `${n} merges since the last green head, every build run red (${tested.length + 2} runs) and none printed a compile error or a failing test: the build failed before it compiled anything, so no merge is to blame`;
 }
 
 export function revertTitle(pr, what) {
