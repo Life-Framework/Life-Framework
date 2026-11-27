@@ -621,25 +621,48 @@ if ($lastSummary) {
   # the main guard could not bisect). The red tier prints its FAIL lines below, so it keeps the assertions only.
   $failPattern = '\[LFTEST\] FAIL |\[LFTEST\]   - '
   if ($lastSummary.Tier -eq "red") { $failPattern = '\[LFTEST\]   - ' }
-  $fails = @($console -split "`n" | Where-Object { $_ -match $failPattern })
+  # One pass over the log: a core-leg console.log is 6 MB and 50k+ lines, and the old per-line
+  # PowerShell pipeline (a -replace and Set-Content per debug line) alone took 43 s of every core leg.
+  # IgnoreCase: the old -match and -replace were case-insensitive.
+  $ic = [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
+  $failRe = New-Object System.Text.RegularExpressions.Regex($failPattern, $ic)
+  $redRe = New-Object System.Text.RegularExpressions.Regex('\[LFTEST\] (RED-OK|FAIL) |\[LFTEST\]   red: ', $ic)
+  $skipRe = New-Object System.Text.RegularExpressions.Regex('\[LFTEST\] SKIP .*needs the pack', $ic)
+  $errRe = New-Object System.Text.RegularExpressions.Regex('\( E \)', $ic)
+  $dbgRe = New-Object System.Text.RegularExpressions.Regex('\[LFDebug:', $ic)
+  $fails = New-Object System.Collections.Generic.List[string]
+  $reds = New-Object System.Collections.Generic.List[string]
+  $packSkips = New-Object System.Collections.Generic.List[string]
+  $debugLines = New-Object System.Collections.Generic.List[string]
+  $errors = New-Object System.Collections.Generic.List[string]
+  foreach ($line in $console.Split("`n")) {
+    if ($line.Length -eq 0) { continue }
+    if ($failRe.IsMatch($line)) { $fails.Add($line) }
+    if ($redRe.IsMatch($line)) { $reds.Add($line) }
+    if ($skipRe.IsMatch($line)) { $packSkips.Add($line) }
+    if ($dbgRe.IsMatch($line)) { $debugLines.Add($line) }
+    if ($errRe.IsMatch($line)) { $errors.Add($line) }
+  }
   foreach ($f in $fails) { Write-Host "  $f" }
   if ($lastSummary.Tier -eq "red") {
     # The proof's evidence: each test's red verdict and the assertion it failed on.
-    foreach ($r in @($console -split "`n" | Where-Object { $_ -match '\[LFTEST\] (RED-OK|FAIL) |\[LFTEST\]   red: ' })) { Write-Host "  $($r.Trim() -replace '^.*\[LFTEST\]\s*', '')" }
+    foreach ($r in $reds) { Write-Host "  $($r.Trim() -replace '^.*\[LFTEST\]\s*', '')" }
   }
   # A core-only run names every test it skipped for the pack, with the reason (#326).
-  $packSkips = @($console -split "`n" | Where-Object { $_ -match '\[LFTEST\] SKIP .*needs the pack' })
   if ($packSkips.Count -gt 0) {
     Write-Host "test-e2e: skipped $($packSkips.Count) test(s) that need the pack:"
     foreach ($k in $packSkips) { Write-Host "  $($k -replace '.*\[LFTEST\] SKIP ', '')" }
   }
 
-  $debugLines = @($console -split "`n" | Where-Object { $_ -match '\[LFDebug:' })
   if ($debugLines.Count -gt 0) {
     # Hundreds of lines per run: a count and a file by default; the lines inline
     # only with LF_TEST_DEBUG_LINES=1 (tools\cli dev prints its own).
     $dbgFile = Join-Path $lastSummary.LogDir "lfdebug-lines.txt"
-    $debugLines | ForEach-Object { $_ -replace '.*\[LFDebug:', '[LFDebug:' } | Set-Content -LiteralPath $dbgFile -Encoding utf8
+    $dbgStrip = New-Object System.Text.RegularExpressions.Regex('.*\[LFDebug:', $ic)
+    $dbgOut = New-Object System.Collections.Generic.List[string]
+    foreach ($d in $debugLines) { $dbgOut.Add($dbgStrip.Replace($d, '[LFDebug:', 1)) }
+    # UTF-8 with BOM and CRLF, as Set-Content -Encoding utf8 wrote it.
+    [System.IO.File]::WriteAllLines($dbgFile, $dbgOut, (New-Object System.Text.UTF8Encoding $true))
     Write-Host "test-e2e: feature debug lines ($($debugLines.Count)): $dbgFile"
     if ($env:LF_TEST_DEBUG_LINES -eq '1') {
       foreach ($d in $debugLines) { Write-Host "  $($d -replace '.*\[LFDebug:', '[LFDebug:')" }
@@ -651,7 +674,6 @@ if ($lastSummary) {
     exit 1
   }
 
-  $errors = @($console -split "`n" | Where-Object { $_ -match '\( E \)' })
   if ($errors.Count -gt 0) {
     Write-Host "test-e2e: FAILED ($($errors.Count) engine/script error(s) during the run):"
     foreach ($e in ($errors | Select-Object -First 10)) { Write-Host "  $($e.Trim())" }
