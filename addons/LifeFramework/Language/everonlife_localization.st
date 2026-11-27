@@ -9427,7 +9427,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4A1C9E27B05D3F19}" {
      Id "LF-Job_ParcelDest"
-     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Target_en_us "the delivery stop marked on your map"
      Comment "Where a courier parcel goes. Shown in the parcel description."
     }
     CustomStringTableItem "{967C561794E4E4EC}" {
@@ -9449,9 +9449,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Comment "Hint title when the player's job grade rises (employment fiction, not an arcade level-up)"
     }
     CustomStringTableItem "{B72D78719E88C276}" {
-     Id "LF-Job_RunStarted_Courier"
-     Target_en_us "Carry the parcel east along the street to the porch past the brick-walled lock-up, then Complete the run."
-     Comment "Toast when a courier picks up a parcel: where the drop is. Capitalized phrase is the drop-off action name."
+     Id "LF-Job_RunStarted_CourierDeposit"
+     Target_en_us "Carry the parcel to the delivery stop marked on your map, then Complete the run. Your {currency:sym}%1 deposit comes back on delivery."
+     Comment "Toast when a courier picks up a parcel: where the drop is and the cash deposit taken at the counter (%1). Capitalized phrase is the drop-off action name."
     }
     CustomStringTableItem "{958D10C1086B7C3E}" {
      Id "LF-Job_SignedUp"
