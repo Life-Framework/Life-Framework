@@ -194,6 +194,15 @@ through the pool at `--priority high`.
 tools\cli main-guard start | stop | status | watch   # status is also a line in `tools\cli lead`
 ```
 
+**Stale git locks.** A git ended mid-command (the worker killed during a step) leaves `index.lock` or `HEAD.lock`
+in the run tree's admin dir, and every later git there fails "File exists" (2026-11-27 13:14: stage 2 failed "after 3
+tries" until the lead deleted `.git/worktrees/Life-Framework-warm-mwi3fq28/index.lock`; that admin dir is the guard's
+run tree, claimed from the warm pool on 11-15, a move keeps the admin dir's name). The guard's git wrapper and `wt.git`
+(the warm pool's claim, fill and discard) now remove such a lock when it is older than 5 min (`LF_GIT_STALE_LOCK_MIN`)
+and no running git started at or before the lock's last write, log `git lock self-heal: removed stale <path>` once (the
+guard log, or `tmp/wt/warm.log` and stderr for `wt.git`) and re-run the call. A younger lock, an unreadable process list
+and every other lock file are left alone (`tools/lib/stale-git-lock.mjs`, `stale-git-lock-selftest.mjs`).
+
 0. **Stage 0, validate (#2889).** On a new head (batched to one run per 3 min, retried at ~10 min after a no-verdict) the guard
    starts `validate --all` (about 3 min, no Workbench) in its own worktree, in the background, before the compile; it never holds the
    compile or stage 2 and never marks the head red on GitHub. A failure reruns just the failing checks at the same

@@ -32,6 +32,7 @@ import * as mg from "./lib/main-guard.mjs";
 import { healBlockedFastForward, noteAlert } from "./lib/main-ff-heal.mjs";
 import * as rdbCache from "./lib/rdb-cache.mjs";
 import * as pin from "./lib/guard-pin.mjs";
+import { runGitHealing } from "./lib/stale-git-lock.mjs";
 import { hostname } from "node:os";
 import { killTreeSync } from "./lib/wb-until.mjs";
 
@@ -87,7 +88,13 @@ export function workerAlive(root) {
   }
 }
 
-const git = (cwd, args, opts = {}) => spawnSync("git", ["-C", cwd, ...args], { encoding: "utf8", windowsHide: true, maxBuffer: 64 * 1024 * 1024, ...opts });
+// A git ended mid-command (the worker killed during a step) leaves index.lock behind and every later call in the run
+// tree failed "File exists" until the lead deleted it (2026-11-27 13:14, stage 2 "after 3 tries"). A stale lock is
+// removed, logged and the call re-run (tools/lib/stale-git-lock.mjs).
+const git = (cwd, args, opts = {}) =>
+  runGitHealing(() => spawnSync("git", ["-C", cwd, ...args], { encoding: "utf8", windowsHide: true, maxBuffer: 64 * 1024 * 1024, ...opts }), {
+    log: (line) => log(cwd, line),
+  });
 const gh = (cwd, args) => {
   const bin = wt.ghBin();
   if (!bin) return { status: 1, stdout: "", stderr: "gh not found" };
