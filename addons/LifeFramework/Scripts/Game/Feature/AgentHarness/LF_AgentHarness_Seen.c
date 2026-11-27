@@ -19,6 +19,7 @@
 //!   house=<id>:owned=O:locked=L                   the nearest house's replicated owner (set or not) and lock
 //!   siteflag=<hideout>:holder=<name>:flag=N       the nearest site flag's replicated holder name and flag number
 //!   hideout=<id>:owner=<name>                     the nearest hideout door's replicated owning organisation name
+//!   loose=N                                       with `seen <radius> <item>`: loose copies of that prefab file name in range (the shop shelf read; 0 with no item)
 //! A value is what this client's copy of the entity says; a broken RplProp or a missed BumpMe shows here.
 class LF_HarnessSeen
 {
@@ -55,6 +56,9 @@ class LF_HarnessSeen
 	protected static string s_sSiteFlag;
 	protected static float s_fHideoutAt;
 	protected static string s_sHideout;
+	// Shop shelf read (2026-11-27): loose (not carried, not stored) copies of one prefab file name within the radius.
+	protected static string s_sLooseItem;
+	protected static int s_iLoose;
 
 	//------------------------------------------------------------------------------------------------
 	//! The query lists are created on the first read and emptied on the later ones: a static `= {}` initializer
@@ -314,6 +318,13 @@ class LF_HarnessSeen
 		if (shop)
 			s_iChop = shop.GetPercent();
 
+		if (!s_sLooseItem.IsEmpty() && Short(prefab) == s_sLooseItem)
+		{
+			InventoryItemComponent looseItem = LF_Component<InventoryItemComponent>.Find(entity);
+			if (looseItem && !looseItem.GetParentSlot())
+				s_iLoose++;
+		}
+
 		float at = vector.Distance(s_vOrigin, entity.GetOrigin());
 		float rounded = Math.Round(at * 10) / 10;
 		CollectNearest(entity, at);
@@ -354,8 +365,11 @@ class LF_HarnessSeen
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static string Read(float radius)
+	//! \param item prefab file name (no extension) whose loose copies `loose=` counts; empty counts none.
+	static string Read(float radius, string item = "")
 	{
+		s_sLooseItem = item;
+		s_iLoose = 0;
 		IEntity me = LF_Utils.GetLocalCharacter();
 		if (!me)
 			return "no_character";
@@ -418,6 +432,7 @@ class LF_HarnessSeen
 		tokens += " house=" + s_sHouse;
 		tokens += " siteflag=" + s_sSiteFlag;
 		tokens += " hideout=" + s_sHideout;
+		tokens += " loose=" + s_iLoose;
 		return tokens;
 	}
 

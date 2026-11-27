@@ -242,6 +242,8 @@ export function buildLine(id, spec) {
   if (spec.verb === "seen") {
     const radius = Number(spec.radius ?? 0);
     if (!Number.isFinite(radius) || radius < 0) throw new Error(`seen radius must be a number: ${spec.radius}`);
+    // seen <radius> <item>: `loose=` counts the loose copies of that prefab file name (a shop shelf read).
+    if (spec.item) return `${id} seen ${radius > 0 ? radius : 12} ${token(spec.item, "item")}`;
     return radius > 0 ? `${id} seen ${radius}` : `${id} seen`;
   }
   if (spec.verb === "perf") {
