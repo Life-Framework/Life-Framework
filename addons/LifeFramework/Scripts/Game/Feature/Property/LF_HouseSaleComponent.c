@@ -46,7 +46,7 @@ class LF_HouseSaleComponent : ScriptComponent
 	protected string m_sHouseId;
 
 	//! Whether somebody owns this sign's house. Set by the server only; clients read the replicated copy.
-	[RplProp(onRplName: "OnOwnedReplicated")]
+	[RplProp()]
 	protected bool m_bOwned;
 
 	//! Live house signs; the component's own OnDelete removes it.
@@ -120,30 +120,7 @@ class LF_HouseSaleComponent : ScriptComponent
 		m_bOwned = nowOwned;
 		Replication.BumpMe();
 		LF_Debug.Info(FEATURE, string.Format("house sale sign '%1' owned=%2", m_sHouseId, nowOwned));
-		// A listen host's own client prints this board too; a dedicated server has no face to redraw.
-		RepaintFace();
 		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Client: the server changed the owned flag (a sale, a wipe, a restart's load). Also what a late
-	//! joiner runs when it first receives the sign. The board's face prints "Sold" or "For sale" again.
-	protected void OnOwnedReplicated()
-	{
-		RepaintFace();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The sign face on this prop (LF_SignComponent.m_sSoldSignId) follows the owned flag.
-	protected void RepaintFace()
-	{
-		IEntity owner = GetOwner();
-		if (!owner)
-			return;
-
-		LF_SignComponent face = LF_Component<LF_SignComponent>.Find(owner);
-		if (face)
-			face.OnSaleChanged();
 	}
 
 	//------------------------------------------------------------------------------------------------
