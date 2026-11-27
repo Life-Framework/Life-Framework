@@ -1,4 +1,4 @@
-// red-proof: 2026-11-27 (flows-1127): RedProof() skips the loading, so "the cargo truck's storage takes every unit of <kind>" fails for every kind (0 of 40, 20, 100, 120); the green run loads the real counts (40 iron bars, 20 copper, 100 coal, 120 planks all fit). A first hook that doubled the counts was hollow: the truck's storage holds 240 planks too.
+// red-proof: 2026-11-27 (flows-1127): RedProof() skips the loading, so "the cargo truck's storage takes every unit of <kind>" fails for every kind (0 of 40, 100, 120); the green run loads the real counts (40 iron bars, 100 coal, 120 planks all fit; the copper order is gone, #5064). A first hook that doubled the counts was hollow: the truck's storage holds 240 planks too.
 //! Every export order the pack opens must fit in the truck a hauler is told to bring (the 2026-11-26 round: "the order
 //! wanted 120 planks and the harness cannot put them in the pockets"). The hand-in counts the goods in a vehicle backed
 //! up to the crane spot and in the pockets, so an order a Cargo truck's storage cannot hold is an order no player can

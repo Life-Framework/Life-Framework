@@ -101,7 +101,7 @@ StringTable {
     }
     CustomStringTableItem "{2A339D63A97098B6}" {
      Id "LF-Activity_Fishing_Rod_Note"
-     Target_en_us "Buy a fishing rod at the general store."
+     Target_en_us "Buy a fishing rod at the seed and feed store."
      Comment "Fishing step note, one sentence."
     }
     CustomStringTableItem "{547D45C328DE826A}" {
@@ -121,7 +121,7 @@ StringTable {
     }
     CustomStringTableItem "{6DD6F53CECE3FDBC}" {
      Id "LF-Activity_Lumber_Axe_Note"
-     Target_en_us "Buy an axe at the general store."
+     Target_en_us "Buy an axe at the hardware store."
      Comment "Lumber step note, one sentence."
     }
     CustomStringTableItem "{E465F8E7BDD765C3}" {
@@ -871,7 +871,7 @@ StringTable {
     }
     CustomStringTableItem "{F4258080CC43147C}" {
      Id "LF-Dialogue_ClerkEveron_SettleFoundation"
-     Target_en_us "Lay the foundation of your cottage. The general store sells gravel and cement."
+     Target_en_us "Lay the foundation of your cottage. The hardware store sells gravel and cement."
      Comment "Pack patch of the clerk dialogue's line settle_foundation (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{C2B2AC304D6052FB}" {
@@ -5626,7 +5626,7 @@ StringTable {
     }
     CustomStringTableItem "{4D8E21B7A09C35F6}" {
      Id "LF-Quest_SettleFoundation_Desc"
-     Target_en_us "Lay the foundation of your cottage. The general store sells gravel and cement."
+     Target_en_us "Lay the foundation of your cottage. The hardware store sells gravel and cement."
      Comment "Settling-in chain: finish the foundation stage on a plot (#3195)."
     }
     CustomStringTableItem "{91C6F3A82E5B704D}" {
@@ -7851,7 +7851,7 @@ StringTable {
     }
     CustomStringTableItem "{6DB7091FD56820C9}" {
      Id "LF-Sign_PostOffice_Needs"
-     Target_en_us "Courier work is open to all|Fuel delivery needs work level 2, taxi work level 3|Every paid run counts toward your level"
+     Target_en_us "Courier work is open to all|Fuel delivery needs work level 4, taxi work level 6|Every paid run counts toward your level"
      Comment "Sign card for the post office (delivery jobs), Needs section."
     }
     CustomStringTableItem "{1E58663948A81073}" {
