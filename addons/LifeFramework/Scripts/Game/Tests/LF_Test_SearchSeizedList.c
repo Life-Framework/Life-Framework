@@ -1,4 +1,4 @@
-// red-proof: RED-OK 2026-11-16 `tools/cli test --no-build --red LF_Test_SearchSeizedList`: with the seizure skipped it failed `- the toast names the suspect`, `- the toast names the pistol`, `- the toast names the rifle`. Green without the hook.
+// red-proof: RED-OK 2026-11-16 `tools/cli test --no-build --red LF_Test_SearchSeizedList`: with the seizure skipped it failed `- the toast names the suspect`, `- the toast names the pistol`, `- the toast names the rifle`. Green without the hook. 2026-11-27 `--red LF_Test_SearchSeizedList` again with the suspect's toast: RED PROOF OK, `the suspect's toast names the pistol`, `the suspect's toast names the rifle` among the failures.
 //! catalogue/search-seized-list (#2154, #1978): a police search tells the officer what it seized.
 //! SearchAndSeize on a carrier with two unlawful kinds fills an out list of display names (a count
 //! in front when more than one), and the toast text built from it names both; a long list is cut
@@ -56,6 +56,12 @@ class LF_Test_SearchSeizedList : LF_Test
 		ctx.True(!pistolName.IsEmpty() && text.Contains(pistolName), "the toast names the pistol");
 		ctx.True(!rifleName.IsEmpty() && text.Contains(rifleName), "the toast names the rifle");
 
+		// The searched player is told what they lost (agent playtest 2026-11-27: the suspect saw nothing).
+		string taken = LF_ItemSearch.TakenText(seizedList);
+		ctx.True(!pistolName.IsEmpty() && taken.Contains(pistolName), "the suspect's toast names the pistol");
+		ctx.True(!rifleName.IsEmpty() && taken.Contains(rifleName), "the suspect's toast names the rifle");
+		ctx.False(taken.Contains("Ivan Petrov"), "the suspect's toast does not name them");
+
 		// A kind seized more than once carries its count; a long list is cut to three.
 		array<string> many = {"AKS-74U", "2x 30-round magazine", "Radio", "Lockpick", "Flare"};
 		string cut = LF_ItemSearch.SeizedText("Ivan Petrov", many);
@@ -64,6 +70,9 @@ class LF_Test_SearchSeizedList : LF_Test
 		ctx.True(cut.Contains("2"), "the toast says how many more");
 		array<string> none = {};
 		ctx.Equal(0, LF_ItemSearch.SeizedText("Ivan Petrov", none).Length(), "nothing seized, no seized text");
+		ctx.Equal(0, LF_ItemSearch.TakenText(none).Length(), "nothing seized, no taken text");
+		string takenCut = LF_ItemSearch.TakenText(many);
+		ctx.True(takenCut.Contains("Radio") && !takenCut.Contains("Lockpick"), "the suspect's long list is cut to three too");
 
 		LF_WantedReports.ClearFor(UID);
 		LF_TestCharacterFixture.Delete(suspect);

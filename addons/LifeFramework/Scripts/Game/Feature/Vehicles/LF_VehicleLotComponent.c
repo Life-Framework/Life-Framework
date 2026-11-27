@@ -237,6 +237,50 @@ class LF_VehicleLotComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pure: the index of the origin closest to `from` (flat distance), or -1 for an empty list.
+	static int NearestIndex(notnull array<vector> origins, vector from)
+	{
+		int best = -1;
+		float bestDistance;
+		for (int i = 0; i < origins.Count(); i++)
+		{
+			float distance = vector.DistanceXZ(origins[i], from);
+			if (best < 0 || distance < bestDistance)
+			{
+				best = i;
+				bestDistance = distance;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lot whose entity stands closest to `from`, or null when the world has none.
+	static LF_VehicleLotComponent Nearest(vector from)
+	{
+		if (!s_aLots)
+			return null;
+
+		array<LF_VehicleLotComponent> lots = {};
+		array<vector> origins = {};
+		foreach (LF_VehicleLotComponent lot : s_aLots)
+		{
+			if (!lot || !lot.GetOwner())
+				continue;
+
+			lots.Insert(lot);
+			origins.Insert(lot.GetOwner().GetOrigin());
+		}
+
+		int at = NearestIndex(origins, from);
+		if (at < 0)
+			return null;
+
+		return lots[at];
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Returns the lot with this shop id, or null.
 	static LF_VehicleLotComponent FindLot(string shopId)
 	{
