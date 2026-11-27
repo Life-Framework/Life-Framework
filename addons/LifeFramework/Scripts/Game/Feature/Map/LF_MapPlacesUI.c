@@ -372,6 +372,37 @@ class LF_MapPlaceIcons
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! False when `imageSet` is known not to define `quad`. Loading a missing quad into a widget makes the engine log a
+	//! GUI error (#5127: 60 `Can't find image 'poi_*'` lines per map open, though the fallback quad drew fine), so
+	//! the names of each imageset are read once and a miss is never offered to a widget. An imageset whose names
+	//! cannot be listed answers true: the load decides, as before.
+	static bool SetMayHave(ResourceName imageSet, string quad)
+	{
+		if (imageSet.IsEmpty())
+			return false;
+
+		if (!s_mSetQuads)
+			s_mSetQuads = new map<string, ref array<string>>();
+
+		string key = imageSet;
+		array<string> names;
+		if (!s_mSetQuads.Find(key, names))
+		{
+			names = {};
+			WidgetManager.GetImageSetImages(imageSet, names);
+			s_mSetQuads.Set(key, names);
+		}
+
+		if (names.IsEmpty())
+			return true;
+
+		return names.Find(quad) != -1;
+	}
+
+	//! The quad names each imageset defines, by imageset (an immutable fact of the resource: no reset hook).
+	protected static ref map<string, ref array<string>> s_mSetQuads;
+
+	//------------------------------------------------------------------------------------------------
 	//! Loads the first quad that exists. \return true when one loaded.
 	static bool Apply(ImageWidget widget, notnull array<string> candidates)
 	{
@@ -391,14 +422,14 @@ class LF_MapPlaceIcons
 		ResourceName pack = PackImageSet();
 		foreach (string quad : candidates)
 		{
-			if (!pack.IsEmpty() && widget.LoadImageFromSet(0, pack, quad))
+			if (!pack.IsEmpty() && SetMayHave(pack, quad) && widget.LoadImageFromSet(0, pack, quad))
 			{
 				pick.m_Set = pack;
 				pick.m_sQuad = quad;
 				return pick;
 			}
 
-			if (widget.LoadImageFromSet(0, CORE_IMAGESET, quad))
+			if (SetMayHave(CORE_IMAGESET, quad) && widget.LoadImageFromSet(0, CORE_IMAGESET, quad))
 			{
 				pick.m_Set = CORE_IMAGESET;
 				pick.m_sQuad = quad;
