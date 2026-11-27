@@ -1,4 +1,4 @@
-// red-proof: RED-OK law/charge-sheet-screen, observed 2026-11-23 with `tools/cli test --no-build --red LF_Test_ChargeSheetScreen`: with the hook on nothing is ticked on the paper and the signature is skipped, so the rows, greyed rows, totals, the offer and `a signed sheet makes the booking offer (expected '', got 'skipped')` all fail. Green: `--only` passed. Row status (playtest 2026-11-25): on the unfixed code `--only LF_Test_ChargeSheetScreen` failed the two new assertions (got 'Over cap'); green after the fix.
+// red-proof: RED-OK law/charge-sheet-screen, observed 2026-11-23 with `tools/cli test --no-build --red LF_Test_ChargeSheetScreen`: with the hook on nothing is ticked on the paper and the signature is skipped, so the rows, greyed rows, totals, the offer and `a signed sheet makes the booking offer (expected '', got 'skipped')` all fail. Green: `--only` passed. Row status (playtest 2026-11-25): on the unfixed code `--only LF_Test_ChargeSheetScreen` failed the two new assertions (got 'Over cap'); green after the fix. Row text fit (#5081, 2026-11-27): with the row status `%1, above your rank's limit` (29 characters) `--only LF_Test_ChargeSheetScreen` failed `the status fits the row's narrow status column ... got 29 characters` and the four-figure line (30); with `%1, over your limit` it passes.
 //! law/charge-sheet-screen (#4426, police L4): the rows, greyed rows and total the screen model shows
 //! equal LF_ChargeSheetRules for a fixture sheet (stacked and over-cap rows grey); Sign takes the ticked
 //! codes only, drops an id the suspect has no open report for, and the booking offer is the server's
@@ -96,7 +96,13 @@ class LF_Test_ChargeSheetScreen : LF_Test
 		ctx.Equal(LF_EChargeRow.OVER_CAP, RowOf(capped, c.m_sCrimeId).m_eState, "the row past the cap is greyed");
 		string cappedStatus = LF_ChargeSheetScreen.RowStatus(RowOf(capped, c.m_sCrimeId), 400);
 		ctx.True(cappedStatus.Contains("150"), "the greyed row shows its own fine, not a bare 'Over cap' (got '" + cappedStatus + "')");
-		ctx.True(cappedStatus.Contains("above your rank's limit"), "and says it is above the rank's limit (got '" + cappedStatus + "')");
+		ctx.EqualStr(LF_Terms.Text("#LF-ChargeSheet_OverCap", LF_Terms.Text("#LF-ChargeSheet_Money", "150")), cappedStatus, "and says it is over the limit, with the money text (got '" + cappedStatus + "')");
+		ctx.True(cappedStatus.Contains("$150"), "the greyed row's fine has its dollar sign (got '" + cappedStatus + "')");
+		ctx.True(cappedStatus.Length() <= 24, "the status fits the row's narrow status column, which clipped 'above your rank's limit' mid-word (#5081; got " + cappedStatus.Length() + " characters: '" + cappedStatus + "')");
+
+		// A four-figure fine still fits.
+		string bigStatus = LF_Terms.Text("#LF-ChargeSheet_OverCap", LF_Terms.Text("#LF-ChargeSheet_Money", "9999"));
+		ctx.True(bigStatus.Length() <= 25, "a four-figure fine still fits the status column (got " + bigStatus.Length() + " characters: '" + bigStatus + "')");
 
 		// Untick A: B now counts. Untick all: nothing to sign.
 		array<string> noA = {b.m_sCrimeId, c.m_sCrimeId};
