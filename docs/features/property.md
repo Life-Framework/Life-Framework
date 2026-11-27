@@ -178,3 +178,5 @@
   1989 hardware store, `hardware` stock and `LF_ShopPrices_GeneralStore.conf`). A save that holds a half-deposited door stage
   loses that one count (deposits are counts by prefab). Proof: `property/build-door-kit` (every stage requirement loads and
   fits a character's inventory, the kit counts at a build site) and `everon/door-kit-stock` (pack leg).
+
+- 🔧 (2026-11-27, playtest-1127-r4) **The house purchase toast no longer prints the internal house id.** `LF-Property_HouseBought` read "You bought house saint-philippe.home.sp-b83. The key is in your inventory."; the en_us text is now "You bought the house. The key is in your inventory." (the key is unchanged and the id is still passed, unused). Pictures: `website/public/docs-images/playtest-1127-r4/house-bought-raw-id-before.png`, `house-bought-fixed-after.png`. Merged, in-dev.
