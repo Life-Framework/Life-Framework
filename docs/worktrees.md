@@ -169,7 +169,11 @@ gate before a merge; the main guard (next section) checks `main` after it.
    Before the preflight ship prints the tests this diff can break and GitHub's `validate` does not run (advice only,
    never a failure; `tools/lib/touched-tests.mjs`, `touched-tests-selftest.mjs`, `docs/testing/revert-audit-2026-11-27.md`):
    a changed test file runs its class; a changed file runs the tests whose source names its stem, a class it declares or
-   a string Id it adds; **any pack data change (`addons/LF_Everon1989` Configs, Prefabs, Missions, Language, UI) prints
+   a string Id it adds; a changed `.conf`, `.et` or `.layout` also runs the tests that read it (they name its file name
+   or `{GUID}`, name a class whose script holds that path in a string, such as `LF_SignCatalog` for `LF_Signs.conf`, one
+   fixture deeper, or for a conf name a top-level `m_a...` member the test iterates), printed first under "tests that
+   read the changed data" with one line per reason (#5173 added sign rows and `signs/next` was found only by luck);
+   **any pack data change (`addons/LF_Everon1989` Configs, Prefabs, Missions, Language, UI) prints
    the whole pack leg** as one `tools\cli test --no-build --only ...` (about 40 s: a pack test reads the merged config
    and rarely names the file it pins); persistence files add `--tier persistence` and `wt e2e`; a world layer adds
    `audit placement --strict`; the test world pin lists add `--tier all`. Run what it prints, then ship.
