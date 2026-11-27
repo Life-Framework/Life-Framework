@@ -41,8 +41,9 @@ class LF_HospitalBedComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! World transform the waking body takes: the bed origin plus the offset, facing the bed's yaw
-	//! plus the configured yaw.
+	//! World transform of a patient laid in the bed: on the mattress top (LF_BedWakePose.LayPoint, from
+	//! the bed's real bounds) plus the configured offset, facing the bed's yaw plus the configured yaw.
+	//! The bed origin is on the floor under the frame, so it is not the lay point (#5153).
 	void GetWakeTransform(out vector transform[4])
 	{
 		IEntity owner = GetOwner();
@@ -51,7 +52,7 @@ class LF_HospitalBedComponent : ScriptComponent
 
 		vector angles = owner.GetYawPitchRoll();
 		Math3D.AnglesToMatrix(Vector(angles[0] + m_fWakeYaw, 0, 0), transform);
-		transform[3] = bed[3] + m_vWakeOffset.Multiply3(bed);
+		transform[3] = LF_BedWakePose.LayPoint(owner) + m_vWakeOffset.Multiply3(bed);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -69,6 +70,14 @@ class LF_HospitalBedComponent : ScriptComponent
 	vector GetStandPosition(IEntity ignore = null)
 	{
 		return LF_BedWakePose.StandOnFloor(GetOwner(), m_vStandOffset, ignore);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The floor spot a patient laid in the bed steps down to, when one has room (both sides, the
+	//! foot, wider rings). False: no spot, the patient stays on the mattress.
+	bool FindStandSpot(IEntity ignore, out vector spot)
+	{
+		return LF_BedWakePose.FindStandSpot(GetOwner(), m_vStandOffset, ignore, spot);
 	}
 
 	//------------------------------------------------------------------------------------------------
