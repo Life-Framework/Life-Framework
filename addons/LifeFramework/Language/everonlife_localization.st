@@ -6320,6 +6320,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Smiling Doll Mask"
      Comment "Headgear item name (tools/assets/doll-mask)"
     }
+    CustomStringTableItem "{59E6B892B42DD6DB}" {
+     Id "LF-DownedCall_Summary"
+     Target_en_us "Person down, bleeding out"
+     Comment "Medic call summary (board row, pager card) placed automatically when a player goes down (#5152)."
+    }
     CustomStringTableItem "{B20154B0D085697C}" {
      Id "LF-Duty_AlreadyOn"
      Target_en_us "You are already on duty."
