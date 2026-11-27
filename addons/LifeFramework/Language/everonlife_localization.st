@@ -835,7 +835,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    }
   CustomStringTableItem "{FDB3A4352A9457A4}" {
    Id "EL-Item_Sold"
-   Target_en_us "Sold item for {currency:sym}%1!"
+   Target_en_us "Sold for {currency:sym}%1!"
    Target_es_es "Item vendido por {currency:sym}%1!"
    Target_de_de "Item für {currency:sym}%1 verkauft!"
    Target_fr_fr "Objet vendu pour {currency:sym}%1!"
