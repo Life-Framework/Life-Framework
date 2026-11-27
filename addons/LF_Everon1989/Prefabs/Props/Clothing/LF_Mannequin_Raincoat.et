@@ -6,7 +6,7 @@ GenericEntity : "{451F65968BA97575}Prefabs/Props/Commercial/LF_MannequinDisplay.
   }
   LF_MannequinOutfitComponent "{DF845760343DB74B}" {
    m_aItemIds {
-    "jacket_raincoat_green"
+    "raincoat_green"
     "trousers_fisherman_green"
     "hat_knitted_brown"
    }
