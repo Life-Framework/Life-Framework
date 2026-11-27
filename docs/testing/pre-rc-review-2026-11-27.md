@@ -44,3 +44,25 @@ Method: `git diff <merge>^1 <merge> -- addons/` for each listed PR. Configs, pri
 ## Outcome
 
 No confirmed player-hitting defect: 0 fixed, 0 issues filed. Nothing here blocks the RC. One playtest look stays open: worker-side board drops at the woodlot saw (#5075), from its short end and its long end.
+
+## Part 2: merges after #5115 (#5116 to #5135)
+
+Scope: every PR merged to `main` after #5115 up to `f181916f8` (#5135) that touches `addons/`. These PRs touched nothing in `addons/`: #5116 (part 1 itself), #5121, #5122, #5126, #5128 (docs images) and #5133. #5120 changes one en_us string only.
+
+Method: as in part 1, `git diff <merge>^1 <merge> -- addons/` for each PR, read by hand against `origin/main`. The prefab diffs were also checked for parents and children: each changed `.et`'s GUID was searched for in `addons/`, to catch a second component of the same class that would shadow the first.
+
+| PR | Area | Verdict | Evidence |
+|---|---|---|---|
+| #5134 civ plates | Prefab components, Rpl, persistence | clean | Nine civilian cars gain `LF_LicensePlateManagerComponent "{5984C85FA25812F2}"`. Their parents are vanilla prefabs, and none of them has a plate manager. `Vehicle_Base.et` uses the same component GUID, but it is not an ancestor of these cars, so nothing is overridden by mistake. Of the children (the 31 pack colours and liveries, plus `LF_S105_PoliceBase`), none declares its own plate manager, so no car ends up with two. The police UAZ469 inherits vanilla `UAZ469_covered_CIV_blue`, not `EL_UAZ469_covered_CIV_blue`, so it keeps its single manager. Each of the 18 new `LF_LicensePlatePointInfo` GUIDs occurs once. Restart: owned cars already save `record.m_sPlate`, because it is issued at purchase whether or not the prefab has a manager. On restore `SetRegistration` applies the saved plate and frees the plate that spawned with the car (`LF_VehicleOwnership.c:1836`). A late joiner gets the plate through `RplSave`/`RplLoad`. |
+| #5135 NearestSettlement | Core, map | clean | Display only, read on the client from local location labels. `Nearest` is unchanged for robbery and bus-stop names. The settlement filter reads the vanilla `MapDescriptorComponent` type, and the PR's island session shows every searched place named after a town on Everon. A world whose labels have no descriptor gets an empty town suffix, not an error. |
+| #5132 map icon lookup | UI | clean | Client UI only. The imageset quad names are cached in a `ref map<string, ref array<string>>`. An imageset that lists no names falls back to the old load-and-see path. The harness search now returns the names it found. |
+| #5130 courier deposit text | Localization, jobs | clean | The key `LF-Job_RunStarted_Courier` became `...CourierDeposit`, and nothing else in `addons/`, `tools/` or `agent-box/` names the old key. The toast's `%1` is the deposit that `BeginRun` actually took, sent with it as an argument. The other run-started keys ignore the extra argument. |
+| #5131 JIP sweep | Harness, police | clean | Adds the read-only `LF_IsWornCuffsShown()` and a `worn=` field to the harness `peers` line. Nothing replicated or saved changed. |
+| #5125 F2 crew row, F3 done page | UI, activities | clean, one stale comment | `PayText(0)` now reads "no wage", and only below 0 does it read "pay varies". Every shipped `LF_ActivityDef` sets `m_iPayPerHour`, and only `crew` sets 0. The `PlaytestTown` overlay leaves pay alone, because it merges by `IsVariableSetDirectly`. The attribute help still says "0 for unknown": a pack row that leaves the pay out would now read "no wage". No shipped row does that, so it is not filed. Opening the guide sends one `LF_AskPlayerMenu` request (the existing personal-file request); the answer reprints page 1 only when it changes what page 1 says. |
+| #5124 first-hour toasts | Quests, notifications | clean | The new `SLOT_VEHICLE` slot reaches the client: `SendToPlayer` → `LF_DeliverNotification(..., m_sSlot)` (owner RPC). A turn-in card takes `SLOT_STEP` only for an auto turn-in step. `m_sTurnInTitleKey` is a new optional attribute that falls back to the old title. The one pack row that uses it has its key in the pack table, under the unique GUID `{2BF04E64189969DC}`. |
+| #5118 drive gate layer | Harness | clean | Read-only probes in `LF_DriveHarness`: raycasts, door lookups and layer names. No RPC, money, save or world write. |
+| #5120 playtest text | Localization | clean | One en_us string. |
+
+## Part 2 outcome
+
+No confirmed player-hitting defect: 0 fixed, 0 issues filed. Nothing in #5116 to #5135 blocks the RC.
