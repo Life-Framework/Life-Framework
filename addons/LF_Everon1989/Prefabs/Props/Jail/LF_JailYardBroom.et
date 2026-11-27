@@ -34,5 +34,8 @@ GenericEntity {
     }
    }
   }
+  RplComponent "{B66F72966D1E002D}" {
+   Enabled 1
+  }
  }
 }

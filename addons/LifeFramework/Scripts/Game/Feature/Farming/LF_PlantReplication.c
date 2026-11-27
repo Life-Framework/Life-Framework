@@ -280,6 +280,55 @@ class LF_PlantReplication
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client (harness): perform the HARVEST (or INSPECT) action of the stage mesh nearest the user,
+	//! exactly as the action menu does: PerformAction on the mesh's own LF_PlantAction, which asks the
+	//! server through the player controller. \return the plant id the action was performed on, or empty.
+	static string PerformNearest(IEntity user, LF_EPlantActionMode mode)
+	{
+		if (!user)
+			return "";
+
+		string nearestId;
+		IEntity nearest;
+		float best = 1000000;	// lf-float: a distance in metres
+		foreach (string id, EntityID drawn : ClientVisuals())
+		{
+			IEntity visual = GetGame().GetWorld().FindEntityByID(drawn);
+			if (!visual)
+				continue;
+
+			float d = vector.Distance(user.GetOrigin(), visual.GetOrigin());
+			if (d < best)
+			{
+				best = d;
+				nearest = visual;
+				nearestId = id;
+			}
+		}
+
+		if (!nearest)
+			return "";
+
+		ActionsManagerComponent manager = ActionsManagerComponent.Cast(nearest.FindComponent(ActionsManagerComponent));
+		if (!manager)
+			return "";
+
+		array<BaseUserAction> actions = new array<BaseUserAction>();
+		manager.GetActionsList(actions);
+		foreach (BaseUserAction action : actions)
+		{
+			LF_PlantAction plantAction = LF_PlantAction.Cast(action);
+			if (plantAction && plantAction.GetMode() == mode)
+			{
+				plantAction.PerformAction(nearest, user);
+				return nearestId;
+			}
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The stage the client shows for a plant, or -1.
 	static int ClientStageOf(string plantId)
 	{
@@ -527,6 +576,8 @@ modded class LF_GameModeRoleplay
 //!   plantsync plant [cropId]        the server gives this character one seed and plants it 2 m ahead
 //!   plantsync grow                  the server's farming clock moves on one stage of that crop (default cabbage)
 //!   plantsync reset                 the server runs the whole world reset (#2820)
+//!   plantsync ripen [cropId]        grow every plant of that crop to ripe, watering the nearest one between stages
+//!   plantsync harvest|inspect      this machine performs that action on its nearest stage mesh (the menu's path)
 //! A client asks the server through its character (the harness gate allows it on a dev build only).
 modded class LF_AgentHarnessVerbs
 {
@@ -541,8 +592,22 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
+		if (cmd.Arg1 == "harvest" || cmd.Arg1 == "inspect")
+		{
+			LF_EPlantActionMode mode = LF_EPlantActionMode.HARVEST;
+			if (cmd.Arg1 == "inspect")
+				mode = LF_EPlantActionMode.INSPECT;
+
+			string performed = LF_PlantReplication.PerformNearest(LF_Utils.GetLocalCharacter(), mode);
+			if (performed.IsEmpty())
+				LF_AgentHarness.Answer(cmd.Id, "error", "plantsync " + cmd.Arg1 + ": no stage mesh with that action on this machine | " + LF_PlantReplication.DescribeLocal());
+			else
+				LF_AgentHarness.Answer(cmd.Id, "ok", "performed=" + performed + " | " + LF_PlantReplication.DescribeLocal());
+			return true;
+		}
+
 		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
-		if ((cmd.Arg1 != "plant" && cmd.Arg1 != "grow" && cmd.Arg1 != "reset") || !character)
+		if ((cmd.Arg1 != "plant" && cmd.Arg1 != "grow" && cmd.Arg1 != "ripen" && cmd.Arg1 != "reset") || !character)
 		{
 			LF_AgentHarness.Answer(cmd.Id, "error", "usage: plantsync state | plant [cropId] | grow | reset (plant, grow and reset need a character)");
 			return true;
@@ -592,6 +657,31 @@ modded class SCR_ChimeraCharacter
 
 		if (cropId.IsEmpty())
 			cropId = "cabbage";
+
+		if (action == "ripen")
+		{
+			// The crop (default cabbage) grows to ripe on the farming clock, the character watering the nearest
+			// plant between stages as a gardener must (a crop left dry past its water window dies).
+			LF_CropRow ripening = LF_Plants.FindCrop(cropId);
+			if (!ripening)
+			{
+				LF_HarnessReply(commandId, "error", "plantsync ripen: no crop " + cropId + " in the loaded catalogue");
+				return;
+			}
+
+			int ripeStages = LF_PlantRules.BuildStages(ripening).Count();
+			float stepSeconds = ripening.m_iGrowthSeconds / (ripeStages - 1) + 1;	// lf-float: one stage of farming-clock seconds
+			LF_InventoryUtils.AddAmount(this, LF_Plants.WATER_BOTTLE, 1, true);
+			for (int i = 1; i < ripeStages; i++)
+			{
+				LF_Plants.AdvanceClock(stepSeconds);
+				if (i < ripeStages - 1)
+					LF_Plants.Water(this, LF_Plants.FindNearest(GetOrigin(), LF_Plants.REACH));
+			}
+
+			LF_HarnessReply(commandId, "ok", string.Format("ripened | %1", LF_PlantReplication.DescribeLocal()));
+			return;
+		}
 
 		if (action == "grow")
 		{

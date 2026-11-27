@@ -84,7 +84,7 @@ async function runPlantLate(args) {
     for (const f of fails) console.log(`FAIL  ${f}`);
     console.log(fails.length
       ? "plant-late-proof: FAIL"
-      : "plant-late-proof: PASS (a late joiner on a dedicated server shows the planted crop at the server's stage, and the world reset clears it on both clients)");
+      : "plant-late-proof: PASS (a late joiner on a dedicated server shows the planted crop at the server's stage, the world reset clears it on both clients, and a remote client's harvest of a ripe crop is served and removes it for both)");
     return fails.length ? 1 : 0;
   };
   const stateOf = (n) => parseState(on(n, { verb: "plantsync", words: ["state"] }, 10000).detail);
@@ -116,7 +116,9 @@ async function runPlantLate(args) {
   // safe zone, so it walks out to `--stand` first and tries each side until one is open soil.
   let planted = null;
   let plantId = null;
+  let usedSide = "";
   for (const side of stand ? SIDES : [""]) {
+    usedSide = side;
     if (stand) {
       on(1, { verb: "stand", entityName: stand, side }, 10000);
       wait(3000);
@@ -154,6 +156,35 @@ async function runPlantLate(args) {
   if (reset.status !== "ok") fails.push(`reset: ${reset.status} ${reset.detail}`);
   if (!waitEmpty(1)) fails.push("reset: client 1 still shows the crop");
   if (!waitEmpty(2)) fails.push("reset: client 2 still shows the crop");
+
+  // 6. A harvest works for a remote client, not only for a host. Client 1 plants again, the crop ripens on the
+  // server clock, and client 2 (a remote client on a dedicated server) stands where it was planted and performs
+  // the stage mesh's own HARVEST action (`plantsync harvest`: PerformAction on the local mesh, which asks the
+  // server through the player controller; the mesh is a local entity with no RplComponent on purpose, #3177).
+  // The server pays the crop and removes the row, so both clients must show no plant afterwards.
+  if (stand) {
+    on(1, { verb: "stand", entityName: stand, side: usedSide }, 10000);
+    wait(3000);
+  }
+  const again = on(1, { verb: "plantsync", words: ["plant", "cabbage"] }, 15000);
+  const plantId2 = again.status === "ok" ? parsePlanted(again.detail) : null;
+  if (!plantId2) { fails.push(`harvest: the server did not plant a second cabbage (${again.status} ${again.detail})`); return done(); }
+  const ripened = on(1, { verb: "plantsync", words: ["ripen", "cabbage"] }, 20000);
+  if (ripened.status !== "ok") { fails.push(`harvest: the server did not ripen the crop (${ripened.status} ${ripened.detail})`); return done(); }
+  const ripeSeen = waitShows(2, plantId2, 2);
+  console.log(`client 2 sees it ripe: ${ripeSeen.detail}`);
+  if (!ripeSeen.ok) { fails.push(`harvest: client 2 does not see the crop ripe: ${ripeSeen.detail}`); return done(); }
+  if (stand) {
+    // The plant is 2 m in front of client 1's spot, towards the entity: client 2 stands at the plant's own spot.
+    const m = /^([ewns])(\d+)$/.exec(usedSide);
+    const plantSide = m && Number(m[2]) > 2 ? `${m[1]}${Number(m[2]) - 2}` : usedSide;
+    on(2, { verb: "stand", entityName: stand, side: plantSide }, 10000);
+    wait(3000);
+  }
+  const harvest = on(2, { verb: "plantsync", words: ["harvest"] }, 15000);
+  if (harvest.status !== "ok" || !String(harvest.detail).includes(`performed=${plantId2}`)) fails.push(`harvest: client 2 could not perform the action (${harvest.status} ${harvest.detail})`);
+  if (!waitEmpty(2)) fails.push("harvest: client 2 still shows the crop after its harvest (the server did not serve the request)");
+  if (!waitEmpty(1)) fails.push("harvest: client 1 still shows the crop after client 2 harvested it");
   return done();
 }
 
