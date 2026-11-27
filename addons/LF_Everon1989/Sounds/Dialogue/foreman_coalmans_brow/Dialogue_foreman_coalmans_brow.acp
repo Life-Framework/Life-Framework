@@ -158,7 +158,7 @@ AudioClass {
   }
   SoundClass {
    id 106505
-   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_04"
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_03"
    version 5
    tl 680 1120
    ins {
@@ -180,7 +180,7 @@ AudioClass {
   }
   SoundClass {
    id 107529
-   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_05"
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_04"
    version 5
    tl 680 1400
    ins {
@@ -202,7 +202,7 @@ AudioClass {
   }
   SoundClass {
    id 108553
-   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_10"
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_05"
    version 5
    tl 680 1680
    ins {
@@ -224,7 +224,7 @@ AudioClass {
   }
   SoundClass {
    id 109577
-   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_20"
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_06"
    version 5
    tl 680 1960
    ins {
@@ -233,6 +233,50 @@ AudioClass {
      links {
       ConnectionClass connection {
        id 211986
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 110601
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_10"
+   version 5
+   tl 680 2240
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 213010
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 111625
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_20"
+   version 5
+   tl 680 2520
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 214034
        port 65
       }
      }
@@ -286,6 +330,14 @@ AudioClass {
       }
       ConnectionClass connection {
        id 109577
+       port 65
+      }
+      ConnectionClass connection {
+       id 110601
+       port 65
+      }
+      ConnectionClass connection {
+       id 111625
        port 65
       }
      }
@@ -518,7 +570,7 @@ AudioClass {
   }
   ShaderClass {
    id 208914
-   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_04"
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_03"
    version 5
    tl 432 1120
    ins {
@@ -565,7 +617,7 @@ AudioClass {
   }
   ShaderClass {
    id 209938
-   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_05"
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_04"
    version 5
    tl 432 1400
    ins {
@@ -612,7 +664,7 @@ AudioClass {
   }
   ShaderClass {
    id 210962
-   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_10"
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_05"
    version 5
    tl 432 1680
    ins {
@@ -659,7 +711,7 @@ AudioClass {
   }
   ShaderClass {
    id 211986
-   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_20"
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_06"
    version 5
    tl 432 1960
    ins {
@@ -695,6 +747,100 @@ AudioClass {
      links {
       ConnectionClass connection {
        id 314372
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 213010
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_10"
+   version 5
+   tl 432 2240
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 315396
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 214034
+   name "SOUND_DLG_FOREMAN_COALMANS_BROW_NEXT_20"
+   version 5
+   tl 432 2520
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 316420
        port 65
       }
      }
@@ -786,9 +932,21 @@ AudioClass {
   }
   BankLocalClass {
    id 311300
-   name "DLG_FOREMAN_COALMANS_BROW_NEXT_04"
+   name "DLG_FOREMAN_COALMANS_BROW_NEXT_03"
    version 7
    tl 150 1120
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{250F9258FF87E73F}Sounds/Dialogue/foreman_coalmans_brow/foreman_coalmans_brow_next_03.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 312324
+   name "DLG_FOREMAN_COALMANS_BROW_NEXT_04"
+   version 7
+   tl 150 1400
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -797,10 +955,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 312324
+   id 313348
    name "DLG_FOREMAN_COALMANS_BROW_NEXT_05"
    version 7
-   tl 150 1400
+   tl 150 1680
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -809,10 +967,22 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 313348
+   id 314372
+   name "DLG_FOREMAN_COALMANS_BROW_NEXT_06"
+   version 7
+   tl 150 1960
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{AD0E8D4EEBC134FB}Sounds/Dialogue/foreman_coalmans_brow/foreman_coalmans_brow_next_06.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 315396
    name "DLG_FOREMAN_COALMANS_BROW_NEXT_10"
    version 7
-   tl 150 1680
+   tl 150 2240
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -821,10 +991,10 @@ AudioClass {
    }
   }
   BankLocalClass {
-   id 314372
+   id 316420
    name "DLG_FOREMAN_COALMANS_BROW_NEXT_20"
    version 7
-   tl 150 1960
+   tl 150 2520
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -900,6 +1070,14 @@ AudioClass {
        id 109577
        port 5
       }
+      ConnectionClass connection {
+       id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -967,6 +1145,14 @@ AudioClass {
        id 109577
        port 5
       }
+      ConnectionClass connection {
+       id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -1032,6 +1218,14 @@ AudioClass {
       }
       ConnectionClass connection {
        id 109577
+       port 5
+      }
+      ConnectionClass connection {
+       id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
        port 5
       }
      }

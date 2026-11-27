@@ -1284,6 +1284,11 @@ StringTable {
      Target_en_us "Next up, level 2. Coal face permit. The East Rise coal seam opens at Mining 4. Keep swinging."
      Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
     }
+    CustomStringTableItem "{ECAED3F1E2EFB65D}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next03"
+     Target_en_us "Next up, level 3. Copper seam permit: cut copper ore. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
     CustomStringTableItem "{559537B1196BA0B6}" {
      Id "LF-Dialogue_ForemanCoalmansBrow_Next04"
      Target_en_us "Next up, level 4. Iron seam permit: mine iron. Keep swinging."
@@ -1292,6 +1297,11 @@ StringTable {
     CustomStringTableItem "{245379492B9DA31E}" {
      Id "LF-Dialogue_ForemanCoalmansBrow_Next05"
      Target_en_us "Next up, level 5. Seasoned miner license: cut any ore twice as fast. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{A0A02721D8EA9C3B}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next06"
+     Target_en_us "Next up, level 6. Gold seam permit: cut gold ore. Keep swinging."
      Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
     }
     CustomStringTableItem "{E3081B2AD3609B7C}" {
@@ -5399,11 +5409,6 @@ StringTable {
      Target_en_us "Saint-Philippe"
      Comment "Named place (#1943, town pass #1947): the map label dispatch reads for a robbery away from any sign; LF_NamedPlaces.Nearest."
     }
-    CustomStringTableItem "{BAB9ACAE05275AD2}" {
-     Id "LF-PlayerMenu_SkillDesc_MINER"
-     Target_en_us "Coal and iron from the pits. The richer ores want more experience first."
-     Comment "Everon pack override of the Mining skill line (#5065): the island has no copper or gold rock, so the core line that names them is replaced."
-    }
     CustomStringTableItem "{3F2132C5DE771A7C}" {
      Id "LF-PlaytestTown_Arrival_Desc"
      Target_en_us "Walk to the town hall on the square and talk to the clerk at the desk for your papers."
@@ -7631,7 +7636,7 @@ StringTable {
     }
     CustomStringTableItem "{31F99065D184F5F5}" {
      Id "LF-Sign_Mining_What"
-     Target_en_us "Iron ore in the rocks here. The furnace stands next to them."
+     Target_en_us "Iron, copper, and gold ore in the rocks here. The furnace stands next to them."
      Comment "Mining sign card, What section."
     }
     CustomStringTableItem "{2C369D85CBC200FE}" {
@@ -9481,8 +9486,8 @@ StringTable {
     }
     CustomStringTableItem "{1A00A6261B157402}" {
      Id "LF-Unlock_Miner_03"
-     Target_en_us "Mining 3: a steady swing"
-     Comment "Miner level 3 milestone (#5065): opens nothing; the island has no copper rock, so the copper seam permit is gone from the card. The card and F2 show this line as it is."
+     Target_en_us "Copper seam permit: cut copper ore"
+     Comment "What Miner level 3 opens (a real gate: LICENSE); the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{BC5517754137773A}" {
      Id "LF-Unlock_Miner_04"
@@ -9496,8 +9501,8 @@ StringTable {
     }
     CustomStringTableItem "{1C250B11512B3D55}" {
      Id "LF-Unlock_Miner_06"
-     Target_en_us "Mining 6: you read the rock"
-     Comment "Miner level 6 milestone (#5065): opens nothing; the island has no gold rock, so the gold seam permit is gone from the card. The card and F2 show this line as it is."
+     Target_en_us "Gold seam permit: cut gold ore"
+     Comment "What Miner level 6 opens (a real gate: LICENSE); the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{C11E3BA396E420F8}" {
      Id "LF-Unlock_Miner_07"
