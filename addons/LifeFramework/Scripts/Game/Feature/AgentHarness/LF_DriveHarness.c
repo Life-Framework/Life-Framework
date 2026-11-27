@@ -88,6 +88,10 @@ class LF_DriveHarness
 	static const float TRIM_BEHIND_M = 12; // lf-fixed: harness geometry
 	//! What stands in front of the bumper is looked for this far out.
 	static const float BLOCKER_LOOK_M = 3; // lf-fixed: harness geometry
+	//! A shut door (a boom barrier's bar, a yard gate) is looked for this far ahead of the bumper.
+	static const float DOOR_LOOK_M = 4; // lf-fixed: harness geometry
+	//! A door ray steps past this many parts of the car itself before it gives up.
+	static const int DOOR_HOPS = 6; // lf-fixed: harness geometry
 	//! A leg is LEG_M of route; its budget is LEG_BASE_S plus the leg at LEG_MIN_MPS.
 	static const float LEG_M = 400; // lf-fixed: harness tuning
 	static const float LEG_BASE_S = 45; // lf-fixed: harness tuning
@@ -759,6 +763,7 @@ class LF_DriveHarness
 	protected static string s_sProbe;
 	protected static vector s_vProbeAt;
 	protected static int s_iProbeCount;
+	protected static IEntity s_pProbeCar;
 
 	//------------------------------------------------------------------------------------------------
 	//! drive probe <x,z> [r=<m>]: what stands within r metres (default 4) of a spot where a drive got
@@ -783,8 +788,12 @@ class LF_DriveHarness
 		s_vProbeAt = at;
 		s_sProbe = "";
 		s_iProbeCount = 0;
+		s_pProbeCar = null;
 		world.QueryEntitiesBySphere(at, radius, CollectProbe, null, EQueryEntitiesFlags.ALL);
 		string line = string.Format("probe ground=%1 n=%2 %3", Round1(at[1]), s_iProbeCount, s_sProbe);
+		// A car in the sphere: what its blocker check says where it stands (the shut-door test, off a drive).
+		if (s_pProbeCar)
+			line += " blocker=" + Blocker(s_pProbeCar, ForwardOf(s_pProbeCar));
 		LF_Debug.Info(FEATURE, "drive " + line);
 		LF_AgentHarness.Answer(id, "ok", line);
 	}
@@ -792,7 +801,11 @@ class LF_DriveHarness
 	//------------------------------------------------------------------------------------------------
 	protected static bool CollectProbe(IEntity entity)
 	{
-		if (!entity || GenericTerrainEntity.Cast(entity) || s_iProbeCount >= 40)
+		if (!entity || GenericTerrainEntity.Cast(entity))
+			return true;
+
+		// The list is capped, but a door is always listed: the gate step needs it.
+		if (s_iProbeCount >= 40 && !IsDoor(entity))
 			return true;
 
 		string name = LF_Utils.GetPrefabName(entity);
@@ -806,13 +819,84 @@ class LF_DriveHarness
 		vector mins, maxs;
 		entity.GetBounds(mins, maxs);
 		vector o = entity.GetOrigin();
+		if (!s_pProbeCar && Vehicle.Cast(entity))
+			s_pProbeCar = entity;
+
 		string door;
 		if (IsDoor(entity))
-			door = ",door";
+		{
+			door = ",door:shut";
+			BaseDoorComponent doorState = DoorOfEntity(entity);
+			if (doorState && doorState.IsOpen())
+				door = ",door:open";
+		}
 
 		s_sProbe += string.Format("%1@%2m,h%3,at=%4;%5;%6%7 ", name, Round1(vector.DistanceXZ(o, s_vProbeAt)), Round1(maxs[1] - mins[1]), Round1(o[0]), Round1(o[1]), Round1(o[2]), door);
+		if (door != "")
+			s_sProbe += LayerReport(entity, mins, maxs) + " ";
+
 		s_iProbeCount++;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Which physics layers a trace across a door's bounds hits (from each side of its local axes, at its
+	//! middle height): `Layer:hits` for each layer tried, the letters naming the axis sides that hit it.
+	protected static string LayerReport(IEntity door, vector mins, vector maxs)
+	{
+		array<string> names = {"Main", "Projectile", "Interaction", "BuildingFireView", "FireGeometry", "VehicleCast", "Vehicle", "Static", "Default", "Dynamic", "Camera", "Debris", "all"};
+		array<int> masks = {EPhysicsLayerPresets.Main, EPhysicsLayerPresets.Projectile, EPhysicsLayerPresets.Interaction, EPhysicsLayerPresets.BuildingFireView, EPhysicsLayerDefs.FireGeometry, EPhysicsLayerDefs.VehicleCast, EPhysicsLayerDefs.Vehicle, EPhysicsLayerDefs.Static, EPhysicsLayerDefs.Default, EPhysicsLayerDefs.Dynamic, EPhysicsLayerDefs.Camera, EPhysicsLayerDefs.Debris, -1};
+		vector mid = (mins + maxs) * 0.5;
+		vector half = (maxs - mins) * 0.5;
+		array<string> sides = {"+x", "-x", "+z", "-z"};
+		string report = "layers[";
+		foreach (int m, int mask : masks)
+		{
+			string hits;
+			for (int s = 0; s < 4; s++)
+			{
+				vector far = mid;
+				if (s == 0)
+					far[0] = maxs[0] + 2;
+				else if (s == 1)
+					far[0] = mins[0] - 2;
+				else if (s == 2)
+					far[2] = maxs[2] + 2;
+				else
+					far[2] = mins[2] - 2;
+
+				TraceParam trace = new TraceParam();
+				trace.Start = door.CoordToParent(far);
+				trace.End = door.CoordToParent(mid);
+				trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+				trace.LayerMask = mask;
+				trace.Exclude = null;
+				float fraction = GetGame().GetWorld().TraceMove(trace, null);
+				if (fraction >= 1 || !trace.TraceEnt || GenericTerrainEntity.Cast(trace.TraceEnt))
+					continue;
+
+				IEntity root = trace.TraceEnt;
+				IEntity top = door;
+				while (top.GetParent())
+					top = top.GetParent();
+
+				while (root.GetParent())
+					root = root.GetParent();
+
+				// `+x` the door leaf itself; `+x~` another part of its barrier (the post).
+				if (trace.TraceEnt == door)
+					hits += sides[s];
+				else if (root == top)
+					hits += sides[s] + "~";
+			}
+
+			if (hits.IsEmpty())
+				hits = "-";
+
+			report += names[m] + ":" + hits + " ";
+		}
+
+		return report + "half=" + Round1(half[0]) + "x" + Round1(half[1]) + "x" + Round1(half[2]) + "]";
 	}
 
 	protected static int s_iPlanId;
@@ -2115,6 +2199,15 @@ class LF_DriveHarness
 		if (FuelShare(car) == 0)
 			return "out_of_fuel";
 
+		// A boom barrier's bar is on the Projectile layer only (a probe across it: Main, Vehicle and Static
+		// hit just its post), so the rays below never see it: look for shut doors on that layer first.
+		string shut = ShutDoorAhead(car, forward);
+		if (shut.IsEmpty())
+			shut = ShutDoorInReach(car);
+
+		if (!shut.IsEmpty())
+			return shut;
+
 		// Three rays (both front corners and the middle) at a kerb height and a bumper height.
 		array<float> heights = {0.35, 0.9, Math.Max(s_fTopM - 0.3, 1.4)};
 		array<float> sides = {0, -1, 1};
@@ -2155,7 +2248,7 @@ class LF_DriveHarness
 				corner = "right";
 
 			// A shut door or gate (a boom barrier is a door): a car does not push through it.
-			if (IsDoor(hit))
+			if (IsDoor(hit) && IsGateSized(hit))
 				return string.Format("shut_door_%1_at_%2m_%3", name, Round1(fraction * BLOCKER_LOOK_M), corner);
 
 			return string.Format("blocked_by_%1_at_%2m_%3", name, Round1(fraction * BLOCKER_LOOK_M), corner);
@@ -2163,6 +2256,213 @@ class LF_DriveHarness
 
 		vector angles = car.GetYawPitchRoll();
 		return string.Format("clear_pitch_%1", Math.Round(angles[1]));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `shut_door_<prefab>_at_<m>m_<corner>` when a door that is not open stands within DOOR_LOOK_M ahead of
+	//! the bumper, else "". Rays on the Projectile layer (the only one a boom barrier's bar answers to) at
+	//! several heights, since a bar passes over the bumper; only a hit on a door counts, so trees and people
+	//! on that layer are ignored. The nearest door hit wins.
+	static string ShutDoorAhead(IEntity car, vector forward)
+	{
+		array<float> heights = {0.4, 0.7, 1.0, 1.3, 1.6};
+		array<float> sides = {0, -1, 1};
+		// A car that stopped against a bar has the bar over its bonnet or at the windscreen, past a ray from the
+		// bumper: the rays start at the rear and run to DOOR_LOOK_M beyond the bumper. `metres` below is
+		// measured from the bumper (negative: the bar is over the car).
+		float half = Math.Max(s_fFrontM, 1.5);
+		float rear = -half;
+		float length = 2 * half + DOOR_LOOK_M;
+		float best = DOOR_LOOK_M + 1;
+		string found;
+		foreach (float side : sides)
+		{
+			foreach (float h : heights)
+			{
+				// The car's own parts (body, lights, the seated driver) answer on that layer too: step past
+				// each and cast again.
+				vector origin = car.CoordToParent(Vector(side * s_fHalfWidthM, h, rear));
+				vector start = origin;
+				vector end = origin + forward * length;
+				IEntity hit;
+				float fraction = 1;
+				for (int hop = 0; hop < DOOR_HOPS; hop++)
+				{
+					TraceParam trace = new TraceParam();
+					trace.Start = start;
+					trace.End = end;
+					trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+					trace.LayerMask = EPhysicsLayerPresets.Projectile;
+					trace.Exclude = car;
+					fraction = GetGame().GetWorld().TraceMove(trace, null);
+					hit = trace.TraceEnt;
+					if (fraction >= 1 || !hit)
+					{
+						hit = null;
+						break;
+					}
+
+					IEntity root = hit;
+					while (root.GetParent())
+						root = root.GetParent();
+
+					if (root != car)
+						break;
+
+					start = start + (end - start) * fraction + forward * 0.05;
+					hit = null;
+				}
+
+				if (!hit || !IsDoor(hit) || !IsGateSized(hit))
+					continue;
+
+				// An open leaf or a raised bar beside the road is not in the way.
+				BaseDoorComponent door = DoorOfEntity(hit);
+				if (door && door.IsOpen())
+					continue;
+
+				float metres = vector.Distance(origin, start + (end - start) * fraction) - 2 * half;
+				if (metres >= best)
+					continue;
+
+				best = metres;
+				string name = LF_Utils.GetPrefabName(hit);
+				if (name.IsEmpty())
+					name = hit.ClassName();
+
+				int slash = name.LastIndexOf("/");
+				if (slash >= 0)
+					name = name.Substring(slash + 1, name.Length() - slash - 1);
+
+				name.Replace(".et", "");
+				string corner = "middle";
+				if (side < 0)
+					corner = "left";
+				else if (side > 0)
+					corner = "right";
+
+				found = string.Format("shut_door_%1_at_%2m_%3", name, Round1(metres), corner);
+			}
+		}
+
+		return found;
+	}
+
+	//! A door leaf at least this wide (its longest bound, metres) is a gate or a boom barrier's bar; a house door
+	//! (about 1 m) beside the road is a wall to the harness, not a gate to open.
+	static const float GATE_MIN_M = 1.8; // lf-fixed: harness geometry
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the door entity (or its nearest door parent) is wide enough to be a gate or a bar.
+	protected static bool IsGateSized(IEntity hit)
+	{
+		IEntity e = hit;
+		while (e && !e.FindComponent(DoorComponent))
+			e = e.GetParent();
+
+		if (!e)
+			return false;
+
+		vector mins, maxs;
+		e.GetBounds(mins, maxs);
+		vector size = maxs - mins;
+		return Math.Max(Math.Max(size[0], size[1]), size[2]) >= GATE_MIN_M;
+	}
+
+	protected static IEntity s_pDoorCar;
+	protected static float s_fDoorBest;
+	protected static string s_sDoorFound;
+
+	//------------------------------------------------------------------------------------------------
+	//! One door of the sphere query: not open, not the car's own, its bounds crossing the car's footprint.
+	protected static bool CollectDoor(IEntity door)
+	{
+		if (!door || !s_pDoorCar)
+			return true;
+
+		BaseDoorComponent component = BaseDoorComponent.Cast(door.FindComponent(DoorComponent));
+		if (!component || component.IsOpen() || !IsGateSized(door))
+			return true;
+
+		IEntity top = door;
+		while (top.GetParent())
+			top = top.GetParent();
+
+		if (top == s_pDoorCar)
+			return true;
+
+		float half = Math.Max(s_fFrontM, 1.5);
+		vector mins, maxs;
+		door.GetBounds(mins, maxs);
+		vector size = maxs - mins;
+		int axis = 0;
+		if (size[1] > size[axis])
+			axis = 1;
+
+		if (size[2] > size[axis])
+			axis = 2;
+
+		float nearest = s_fDoorBest;
+		for (int k = 0; k <= 12; k++)
+		{
+			vector p = (mins + maxs) * 0.5;
+			p[axis] = mins[axis] + size[axis] * k / 12;
+			vector local = s_pDoorCar.CoordToLocal(door.CoordToParent(p));
+			if (Math.AbsFloat(local[0]) > s_fHalfWidthM + 0.3 || local[2] < -half || local[2] > half + DOOR_LOOK_M || local[1] < -0.5 || local[1] > s_fTopM + 0.5)
+				continue;
+
+			float metres = local[2] - half;
+			if (metres < nearest)
+				nearest = metres;
+		}
+
+		if (nearest >= s_fDoorBest)
+			return true;
+
+		s_fDoorBest = nearest;
+		string name = LF_Utils.GetPrefabName(door);
+		if (name.IsEmpty())
+			name = door.ClassName();
+
+		int slash = name.LastIndexOf("/");
+		if (slash >= 0)
+			name = name.Substring(slash + 1, name.Length() - slash - 1);
+
+		name.Replace(".et", "");
+		s_sDoorFound = string.Format("shut_door_%1_at_%2m_geometry", name, Round1(nearest));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The same answer as ShutDoorAhead, from geometry instead of rays: a door that is not open whose
+	//! bounds (sampled along its longest side) cross the car's footprint, from its rear to DOOR_LOOK_M
+	//! beyond its bumper. Catches a bar the rays cannot reach.
+	protected static string ShutDoorInReach(IEntity car)
+	{
+		float half = Math.Max(s_fFrontM, 1.5);
+		s_pDoorCar = car;
+		s_fDoorBest = DOOR_LOOK_M + 1;
+		s_sDoorFound = "";
+		GetGame().GetWorld().QueryEntitiesBySphere(car.GetOrigin(), half + DOOR_LOOK_M + 6, CollectDoor, null, EQueryEntitiesFlags.ALL);
+		s_pDoorCar = null;
+		return s_sDoorFound;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The door component of an entity or of the nearest parent that has one.
+	protected static BaseDoorComponent DoorOfEntity(IEntity hit)
+	{
+		IEntity e = hit;
+		while (e)
+		{
+			BaseDoorComponent door = BaseDoorComponent.Cast(e.FindComponent(BaseDoorComponent));
+			if (door)
+				return door;
+
+			e = e.GetParent();
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------

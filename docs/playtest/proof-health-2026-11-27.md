@@ -11,7 +11,7 @@ Hours are the X-6 checkpoint each proof belongs to (`docs/playtest/rounds/2026-1
 | Hour | Proof | First run | Now | What it was / the fix |
 |---|---|---|---|---|
 | 0 to 2 | `harness.mjs flow playtest-030-first-two-hours` | pass | **pass** (9 of 9, three sessions) | none |
-| 0 to 2 | `starter-gates-proof` | FAIL | **pass** (fresh account) | not stale: it reads the clerk's ID card and `resetplayer` from earlier proofs wiped it, and the clerk issues one per account. **Run it first on a fresh character** (it says so in its header) |
+| 0 to 2 | `starter-gates-proof` | FAIL | **pass** (fresh account) | not stale: it read the clerk's ID card, `resetplayer` from earlier proofs wiped it, and the clerk issues one per account. Fixed in the proof (rc-proof-order): it reads the turned-in arrival quest, skips the clerk when it is turned in and resets the trades itself, so no run order is needed |
 | 0 to 2 | `counter-talk-proof` | pass | pass | |
 | 0 to 2 | `first-talk-proof` | pass | pass | |
 | 0 to 2 | `job-desk-proof` | pass | pass | |
@@ -74,10 +74,10 @@ Sessions on this PC from `ws/proof-health-1127-r2`, `--mission island --profile 
 
 ## Order for Saturday's run (what the table implies)
 
-1. Fresh character: the first-two-hours flow, then `starter-gates-proof` before anything that calls `resetplayer`.
+1. The first-two-hours flow, then `starter-gates-proof` on the same character, in any order: the proof sets up its own precondition (`_preconditions.mjs`, rc-proof-order). It puts every trade back to level 1 and skips the clerk when `arrival_register` is already turned in (the gate is the quest, not the card; `resetplayer` empties the pack but the quest stays). The one thing it cannot reset is a criminal record (no harness verb clears one), so it still goes before the police and jail proofs.
 2. Hour 6 `casualty-call` resets the pack; do the truck proofs on a character that has not been reset since `truck-check-proof` bought the truck: `truck-check-proof` then `truck-haul-proof` back to back (about 2 min plus 6 min), before the restart or after it (the haul proof collects an impounded truck).
 3. Hour 7 `export-crane-proof` once per session, with a bought truck parked first if the order drawn is the 120 planks.
-4. Hour 8 `outpost-north-proof` on a character at standing 0 (`repgrant UNDERWORLD 0`), once per session; `booking-desk-proof` with two clients.
+4. Hour 8 `outpost-north-proof` on a character at standing 0 (`repgrant UNDERWORLD 0`), once per session; `booking-desk-proof` with two clients; it holds the officer's handcuffs before every cuffing and grants a pair through `itemgive` when the pack has none (the duty kit is issued once per account; step 1b once flaked `NO_CUFFS` with the officer holding no cuffs yet), so a fresh or a reused officer both pass.
 5. Police and crew proofs (`island-cop-proof`, `island-vault-proof`, `island-bank-door-clear-proof`) each want a fresh two-client session, or at least a character that has not used the cop kit; `island-vault-proof` and `island-bank-door-clear-proof` both take the vault's single bag.
 6. `mining-iron-chain` and `iron-chain-proof` 5 minutes apart at least.
 7. Two-client island proofs each want a fresh session where they rob, cuff or take a run: `postal-van-proof` (about 2 min), `patrol-island-proof` (2 min, needs the roster seed for client 2), `island-jail-breach-proof` (7 min, one run: the jail doors stay blown), then `island-bank-heist-proof` on 4 clients (`session up --clients 4 --roster 3,4`, 4 min). `square-harbor-life-proof` can run any time; a second run in one session is fine now.
