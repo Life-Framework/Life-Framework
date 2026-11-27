@@ -86,8 +86,9 @@ class LF_ActivityPage
 		screen.SetListHeight(PART_LIST, LIST_HEIGHT);
 		foreach (int i, LF_ActivityRow row : s_Data.m_aRows)
 		{
-			// One button: the detail's Start or Resume. A row is picked by clicking it.
-			screen.AddListRow(PART_LIST, ROW + i.ToString(), LF_Terms.Text(row.m_sNameKey), RowStatus(row), string.Empty);
+			// A row is picked by pressing its Read button (the same word the errand rows use); the one Start or Guide
+			// button sits under the detail. A row with no action hides its button, and then nothing on it can be pressed.
+			screen.AddListRow(PART_LIST, ROW + i.ToString(), LF_Terms.Text(row.m_sNameKey), RowStatus(row), "#LF-PlayerMenu_Read");
 		}
 
 		if (s_iPicked < 0 || s_iPicked >= s_Data.m_aRows.Count())
