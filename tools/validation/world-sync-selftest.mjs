@@ -18,12 +18,14 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { scratchDir } from "../lib/scratch.mjs";
+import { sections } from "../lib/selftest-sections.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
 const fail = (m) => { console.log(`FAIL  ${m}`); failed++; };
 const check = (c, m) => { if (!c) fail(m); };
 
+const S = sections(import.meta.url); // each scene below runs in its own process, in parallel (tools/lib/selftest-sections.mjs)
 let lib, cmd;
 try {
   lib = await import(pathToFileURL(join(ROOT, "tools", "lib", "world-sync.mjs")).href);
@@ -91,7 +93,7 @@ const snapshot = (dir) => ({
 const noBackup = (dir) => !readdirSync(join(dir, ".git")).some((n) => n.startsWith("lf-world-sync-backup"));
 
 // ---- 1a. no overlap, fast-forward, staged + unstaged + untracked edits survive
-{
+S.add("1a no overlap", () => {
   const s = scene();
   put(s.work, SJ, "street jobs v1\nMAINTAINER EDIT\n");          // unstaged
   put(s.work, "docs/b.md", "doc b v1\nstaged edit\n"); git(s.work, "add", "docs/b.md"); // staged
@@ -111,10 +113,10 @@ const noBackup = (dir) => !readdirSync(join(dir, ".git")).some((n) => n.startsWi
   check(after.head === git(s.work, "rev-parse", "origin/main"), "no overlap: HEAD was not fast-forwarded");
   check(after.stash === "" && noBackup(s.work), "no overlap: a stash or backup was left behind");
   s.done();
-}
+});
 
 // ---- 1b. no overlap, but the maintainer has a commit main lacks: a merge commit, edits still intact
-{
+S.add("1b no overlap", () => {
   const s = scene();
   put(s.work, OT, "other v1\ncommitted by maintainer\n"); git(s.work, "add", "-A"); git(s.work, "commit", "-qm", "maint");
   put(s.work, SJ, "street jobs v1\nDIRTY\n");
@@ -129,10 +131,10 @@ const noBackup = (dir) => !readdirSync(join(dir, ".git")).some((n) => n.startsWi
   const st = git(s.work, "status", "--porcelain").split("\n");
   check(st.length === 1 && st[0].endsWith("Street_Jobs.layer"), `merge: status is ${JSON.stringify(st)}`);
   s.done();
-}
+});
 
 // ---- 2. overlap on a layer: held, everything else pulled, HEAD stays
-{
+S.add("2 overlap on a layer", () => {
   const s = scene();
   put(s.work, SJ, "street jobs v1\nMY HAND EDIT\n");
   const mine = read(s.work, SJ);
@@ -150,10 +152,10 @@ const noBackup = (dir) => !readdirSync(join(dir, ".git")).some((n) => n.startsWi
   const r2 = lib.syncWorktree(s.work, { listProcesses: () => [] });
   check(r2.status === "ok" && r2.pulled === 0 && r2.held.length === 1 && read(s.work, SJ) === mine, `layer overlap: rerun status '${r2.status}' pulled ${r2.pulled}`);
   s.done();
-}
+});
 
 // ---- 3a. a dirty layer that main renamed: the pair is held, the rest pulled
-{
+S.add("3a a dirty layer that main renamed", () => {
   const s = scene();
   put(s.work, AL, "a layer v1\nMY EDIT\n");
   put(s.up, "docs/a.md", "doc a v2\n"); s.push("docs");
@@ -165,10 +167,10 @@ const noBackup = (dir) => !readdirSync(join(dir, ".git")).some((n) => n.startsWi
   check(read(s.work, "docs/a.md") === "doc a v2\n", "rename: the rest was not pulled");
   check(r.held.length === 2, `rename: held ${r.held.length}, want 2 (old and new name)`);
   s.done();
-}
+});
 
 // ---- 3b. a dirty non-layer file that main renamed: nothing changes, blocked
-{
+S.add("3b a dirty non-layer file that main renamed", () => {
   const s = scene();
   put(s.work, "docs/a.md", "doc a v1\nMY EDIT\n");
   put(s.up, "docs/b.md", "doc b v2\n"); s.push("b");
@@ -180,10 +182,10 @@ const noBackup = (dir) => !readdirSync(join(dir, ".git")).some((n) => n.startsWi
   check(JSON.stringify(after) === JSON.stringify(before) && read(s.work, "docs/b.md") === "doc b v1\n", "blocked: the worktree changed");
   check(/^SUMMARY world-sync blocked /.test(r.summary), `blocked: summary '${r.summary}'`);
   s.done();
-}
+});
 
 // ---- 4. dry run changes nothing
-{
+S.add("4 dry run changes nothing", () => {
   const s = scene();
   put(s.work, SJ, "street jobs v1\nDRY\n");
   put(s.up, SJ, "v2\n"); put(s.up, "docs/a.md", "doc a v2\n"); s.push("up");
@@ -193,10 +195,10 @@ const noBackup = (dir) => !readdirSync(join(dir, ".git")).some((n) => n.startsWi
   check(JSON.stringify(snapshot(s.work)) === JSON.stringify(before) && read(s.work, "docs/a.md") === "doc a v1\n", "dry run: the worktree changed");
   check(/^SUMMARY world-sync ok dry-run pulled=1 /.test(r.summary), `dry run: summary '${r.summary}'`);
   s.done();
-}
+});
 
 // ---- 5. Workbench running on this worktree: still syncs, says to reload; another project does not count
-{
+S.add("5 Workbench running on this worktree", () => {
   const s = scene();
   put(s.up, "docs/a.md", "doc a v2\n"); s.push("up");
   const cmdline = `"C:\\Program Files\\Arma Reforger Tools\\Workbench\\ArmaReforgerWorkbench.exe" -gproj "${s.work}\\addons\\LifeFramework\\addon.gproj"`;
@@ -207,10 +209,10 @@ const noBackup = (dir) => !readdirSync(join(dir, ".git")).some((n) => n.startsWi
   check(r.lines.some((l) => /reload the world in Workbench \(File > Reload, or reopen it\)/.test(l)), "workbench: no reload line");
   check(read(s.work, "docs/a.md") === "doc a v2\n", "workbench: upstream was not pulled");
   s.done();
-}
+});
 
 // ---- 6. failure part-way restores the exact prior state (after the tree moved; after HEAD moved)
-for (const [name, hook] of [["afterWorktree", "after the working tree moved"], ["afterHead", "after HEAD moved"]]) {
+for (const [name, hook] of [["afterWorktree", "after the working tree moved"], ["afterHead", "after HEAD moved"]]) S.add(`6 failure ${hook}`, () => {
   const s = scene();
   put(s.work, SJ, "street jobs v1\nHAND\n");
   put(s.work, "docs/b.md", "doc b v1\nstaged\n"); git(s.work, "add", "docs/b.md");
@@ -228,10 +230,10 @@ for (const [name, hook] of [["afterWorktree", "after the working tree moved"], [
   check(after.stash === "" && noBackup(s.work), `failure ${hook}: a stash or backup was left behind`);
   check(/^SUMMARY world-sync error /.test(r.summary), `failure ${hook}: summary '${r.summary}'`);
   s.done();
-}
+});
 
 // ---- 7. guards: not a ws/ branch, a merge in progress, unreachable origin: errors with nothing changed
-{
+S.add("7 guards", () => {
   const s = scene();
   put(s.up, "docs/a.md", "doc a v2\n"); s.push("up");
   git(s.work, "checkout", "-q", "main");
@@ -245,10 +247,10 @@ for (const [name, hook] of [["afterWorktree", "after the working tree moved"], [
   const g = lib.syncWorktree(s.work, { listProcesses: () => [] });
   check(g.status === "error" && /fetch failed/.test(g.message) && JSON.stringify(snapshot(s.work)) === JSON.stringify(before), `guard: bad origin gave '${g.status}' ${g.message}`);
   s.done();
-}
+});
 
 // ---- 8. the CLI entry: arguments and the check-in hint
-{
+S.add("8 the CLI entry", () => {
   const a = cmd.parseArgs(["--wt", "x", "--dry-run"]);
   check(a.slug === "x" && a.dryRun === true && a.force === false, "cli: --wt/--dry-run not parsed");
   check(cmd.parseArgs(["--bogus"]).error, "cli: an unknown argument was accepted");
@@ -257,7 +259,6 @@ for (const [name, hook] of [["afterWorktree", "after the working tree moved"], [
   check(/^tools\\cli world-sync --wt town-maintainer-edits\b/.test(hint), `cli: watch hint '${hint}'`);
   check(lib.planSync([{ status: "M", path: "a.layer" }], new Set(["a.layer"])).held.size === 1, "plan: a layer overlap is not held");
   check(lib.planSync([{ status: "M", path: "a.txt" }], new Set(["a.txt"])).blocked.length === 1, "plan: a non-layer overlap is not blocked");
-}
+});
 
-console.log(failed ? `SUMMARY world-sync-selftest fail ${failed}` : "SUMMARY world-sync-selftest ok");
-process.exit(failed ? 1 : 0);
+process.exit(await S.run({ failed: () => failed, summary: (n) => (n ? `SUMMARY world-sync-selftest fail ${n}` : "SUMMARY world-sync-selftest ok") }));

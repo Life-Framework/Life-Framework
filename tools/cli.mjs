@@ -39,6 +39,7 @@
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
 import { areaConcurrency, registerValidate, shareConcurrency } from "./lib/validate-concurrency.mjs";
+import { loadSeed, orderJobs } from "./lib/validate-order.mjs";
 import "./lib/quiet-gate.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -767,9 +768,8 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
     if (inc?.get(s)?.unchanged) return { s, skipped: inc.get(s).why, incremental: true };
     return { s };
   });
-  // Longest first (from the last recorded times) so one slow check never starts last.
-  const lastSecs = (j) => state?.checks[j.s]?.secs ?? 0;
-  const queue = jobs.filter((j) => !j.skipped).sort((a, b) => lastSecs(b) - lastSecs(a));
+  // Longest first (this worktree's last times, else the committed seed) so one slow check never starts last.
+  const queue = orderJobs(jobs.filter((j) => !j.skipped), state, loadSeed());
   const env = toolEnv();
   // Per-check budget (tools/lib/check-budget.mjs): a check over it is killed and fails by name. Times
   // leave out any freeze of this process, which is reported once below instead of blamed on a check.

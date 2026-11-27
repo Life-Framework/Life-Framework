@@ -13,17 +13,20 @@
 //   unclassified it printed "registry-only: expected healed, got needs-human".
 // red-proof (2026-11-27): with the hand-off not honoured (a fresh tmp/ log counted as dirty) "a shipped, clean worktree
 //   with fresh tmp/ logs should read as done" and "heal's own pushed merge should hand the worktree off again" failed.
-import { mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { gitSync } from "../lib/git-retry.mjs";
 import { autoMergeWithRetry, conflictKind, healMerge, isLive, markHandoff, predictConflicts, pushBranch, readHandoff, LIVE_MS } from "../prs.mjs";
 import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
+import { sections } from "../lib/selftest-sections.mjs";
 
 useHermeticGit(); // no machine git config, no auto-gc beside the scratch repos (tools/lib/selftest-git.mjs)
 
-const failures = [];
-const fail = (m) => failures.push(m);
+// Each scenario below is a section that runs in its own process, in parallel (tools/lib/selftest-sections.mjs).
+const S = sections(import.meta.url);
+let failed = 0;
+const fail = (m) => { failed++; console.log(`  - ${m}`); };
 const TESTS = "addons/LifeFramework/Scripts/Game/Tests";
 // A generated file both sides regenerate: the core language conf stands in for it (conflictKind "regen-localization").
 const REGISTRY = "addons/LifeFramework/Language/everonlife_localization.en_us.conf";
@@ -61,6 +64,7 @@ const regenerate = (dir, kind) => {
 };
 
 // Classification.
+S.add("classification", () => {
 for (const [p, k] of [
   [REGISTRY, "regen-localization"],
   ["addons/LifeFramework/Language/everonlife_localization.st", "string-table"],
@@ -82,15 +86,23 @@ for (const [p, k] of [
   if (conflictKind(p) !== k) fail(`conflictKind(${p}) = ${conflictKind(p)}, expected ${k}`);
 }
 
+});
+
+// Identity and pinned settings as config text: five `git config` spawns per repo become none.
+const REPO_CONFIG = (temp) => [
+  "[user]", "\temail = pr-keeper@example.com", "\tname = pr-keeper",
+  "[core]", "\tautocrlf = false", `\thooksPath = ${join(temp, "no-hooks").split("\\").join("/")}`,
+  "[commit]", "\tgpgsign = false", "",
+].join("\n");
+
+S.add("heal: registry-only, real and mixed conflicts, legacy worktree", () => {
 const temp = scratchDir("lf-pr-keeper-");
 try {
   const origin = join(temp, "origin.git");
   const seed = join(temp, "seed");
   must(temp, ["init", "-q", "--bare", "-b", "main", origin]);
   must(temp, ["clone", "-q", origin, seed]);
-  for (const [k, v] of [["user.email", "pr-keeper@example.com"], ["user.name", "pr-keeper"], ["core.autocrlf", "false"], ["commit.gpgsign", "false"], ["core.hooksPath", join(temp, "no-hooks")]]) {
-    must(seed, ["config", k, v]);
-  }
+  appendFileSync(join(seed, ".git", "config"), REPO_CONFIG(temp));
   must(seed, ["checkout", "-q", "-b", "main"]);
   addTest(seed, "LF_Test_A");
   write(seed, SCRIPT, "void Foo()\n{\n\tint x = 1;\n}\n");
@@ -162,7 +174,7 @@ try {
   {
     const legacy = join(temp, "legacy");
     must(temp, ["clone", "-q", origin, legacy]);
-    for (const [k, v] of [["user.email", "pr-keeper@example.com"], ["user.name", "pr-keeper"], ["core.autocrlf", "false"], ["commit.gpgsign", "false"], ["core.hooksPath", join(temp, "no-hooks")]]) must(legacy, ["config", k, v]);
+    appendFileSync(join(legacy, ".git", "config"), REPO_CONFIG(temp));
     const INV = "docs/asset-inventory.md", GAL = "website/content/gallery.json", AREAS = "agent-box/areas.json";
     const NL = String.fromCharCode(10);
     const doc = (lines) => lines.join(NL) + NL;
@@ -194,6 +206,23 @@ ${t}`);
     }
   }
 
+} catch (e) {
+  fail(`scenario threw: ${e.message}`);
+} finally {
+  removeScratch(temp);
+}
+});
+
+S.add("liveness, hand-off marker, auto-merge retry", () => {
+const temp = scratchDir("lf-pr-keeper-");
+try {
+  // A fresh worktree with one commit stands in for the healed one.
+  const a = join(temp, "fresh");
+  mkdirSync(a);
+  must(a, ["init", "-q", "-b", "ws/fresh"]);
+  write(a, "docs/a.md", "a\n");
+  must(a, ["add", "-A"]);
+  git(a, ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "base"]);
   // Liveness: a fresh change is live now and idle 15 min later.
   write(a, "tmp/note.txt", "agent scratch\n");
   if (!isLive(a).live) fail("a worktree changed just now should be live");
@@ -262,10 +291,6 @@ ${t}`);
 } finally {
   removeScratch(temp);
 }
+});
 
-if (failures.length) {
-  console.log("pr-keeper-selftest: FAIL");
-  for (const f of failures) console.log(`  - ${f}`);
-  process.exit(1);
-}
-console.log("pr-keeper-selftest: OK (registry-only conflict healed and pushed; legacy worktree appends to inventory, gallery and areas merged by the hub drivers; real and mixed conflicts aborted, HEAD and origin untouched; liveness window)");
+process.exit(await S.run({ failed: () => failed, summary: (n) => (n ? "pr-keeper-selftest: FAIL" : "pr-keeper-selftest: OK (registry-only conflict healed and pushed; legacy worktree appends to inventory, gallery and areas merged by the hub drivers; real and mixed conflicts aborted, HEAD and origin untouched; liveness window)") }));

@@ -1683,7 +1683,22 @@ fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/r
   worktree: a fresh worktree skips each check another worktree passed on identical inputs (2026-11-17: 318 of 361
   checks skipped on a fresh worktree; before, each slice's first validate ran all of them, ~4-6 min under load).
   `always` and `ttl=` checks never use it. Delete the file to stop sharing.
-- Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
+- Checks start longest first and every run ends with `slowest: ...`. The time of a check comes from this worktree's last
+  green run, else from `tools/lib/validate-order-seed.json` (`tools/lib/validate-order.mjs`): a fresh worktree and every CI run
+  (a fresh checkout, only the green fingerprints cached) used to start in file-name order, so `world-sync-selftest` and
+  `merge-drivers-selftest` began last and ran alone (2026-11-27: 486 s wall for 308 s of work per worker). Refresh the seed after
+  a `validate --all` with `node tools/lib/validate-order.mjs --write`; it only orders, a stale seed costs nothing.
+- GitHub already caches a green set (`actions/cache`, .github/workflows/validate.yml: #3189), so a PR runs only the checks whose
+  inputs changed; a push to main runs every check and refreshes it. A PR that touches `tools/lib/` re-runs every selftest
+  that imports it, so keep the slow selftests fast: see below.
+- **A git-heavy selftest is split into sections** (`tools/lib/selftest-sections.mjs`): `S.add("name", () => {...})` per scene,
+  `process.exit(await S.run({ failed: () => failed, summary }))` at the end. The parent re-runs the file once per section
+  (`LF_SELFTEST_SECTION`), up to `LF_SELFTEST_JOBS` (default half the CPUs, 2-4) at a time, replays the output in order and
+  adds up the failures; every assertion still runs once, in the same code. spawnSync blocks the event loop, so scenes in one
+  process only ever added up. Used by world-sync, merge-drivers, pr-keeper and output-budget (84 to 28 s, 93 to 15 s in isolation,
+  2026-11-27). A section builds its own scratch repo; sections share nothing. Setup spawns are the other cost (about 45-80 ms
+  each on Windows): write a scratch repo's identity into `.git/config` instead of five `git config` calls, and `commit -a`
+  instead of `add -A` + `commit` after the first commit. `selftest-sections-selftest.mjs` proves the helper and the ordering.
 - Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile and `world-sync-selftest` and `selftest-scratch-selftest` (`SLOW_CHECK_S in `tools/cli.mjs`; it spawns ~500 git processes). A check over it
   prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the
   validate process itself was frozen (a synchronous call beside the checks, as `ci` runs validate beside the build);

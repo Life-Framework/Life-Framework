@@ -17,14 +17,22 @@ import { gitSync } from "../lib/git-retry.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { PASSTHROUGH, summarize } from "../lib/quiet-run.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
+import { sections } from "../lib/selftest-sections.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const failures = [];
+// Each part below is a section that runs in its own process, in parallel (tools/lib/selftest-sections.mjs): the
+// five `cli` runs and the pool fixture are independent and each takes seconds.
+const S = sections(import.meta.url);
+let failed = 0;
 const check = (ok, msg) => {
-  if (!ok) failures.push(msg);
+  if (!ok) {
+    failed++;
+    console.log(`  ${msg}`);
+  }
 };
 
 // ---- the summariser, on transcripts of known shape
+S.add("summariser", () => {
 const log = "tmp/logs/x.log";
 const sum = (label, code, lines) => summarize({ label, code, text: lines.join("\n"), logPath: log, seconds: 1 });
 
@@ -86,6 +94,8 @@ check(stepFail.some((l) => l.includes("-> error no_target")) && stepFail.some((l
 const gateCached = sum("wt-gate", 0, ["=== ci: test ===", "test: CACHED pass, same inputs as the run at T on pc in w (5/5 passed, tier=all); key abc", ...Array.from({ length: 12 }, (_, i) => `test-e2e: SUMMARY tier=all passed=${i} failed=0 total=${i} (1 s)`)]);
 check(gateCached.some((l) => l.startsWith("test: CACHED pass")), "a reused test pass is always shown");
 
+});
+
 // ---- the real quick commands
 function run(args, env = {}) {
   const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...args], {
@@ -102,15 +112,19 @@ const budgets = [
   ["help", ["help"], 12],
   ["wt help", ["wt", "help"], 6],
 ];
-for (const [name, args, max] of budgets) {
-  const r = run(args);
-  check(r.lines.length <= max, `${name} stays inside ${max} lines (got ${r.lines.length})`);
-}
+S.add("help budgets", () => {
+  for (const [name, args, max] of budgets) {
+    const r = run(args);
+    check(r.lines.length <= max, `${name} stays inside ${max} lines (got ${r.lines.length})`);
+  }
+  const full = run(["help", "--verbose"]);
+  check(full.lines.length > 60, `help --verbose still prints the full usage (got ${full.lines.length} lines)`);
+});
 // pool status prints one row per busy lane and per queued job, so its length follows the live pool:
 // 43 lines on a busy afternoon (2026-11-14) failed this check for a reason that is not a bug. The
 // budget is for a fixed pool state: a scratch checkout with only this PC, an empty hub, and a queue
 // of 30 waiting jobs (the per-lane cap of 4 must keep it short).
-{
+S.add("pool status fixture", () => {
   const fx = scratchDir("lf-pool-budget-");
   try {
     gitSync(["init", "-q", fx], { windowsHide: true });
@@ -134,11 +148,10 @@ cmdPoolStatus(root, false);
   } finally {
     rmSync(fx, { recursive: true, force: true });
   }
-}
-const full = run(["help", "--verbose"]);
-check(full.lines.length > 60, `help --verbose still prints the full usage (got ${full.lines.length} lines)`);
+});
 
 // validate with every check but one skipped: the wrapper's output, not the checks', is under test.
+S.add("validate wrapper output", () => {
 const keep = "validate-no-bom.mjs";
 const skipAll = readdirSync(join(ROOT, "tools", "validation")).filter((f) => /\.(mjs|ps1)$/.test(f) && f !== keep);
 const v = run(["validate"], { LF_VALIDATE_SKIP: skipAll.join(","), LF_VALIDATE_ALL: "1" });
@@ -148,9 +161,9 @@ check(v.lines.some((l) => /^skipped \d+ check/.test(l)), "validate names the che
 const vv = run(["validate", "--verbose"], { LF_VALIDATE_SKIP: skipAll.join(","), LF_VALIDATE_ALL: "1" });
 check(vv.lines.length > v.lines.length && vv.lines.some((l) => l.startsWith("PASS")), "validate --verbose restores the per-check lines");
 
-if (failures.length) {
-  console.log("output-budget-selftest: FAIL");
-  for (const f of failures) console.log(`  ${f}`);
-  process.exit(1);
-}
-console.log("output-budget-selftest: OK (summaries, caps, skips and timeouts kept; help, wt help, pool status, validate inside their budgets)");
+});
+
+process.exit(await S.run({
+  failed: () => failed,
+  summary: (n) => (n ? "output-budget-selftest: FAIL" : "output-budget-selftest: OK (summaries, caps, skips and timeouts kept; help, wt help, pool status, validate inside their budgets)"),
+}));

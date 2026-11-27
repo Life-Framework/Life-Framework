@@ -359,33 +359,63 @@ function sharedSurface(a, b) {
 export function overlapProblems(list) {
   const cand = list.filter(({ e, m }) => !m.missing && !m.point && !isKind(e, "vegetation") && !isKind(e, "building") && !isKind(e, "surface") && volume(m) <= 40 && volume(m) > 1e-4);
   const out = new Map();
-  for (let i = 0; i < cand.length; i++) {
-    for (let j = i + 1; j < cand.length; j++) {
+  // The old loop ran a regex over a freshly built string for both props of every pair and a 15-axis box test for
+  // every pair within 12 m: in the dense grid world (2774 props, analysed six times) that was 8 s per run and most
+  // of the place-tool selftest. Per-prop facts are computed once, the cheap rejects come first, and a pair whose
+  // world AABBs are apart (so the oriented boxes cannot interpenetrate: the depth would be negative, under every
+  // limit) never reaches obbPenetration. Pairs are still visited in list order, so the output is unchanged.
+  const n = cand.length;
+  const chain = cand.map(({ e }) => isKind(e, "chain"));
+  const holder = cand.map(({ e }) => isKind(e, "holder"));
+  const labels = cand.map(({ e }) => label(e));
+  const vol = cand.map(({ m }) => volume(m));
+  const bx = new Float64Array(n);
+  const bz = new Float64Array(n);
+  const lo = new Float64Array(n * 3);
+  const hi = new Float64Array(n * 3);
+  cand.forEach(({ m }, i) => {
+    const w = obbAabb(m.box);
+    bx[i] = m.box.c[0];
+    bz[i] = m.box.c[2];
+    for (let k = 0; k < 3; k++) {
+      lo[i * 3 + k] = w.min[k];
+      hi[i * 3 + k] = w.max[k];
+    }
+  });
+  const EPS = 1e-3;
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      if (Math.abs(bx[i] - bx[j]) > 12 || Math.abs(bz[i] - bz[j]) > 12) continue;
+      if (lo[i * 3] > hi[j * 3] + EPS || lo[j * 3] > hi[i * 3] + EPS || lo[i * 3 + 1] > hi[j * 3 + 1] + EPS || lo[j * 3 + 1] > hi[i * 3 + 1] + EPS || lo[i * 3 + 2] > hi[j * 3 + 2] + EPS || lo[j * 3 + 2] > hi[i * 3 + 2] + EPS) continue;
       const A = cand[i];
       const B = cand[j];
-      if (Math.abs(A.m.box.c[0] - B.m.box.c[0]) > 12 || Math.abs(A.m.box.c[2] - B.m.box.c[2]) > 12) continue;
       if (A.e.parent && (A.e.parent === B.e.name || A.e.parent === B.e.parent)) continue;
       if (B.e.parent && B.e.parent === A.e.name) continue;
-      if (isKind(A.e, "chain") && isKind(B.e, "chain")) continue;
+      if (chain[i] && chain[j]) continue;
       const depth = obbPenetration(A.m.box, B.m.box);
       // Two props standing on the same table or counter are neighbours, not one inside the other: any
       // push-through counts (a till and a bottle on one counter overlapped by 0.05 m and passed the 0.08 m limit).
       const sameSurface = sharedSurface(A.m, B.m);
       if (depth <= (sameSurface ? LIMITS.sharedOverlap : LIMITS.overlap)) continue;
-      const [small, big] = volume(A.m) <= volume(B.m) ? [A, B] : [B, A];
+      const aSmall = vol[i] <= vol[j];
+      const si = aSmall ? i : j;
+      const bi = aSmall ? j : i;
+      const small = cand[si];
+      const big = cand[bi];
       // Contents: something much smaller sitting inside a shelf, a stand, a crate (apples in the press crate).
-      if (!sameSurface && isKind(big.e, "holder") && volume(small.m) < volume(big.m) * 0.5 && insideFraction(small.m.box, big.m.box) > 0.6) continue;
+      if (!sameSurface && holder[bi] && vol[si] < vol[bi] * 0.5 && insideFraction(small.m.box, big.m.box) > 0.6) continue;
       // Resting on it: the surface found under the small one is the big one (a jerrycan on a workbench whose
       // back panel rises above the top), or the small one's bottom is at the big one's top.
-      if (small.m.gap <= LIMITS.gap && small.m.gap >= -LIMITS.gap && (small.m.on === big.m.found || small.m.on === label(big.e))) continue;
+      if (small.m.gap <= LIMITS.gap && small.m.gap >= -LIMITS.gap && (small.m.on === big.m.found || small.m.on === labels[bi])) continue;
       // Resting on top: the small one's bottom is at the big one's top.
-      const sb = obbAabb(small.m.box);
-      const bb = obbAabb(big.m.box);
-      if (sb.min[1] >= bb.max[1] - LIMITS.overlap * 1.5) continue;
-      for (const [x, y] of [[A, B], [B, A]]) {
-        const key = x.idx;
-        if (!out.has(key)) out.set(key, []);
-        out.get(key).push({ kind: "overlaps", amount: Math.min(depth, 1), text: `overlaps ${label(y.e)} by ${r2(depth)} m` });
+      if (lo[si * 3 + 1] >= hi[bi * 3 + 1] - LIMITS.overlap * 1.5) continue;
+      const amount = Math.min(depth, 1);
+      const deep = r2(depth);
+      for (const [x, y] of [[i, j], [j, i]]) {
+        const key = cand[x].idx;
+        let rows = out.get(key);
+        if (!rows) out.set(key, (rows = []));
+        rows.push({ kind: "overlaps", amount, text: `overlaps ${labels[y]} by ${deep} m` });
       }
     }
   }
