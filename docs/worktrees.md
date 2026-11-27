@@ -242,6 +242,12 @@ and every other lock file are left alone (`tools/lib/stale-git-lock.mjs`, `stale
      (first, recheck, each probe) is red and none printed a compile error or a failing test, the build died before it
      compiled anything: nothing is reverted, the head is marked `infra` (not red), the staff webhook gets one line per
      head, and a later tick runs it again (`infraRun`; a held lock was already infra, #2759).
+   - **A dirty run tree is cleaned, and its refusal is infra (#5117).** The pre-move e2e checks out an old ref in the
+     guard's run worktree; a worker that dies mid-run leaves untracked files under `addons/`, and the next run refused
+     with `e2e --pre-move needs a clean tree` (03731faa and 921ff355 were called red twice and got a wrong fix card).
+     Before every checkout and every `--pre-move` run the guard drops untracked and ignored files under `addons/` of
+     that one worktree through `cleanRunFolder` (never follows a game-addons junction, keeps `resourceDatabase.rdb`),
+     and the refusal itself classifies as infra (`run-tree-clean.mjs`, `main-guard-clean-run-tree-selftest.mjs`).
    - **A test-only merge is bisected with the merge it follows.** A merge that changes only tests (`isTestOnly`)
      directly after another is probed at the test fix, never between the two (`groupFollowUps`), so a data PR whose
      test fix landed is not blamed. After the data PR is reverted, a test-only merge in the same range is explained by
@@ -1367,6 +1373,41 @@ child of the session when the connection closes. Without the cap a remote machin
 `restart`, the harness and the proof verbs from that worktree go there (above). `journey` drives clients in-process,
 so it runs on this PC; it refuses `--machine lf-testbox` and a recorded remote session. Clients on this PC can join a
 box server over the LAN (manual steps below).
+
+### Game update guard (`game-update`)
+
+On 2026-11-27 (~15:03) Steam updated the Reforger client (app 1874880, build 26639613) but not the dedicated server
+(app 1874900, stayed on 26257316): Steam suspends a server update while any `ArmaReforgerServer.exe` runs. Every
+`session up` then booted a server that answered `Client uses unsupported protocol version`, waited ~5 min for
+"server not ready", and the agents' retries kept a server running, which kept Steam from updating
+(`docs/debug-log-triage.md`). The guard reads what is on disk (`tools/lib/game-update.mjs`, milliseconds, no process
+started) and says it at once:
+
+- **Signals.** The app build ids are different numbers even when the apps are in step (client 26639613, server
+  26634883 on a good day), so they are not compared with each other. The check is the game version in the exes
+  (`ArmaReforgerSteam.exe` against `ArmaReforgerServer.exe`, e.g. 1.9.0.42, read from the version resource's string
+  table) plus each Steam manifest (`appmanifest_<id>.acf`: `buildid` against `TargetBuildID`, and a `StateFlags` bit
+  for update required, running, paused, started, downloading, staging or committing). Paths come from
+  `ENFUSION_GAME_PATH`, `ENFUSION_SERVER_PATH`, `ENFUSION_WORKBENCH_PATH` (env, then `lf.local.json`, then the Steam
+  defaults).
+- **`session up`** (the machine that boots the server runs it, so a pool machine checks itself) fails in under a second
+  with `FAIL  GAME UPDATE PENDING: client 1.9.0.42 (build 26639613) vs server 1.8.1.7 (build 26257316): the server is
+  behind the client. Fix: tools\cli game-update ...`. Do not retry it: each retry starts a server that keeps Steam out.
+  A `--clients 0` session starts no client, so there it is a `WARN` and the session boots. `LF_SKIP_GAME_UPDATE_CHECK=1`
+  skips the check. `test`, `e2e` and `dev` boot only the server (no client joins), so the protocol line cannot occur
+  there and they do not check.
+- **`tools\cli status`** always prints one `game:` line; **`pool status`** prints the `GAME UPDATE PENDING` line when
+  this PC's apps disagree or a manifest says an update is queued.
+- **`tools\cli game-update [--check] [--dry-run] [--wait-min N] [--update-min N]`** is the fix. It refuses at once
+  while any session lane on this PC is held (`session down` there first); waits up to `--wait-min` (default 20) for
+  running Reforger processes of the lagging apps to end, never stopping one (test servers finish on their own, and
+  while the install is out of step no new session starts); asks Steam to update through `steam://install/<app id>`;
+  and waits up to `--update-min` (default 30) for the manifests and exe versions to match. `--check` only prints the
+  verdict (exit 1 when pending). It touches this machine's own install and nothing else: never the 0grind server.
+  Run it on a pool machine over ssh (`node tools/cli.mjs game-update`) for that machine's install.
+
+`selftest`: `tools/validation/game-update-selftest.mjs` (fixture manifests and exes; the held-session, wait-budget,
+update and timeout paths over fake effects).
 
 ### Box setup
 

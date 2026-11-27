@@ -45,9 +45,9 @@ class LF_VehicleHandover
 
 		string plate = LF_VehicleOwnership.GetPlate(vehicleId);
 		if (plate.IsEmpty())
-			LF_Utils.NotifyEntity(user, "#LF-Vehicle_OutOnLotNoPlate", "#LF-Vehicle_OutOnLotTitle", 10);
+			LF_Utils.NotifyEntity(user, "#LF-Vehicle_OutOnLotNoPlate", "#LF-Vehicle_OutOnLotTitle", 10, "", LF_NotificationManagerComponent.SLOT_VEHICLE);
 		else
-			LF_Utils.NotifyEntity(user, "#LF-Vehicle_OutOnLot", "#LF-Vehicle_OutOnLotTitle", 10, plate);
+			LF_Utils.NotifyEntity(user, "#LF-Vehicle_OutOnLot", "#LF-Vehicle_OutOnLotTitle", 10, plate, LF_NotificationManagerComponent.SLOT_VEHICLE);
 
 		vector origin = car.GetOrigin();
 		Sink().Mark(uid, WAYPOINT_ID, "#LF-Vehicle_YourCarMark", Math.Round(origin[0]), Math.Round(origin[2]));

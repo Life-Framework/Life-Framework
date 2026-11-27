@@ -216,6 +216,7 @@ class LF_PlayerMenuSheet
 		bool changed = wire != s_sWire;
 		s_sWire = wire;
 		s_Data = data;
+		LF_WelcomeGuideSheet.OnFileData();
 		LF_Debug.Info(LF_PlayerMenuServer.FEATURE, string.Format("file received: %1 skills, %2 quests, %3 licences", data.m_aSkills.Count(), data.m_aQuests.Count(), data.m_aLicenceKeys.Count()));
 		if (changed && IsOpen() && s_Sheet)
 			GetGame().GetCallqueue().CallLater(s_Sheet.ShowLater, 0, false);

@@ -1,6 +1,18 @@
 Vehicle : "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" {
  ID "E1A105BE1A000002"
  components {
+  LF_LicensePlateManagerComponent "{5984C85FA25812F2}" {
+   m_Plates {
+    LF_LicensePlatePointInfo "{A12A76B30C7A6D9D}" {
+     Offset 0 0.88 -2.12
+     Angles 0 0 0
+    }
+    LF_LicensePlatePointInfo "{C5F926778E66FC65}" {
+     Offset 0 0.50 2.22
+     Angles 180 0 0
+    }
+   }
+  }
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
    m_bIgnitionLocked 1
   }

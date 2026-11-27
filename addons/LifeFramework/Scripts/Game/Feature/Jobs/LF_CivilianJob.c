@@ -602,7 +602,7 @@ class LF_CivilianJob
 	static string RunStartedKey(LF_EJobType job)
 	{
 		if (job == LF_EJobType.PARCEL)
-			return "#LF-Job_RunStarted_Courier";
+			return "#LF-Job_RunStarted_CourierDeposit";
 
 		return string.Empty;
 	}

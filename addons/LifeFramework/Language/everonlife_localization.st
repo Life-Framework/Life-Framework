@@ -835,7 +835,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    }
   CustomStringTableItem "{FDB3A4352A9457A4}" {
    Id "EL-Item_Sold"
-   Target_en_us "Sold item for {currency:sym}%1!"
+   Target_en_us "Sold for {currency:sym}%1!"
    Target_es_es "Item vendido por {currency:sym}%1!"
    Target_de_de "Item für {currency:sym}%1 verkauft!"
    Target_fr_fr "Objet vendu pour {currency:sym}%1!"
@@ -2218,7 +2218,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{917EF52F3C24A83B}" {
      Id "LF-Activity_Guided"
      Target_en_us "The waypoint is back on your current step."
-     Comment "Next tab line after Guide me."
+     Comment "Next tab line after Resume."
     }
     CustomStringTableItem "{366A7B92337FE227}" {
      Id "LF-Activity_Kilometres"
@@ -2249,6 +2249,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Activity_PayHour"
      Target_en_us "%1/h"
      Comment "Next tab row status. %1 is money, e.g. $470."
+    }
+    CustomStringTableItem "{7E1A4C93D05B2F68}" {
+     Id "LF-Activity_PayNone"
+     Target_en_us "no wage"
+     Comment "Next tab row status for a row that pays nothing by the hour (founding a crew); it is a first step, not a job."
     }
     CustomStringTableItem "{4835914B88D22934}" {
      Id "LF-Activity_PayUnknown"
@@ -2287,7 +2292,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{58A349D528905815}" {
      Id "LF-Activity_Summary"
-     Target_en_us "Ways to earn a living. Pick one and press Start: each step puts a waypoint on your map."
+     Target_en_us "Ways to earn a living, and first steps to take (a row marked no wage pays nothing). Pick one and press Start: each step puts a waypoint on your map."
      Comment "Next tab line above the activity list."
     }
     CustomStringTableItem "{51D3548DA687534E}" {
@@ -9427,7 +9432,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4A1C9E27B05D3F19}" {
      Id "LF-Job_ParcelDest"
-     Target_en_us "the porch past the brick-walled lock-up, east end of the street"
+     Target_en_us "the delivery stop marked on your map"
      Comment "Where a courier parcel goes. Shown in the parcel description."
     }
     CustomStringTableItem "{967C561794E4E4EC}" {
@@ -9449,9 +9454,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Comment "Hint title when the player's job grade rises (employment fiction, not an arcade level-up)"
     }
     CustomStringTableItem "{B72D78719E88C276}" {
-     Id "LF-Job_RunStarted_Courier"
-     Target_en_us "Carry the parcel east along the street to the porch past the brick-walled lock-up, then Complete the run."
-     Comment "Toast when a courier picks up a parcel: where the drop is. Capitalized phrase is the drop-off action name."
+     Id "LF-Job_RunStarted_CourierDeposit"
+     Target_en_us "Carry the parcel to the delivery stop marked on your map, then Complete the run. Your {currency:sym}%1 deposit comes back on delivery."
+     Comment "Toast when a courier picks up a parcel: where the drop is and the cash deposit taken at the counter (%1). Capitalized phrase is the drop-off action name."
     }
     CustomStringTableItem "{958D10C1086B7C3E}" {
      Id "LF-Job_SignedUp"
@@ -18697,6 +18702,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-WelcomeGuide_Dismissed"
      Target_en_us "The guide will not open by itself again. Press F3 to read it."
      Comment "Toast after Don't show again."
+    }
+    CustomStringTableItem "{3D6B90E2A41C85F7}" {
+     Id "LF-WelcomeGuide_DoneBody1a"
+     Target_en_us "Your arrival errands are done and your papers are in order. Open your personal file (F2) and pick What to do next: it lists ways to earn a living and first steps around {town}. Press Start on one and it puts a waypoint on the first step; Resume puts the waypoint back on one you already started."
+     Comment "Welcome guide page 1, first paragraph once every arrival errand is turned in. Core text, no place names."
+    }
+    CustomStringTableItem "{A92F17D3586E04BC}" {
+     Id "LF-WelcomeGuide_DoneBody1b"
+     Target_en_us "Press M for the map. The next pages cover money, the map, the {police} and the {medic:plural}, and where to read more."
+     Comment "Welcome guide page 1, second paragraph once every arrival errand is turned in."
+    }
+    CustomStringTableItem "{F4C80B6195DA3E27}" {
+     Id "LF-WelcomeGuide_DoneHead1"
+     Target_en_us "WHAT NEXT"
+     Comment "Welcome guide page 1 heading once every arrival errand is turned in."
     }
     CustomStringTableItem "{08C7D7374201626B}" {
      Id "LF-WelcomeGuide_Head1"

@@ -18,7 +18,8 @@ class LF_Test_EveronActivityStarters : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void CheckRow(LF_TestContext ctx, LF_ActivityConfig config, string id, string kind)
+	//! \param wage False for a row that is a first step, not a job: it pays nothing and F2 says "no wage" (#5119).
+	protected void CheckRow(LF_TestContext ctx, LF_ActivityConfig config, string id, string kind, bool wage = true)
 	{
 		LF_ActivityDef def;
 		if (!RedProof())
@@ -29,7 +30,19 @@ class LF_Test_EveronActivityStarters : LF_Test
 			return;
 
 		ctx.EqualStr(string.Empty, LF_ActivityConfig.Problem(def), "the starter stands: " + id);
-		ctx.True(def.m_iPayPerHour > 0, "the starter says what it pays: " + id);
+		if (wage)
+		{
+			ctx.True(def.m_iPayPerHour > 0, "the starter says what it pays: " + id);
+		}
+		else
+		{
+			// Founding a crew pays nothing: no made-up hourly figure on the row (#5119).
+			ctx.Equal(0, def.m_iPayPerHour, "a starter that is not a wage carries no pay figure: " + id);
+			string badge = LF_ActivityPage.PayText(def.m_iPayPerHour);
+			ctx.EqualStr(LF_Terms.Text("#LF-Activity_PayNone"), badge, "its F2 badge says it pays no wage: " + id);
+			ctx.False(badge.Contains("$"), "its F2 badge shows no money: " + id);
+		}
+
 		ctx.EqualStr(kind, def.m_sPlaceKind, "the starter's distance is to the place: " + id);
 		ctx.True(def.StepCount() > 0, "the starter has a step: " + id);
 		if (def.StepCount() == 0)
@@ -61,7 +74,7 @@ class LF_Test_EveronActivityStarters : LF_Test
 		if (!config)
 			return;
 
-		CheckRow(ctx, config, "crew", "OrgDesk");
+		CheckRow(ctx, config, "crew", "OrgDesk", false);
 		CheckRow(ctx, config, "truckcheck", "TruckCheckStart");
 		CheckRow(ctx, config, "perkpick", "LabourOffice");
 		CheckRow(ctx, config, "rumor", "FenceYard");

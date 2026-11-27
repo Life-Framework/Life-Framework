@@ -82,7 +82,7 @@ class LF_Test_JobKindRules : LF_Test
 		ctx.EqualStr("#LF-Job_SignedUp_Taxi", taxiSign, "a taxi driver is told the taxi step");
 		ctx.EqualStr("#LF-Job_SignedUp_Courier", farmerSign, "any other job falls back to the courier text");
 		ctx.EqualStr("#LF-Job_SignedUp_Courier", unemployedSign, "no job falls back to the courier text");
-		ctx.EqualStr("#LF-Job_RunStarted_Courier", parcelRun, "a parcel run says where the cargo goes");
+		ctx.EqualStr("#LF-Job_RunStarted_CourierDeposit", parcelRun, "a parcel run says where the cargo goes");
 		ctx.EqualStr("", fuelRun, "a fuel run has no run-start text");
 		ctx.EqualStr("", taxiRun, "a taxi run has no run-start text");
 		ctx.EqualStr("", farmerRun, "a job with no run has no run-start text");

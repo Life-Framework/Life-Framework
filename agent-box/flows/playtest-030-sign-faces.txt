@@ -1,0 +1,79 @@
+# Playtest round 2 (2026-11-27): the town sign faces read in a session, a front and a back shot each (the camera offset is the
+# sign yaw read as a direction 3 m out; the "b" shot is the opposite side). Shots land in the client el-captures folder.
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow playtest-030-sign-faces
+#   node agent-box/session.mjs pull ; node agent-box/session.mjs down
+# The quiz and form R-89 are the first screens, so the client must be a fresh account.
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+
+step 1 sign bank
+stand Fit_saint_philippe_bank_lf_sign_fascia e3
+wait 3000
+shot world r2_bank_a 4372.584 16.1 10649.702 0.37 0.2 -2.98
+shot world r2_bank_b 4372.584 16.1 10649.702 -0.37 0.2 2.98
+step 2 sign barber
+stand Fit_saint_philippe_barber_barber_sign_fascia e3
+wait 3000
+shot world r2_barber_a 4414.929 13.25 10768.203 1.41 0.2 -2.65
+shot world r2_barber_b 4414.929 13.25 10768.203 -1.41 0.2 2.65
+step 3 sign carlot
+stand Fit_saint_philippe_carlot_vehicle_lot_sign e3
+wait 3000
+shot world r2_carlot_a 4396.498 15.494 10624.595 0.47 0.2 -2.96
+shot world r2_carlot_b 4396.498 15.494 10624.595 -0.47 0.2 2.96
+step 4 sign clinic
+stand Fit_saint_philippe_clinic_lf_sign_fascia e3
+wait 3000
+shot world r2_clinic_a 4431.955 14.2 10777.18 1.41 0.2 -2.65
+shot world r2_clinic_b 4431.955 14.2 10777.18 -1.41 0.2 2.65
+step 5 sign farm
+stand Fit_saint_philippe_farm_farm_sign e3
+wait 3000
+shot world r2_farm_a 4434.476 17.511 10601.009 -0.21 0.2 2.99
+shot world r2_farm_b 4434.476 17.511 10601.009 0.21 0.2 -2.99
+step 6 sign hostel
+stand Fit_saint_philippe_hostel_hostel_fascia e3
+wait 3000
+shot world r2_hostel_a 4470.322 15.7 10762.875 -2.95 0.2 -0.52
+shot world r2_hostel_b 4470.322 15.7 10762.875 2.95 0.2 0.52
+step 7 sign post
+stand Fit_saint_philippe_parcel_post_office_sign e3
+wait 3000
+shot world r2_post_a 4426.778 12.9 10752.455 2.95 0.2 -0.52
+shot world r2_post_b 4426.778 12.9 10752.455 -2.95 0.2 0.52
+step 8 sign super
+stand Fit_saint_philippe_supermarket_lf_sign_fascia e3
+wait 3000
+shot world r2_super_a 4381.03 15.5 10672.662 2.97 0.2 0.42
+shot world r2_super_b 4381.03 15.5 10672.662 -2.97 0.2 -0.42
+

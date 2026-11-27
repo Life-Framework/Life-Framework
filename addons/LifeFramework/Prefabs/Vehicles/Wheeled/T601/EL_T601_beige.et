@@ -1,6 +1,18 @@
 Vehicle : "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et" {
  ID "E1A601BE1A000002"
  components {
+  LF_LicensePlateManagerComponent "{5984C85FA25812F2}" {
+   m_Plates {
+    LF_LicensePlatePointInfo "{19FB79609C22CE07}" {
+     Offset 0 0.60 -1.96
+     Angles 0 0 0
+    }
+    LF_LicensePlatePointInfo "{46B499D2BF2159A1}" {
+     Offset 0 0.55 1.70
+     Angles 180 0 0
+    }
+   }
+  }
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
   }
   LF_VehicleStorageAccessControl "{E1A601BE1A000004}" {

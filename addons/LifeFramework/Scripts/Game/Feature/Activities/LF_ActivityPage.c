@@ -222,10 +222,15 @@ class LF_ActivityPage
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A pay of 0 is a row that is not a wage (founding a crew pays nothing): it says so, never a made-up
+	//! figure. Below 0 the pay is not known.
 	static string PayText(int perHour)
 	{
-		if (perHour <= 0)
+		if (perHour < 0)
 			return LF_Terms.Text("#LF-Activity_PayUnknown");
+
+		if (perHour == 0)
+			return LF_Terms.Text("#LF-Activity_PayNone");
 
 		return LF_Terms.Text("#LF-Activity_PayHour", LF_MoneyFormat.FormatMoney(perHour));
 	}

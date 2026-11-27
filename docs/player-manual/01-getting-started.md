@@ -15,7 +15,8 @@ A few seconds after you get out of bed a short **welcome guide** opens: five pap
 the F2 "What to do next" page, the map, police and medic duty, and where to read more. Turn the pages with **Next** and **Previous**.
 
 * **Set waypoint to the clerk** (page 1) puts a waypoint on the town clerk, the first errand. If you are further
-  along, it points at your current errand instead.
+  along, it points at your current errand instead. Once every arrival errand is turned in, page 1 is headed
+  **WHAT NEXT** and tells you to open F2 and pick **What to do next**, where **Start** on a row puts a waypoint on its first step.
 * **Close** puts it away; it opens again the next time you join, until the clerk has given you your papers.
 * **Don't show again** stops it opening by itself.
 * Press **F3** (gamepad: **right bumper + Y**) to open it again at any time. You can change the key in
@@ -41,8 +42,9 @@ Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It
   end and read **Done**. Pick one and press **Start**: a few short steps follow, each with a waypoint on your screen, a
   mark on your map and a one-line note. A step you have already done is skipped (you hold the job, you carry the tool).
   **Resume** on a started one puts the waypoint and the note back on its step.
+  A row that pays nothing by the hour is marked **no wage** instead of a pay figure.
   Four more rows point you at a place on the island and show up when they apply: **Found a crew** (the registry cabin in
-  Saint-Philippe; done once you are in a crew), **Truck check** (the examiner at the truck yard in the north-east, $300;
+  Saint-Philippe; marked no wage; done once you are in a crew), **Truck check** (the examiner at the truck yard in the north-east, $300;
   listed at Hauling level 5 or when you own a van, done once you pass), **Pick a perk** (the counter at the labor office in
   the town hall; listed once any trade reaches level 10, done once you pick a perk) and **A rumor of easy money** (the
   fence's yard; listed once you have a criminal record). **Start** puts the waypoint on the place.
@@ -59,8 +61,9 @@ step's note come back by themselves. Type `/hud objective off` in chat to hide t
 ## Your welcome pack and car
 
 The clerk gives you your **ID card**, some cash and a meal; a note lists everything you got. A small car waits in the
-garage at the car lot next to the town hall. When you take it out, a note gives its plate, its hazard lights blink and a
-marker sits over it for 30 seconds, so you can tell it from the other cars on the lot.
+garage at the car lot next to the town hall. When you take it out, one note gives its plate (it replaces the
+"waiting on the pad" note instead of standing beside it), its hazard lights blink and a marker sits over it for 30
+seconds, so you can tell it from the other cars on the lot.
 
 ### The mining run, step by step
 
@@ -93,7 +96,7 @@ back when you rejoin. Other players do not see yours.
 | **Your first car** | The clerk also puts a small **Sputnik T601** in your garage. It is yours, and it takes one of your garage slots. Walk to the **garage counter** at the car lot and pick *Retrieve vehicle*; the car stands on the garage pad and your key is already in your pocket. | Car lot, west of the town hall |
 | **Apple picking** | Drive to the **orchard** east of town and pick **six apples** from the apple trees. | Orchard |
 | **Fresh juice** | Use the **juice press** on the orchard stall: three apples make one bottle of apple juice, so your six make two. | Orchard stall |
-| **Sell your juice at the market stall** | Sell your apple juice to the **market trader** in town: look at the stall, scroll down to the juice row (the last one, **Sell 1 Apple Juice**; the row shows the price, $18 a bottle) and press F, or pick **Sell all goods**. A note then reads *You are on your way*: take a job from the town board, ask the clerk for more errands, and find your errands and jobs in your player menu. | Market |
+| **Sell your juice at the market stall** | Sell your apple juice to the **market trader** in town: look at the stall, scroll down to the juice row (the last one, **Sell 1 Apple Juice**; the row shows the price, $18 a bottle) and press F, or pick **Sell all goods**. The sale note reads *Sold for $18!*, then a card titled *Find steady work* reads *You are on your way*: take a job from the town board, ask the clerk for more errands, and find your errands and jobs in your player menu. | Market |
 
 You get the welcome pack and the car once per character, never again after a respawn, a rejoin or a server restart.
 A character who already owns a car gets no starter car: take your own car out of the garage for that step. A character

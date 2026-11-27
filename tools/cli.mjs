@@ -106,6 +106,7 @@ import { checkBudgetMs, createWatchdog } from "./lib/check-budget.mjs";
 import { silentFailureNote } from "./lib/silent-failure.mjs";
 import { killTreeSync, pidAlive as wbPidAlive, waitUntilDone } from "./lib/wb-until.mjs";
 import { findFreezeDump, stallReason, steamSignedIn } from "./lib/wb-launch-health.mjs";
+import * as gameUpdate from "./lib/game-update.mjs";
 
 function mcpDirFor(root) {
   const own = join(root, "tools", "mcp");
@@ -405,6 +406,12 @@ function cmdStatus() {
     console.log(`  ${wbRoute.statusLine({ machines: pool.loadMachines(ROOT) })}`);
   } catch (e) {
     console.log(`  workbench: unknown (${e.message})`);
+  }
+  try {
+    const gu = gameUpdate.check(ROOT, { dirs: gameUpdate.dirsFromEnv(envOf()) });
+    console.log(`  ${gu.line ?? gameUpdate.okLine(gu.install)}`);
+  } catch (e) {
+    console.log(`  game: unknown (${e.message})`);
   }
   console.log("");
   console.log("mcp servers (tools/mcp/):");
@@ -2725,6 +2732,18 @@ function cmdSessionUp(root, dir, flags) {
     if (!existsSync(f)) {
       console.log(`FAIL  not found: ${f}`);
       return 1;
+    }
+  }
+  // A client on a newer game than the server is refused by it ("Client uses unsupported protocol version"): fail in
+  // seconds with both builds, not after ~5 min of "server not ready" (docs/worktrees.md "Game update guard").
+  if (process.env.LF_SKIP_GAME_UPDATE_CHECK !== "1") {
+    const gu = gameUpdate.check(root, { dirs: gameUpdate.dirsFromEnv(envOf()) });
+    if (gu.line) {
+      if (clients > 0) {
+        console.log(`FAIL  ${gu.line}`);
+        return 1;
+      }
+      console.log(`WARN  ${gu.line} (a server-only session starts no client, so it boots)`);
     }
   }
   const holderOf = () => {

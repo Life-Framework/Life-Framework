@@ -1,4 +1,5 @@
 import { arrive, clientBox, sessionDir } from "../session.mjs";
+import { hasPapers, papersMove, resetTrades } from "./_preconditions.mjs";
 
 // F2 "What to do next": the four island starters are gated (#4771).
 //   node agent-box/session.mjs up --mission island --profile full
@@ -7,7 +8,9 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 // A fresh civilian opens the Next tab: the crew row is listed, the truck check, perk pick and rumor rows are not
 // (shot one). The client then earns Hauling XP with `levelupcard grant` (the real AddXp path, DELIVERY 5000 is level 10)
 // and the tab is read and shot again: Hauling 5 opens the truck check and a trade at level 10 the perk pick; the rumor
-// stays hidden with no criminal record. Run it on a fresh session: the XP stays with the account.
+// stays hidden with no criminal record. It sets up its own character, so it runs in any order: trades go back to level 1
+// first and the clerk is skipped when the arrival papers are already turned in. The one thing it cannot reset is a
+// criminal record (no harness verb clears one): run it before the police and jail proofs.
 const ANSWER_BUDGET_MS = 15000;
 
 async function runStarterGatesProof() {
@@ -40,27 +43,40 @@ async function runStarterGatesProof() {
   on(1, { verb: "guide", words: ["close"] });
   wait(500);
 
-  // The clerk's papers come first: no run (and no starter row) is listed before them. Talk at the town hall
-  // desk the way playtest-030-first-two-hours does, answering each reply as it appears, until the card is carried.
+  // Its own precondition, so the run order does not matter (rc-proof-order): a "new civilian" is a character with its
+  // papers and every trade at level 1. The levels are set here (an earlier proof may have raised Hauling or a trade).
+  const resetFailed = resetTrades(on, wait, 1);
+  if (resetFailed.length) console.log(`trade reset: ${resetFailed.join("; ")}`);
+
+  // The clerk's papers come first: no run (and no starter row) is listed before them. The gate is the turned-in
+  // arrival quest, not the card in the pack: a character who already did the clerk (the first-two-hours flow, then the
+  // reset every proof verb starts with, which empties the pack) is registered and the clerk issues nothing again.
+  // Otherwise talk at the town hall desk the way playtest-030-first-two-hours does, answering each reply as it appears,
+  // until the card is carried.
   const CLERK = "Fit_saint_philippe_arrival_town_hall_clerk";
-  must(on(1, { verb: "stand", entityName: CLERK, side: "e2" }, 20000), "stand at the clerk");
-  wait(1500);
-  must(on(1, { verb: "use", className: "LF_QuestAction", entityName: CLERK }, 10000), "talk to the clerk");
-  for (let turn = 0; turn < 12 && !/idcard=(?!none)\S+/.test(on(1, { verb: "state" }, 10000).detail); turn++) {
-    for (let waited = 0; waited < 20000 && !/phase=choosing/.test(String(on(1, { verb: "dialogue" }, 10000).detail)); waited += 1000) wait(1000);
-    on(1, { verb: "input", action: "MenuSelect" });
-    wait(2500);
+  const papersNow = () => hasPapers(on(1, { verb: "state" }, 10000).detail);
+  if (papersMove(on(1, { verb: "state" }, 10000).detail) === "skip") {
+    console.log("the character already has its papers (arrival_register is turned in): no clerk talk");
+  } else {
+    must(on(1, { verb: "stand", entityName: CLERK, side: "e2" }, 20000), "stand at the clerk");
+    wait(1500);
+    must(on(1, { verb: "use", className: "LF_QuestAction", entityName: CLERK }, 10000), "talk to the clerk");
+    for (let turn = 0; turn < 12 && !papersNow(); turn++) {
+      for (let waited = 0; waited < 20000 && !/phase=choosing/.test(String(on(1, { verb: "dialogue" }, 10000).detail)); waited += 1000) wait(1000);
+      on(1, { verb: "input", action: "MenuSelect" });
+      wait(2500);
+    }
+    wait(9000);
+    on(1, { verb: "input", action: "MenuBack" });
+    wait(2000);
+    if (!papersNow()) fails.push("the clerk did not hand over the papers (arrival_register is not turned in)");
   }
-  wait(9000);
-  on(1, { verb: "input", action: "MenuBack" });
-  wait(2000);
-  if (!/idcard=(?!none)\S+/.test(on(1, { verb: "state" }, 10000).detail)) fails.push("the clerk did not hand over the ID card");
 
   must(on(1, { verb: "playermenu", words: ["open", "next"] }), "open the file on NEXT");
   let rows = rowsNow();
   if (!has(rows, "crew")) fails.push(`a new civilian is not offered the crew row: ${rows}`);
   for (const id of ["truckcheck", "perkpick", "rumor"]) {
-    if (has(rows, id)) fails.push(`a new civilian is offered ${id}: ${rows}`);
+    if (has(rows, id)) fails.push(`a new civilian is offered ${id}${id === "rumor" ? " (a criminal record left by an earlier proof opens it)" : ""}: ${rows}`);
   }
   const indexOf = (r, id) => r.replace(/.*ids=/, "").split(",").findIndex((x) => x.startsWith(id + ":"));
   must(on(1, { verb: "activities", words: ["pick", String(Math.max(indexOf(rows, "crew"), 0))] }), "pick the crew row");

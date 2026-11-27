@@ -1,6 +1,18 @@
 Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et" {
  ID "E1A469BE1A000002"
  components {
+  LF_LicensePlateManagerComponent "{5984C85FA25812F2}" {
+   m_Plates {
+    LF_LicensePlatePointInfo "{FAC374EBE54FAA60}" {
+     Offset -0.34 0.78 -1.92
+     Angles 0 0 0
+    }
+    LF_LicensePlatePointInfo "{1B8930908B08FD01}" {
+     Offset 0 0.62 2.22
+     Angles 180 0 0
+    }
+   }
+  }
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
   }
   LF_VehicleStorageAccessControl "{E1A469BE1A000004}" {

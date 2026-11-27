@@ -697,6 +697,13 @@ modded class SCR_ChimeraCharacter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether this machine shows the handcuffs model on the wrist (the harness `peers` worn= read).
+	bool LF_IsWornCuffsShown()
+	{
+		return m_LF_WornCuffs != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server only: the cuffs on the wrist open (the release hold) or shut again.
 	void LF_SetCuffsOpen(bool open)
 	{

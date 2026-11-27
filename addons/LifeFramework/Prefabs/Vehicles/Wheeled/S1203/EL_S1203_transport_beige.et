@@ -1,6 +1,18 @@
 Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et" {
  ID "E1A1203BE1A00002"
  components {
+  LF_LicensePlateManagerComponent "{5984C85FA25812F2}" {
+   m_Plates {
+    LF_LicensePlatePointInfo "{0900DDBE426B746B}" {
+     Offset 0 0.70 -2.24
+     Angles 0 0 0
+    }
+    LF_LicensePlatePointInfo "{C79C4FE3F499480E}" {
+     Offset 0 0.64 2.24
+     Angles 180 0 0
+    }
+   }
+  }
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
   }
   LF_VehicleStorageAccessControl "{E1A1203BE1A00004}" {

@@ -1,6 +1,18 @@
 Vehicle : "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et" {
  ID "E1A923BE1A000002"
  components {
+  LF_LicensePlateManagerComponent "{5984C85FA25812F2}" {
+   m_Plates {
+    LF_LicensePlatePointInfo "{563A70B3AE86F935}" {
+     Offset 0 1.00 -4.52
+     Angles 0 0 0
+    }
+    LF_LicensePlatePointInfo "{9EA90BB4D8A8F655}" {
+     Offset 0 0.95 3.77
+     Angles 180 0 0
+    }
+   }
+  }
   LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
   }
   LF_VehicleStorageAccessControl "{E1A923BE1A000004}" {
