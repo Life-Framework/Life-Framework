@@ -673,6 +673,11 @@ const SLOW_CHECK_S = new Map([
   ["selftest-scratch-selftest.mjs", 1200],
   ["merge-drivers-selftest.mjs", 1200],
   ["promote-selftest.mjs", 1200],
+  // The same wall on 2026-11-22 for the other scratch-repo selftests: main-ff-heal (600 s, twice), main-guard-validate
+  // (602 s) and pool-selftest (486 s, reaping 30-minute-old leases) were red on 600 s with a green recheck.
+  ["main-ff-heal-selftest.mjs", 1200],
+  ["main-guard-validate-selftest.mjs", 1200],
+  ["pool-selftest.mjs", 1200],
 ]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
@@ -5445,6 +5450,11 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
       return (await import("./lib/placement-gate.mjs")).runIslandGate(files, (a) => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "audit", "placement", ...a], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1);
     },
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
+    pullBranch: () => {
+      const f = wt.git(wtRoot, ["fetch", "origin", e.branch]);
+      if (f.status !== 0) throw new Error((f.stderr || f.stdout).trim());
+      shipMergeBase(wtRoot, e.branch, healMergeSync, (l) => console.log(l));
+    },
     findPr: () => wt.findOpenPrGh(wtRoot, e.branch),
     createPr: (o) => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base, draft: o?.draft === true }),
     autoMerge: (n) => gh(["pr", "merge", String(n), "--auto", "--merge"]),
@@ -5459,7 +5469,7 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
   // waiting out the 15-minute LIVE window the ship's own logs would start. A later edit or commit here ends it.
   if (r.code === 0 && !draft) markHandoff(wtRoot, head, "ship");
   if (r.code === 0 && draft) console.log(`ship: draft PR left open for review. Prune after it merges: 'cli wt prune ${slug}'`);
-  else if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. If GitHub later reports CONFLICTING, re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
+  else if (r.code === 0) console.log(`ship: merged, in-dev once GitHub merges it. A CONFLICTING state from driver-merged files heals itself (pr-autoheal workflow); for any other conflict re-run 'cli wt ship ${slug}'. Prune after merge: 'cli wt prune ${slug}'`);
   return r.code;
 }
 

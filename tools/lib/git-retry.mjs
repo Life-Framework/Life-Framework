@@ -8,6 +8,11 @@
 // comes back at once, never re-run and never reported as SILENT-GIT (main run 19f958076: an absent MERGE_HEAD was
 // run three times behind a backoff and logged as a failure). `expectedGitExits(args)` knows the git probes; any
 // other call names its own with `{ expectExit: [1] }`. A probe that dies another way (128, a crash) is still re-run.
+// A launch failure is a flake too: Windows could not start git at all under memory pressure ("error launching
+// git: The paging file is too small", "Insufficient system resources", exit 0xC0000142 or 0xC0000017, a spawn
+// EAGAIN/ENOMEM/EMFILE; main guard 2026-11-22 and 2026-11-23: main-ff-heal, main-guard-validate and world-sync
+// selftests). The command never ran, so it is re-run too, behind a longer backoff (memory takes a moment to come
+// back) instead of failing the whole check.
 // When every attempt fails silently the result says so: exit code, signal and "no output" on stderr, plus one
 // `SILENT-GIT` line on this process's stderr (the CI log).
 //
@@ -22,6 +27,7 @@ import { spawnSync } from "node:child_process";
 export const GIT_ATTEMPTS = 3;
 export const FAIL_SILENTLY_ENV = "LF_GIT_FAIL_SILENTLY";
 const BACKOFF_MS = 150;
+const LAUNCH_BACKOFF_MS = 1500;
 
 // What a process did, never empty: the spawn error, the signal, the exit code and what it printed.
 export function describeRun(res) {
@@ -69,6 +75,18 @@ export function isSilentFailure(res, expectExit = []) {
   return String(res.stdout).trim() === "" && String(res.stderr).trim() === "";
 }
 
+const LAUNCH_EXITS = new Set([3221225794, 3221225495]); // STATUS_DLL_INIT_FAILED, STATUS_NO_MEMORY
+const LAUNCH_SPAWN_CODES = new Set(["EAGAIN", "ENOMEM", "EMFILE", "ENFILE"]);
+const LAUNCH_TEXT = /error launching git|paging file is too small|insufficient system resources|not enough memory resources|resource temporarily unavailable/i;
+
+// The OS could not start the process (not "git ran and said no"): resource exhaustion, so a re-run is safe.
+export function isLaunchFailure(res) {
+  if (res.error) return LAUNCH_SPAWN_CODES.has(res.error.code);
+  if (res.status === 0 || res.status == null) return false;
+  if (LAUNCH_EXITS.has(res.status)) return true;
+  return LAUNCH_TEXT.test(String(res.stderr ?? ""));
+}
+
 function injectedFailures(env) {
   const n = Number(env[FAIL_SILENTLY_ENV]);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
@@ -85,7 +103,7 @@ export function spawnRetrying(command, args, options = {}, { attempts = GIT_ATTE
   let first = null;
   let result = null;
   for (let attempt = 1; attempt <= attempts; attempt++) {
-    if (attempt > 1) nap(BACKOFF_MS * (attempt - 1));
+    if (attempt > 1) nap((result && isLaunchFailure(result) ? LAUNCH_BACKOFF_MS : BACKOFF_MS) * (attempt - 1));
     if (injected > 0) {
       injected--;
       result = { status: 1, signal: null, stdout: options.encoding ? "" : Buffer.alloc(0), stderr: options.encoding ? "" : Buffer.alloc(0), output: null, pid: 0 };
@@ -93,8 +111,12 @@ export function spawnRetrying(command, args, options = {}, { attempts = GIT_ATTE
       result = spawnSync(command, args, attempt > 1 && optionsFor ? optionsFor(attempt, options) : options);
     }
     if (attempt > 1) onAttempt?.(attempt, result, first);
-    if (!isSilentFailure(result, expectExit)) return result;
+    if (!isSilentFailure(result, expectExit) && !isLaunchFailure(result)) return result;
     first ??= result;
+  }
+  if (isLaunchFailure(result)) {
+    console.error(`LAUNCH-GIT lf-git: ${name} could not start ${attempts} times (exit ${result.status ?? "none"}, ${result.error?.code ?? "no spawn error"})`);
+    return result;
   }
   const message = `lf-git: ${name} failed ${attempts} times (exit ${result.status ?? "none"}, signal ${result.signal ?? "none"}) with no output\n`;
   console.error(`SILENT-GIT ${message.trim()}`);

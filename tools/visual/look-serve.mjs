@@ -43,6 +43,33 @@ const BOOT_BUDGET_S = 150;
 const STOP_WAIT_MS = 15000;
 // Raw files a request owns; serve.txt and alive.txt belong to the server and are never cleared by a request.
 export const REQUEST_FILES = /^(plan\.txt|go\.txt|go\.tmp|done\.txt|status\.txt|.*\.png)$/;
+// The server's own files and the request's inbox: everything else in the raw folder is the answer (claimAnswer).
+const SERVER_FILES = new Set(["serve.txt", "alive.txt", "stop.txt", "go.txt", "go.tmp", "plan.txt"]);
+const ANSWER_MAX_AGE_MS = 6 * 60 * 60 * 1000;
+
+// Each answer moves out of the shared raw folder into a folder of its own request id while the build lock is still
+// held, and look collects from there. On 2026-11-27 look released the lock and then collected from the shared folder:
+// the next worktree's request cleared it (sendRequest removes every .png; a restart empties it), and the villages
+// sweep got 70 of 70 shots missing twice. -> the answer folder.
+export const answersOf = (profile) => join(profile, "profile", "lf-visual-answers");
+export function claimAnswer(raw, answers, id) {
+  const dest = join(answers, String(id).replace(/[^A-Za-z0-9._-]/g, "_"));
+  mkdirSync(dest, { recursive: true });
+  for (const f of readdirSync(raw)) if (!SERVER_FILES.has(f)) renameRetry(join(raw, f), join(dest, f));
+  return dest;
+}
+// Answer folders a caller never collected (it crashed, or ran with --keep) go after ANSWER_MAX_AGE_MS.
+export function pruneAnswers(answers, now = Date.now(), maxAgeMs = ANSWER_MAX_AGE_MS) {
+  let names = [];
+  try { names = readdirSync(answers); } catch { return 0; }
+  let n = 0;
+  for (const f of names) {
+    try {
+      if (now - statSync(join(answers, f)).mtimeMs > maxAgeMs) { rmSync(join(answers, f), { recursive: true, force: true }); n++; }
+    } catch {}
+  }
+  return n;
+}
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const short = (sha) => String(sha || "").slice(0, 10);
@@ -412,7 +439,10 @@ export async function serveLook(root, { plan, budgetS, exe, workbenchArgs, snaps
     return { ok: false, why };
   }
   writeServeState(root, { ...st, sha: snap.sha, lastUsed: new Date().toISOString(), by: root });
-  return { ok: true, served, sha: snap.sha, renderedTree, reason: decision.reason, raw: res.raw, statusText: res.statusText, seconds: res.seconds, id };
+  // Still under the build lock: the answer leaves the shared folder before the next request can clear it.
+  pruneAnswers(answersOf(st.profile));
+  const own = claimAnswer(res.raw, answersOf(st.profile), id);
+  return { ok: true, served, sha: snap.sha, renderedTree, reason: decision.reason, raw: own, statusText: res.statusText, seconds: res.seconds, id };
 }
 
 // ------------------------------------------------------------------ the `look serve` command

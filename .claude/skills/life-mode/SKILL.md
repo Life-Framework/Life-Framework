@@ -39,6 +39,20 @@ see, **show-me-your-work** for long autonomous work.
 - Heavy commands (`build`, `test`, `dev`, `serve`, `ci`) run only in a worktree; see `docs/worktrees.md`.
 - Delegate bulk inspection when it saves context; inspect delegated diffs yourself.
 
+## Under a feature freeze
+
+A freeze is on while the lead says so (0.3.0: #4836, cut 2026-11-28; remove this section when it lifts). A card is
+worth dispatching when it is:
+- a defect a player or sweep hit: a BELOW grade (dark site, empty shelf, floating prop, unreadable sign), a failing
+  test or proof, a stale proof, a red `main`;
+- wording and polish: US English, debug-looking text, a missing fascia or lamp (**polish**);
+- release readiness: docs, `Feature.md` rows, tooling friction, a playtest round with its pictures, perf audits.
+
+Refuse, and file an issue labelled for after the cut instead of building: a new feature, system, job, shop, item or
+quest; new content that is not fixing a graded defect; a refactor with no bug behind it; anything that changes a save
+payload, an RPC signature or a shared prefab's shape. One slot or one defect per PR, smallest diff, its proof in the
+body. A fix for the release goes `--base release-<ver>` and is synced back (`docs/worktrees.md` "Base branches").
+
 ## Completion
 
 1. Inspect the diff and affected resources.

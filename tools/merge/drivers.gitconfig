@@ -23,6 +23,10 @@
 	name = Three-way multiset merge of the enforce-lint baseline
 	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs union-lint-baseline.mjs %O %A %B %P; else node tools/merge/union-lint-baseline.mjs %O %A %B %P; fi"
 
+[merge "lf-island-baseline"]
+	name = Three-way row-set merge of the island placement baseline
+	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs merge-island-baseline.mjs %O %A %B %P; else node tools/merge/merge-island-baseline.mjs %O %A %B %P; fi"
+
 [merge "lf-table-rows"]
 	name = Markdown table union keyed by the Prefab or Item column
 	driver = "if [ -f tools/merge/run-driver.mjs ]; then node tools/merge/run-driver.mjs merge-table-rows.mjs %O %A %B %P; else node tools/merge/merge-table-rows.mjs %O %A %B %P; fi"

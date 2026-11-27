@@ -303,7 +303,7 @@ function throws(fn) {
 const tmp = scratchDir("lf-town-map-");
 try {
   const out = join(tmp, "mapping.json");
-  const cli = (...args) => spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "town", ...args], { cwd: ROOT, encoding: "utf8", timeout: 60000, windowsHide: true });
+  const cli = (...args) => spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), "town", ...args], { cwd: ROOT, encoding: "utf8", timeout: 300000, windowsHide: true }); // 60 s flaked `--force` on a loaded box (main guard 2026-11-24)
   const noSub = cli();
   check(/\bmap\b/.test(noSub.stdout + noSub.stderr), "`town` with no subcommand should list `map`");
   const unknown = cli("nosuchsub");

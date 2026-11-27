@@ -20,6 +20,7 @@
 // Exit codes (the CLI): 0 ok (held files still count as ok), 2 blocked (nothing changed), 1 error (state restored).
 
 import { spawnSync } from "node:child_process";
+import { gitSync } from "./git-retry.mjs";
 import { createHash } from "node:crypto";
 import { existsSync, lstatSync, mkdirSync, readFileSync, readlinkSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
@@ -29,7 +30,8 @@ import { wtDirFor } from "./local-config.mjs";
 const BIG = 1 << 30;
 
 function runGit(dir, args, { env, input, allowFail = false, timeout = 600000 } = {}) {
-  const r = spawnSync("git", args, {
+  // gitSync: git failing to start under memory pressure (exit 0xC0000142) is re-run, not reported as a failed sync.
+  const r = gitSync(args, {
     cwd: dir,
     env: { ...process.env, GIT_TERMINAL_PROMPT: "0", ...(env ?? {}) },
     input,

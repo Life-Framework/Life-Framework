@@ -109,3 +109,39 @@ SCR_DestructibleEntity Fit_farmcompound_compound_fence_e_12 : "{57873EAF69D5450E
  coords 6654.721 0 5965.11
  angleY 38
 }
+GenericEntity Fit_farmcompound_compound_lamp_barrel_door : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 6631.815 115.387 5966.002
+ angleY 58
+}
+GenericEntity Fit_farmcompound_compound_lamp_barrel_flag : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 6639.623 115.976 5963.327
+ angleY 178
+}
+GenericEntity Fit_farmcompound_compound_lamp_barrel_plate : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 6637.434 116.529 5977.093
+ angleY -62
+}
+GameEntity Fit_farmcompound_compound_farm_lamp_door : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 6631.815 116.477 5966.002
+ angleY 38
+}
+GenericEntity Fit_farmcompound_compound_farm_glow_door : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6631.815 116.757 5966.002
+ angleY 38
+}
+GameEntity Fit_farmcompound_compound_farm_lamp_flag : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 6639.623 117.066 5963.327
+ angleY 38
+}
+GenericEntity Fit_farmcompound_compound_farm_glow_flag : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6639.623 117.346 5963.327
+ angleY 38
+}
+GameEntity Fit_farmcompound_compound_farm_lamp_plate : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+ coords 6637.434 117.619 5977.093
+ angleY 38
+}
+GenericEntity Fit_farmcompound_compound_farm_glow_plate : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
+ coords 6637.434 117.899 5977.093
+ angleY 38
+}

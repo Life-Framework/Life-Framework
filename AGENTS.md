@@ -68,6 +68,8 @@ agent per area. `tools\cli usage` shows where the tokens went.
 8. **Update the area's `docs/features/<area>.md` in the same change** that alters a feature. `docs/features.md` is a generated index (`tools\cli regen-features`); never add rows to it.
    Append or edit only your rows; the merge driver keeps rows both sides
    append and stops with conflict markers when both edit the same line.
+   GitHub runs no merge driver, so such a PR goes CONFLICTING when main moves; the
+   `pr-autoheal` workflow merges main in with the drivers within minutes. Leave it alone.
 9. **Classify every new resource core or pack with the red line**
    (`docs/architecture/core-vs-pack.md`): the core decides what the game can
    do, the pack decides what this server is. The core never references
@@ -187,6 +189,9 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   generated and append-only files (string table, language confs, test
   registry, `docs/features/*.md`, `debug-log-triage.md`, the enforce-lint baseline)
   have merge drivers in `tools/merge/`, so they do not count as conflicts.
+  On GitHub the `pr-autoheal` workflow merges main into a PR whose only conflicts are
+  those files, on every push to main and every 20 minutes (docs/worktrees.md "Auto-heal on GitHub").
+  A later `wt ship` whose push is refused as non-fast-forward merges that commit in and pushes again.
 - After your PR is up, `tools\cli prs status`; the maintainer/lead runs `prs heal`.
 
 ## Tests

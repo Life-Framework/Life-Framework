@@ -31,11 +31,24 @@ export function bothSidesTouched(ours, theirs) {
 
 export const BEHIND = /base branch was modified|not up to date|is behind|out of date|update the branch/i;
 export const isBehindRefusal = (text) => BEHIND.test(String(text ?? ""));
+// A push git refuses because the remote branch has commits this one lacks: the pr-autoheal workflow (or `prs heal`)
+// merged main into the PR branch after the last ship.
+export const REMOTE_AHEAD = /non-fast-forward|fetch first|\[rejected\]|updates were rejected/i;
+export const isRemoteAhead = (text) => REMOTE_AHEAD.test(String(text ?? ""));
 
 // deps: driverOverlap() (optional) -> driver-merged files both sides changed; mergeTree() -> {status, stdout, stderr}; mergeBase() -> throws on failure; validate() -> exit code;
 // push() -> {status, stdout, stderr}; findPr() -> pr|null; createPr() -> pr; autoMerge(n) -> {status, stdout, stderr};
-// mergeState(n) -> "BEHIND"|"DIRTY"|...; regenSchema() (optional) rebuilds and commits docs/config/ when the branch needs it; log(line).
+// mergeState(n) -> "BEHIND"|"DIRTY"|...; pullBranch() (optional) merges origin/<branch> into HEAD, throws on a conflict; regenSchema() (optional) rebuilds and commits docs/config/ when the branch needs it; log(line).
 // draft: the PR is opened as a draft and auto-merge is never planned (town-draft and maintainer-review PRs).
+// Push; when the remote branch moved ahead (an auto-heal merge of main), merge it in once and push again.
+function pushOrPull(deps, log) {
+  const first = deps.push();
+  if (first.status === 0 || !deps.pullBranch || !isRemoteAhead(`${first.stdout ?? ""}\n${first.stderr ?? ""}`)) return first;
+  log("ship: the PR branch on GitHub has commits this worktree lacks (an auto-heal merge of main); merging them in");
+  try { deps.pullBranch(); } catch (e) { return { status: 1, stdout: "", stderr: `merging the remote branch: ${e.message}` }; }
+  return deps.push();
+}
+
 export async function shipDirect(deps, { base = "main", slug = "?", preflight = true, retries = 2, draft = false } = {}) {
   const log = deps.log ?? (() => {});
   const fail = (why) => { log(`FAIL  ${why}`); return { code: 1, why }; };
@@ -65,7 +78,7 @@ export async function shipDirect(deps, { base = "main", slug = "?", preflight = 
     if (v !== 0) return fail(`preflight: validate failed (exit ${v}); fix it, commit, re-run 'tools\\cli wt ship ${slug}'. Nothing was pushed.`);
   }
   if (!preflight) { const f = mergeForDrivers(); if (f) return f; regen(); }
-  const push = deps.push();
+  const push = pushOrPull(deps, log);
   if (push.status !== 0) return fail(`push:${String(push.stderr || push.stdout).trim()}`);
   let pr;
   let reused = false;
@@ -101,7 +114,7 @@ export async function shipDirect(deps, { base = "main", slug = "?", preflight = 
     log(`ship: GitHub says the branch is behind origin/${base}; merging it in and pushing again`);
     try { deps.mergeBase(); } catch (e) { return { ...fail(`merge origin/${base}: ${e.message} (PR ${pr.url})`), pr }; }
     regen();
-    const p2 = deps.push();
+    const p2 = pushOrPull(deps, log);
     if (p2.status !== 0) return { ...fail(`push after merging origin/${base}: ${String(p2.stderr || p2.stdout).trim()}`), pr };
   }
   log(`ship: auto-merge on; GitHub merges once its validate check passes. The main guard checks main after the merge.`);

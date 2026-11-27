@@ -13,6 +13,7 @@ import { mergeJsonKeys } from "../merge/merge-json-keys.mjs";
 import { regenPlan, timeoutFor } from "../merge/regen-generated.mjs";
 import { driverBackstopMs } from "../merge/run-driver.mjs";
 import { mergeLintBaselines } from "../merge/union-lint-baseline.mjs";
+import { mergeIslandBaselines } from "../merge/merge-island-baseline.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 // Each scene below is a section that runs in its own process, in parallel (tools/lib/selftest-sections.mjs);
@@ -135,6 +136,18 @@ if (clash.ok) fail("same id with different text should fail");
   const lintRound = mergeLintBaselines(lintText, lintText, lintText);
   if (!lintRound.ok || lintRound.text !== lintText) fail("enforce-lint-baseline.json does not round-trip");
 
+  // Island baseline: round-trips, and two branches that each drop a neighboring row keep both drops.
+  const islandText = readFileSync(join(ROOT, "tools", "place", "island-baseline.json"), "utf8");
+  const islandRound = mergeIslandBaselines(islandText, islandText, islandText);
+  if (!islandRound.ok || islandRound.text !== islandText) fail("island-baseline.json does not round-trip");
+  {
+    const rows = (text) => JSON.parse(text).rows;
+    const without = (drop) => JSON.stringify({ note: "n", rows: ["a", "b", "c", "d"].filter((r) => r !== drop) });
+    const m = mergeIslandBaselines(JSON.stringify({ note: "n", rows: ["a", "b", "c", "d"] }), without("b"), without("c"));
+    if (!m.ok || rows(m.text).join(",") !== "a,d") fail(`island baseline: two neighboring drops should give a,d, got ${m.ok ? rows(m.text) : m.error}`);
+    if (mergeIslandBaselines("", "{not json", "{}").ok) fail("island baseline: an unparseable side must not merge");
+  }
+
   const locPlan = regenPlan("addons/LifeFramework/Language/everonlife_localization.en_us.conf");
   const packLocPlan = regenPlan("addons/LF_Everon1989/Language/lf_everon1989_localization.en_us.conf");
   if (!packLocPlan || packLocPlan.kind !== "localization") fail("a pack language conf should resolve by regen-localization -Write");
@@ -156,6 +169,7 @@ if (clash.ok) fail("same id with different text should fail");
     ["docs/features/*.md", "lf-markdown"],
     ["docs/debug-log-triage.md", "lf-markdown"],
     ["tools/validation/enforce-lint-baseline.json", "lf-lint-baseline"],
+    ["tools/place/island-baseline.json", "lf-island-baseline"],
     ["docs/asset-inventory.md", "lf-table-rows"],
     ["docs/playtest.md", "lf-markdown"],
     ["website/content/gallery.json", "lf-json-keys"],

@@ -33,8 +33,8 @@ tools\cli wt ship slice-<N> --refs <N> --body-file tmp\pr-body-slice-<N>.md --co
 tools\cli slice record <N> --model sonnet --outcome merged --gate pass|fail
 ```
 - `--commit` commits anything left (git add -A) first; without it a dirty worktree is refused.
-- Ship merges `origin/main` itself and regenerates a conflicted test registry or language conf. Only a conflict in
-  your own files comes back to you.
+- Ship merges `origin/main` only when `git merge-tree` reports a conflict, and regenerates a conflict that is only in the
+  language confs. Only a conflict in your own files comes back to you.
 - `slice record` computes minutes from the worktree's creation time; do not estimate them. `--minutes N` is kept only as `agentMinutes` on the row.
 - `slice record --outcome merged` with the PR still open records `shipped` and exits 0. Then stop: never poll
   `gh pr checks`, `Wait-Process` or sleep for the merge; auto-merge and the main guard finish it.
@@ -48,8 +48,10 @@ Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, then exactly
 `PR <full URL>, head <SHA>, checks and reviews <state>` (or the `RESUME <path>` line).
 
 ## Known traps
-- A new `LF_Test_*.c` needs `tools\cli regen-tests`; the registry is generated, never hand-edited.
+- There is no test registry: a new `LF_Test_*.c` with its own `[LF_TestInfo]` is found by reflection; `tools\cli regen-tests` only checks it.
 - A string is appended to `Language/everonlife_localization.st`, then `tools\cli regen-localization`. No `EL_` names.
+  Changing an existing string: grep the old text in `Tests/` and `tools/validation` and fix every pin (#4993 turned `main` red).
+- Under the 0.3.0 freeze a card is a fix, wording or readiness job; a new feature is refused (`life-mode` "Under a feature freeze").
 - `[LF_TestInfo(LF_TestTier.LOGIC|WORLD|PERSISTENCE)]` and a `// red-proof:` line sit above the class. A test never asserts a town
   coordinate or distance.
 - Change a feature: update `docs/features/<area>.md` in the same PR; never add rows to `docs/features.md`.

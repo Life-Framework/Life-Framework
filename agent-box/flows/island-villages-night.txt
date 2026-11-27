@@ -1,0 +1,37 @@
+# Villages and rural sites at 22:00 (sweep 2026-11-27): Levie and Chotain pubs, Montignac depot, still barn, chop yard, farm compound, sawmill, hilltop mast, Meaux speed trap.
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow island-villages-night
+#   node agent-box/villages-night-shots.mjs <tag> [client] [spot,spot]     (the shot list: `capture world` at 22:00, tag before|after)
+#   node agent-box/session.mjs pull / copy the images, then node agent-box/session.mjs down
+# The flow only signs in (the registration sheet); the shots are the script's `capture world <name> x y z ox oy oz <hour>` lines, eye height.
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
