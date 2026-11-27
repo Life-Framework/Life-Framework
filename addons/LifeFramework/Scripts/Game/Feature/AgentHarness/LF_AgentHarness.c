@@ -2823,7 +2823,12 @@ class LF_AgentHarness
 			int peerCuffed = 0;
 			if (LF_Restraint.IsRestrained(body))
 				peerCuffed = 1;
-			joined += string.Format(" cuffed=%1", peerCuffed);
+			// The handcuffs model this client draws on that wrist (a late joiner's copy, 2026-11-27 sweep).
+			int peerWorn = 0;
+			SCR_ChimeraCharacter peerChimera = SCR_ChimeraCharacter.Cast(body);
+			if (peerChimera && peerChimera.LF_IsWornCuffsShown())
+				peerWorn = 1;
+			joined += string.Format(" cuffed=%1 worn=%2", peerCuffed, peerWorn);
 			joined += " " + BodyToken(body);
 		}
 
