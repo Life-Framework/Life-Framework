@@ -12379,7 +12379,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{15CA4CCA7E9E4914}" {
      Id "LF-Org_GiveUpLease"
-     Target_en_us "Give up the lease"
+     Target_en_us "Give up"
      Comment "Ledger row action: the holder gives the hideout yard lease back (#2572)."
     }
     CustomStringTableItem "{6D53E58AC9FADED3}" {
@@ -12429,7 +12429,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{22205B2B89D3D298}" {
      Id "LF-Org_LeaseOurs"
-     Target_en_us "Yours - members enter"
+     Target_en_us "Yours"
      Comment "Hideout lease status: this organization holds it."
     }
     CustomStringTableItem "{376956E573282A68}" {

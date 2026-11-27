@@ -312,13 +312,14 @@ class LF_UIScreen
 
 		bool show = !action.IsEmpty();
 		ShowAction(button, show);
-		if (!show)
-			return true;
+		if (show)
+		{
+			SCR_ButtonTextComponent textButton = SCR_ButtonTextComponent.Cast(button.FindHandler(SCR_ButtonTextComponent));
+			if (textButton)
+				textButton.SetText(action);
+		}
 
-		SCR_ButtonTextComponent textButton = SCR_ButtonTextComponent.Cast(button.FindHandler(SCR_ButtonTextComponent));
-		if (textButton)
-			textButton.SetText(action);
-
+		FitStatusRow(row, status);
 		return true;
 	}
 
@@ -1341,6 +1342,31 @@ class LF_UIScreen
 
 		if (part.GetAction().IsEmpty())
 			ShowAction(button, false);
+
+		FitStatusRow(widget, part.GetStatus());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A status row with no status hides that column and gives its share to the label (LF_UIRowFit): a long title or place
+	//! name is no longer cut at a third of the row. A compact row sizes itself and is left alone.
+	protected void FitStatusRow(Widget row, string status)
+	{
+		if (!row || row.FindAnyWidget("RowBadge"))
+			return;
+
+		TextWidget label = TextWidget.Cast(row.FindAnyWidget("RowLabel"));
+		TextWidget statusText = TextWidget.Cast(row.FindAnyWidget("RowStatus"));
+		if (!label || !statusText)
+			return;
+
+		bool hasStatus = !status.IsEmpty();
+		statusText.SetVisible(hasStatus);
+
+		float weightLabel, weightStatus, weightAction;
+		LF_UIRowFit.Weights(hasStatus, weightLabel, weightStatus, weightAction);
+		LayoutSlot.SetFillWeight(label, weightLabel);
+		if (hasStatus)
+			LayoutSlot.SetFillWeight(statusText, weightStatus);
 	}
 
 	//------------------------------------------------------------------------------------------------
