@@ -10,14 +10,14 @@ hours vary with how far you walk, drive and wait.
 | [Postal van run](#postal-van-run) | ✅ yes | about **$480** (+25 percent at night) | a driving licence |
 | [Taxi](#taxi) | ✅ yes | about **$600**, with a passenger | work level 6, a second player |
 | [Harvest and farm](#harvest-and-farm) | ✅ wheat, garden, orchard | about **$420 to $480** for wheat | reaper and a tow vehicle |
-| [Lumber](#lumber) | ✅ yes | about **$400** | an axe |
-| [Fishing](#fishing) | ✅ yes, sold at the dock wholesale | about **$250 to $430** (the wholesale pays 65 percent of a fish counter's rate) | rod and bait |
+| [Lumber](#lumber) | ✅ yes | about **$450** by hand, about **$740** with a truck | an axe |
+| [Fishing](#fishing) | ✅ yes, sold at the dock wholesale | about **$430 to $470** at the three spots | rod and bait |
 | [Scrap and recycling](#scrap-and-recycling) | ✅ yes, sold at the garage | about **$100 to $200** (a side income) | nothing |
 | [Garbage round](#garbage-round) | ❌ not on the island | about $400 planned | |
 | [Fuel haul](#fuel-haul) | ❌ no depot on the island | about $450 planned | |
-| [Mining](#mining) | ✅ iron at Coalman's Brow | about **$500** | a pickaxe ($150) |
-| [Police](06-police.md) | ✅ yes | **$900 to $1,260** | sign up at the station |
-| [Medic](08-medic.md) | ✅ yes | **$792 to $1,224** | none |
+| [Mining](#mining) | ✅ iron at Coalman's Brow | about **$450** on the brow, **$500 to $650** with a pickup or truck | a pickaxe ($150) |
+| [Police](06-police.md) | ✅ yes | **$350 to $450**, at most **$520** with the bonus | sign up at the station |
+| [Medic](08-medic.md) | ✅ yes | **$480 to $560**, at most **$600** with the bonus | none |
 
 ## Where the job sites are
 
@@ -258,18 +258,18 @@ The drops are on the east side (a house near the district road) and four along t
   **Fire again within 2 seconds** to land it. You can cast about 6 times a minute. Bait makes bites faster. A spot holds about 14 fish and refills one fish every 90 seconds.
   The pond gives **perch, carp and trout**; the bay and open sea give **mackerel, bass and tuna**; the fish depend on the time of day.
 * **Smokehouse:** put a fresh medium fish and **one firewood bundle** in the smoker; 30 seconds later you have a **smoked fish**.
-* **Selling:** walk into the **wholesale warehouse** on the dock (the same counter that buys planks, iron bars and cement), press **F** on the clerk's counter and sell the fish. It pays **65 percent of a fish counter's rate**, the same every time (no falling price), and takes a whole stack in one go:
+* **Selling:** walk into the **wholesale warehouse** on the dock (the same counter that buys planks, iron bars and cement), press **F** on the clerk's counter and sell the fish. It pays a fixed price, the same every time (no falling price), and takes a whole stack in one go:
 
   | Fish | Small | Medium | Large | Smoked |
   |---|---|---|---|---|
-  | Trout | $4 | $8 | $16 | $18 |
-  | Perch | $3 | $7 | $13 | $16 |
+  | Trout | $4 | $12 | $22 | $18 |
+  | Perch | $3 | $11 | $19 | $16 |
   | Mackerel | $3 | $7 | $13 | $16 |
-  | Carp | $5 | $9 | $18 | $21 |
+  | Carp | $5 | $13 | $24 | $21 |
   | Bass | $5 | $10 | $21 | $23 |
   | Tuna | $10 | $20 | $39 | $43 |
 
-* **Pay:** a spot gives about **40 fish an hour** (14 in the first hour), so the cove at Fisherman's Bay (mostly bass, $10.8 a fish on average) is about **$430 an hour**, the harbour water about **$290** and the Spring Pond about **$245**, rod and bait included. Smoking a medium fish (plus a firewood bundle) turns $7 to $20 into $16 to $43, so the smokehouse is worth the walk when you have fish to spare.
+* **Pay:** a spot refills one fish every 90 seconds, about **40 fish an hour** once its first stock is fished out; between those, the same water keeps giving small fish (a little slower). That is about **$430 an hour** at Spring Pond or Black Lake and about **$470** at the cove at Fisherman's Bay, and more in the first hour while the stock lasts. Bass bite only in the evening (17:00 to 21:00); the rest of the day the cove gives mackerel. Smoking a medium fish (plus a firewood bundle) turns $7 to $13 into $16 to $23, so the smokehouse is worth the walk when you have fish to spare.
 * **Needs:** rod and bait.
 
 <!-- map:inset:pond -->
