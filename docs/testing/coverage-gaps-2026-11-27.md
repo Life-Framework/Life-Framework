@@ -2,7 +2,7 @@
 
 A scan of what core gameplay logic has no `LF_Test` reference, taken during the 0.3.0 feature freeze (tests only, no
 behaviour change). The repo had 1,488 test files at the time and `--tier fast` ran 639 tests with the first nine included.
-Round 2 (`ws/test-coverage-1127-r2`) added twelve more and round 3 (`ws/test-coverage-1127-r3`) eleven; their tables are below the
+Round 2 (`ws/test-coverage-1127-r2`) added twelve more, round 3 (`ws/test-coverage-1127-r3`) eleven, round 4 seven and round 5 six; their tables are below the
 first one.
 
 ## How the scan worked
@@ -131,6 +131,45 @@ Looked at and left alone: `LF_QuizController` (`LF_QuizFlow` talks to live contr
 `LF_DisconnectRules.RejoinReason` (a log sentence), `LF_ReputationOverlay` (a merge over pack files, covered by the pack
 overlay tests), `LF_VehicleHandover` and `LF_PlacementAim` (world and camera).
 
+## Round 5: 6 tests, 0 bugs found
+
+Round 5 (`ws/coverage-round-5`) took the "left alone" list from round 4 at its word: the rules behind the world actions are
+tested, the actions' own wiring is not. The scan counted every `*Action.c` whose class name no test file names (50 of them);
+the ones with a money, inventory or state effect and a prefab that spawns in DebugWorld were chosen. Each test finds the
+action on the spawned prop the way the engine holds it (`LF_TestActionFinder`, a new helper over the prefab's
+`BaseActionsManagerComponent`), so `Init` has run against the real owner, then calls `PerformAction(prop, character)` on a
+fixture character, the server path a player's use takes. Nothing names a town coordinate or distance; reach cases move the
+fixture a few metres from a prop spawned beside it.
+
+| Test | Action | What it pins |
+|---|---|---|
+| `LF_Test_FuelBuyAction` | `LF_FuelBuyAction` (fuel, money) | No car at the pump charges nothing and takes no litre; with a car 30 cash buys 15 litres at 2.00, the tank, station stock and purse move together; a broke buyer and a perform with no buyer move nothing; with fuel stock off the prompt hides and a perform sells nothing |
+| `LF_Test_LootSearchAction` | `LF_LootSearchAction` (loot, inventory) | A forged perform with no searcher fills nothing; the first search fills the crate, a second while stocked adds nothing, an emptied crate inside its cooldown stays empty; the prompt needs a searcher |
+| `LF_Test_LockerRentAction` | `LF_LockerRentAction` (lockers, money) | Out of reach of every bank takes nothing; short cash takes nothing; with the price the rent leaves the purse once and the locker is recorded under the character's own key; a second perform and a perform with no character move nothing |
+| `LF_Test_StallRentAction` | `LF_StallRentAction` (market, money) | After closing and one short of the fee rent nothing; with the fee the stall goes to the performer's key and the fee leaves the purse; a second renter keeps their cash and the holder cannot rent a second stall the same day; no character moves nothing |
+| `LF_Test_StallBuyAction` | `LF_StallBuyAction` (market, money, inventory) | A stall with nothing listed sells nothing; a buyer one short and the holder buying their own listing move nothing; a paying buyer gets one item for the cheapest price, the seller is paid the price less the cut, the dearer listing stays; after closing nothing is sold; the prompt shows only on a rented stall |
+| `LF_Test_LostAndFoundAction` | `LF_LostAndFoundReclaimAction` (lockers, money, inventory) | A stranger with nothing waiting does not see the prompt, is refused and loses no cash; the owner one short of the fee takes nothing and the things keep waiting; with the fee the owner pays once and gets the item back; a second perform takes no second fee |
+
+All six carry a `RedProof()` hook; the batched run failed all six (`RED PROOF OK (all 6 listed test(s) fail with the hook on)`).
+The first green run caught one test mistake, not a game bug: the pump finds a car with a sphere query, and a car moved with
+`SetOrigin` in the same frame is not found, so `LF_Test_FuelBuyAction` spawns the car at the pump after its no-car step.
+
+Looked at and left alone (round 5):
+
+- **`LF_GarageBuySlotAction`**: its server rules (`LF_GarageSlotStore.Buy`) are covered by `LF_Test_GarageBuySlot`, but the
+  action needs an entity with `LF_VehicleGarageComponent`, which no prefab carries (the garage shell gets it from a layer
+  override in `Place_saint-philippe_carlot.layer`). A test would have to add the component at runtime. The action's own gates
+  (desk reach, rate limit, alive) stay uncovered.
+- **`LF_BackRoomSearchAction`**: needs a shop with a back room and an on-duty officer; `LF_Test_BackRoomRules` pins the raid
+  rule. No spawnable prefab carries both.
+- **`LF_LockerOpenAction`**: the open path ends in a client RPC to the player's controller, which a fixture body does not
+  have; `LF_Test_LockerRoundtrip` covers `OpenAt` and the close.
+- **`LF_StashContainerAction`**: `Take` is covered by `LF_Test_StashContainerRefill`; the only prefab with the component is
+  the pack's container, so a test would be a pack test for a one-line wrapper.
+- **`LF_VehicleLockAction`, `LF_HouseSaleBuyAction`, `LF_LiveryShopAction`** and the jail escort actions: the rule classes
+  are named by many tests (`LF_Test_VehicleLock`, `LF_Test_HouseSaleBuy`, `LF_Test_LiveryShop`, `LF_Test_Jail*`).
+- **UI sheets and harness verbs** stay with `look` and the `agent-box` proofs (rule 11).
+
 ## Checked and already covered (no test added)
 
 `LF_DutyPay` (rank-change carry), `LF_FineTicket` (deadlines, late amount, desk payment), `LF_TreatmentBills` (issue, debt,
@@ -142,10 +181,10 @@ hints for these were all reached through their callers.
 
 1. **`LF_ATMLive`** (397 lines, ATM/): the live-terminal glue has no class reference. Its rules sit in `LF_ATMQuick` and
    `LF_ATMManager`, which are tested; the glue is not. Needs a WORLD test with a character and a terminal.
-2. **`LF_StallBuyAction`, `LF_StallRentAction`, `LF_LockerRentAction`, `LF_LicenceDeskAction`, `LF_BackRoomSearchAction`**:
-   the money-moving action wrappers. The servers' rules they call (`LF_StallRules`, `LF_LockerRules`, `LF_LicenceDesk`) are
-   tested; the wrapper's wiring (who pays, what is refused before the rule runs) is not. A user-action test with a
-   fixture character would cover all five. Round 2 read them: no pure rule to pull out (see "Looked at and left alone").
+2. **`LF_LicenceDeskAction`, `LF_BackRoomSearchAction`, `LF_GarageBuySlotAction`**: the money-moving action wrappers left after
+   round 5, which covered `LF_StallBuyAction`, `LF_StallRentAction`, `LF_LockerRentAction`, `LF_LostAndFoundReclaimAction`,
+   `LF_FuelBuyAction` and `LF_LootSearchAction` with `PerformAction` on a fixture character (`LF_TestActionFinder`). The licence desk
+   needs a desk prop and a spawned clerk; the other two need a prop no prefab provides (see "Round 5").
 3. **`LF_CharacterShopComponent`** (315 lines): the shop component's buy and sell serve path. `LF_ShopRules` is now covered; the
    component that applies it is not.
 4. **`LF_SaveIds`** (mostly done in rounds 2 and 3): `PrefabSourcesOf`, `PrefabLoads`, `NoteMissing`, `ResolveSignUps`,
