@@ -11,7 +11,7 @@ class LF_Test_EveronClothingCatalogue : LF_Test
 	protected static const int MIN_FOOTWEAR = 3;
 	protected static const int MIN_GLOVES = 2;
 	protected static const int MIN_BACKPACKS = 5;
-	protected static const int MIN_ROWS = 74; // was 75 while the rack listed the green raincoat twice (core and pack offer)
+	protected static const int MIN_ROWS = 75;
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -98,9 +98,8 @@ class LF_Test_EveronClothingCatalogue : LF_Test
 		int field = PriceOf(catalogue, "backpack_iifs_fieldpack");
 		ctx.True(sack > 0 && sack < kolobok && kolobok < alice && alice < field, string.Format("backpack prices rise with capacity (%1 < %2 < %3 < %4)", sack, kolobok, alice, field));
 
-		// Each raincoat colour is its own row at the clothing rack (the green one is the core's raincoat_green offer, which conceals the build;
-		// the pack's own jacket_raincoat_green item stays for the mannequin but is not offered a second time).
-		array<string> coats = {"raincoat_green", "jacket_raincoat_orange", "jacket_raincoat_yellow"};
+		// Each raincoat colour is its own row at the clothing rack.
+		array<string> coats = {"jacket_raincoat_green", "jacket_raincoat_orange", "jacket_raincoat_yellow"};
 		foreach (string coat : coats)
 			ctx.True(PriceOf(catalogue, coat) > 0 && SoldByClothingOutlet(catalogue, coat), "the raincoat colour is on sale: " + coat);
 	}
