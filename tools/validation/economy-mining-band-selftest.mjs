@@ -1,6 +1,6 @@
 // Proves the tuned mining chains (#3246, E2 of #3206): the real core + 1989 pack configs, run through `tools\cli economy`,
-// put iron by pickup, copper by car, stone by truck and the coal feeder on the pay ladder (at or above the lowest duty
-// shift, the Cadet's: #4178), iron and copper near the design's $520 / $510 an hour, stone by truck on the high-tier rung near $656 (#4826, the truck is the climb), and flag only the foot haul of stone,
+// put iron by pickup, stone by truck and the coal feeder on the pay ladder (the copper chain left with the copper rock, #5069) (at or above the lowest duty
+// shift, the Cadet's: #4178), iron near the design's $520 an hour, stone by truck on the high-tier rung near $656 (#4826, the truck is the climb), and flag only the foot haul of stone,
 // which stays unviable on purpose (a 280 minute walk for 10 limestone).
 // inputs: tools/lib/economy-mining.mjs, tools/economy/mining-assumptions.json, addons/LF_Everon1989/Configs/Market/LF_Market_Everon1989.conf, addons/LF_Everon1989/Configs/Market/LF_BuyerDemand_Everon1989.conf, addons/LifeFramework/Configs/Resources/ResourceChains.conf, tools/validation/economy-mining-band-selftest.mjs
 // red-proof (#4869): with the ladder's bandProblems made to return [] the three bandProblems cases print FAIL; with the real check it prints OK.
@@ -17,10 +17,10 @@ const fails = [];
 const rep = buildReport(root, {});
 const loops = rep.mining?.loops ?? [];
 const by = (id) => loops.find((l) => l.id === id);
-const want = { "iron-pickup": 520, "copper-car": 510, "stone-truck": 656 };
+const want = { "iron-pickup": 520, "stone-truck": 656 };
 
 if (rep.error || loops.length === 0) fails.push(`FAIL no mining loops in the report (${rep.error ?? rep.mining?.problems?.join("; ")})`);
-for (const id of ["iron-pickup", "copper-car", "stone-truck", "coal-feeder"]) {
+for (const id of ["iron-pickup", "stone-truck", "coal-feeder"]) {
   const l = by(id);
   if (!l) { fails.push(`FAIL ${id} is missing from the report`); continue; }
   if (l.flagged) fails.push(`FAIL ${l.label} is below the rung: $${l.steady}/h under the $${l.floor}/h Cadet shift`);
@@ -31,8 +31,9 @@ for (const [id, target] of Object.entries(want)) {
 }
 const flagged = loops.filter((l) => l.flagged).map((l) => l.id);
 if (flagged.join() !== "stone-foot") fails.push(`FAIL only stone-foot may stay below the rung (got ${flagged.join() || "none"})`);
-const iron = by("iron-pickup"), copper = by("copper-car"), stone = by("stone-truck");
-if (iron && copper && stone && !(copper.steady <= iron.steady + 40 && stone.steady > iron.steady)) fails.push("FAIL the chains must differ: stone by truck (the truck rung, #4826) pays most, iron and copper within $40 of each other");
+if (by("copper-car")) fails.push("FAIL the island has no copper rock (#5069): the report must carry no copper chain");
+const iron = by("iron-pickup"), stone = by("stone-truck");
+if (iron && stone && !(stone.steady > iron.steady)) fails.push("FAIL the chains must differ: stone by truck (the truck rung, #4826) pays most");
 
 // #4869: the smelter's level steps (#4861) keep the iron loop in its band. The real ladder: every step level has a row, the
 // hourly never falls as the level rises, and no row passes the top of the rung the base loop sits on or the crime ceiling.

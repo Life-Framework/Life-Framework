@@ -1376,7 +1376,7 @@ StringTable {
     }
     CustomStringTableItem "{7E5BC3597728E4A6}" {
      Id "LF-Dialogue_ForemanCoalmansBrow_Next23"
-     Target_en_us "Next up, level 23. Gold buyers pay more. Keep swinging."
+     Target_en_us "Next up, level 23. The old hand. Keep swinging."
      Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
     }
     CustomStringTableItem "{CBB03F4E87351B21}" {
@@ -1386,7 +1386,7 @@ StringTable {
     }
     CustomStringTableItem "{DDFBB27734A40C56}" {
      Id "LF-Dialogue_ForemanCoalmansBrow_Next25"
-     Target_en_us "Next up, level 25. Gold flake in the Ore Ridge workings. Keep swinging."
+     Target_en_us "Next up, level 25. Years of work behind you. Keep swinging."
      Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
     }
     CustomStringTableItem "{C8E0F338F93835F2}" {
@@ -3926,7 +3926,7 @@ StringTable {
     }
     CustomStringTableItem "{21B38ABDE34E34C2}" {
      Id "LF-Foreman_MINER_Next_23"
-     Target_en_us "Next up, level 23. Gold buyers pay more. Keep swinging."
+     Target_en_us "Next up, level 23. The old hand. Keep swinging."
      Comment "Miner foreman (#4237): announces what level 23 opens."
     }
     CustomStringTableItem "{4C5898DA5F1D8B18}" {
@@ -3936,7 +3936,7 @@ StringTable {
     }
     CustomStringTableItem "{DF7FFA8EC78104C3}" {
      Id "LF-Foreman_MINER_Next_25"
-     Target_en_us "Next up, level 25. Gold flake in the Ore Ridge workings. Keep swinging."
+     Target_en_us "Next up, level 25. Years of work behind you. Keep swinging."
      Comment "Miner foreman (#4237): announces what level 25 opens."
     }
     CustomStringTableItem "{8C06746831F9C375}" {
@@ -7726,8 +7726,8 @@ StringTable {
     }
     CustomStringTableItem "{EACF0508930A1624}" {
      Id "LF-Sign_Mining_How"
-     Target_en_us "Swing your pickaxe at the rock. Every few swings a nugget breaks off and drops at your feet; pick it up. At the furnace, use Smelt Iron Nuggets or Smelt Gold Nuggets."
-     Comment "Mining sign card, How section. Smelt Iron Nuggets and Smelt Gold Nuggets are the furnace action names."
+     Target_en_us "Swing your pickaxe at the rock. Every few swings a nugget breaks off and drops at your feet; pick it up. At the furnace, use Smelt iron nuggets."
+     Comment "Mining sign card, How section. Smelt iron nuggets is the furnace action name on the island (the pack furnace smelts iron only, #5069 follow-up: the island has no gold or copper)."
     }
     CustomStringTableItem "{223169ECC7DBE15F}" {
      Id "LF-Sign_Mining_Needs"
@@ -10096,8 +10096,8 @@ StringTable {
     }
     CustomStringTableItem "{120AD22946FB994D}" {
      Id "LF-Unlock_Smelting_15"
-     Target_en_us "The Levie refinery"
-     Comment "What Smelting level 15 opens (a real gate: MACHINE); the level-up card prefixes Opens:."
+     Target_en_us "Smelting 15: a furnace you can trust"
+     Comment "Smelting level 15 milestone: opens nothing; the island places no copper refinery (no copper on the island), so the row no longer names one. The card and F2 show this line as it is."
     }
     CustomStringTableItem "{03AB2A26283A3864}" {
      Id "LF-Unlock_Smelting_16"

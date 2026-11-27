@@ -19,7 +19,6 @@ export const EXPORT_BAND = { min: 650, max: 800 };
 // Goods GUID -> the loop that makes it (the loop id in report.mining or report.lumber, and the lumber good name).
 export const EXPORT_SOURCES = {
   BCD1E8CD7F975074: { section: "mining", loop: "iron-pickup" },
-  "577A665F1662E7AD": { section: "mining", loop: "copper-car" },
   C2AE9B7E62F0369F: { section: "mining", loop: "coal-feeder" },
   "45D1B36F99DD2FC3": { section: "lumber", loop: "hand-planks", good: "plank" },
 };

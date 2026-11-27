@@ -92,10 +92,10 @@ expect(gone.loops.length === 0 && /no machine 'gone'/.test(gone.problems.join())
 const none = buildMining({ root: join(dir, "nowhere"), addonsDir: join(dir, "nowhere", "addons"), packLayers: [], owner: null, duty: { police: 900 } });
 expect(none.loops.length === 0 && /mining loops skipped/.test(none.problems.join()), "no assumptions file prints a problem, not a crash");
 
-// 6. The shipped report: all five chains, flags exactly for the ones below the rung, and every chain has a haul and a plant.
+// 6. The shipped report: the island chains (the copper chain left with the copper rock, #5069), flags exactly for the ones below the rung, and every chain has a haul and a plant.
 const rep = buildReport(root, {});
 const ids = (rep.mining?.loops ?? []).map((l) => l.id);
-expect(!rep.error && ["iron-pickup", "copper-car", "stone-truck", "stone-foot", "coal-feeder"].every((i) => ids.includes(i)), `the real report has the five mining chains (got ${ids.join(", ")}; ${rep.mining?.problems?.join("; ")})`);
+expect(!rep.error && ["iron-pickup", "stone-truck", "stone-foot", "coal-feeder"].every((i) => ids.includes(i)) && !ids.includes("copper-car"), `the real report has the island mining chains and no copper chain (#5069: the island has no copper rock) (got ${ids.join(", ")}; ${rep.mining?.problems?.join("; ")})`);
 expect((rep.mining?.problems ?? []).length === 0, `no mining problem in the real report (${rep.mining?.problems?.join("; ")})`);
 expect(renderReport(rep).some((l) => l.startsWith("mining loops")), "the report prints the mining section");
 expect(rep.flags.filter((f) => f.kind === "mining-duty").length === rep.mining.loops.filter((l) => l.flagged).length, "a mining-duty flag per chain below the rung");

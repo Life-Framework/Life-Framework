@@ -1,5 +1,6 @@
 // red-proof (2026-11-19, #3823): on main with the scrapyard curves in the pack market, `--only everon/market` failed `no unexpected curve` and the trader-row lines for scrap metal, copper wire and rubber scrap; the goods are now in the expected set and skipped in the per-good loop (LF_Test_EveronScrapItems reads them).
 // red-proof (2026-11-19, #3237): the copper bar curve is re-added and the four mining goods are skipped in the per-good loop (LF_Test_EveronMiningMarket reads them).
+// red-proof (2026-11-27, no-copper-gold): the pack's `patch` row for the copper bar (LF_Market_Everon1989.conf) back in place fails `the pack removes the copper bar curve` and `no unexpected curve: ...CopperBar.et`; the `remove` row passes.
 // red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronMarket` printed `RED PROOF OK`; with the pack layer removed (an empty header as the pack source) it failed e.g. `GoldBar.et base is today's sell price (expected 120, got 200)` and the market-on, copper-removed and eight-goods checks. `--only` then passed under the pack header. 2026-11-18 (#3028): the recovery check passes hundredths (it went hollow when Recover moved to hundredths); with a 1 h window instead of 24 h it failed `everon/market`, with 24 h it passes.
 // red-proof (2026-11-19, #3622): with the granary grain curve (#3638) the old count of 11 failed on a `--tier all` run (found 12). The test now asserts the set of goods; `--red LF_Test_EveronMarket` printed RED PROOF OK and `--tier all` is green.
 //! #2849 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the pack's market overlay
@@ -7,7 +8,7 @@
 //! iron bars, planks, cabbages) a curve. Each curve is read against the pack trader's own price list: ceiling
 //! and base are the trader's price, the floor is half of it (rounded up), a unit takes 2 percent of the base off,
 //! and a floored good is back within 10 percent of its base after 24 real hours. The core copper and gold bar
-//! curves are removed by the pack.
+//! curves are removed by the pack (the island has neither rock, so the price board lists neither).
 [LF_TestInfo(LF_TestTier.LOGIC, pack: true)]
 class LF_Test_EveronMarket : LF_Test
 {
@@ -133,12 +134,12 @@ class LF_Test_EveronMarket : LF_Test
 			return;
 
 		ctx.True(config.m_bEnabled, "the pack switches the market on");
-		ctx.True(config.FindGood(COPPER_BAR) != null, "the pack re-adds the copper bar curve (#3237)");
+		ctx.True(config.FindGood(COPPER_BAR) == null, "the pack removes the copper bar curve: the island has no copper, so the price board does not list it");
 		ctx.True(config.FindGood(GOLD_BAR) == null, "the pack removes the gold bar curve");
 		// The set of goods, not a count: the eight the trader buys, the four lumber goods of the wholesale warehouse (#3269)
 		// and the granary grain (#3622, its own lot curve, read by LF_Test_EveronGrainBuyers).
 		// The honey jar and honeycomb (#3448) have their own slow curves, read by LF_Test_EveronHoney.
-		array<ResourceName> expected = {IRON_BAR, APPLE, PLUM, CEMENT, GRAVEL, SAND, WOOD_PLANK, CABBAGE, LF_Test_EveronLumberBuyers.BOARD, LF_Test_EveronLumberBuyers.POST, LF_Test_EveronLumberBuyers.FIREWOOD, LF_Test_EveronGrainBuyers.GRAIN, LF_Test_EveronHoney.JAR, LF_Test_EveronHoney.COMB, COPPER_BAR, LF_Test_EveronMiningMarket.COAL, LF_Test_EveronScrapItems.SCRAP_METAL, LF_Test_EveronScrapItems.COPPER_WIRE, LF_Test_EveronScrapItems.RUBBER_SCRAP};
+		array<ResourceName> expected = {IRON_BAR, APPLE, PLUM, CEMENT, GRAVEL, SAND, WOOD_PLANK, CABBAGE, LF_Test_EveronLumberBuyers.BOARD, LF_Test_EveronLumberBuyers.POST, LF_Test_EveronLumberBuyers.FIREWOOD, LF_Test_EveronGrainBuyers.GRAIN, LF_Test_EveronHoney.JAR, LF_Test_EveronHoney.COMB, LF_Test_EveronMiningMarket.COAL, LF_Test_EveronScrapItems.SCRAP_METAL, LF_Test_EveronScrapItems.COPPER_WIRE, LF_Test_EveronScrapItems.RUBBER_SCRAP};
 		foreach (ResourceName want : expected)
 			ctx.True(config.FindGood(want) != null, "a curve exists for " + want);
 		foreach (LF_MarketGoodDef have : config.m_aGoods)
@@ -175,7 +176,7 @@ class LF_Test_EveronMarket : LF_Test
 			if (LF_Utils.SamePrefab(good.m_sGood, LF_Test_EveronGrainBuyers.GRAIN))
 				continue;
 
-			// The iron bar, copper bar, cement bag and coal lump have their own mining curves (#3237); LF_Test_EveronMiningMarket reads them.
+			// The iron bar, cement bag and coal lump have their own mining curves (#3237); LF_Test_EveronMiningMarket reads them.
 			if (LF_Test_EveronMiningMarket.IsMiningGood(good.m_sGood))
 				continue;
 

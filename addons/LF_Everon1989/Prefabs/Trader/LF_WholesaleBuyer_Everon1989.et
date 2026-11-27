@@ -14,8 +14,6 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
     "{C2AE9B7E62F0369F}Prefabs/Resources/Mining/CoalLump.et"
     "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et"
-    "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et"
-    "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
     "{88F43FF542BB6767}Prefabs/Resources/Mining/Stone.et"
     "{6ADCC5039A8EF571}Prefabs/Resources/Mining/Limestone.et"
     "{FAEF245300848A2C}Prefabs/Items/Fishing/LF_FishTroutSmall.et"
@@ -77,14 +75,6 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     LF_TraderItem "{59693C53B6A5E008}" {
      m_ItemPrefab "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et"
      m_ValuePerItem 9
-    }
-    LF_TraderItem "{59693C53B6A5E009}" {
-     m_ItemPrefab "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et"
-     m_ValuePerItem 8
-    }
-    LF_TraderItem "{59693C53B6A5E00A}" {
-     m_ItemPrefab "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
-     m_ValuePerItem 50
     }
     LF_TraderItem "{59693C53B6A5E00B}" {
      m_ItemPrefab "{88F43FF542BB6767}Prefabs/Resources/Mining/Stone.et"
