@@ -6320,6 +6320,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Smiling Doll Mask"
      Comment "Headgear item name (tools/assets/doll-mask)"
     }
+    CustomStringTableItem "{7D2A91C4E5B3F609}" {
+     Id "LF-DownedHud_Ready"
+     Target_en_us "Bleeding out: %1. Hold X to give up, or wait for help."
+     Comment "HUD line of a downed player once give-up is open (#5155). %1 is the bleed-out time left (m:ss)."
+    }
+    CustomStringTableItem "{7D2A91C4E5B3F608}" {
+     Id "LF-DownedHud_Wait"
+     Target_en_us "Bleeding out: %1. You can give up in %2."
+     Comment "HUD line of a downed player before give-up opens (#5155). %1 is the bleed-out time left (m:ss), %2 the wait before give-up (m:ss)."
+    }
     CustomStringTableItem "{B20154B0D085697C}" {
      Id "LF-Duty_AlreadyOn"
      Target_en_us "You are already on duty."
