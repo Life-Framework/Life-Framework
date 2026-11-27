@@ -7,6 +7,7 @@ One card is one job of at most 45 min / 60 calls (`docs/process/slice-card.md`).
 tools\cli slice brief <N>                      # goal, acceptance, owned files, timebox, machines
 tools\cli wt new slice-<N> --wait ; gh issue edit <N> --add-label agent:working
 ```
+Before building an old bug, run `tools\cli issue-check <N>` and read the cited PRs: today three of five were already fixed.
 Read only the card, `AGENTS.md`, the area's `Feature.md` and `docs/features/<area>.md`. Stay inside `owns`; shared
 append-only files (`docs/features/<area>.md`, string table, triage) are fine; anything else: stop and report.
 
@@ -43,6 +44,10 @@ Body: what changed, the observed red and green lines, `## Manual testing` for an
 "merged, in-dev", never "done". At the limit, ship what passes, write `tmp/handoff-slice-<N>.md` (15 lines), say `SPLIT`
 and list the rest as new cards; never extend.
 
+- `wt ship` prints "the tests this diff can break" before the preflight (GitHub's `validate` runs no game tests): run that
+  `test --no-build --only ...` line first. Any pack data change prints the whole pack leg (~40 s); #5096 went red on
+  `everon/mannequins` that way.
+
 ## Final report
 Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, then exactly
 `PR <full URL>, head <SHA>, checks and reviews <state>` (or the `RESUME <path>` line).
@@ -58,6 +63,11 @@ Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, then exactly
 - Persistence tests use public mutators only; an in-session round trip proves nothing about restart.
 - Merge `origin/main` only when GitHub says `CONFLICTING`.
 - A world prop goes in your own grid cell (`brief grid`), never a town layer.
+- Data checks `validate` runs for you: a prop with an action needs an `RplComponent` (`validate-actions-have-rpl`); a
+  price lives in one pack file (`validate-shop-price-owners`); a mannequin wears only items its outlet sells
+  (`validate-mannequin-outfits`).
+- Harness: `hold weapon` re-draws the first slotted weapon and `itemdrop` cannot clear a weapon-slot item (fresh
+  `session down` + `up` per tool); `input SwitchCameraType` does not reach third person (`agent-box/README.md`).
 
 ## Environment
 No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`tools\cli status` says which you are on). Never pin a machine (`--local`, `--machine`). Run in the foreground (timeout up to

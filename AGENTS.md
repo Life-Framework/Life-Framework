@@ -88,7 +88,7 @@ daily ones.
 |---|---|
 | `tools\cli status` | Toolchain and MCP state; `workbench: ALLOWED` or `NOT allowed` for this machine |
 | `tools\cli lead` / `lead prune-safe [--dry-run]` | The lead's one-screen view (issues by milestone, PRs, worktrees, pool, main guard); `prune-safe` prunes only worktrees whose PR is MERGED, clean, idle and unlocked, never forced (`docs/worktrees.md` "Lead view") |
-| `tools\cli issue-check <N...>` | Before dispatching an issue: LIKELY DONE, CHECK or CLEAR (nine agents went to already-fixed issues on 2026-11-18) |
+| `tools\cli issue-check <N...>` | Before dispatching or building an old issue: LIKELY DONE, CHECK or CLEAR; it follows `Sliced: #N` cards, title quotes and key symbols. Read the PRs it cites before writing code (nine agents went to already-fixed issues on 2026-11-18, three of five old bugs on 2026-11-27) |
 | `tools\cli wt new <slug> [--wait] [--priority low] [--base B]` | Worktree `Life-Framework-ws-<slug>` on `ws/<slug>` with its own ports (`docs/worktrees.md` "Fast `wt new`") |
 | `tools\cli feature new <Area> <Name> [--kind logic\|world\|ui\|item] [--issue N]` | Scaffold a feature with tests, strings, docs rows, a PR body and `tmp/feature-<name>.md` (the ordered checklist); `feature check` lists the `TODO(scaffold)` left |
 | `tools\cli evidence <issue> before\|after <area\|png>` / `... table` | Keep `look` pictures in `website/public/docs-images/<issue>/` and print the PR markdown |
@@ -97,7 +97,7 @@ daily ones.
 | `tools\cli test --no-build --only\|--red <LF_Test_Class\|name\|file>[,...]` | `--only`: just those tests (the loop). `--red`: one boot with each `RedProof()` hook on; exit 0 only if every listed test FAILED, else it names the hollow ones. `--no-cache` forces a run past the pass cache |
 | `tools\cli dev --tier fast` / `wt e2e <slug>` / `logs <pattern>` | validate + test, then the `[LFDebug:*]` lines / the two-boot save, restart and reload proof / grep the newest `console.log` |
 | `tools\cli regen-tests` / `regen-localization` | Check every test's `[LF_TestInfo]` / regenerate the language tables |
-| `tools\cli wt ship <slug> [--refs N] [--body-file F] [--commit "<subject>"]` | PR and auto-merge at once (see "Worktrees"). `--refs N` puts `Refs #N` in the body; merging never closes an issue |
+| `tools\cli wt ship <slug> [--refs N] [--body-file F] [--commit "<subject>"]` | PR and auto-merge at once (see "Worktrees"). `--refs N` puts `Refs #N` in the body; merging never closes an issue. Before the preflight it prints the tests your diff can break that GitHub's `validate` never runs (any pack data change prints the whole pack leg); run that line, then ship |
 | `tools\cli wt gate <slug>` | Optional manual gate for the diff's tier (`tools/lib/gate-tier.mjs`); not part of ship |
 | `tools\cli prs status` | Read-only: every open `ws/*` PR, its checks and its worktree (`LIVE`, `done (ship)`, `idle`) |
 | `tools\cli main-guard start\|stop\|status\|watch` | The gate on main after the merge (see "CI"; `docs/worktrees.md` "Main guard") |
@@ -298,6 +298,12 @@ Detail lives in `.claude/skills/enfusion-resource-authoring` and `enfusion-blast
 - Island placement is gated: `wt ship` and the main guard fail a finding not in `tools/place/island-baseline.json`,
   and the baseline only shrinks (`docs/placement-audit.md` "The island gate").
 - A new world interactable runs `node tools/actions/place-action-contexts.mjs`.
+- A prefab with user actions carries an `RplComponent`, or its actions work only for a host
+  (`validate-actions-have-rpl`; a local-mesh prop whose action overrides `HasLocalEffectOnlyScript()` is exempt).
+- A price has one owner: a shop price rule, a catalogue `m_iPrice`/`m_iSellPrice` or a catalogue offer is written in one
+  pack file, the one whose shop sells it, never two (`validate-shop-price-owners`; the later file wins in silence).
+- Every piece a mannequin wears is a priced catalogue item its outlet still offers; drop an offer and the mannequin
+  outfit goes with it (`validate-mannequin-outfits`; #5096 went red on `everon/mannequins`).
 - Moving or renaming a resource breaks every `{GUID}path` reference, saved worlds included.
 - Layouts: unique widget GUIDs per file, inherited-component GUIDs equal the base, a sibling `.layout.meta`.
 - Input: bind keyboard plus `gamepad0:`; never `W/A/S/D`, `a`, the d-pad, `T`, or `shoulder_left`.
@@ -357,6 +363,7 @@ because the runner has no Reforger install or MCP build. Script compilation and 
 
 **The main guard** checks `main` after each merge (`docs/worktrees.md` "Main guard"): `validate --all`, then the
 Workbench compile (a red compile is reverted at once), then build, full suite, placement audit and e2e (red twice
-bisects). Its verdicts are the `main-guard/compile` and `main-guard/suite` commit statuses; a watchdog restarts a
+bisects). Several red merges with no compiler output are marked `infra`, not reverted, and a test-only merge is bisected with the
+merge it follows (`docs/worktrees.md` "Main guard"). Its verdicts are the `main-guard/compile` and `main-guard/suite` commit statuses; a watchdog restarts a
 stalled worker. `wt new` and `world-sync` start from the newest `compiled-ok` commit; `promote --confirm` needs
 `green`.

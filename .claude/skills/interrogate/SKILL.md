@@ -15,7 +15,9 @@ PR's `## Review` section.
 2. Spawn a read-only reviewer subagent briefed with `.opencode/agent/el-reviewer.md`
    (opencode runs it as `el-reviewer`) and ask for defects, not style notes. Give it the diff
    and the claim, not your reasoning.
-3. Run one independent adversarial pass focused on a different failure mode.
+3. Run one independent adversarial pass focused on a different failure mode. Replication misses a
+   host test cannot see: a user action on a prefab with no `RplComponent` (`validate-actions-have-rpl`
+   catches it; a client harvest proof such as `plant-late-proof` shows the rest), and a late joiner.
 4. **Write every finding to `tmp/review-<slug>.md` in the worktree**, one per line, as an open
    tick box with the file and line:
 

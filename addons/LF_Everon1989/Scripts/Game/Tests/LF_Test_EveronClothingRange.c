@@ -13,6 +13,10 @@ class LF_Test_EveronClothingRange : LF_Test
 	protected static const int MIN_ON_SALE = 45;
 	protected static const int MIN_TOP_TIER = 5;
 	protected static const int TOP_TIER_PRICE = 150;
+	//! Counter items whose shop price rule another pack price file owns (one owner per prefab,
+	//! validate-shop-price-owners): the Soviet flashlight is a general store till line at $40
+	//! (LF_ShopPrices_GeneralStore.conf); the workwear counter sells it at its catalogue price.
+	protected static const ResourceName FLASHLIGHT = "{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -105,6 +109,9 @@ class LF_Test_EveronClothingRange : LF_Test
 				continue;
 
 			ctx.True(item.m_Prefab.Length() > 0 && Resource.Load(item.m_Prefab).IsValid(), "the prefab loads: " + item.m_sId);
+			if (LF_Utils.SamePrefab(item.m_Prefab, FLASHLIGHT))
+				continue;
+
 			LF_ShopPriceRule rule = FindRule(prices, item.m_Prefab);
 			ctx.NotNull(rule, "the counter item has a price rule: " + item.m_sId);
 			if (!rule)
