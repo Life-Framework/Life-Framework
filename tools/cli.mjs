@@ -5422,7 +5422,7 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
       const files = wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
       const tests = tt.scanTests(wtRoot);
       const stDiff = files.some((f) => f.endsWith(".st")) ? wt.git(wtRoot, ["diff", "-U0", `origin/${base}...HEAD`, "--", "*.st"]).stdout : "";
-      return tt.renderLines(tt.pickTests({ files, tests, readFile: (p) => (existsSync(join(wtRoot, p)) ? readFileSync(join(wtRoot, p), "utf8") : null), addedIds: tt.addedStringIds(stDiff) }));
+      return tt.renderLines(tt.pickTests({ files, tests, sources: () => tt.scanSources(wtRoot), readFile: (p) => (existsSync(join(wtRoot, p)) ? readFileSync(join(wtRoot, p), "utf8") : null), addedIds: tt.addedStringIds(stDiff) }));
     },
     mergeTree: () => wt.git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", `origin/${base}`]),
     driverOverlap: () => {

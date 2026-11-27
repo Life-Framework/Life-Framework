@@ -1,13 +1,16 @@
 // Selftest for tools/lib/touched-tests.mjs (revert audit 2026-11-27): the tests `wt ship` tells an agent to run for
 // the exact file lists of five merges the main guard reverted. Reads the real test sources of this checkout.
 // inputs: tools/lib/touched-tests.mjs, tools/lib/ship-direct.mjs, tools/cli.mjs, addons/**/Scripts/Game/Tests/*.c
+// red-proof (conf readers, 2026-11-27): with the previous lib (no scanSources, no loader or accessor pass) it printed
+// "FAIL  #5173: LF_Signs.conf rows run LF_Test_SignNext although no test names the file", "FAIL  #5173: the printed data
+// line carries LF_Test_SignNext" and "FAIL  only runnable tests are named", exit 1.
 // red-proof: observed 2026-11-27 with pickTests returning `packLeg: null` for every diff, it printed "FAIL  #5074 job
 // tables: the pack leg names LF_Test_EveronJobTables", "FAIL  #5074: the printed command carries the test", "FAIL  #5096
 // mannequins: the pack leg names LF_Test_EveronMannequins" and "FAIL  a pack string change prints the pack leg", exit 1.
 import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { addedStringIds, isPackData, pickTests, renderLines, scanTests, tokensFor } from "../lib/touched-tests.mjs";
+import { addedStringIds, isPackData, pickTests, renderLines, scanSources, scanTests, tokensFor } from "../lib/touched-tests.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const fails = [];
@@ -39,6 +42,33 @@ const C = "addons/LifeFramework/";
   expect(r.named.has("LF_Test_SignNext"), "#4899: LF_Signs.conf runs LF_Test_SignNext");
   expect(r.packLeg === null, "a core conf alone does not print the pack leg");
   expect(r.layers.length === 1, "a world layer asks for the placement audit");
+}
+// #5173 (reverted as #5174 for signs/next, relanded as #5175): LF_Signs.conf gained rows without the Next line every
+// sign needs. LF_Test_SignNext never names the conf's file name in code; it loads it through LF_SignCatalog.CONFIG_PATH
+// (its only "LF_Signs.conf" is the words of an assertion message) and walks `config.m_aSigns`. The file list is the real one.
+{
+  const files5173 = [
+    `${C}Configs/Signs/LF_Signs.conf`, `${C}Language/everonlife_localization.de_de.conf`, `${C}Language/everonlife_localization.en_us.conf`,
+    `${C}Language/everonlife_localization.st`, `${C}Prefabs/Props/Property/LF_HouseSaleSign.et`, `${C}Prefabs/Props/Property/LF_PlotSign.et`,
+    `${C}Scripts/Game/Feature/Property/LF_HouseSaleComponent.c`, `${C}Scripts/Game/Feature/Property/LF_PlotComponent.c`,
+    `${C}Scripts/Game/Feature/Signs/LF_SignComponent.c`, `${C}Scripts/Game/Tests/LF_Test_SignCoverage.c`, `${C}Scripts/Game/Tests/LF_Test_SoldSignFace.c`,
+    "docs/features/property.md",
+  ];
+  const noProse = tests.map((t) => (t.cls === "LF_Test_SignNext" ? { ...t, text: t.text.replace("LF_Signs.conf loads", "the sign config loads") } : t));
+  expect(!/LF_Signs/.test(noProse.find((t) => t.cls === "LF_Test_SignNext").text.replace(/LF_SignsOverlay/g, "")), "the replay test source no longer names LF_Signs in prose");
+  const r = pickTests({ files: files5173, tests: noProse, sources: () => scanSources(ROOT), readFile: (p) => (existsSync(join(ROOT, p)) ? readFileSync(join(ROOT, p), "utf8") : null) });
+  expect(r.named.has("LF_Test_SignNext"), "#5173: LF_Signs.conf rows run LF_Test_SignNext although no test names the file");
+  const why = (r.named.get("LF_Test_SignNext") ?? []).join(" | ");
+  expect(/LF_Signs\.conf via LF_SignCatalog/.test(why) && /rows via m_aSigns/.test(why), `#5173: the reasons are the loader class and the accessor (got ${why})`);
+  expect(r.dataCls?.has("LF_Test_SignNext") && /tests that read the changed data:\n\s+tools\\cli test --no-build --only [^\n]*LF_Test_SignNext/.test(renderLines(r).join("\n")), "#5173: the printed data line carries LF_Test_SignNext");
+  expect(renderLines(r).length <= 22, `#5173: the advice stays short (${renderLines(r).length} lines)`);
+  // A test that is only a fixture (no [LF_TestInfo]) is never printed: `--only` cannot run it.
+  expect([...r.named.keys()].every((c) => tests.find((t) => t.cls === c)?.runnable), "only runnable tests are named");
+}
+// A conf nobody loads by name, and a comment that names a file, add nothing.
+{
+  const r = pickTests({ files: [`${C}Configs/Signs/LF_Unread_Nobody.conf`], tests, sources: () => scanSources(ROOT), readFile: () => null });
+  expect(r.named.size === 0 && renderLines(r).join("\n").includes("no test names it"), "an unread conf names no test and falls back to the fast tier");
 }
 // #3653 (persist-owned-implements): a save payload.
 {
