@@ -393,7 +393,9 @@ class LF_PlacementPolicy
 			return false;
 
 		LF_PlacementHouseQuery query = new LF_PlacementHouseQuery(at, HOUSE_RANGE);
-		world.QueryEntitiesBySphere(at, HOUSE_RANGE, query.Collect, null, EQueryEntitiesFlags.STATIC);
+		// ALL, not STATIC: an island house is a mesh-less LF_HouseMarker, which a STATIC query never returns
+		// (playtest 2026-11-27 round 5: the owner was never offered furniture placement in their own house).
+		world.QueryEntitiesBySphere(at, HOUSE_RANGE, query.Collect, null, EQueryEntitiesFlags.ALL);
 		if (!query.m_Nearest)
 			return false;
 
