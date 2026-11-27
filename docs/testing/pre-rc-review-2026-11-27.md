@@ -66,3 +66,18 @@ Method: as in part 1, `git diff <merge>^1 <merge> -- addons/` for each PR, read 
 ## Part 2 outcome
 
 No confirmed player-hitting defect: 0 fixed, 0 issues filed. Nothing in #5116 to #5135 blocks the RC.
+
+## Part 3: the overlay folder search cache (#5141)
+
+#5141 made `LF_ConfigOverlay.FolderRows` cache each folder's `ResourceDatabase.SearchResources` result in a static map, on the grounds that the database cannot change while the game runs. This runs on the live server for every config load and every NPC dialogue spawn. The map holds resource names only, never loaded resources: each load still calls `BaseContainerTools.LoadContainer`, so the cache can only go wrong by listing the wrong files.
+
+| Risk | Verdict | Reasoning |
+|---|---|---|
+| A pack addon mounted after the first search | dismissed | The cache is a static in the core addon's own script module. A server or client mounts every addon before it compiles that module, and a change to the addon set (a client joining a modded server) rebuilds the module, which drops every static. No addon can join a module that already ran this code. |
+| The first search runs before all addons are registered | dismissed | The first call comes from a config load (game mode init or a lazy catalogue), which is script, so it runs after the mount. Dedicated server boot order and early init are the same case. Before #5141 the same search ran at the same moment, so whatever the first search saw, the uncached code saw too. |
+| World change or mission restart in one process | dismissed for the server, **fixed** for Workbench | On a dedicated server the database is fixed for the process, so a new world sees the same file list. In Workbench the script module survives from one play to the next, while a `.conf` created in the resource browser between two plays joins the database. A cached folder (including one cached as empty) then hid the new overlay until a script reload. Fix: `LF_ConfigOverlay_StaticResetHook` in the same file drops the cache at world end. That costs one search per folder per world (about 19 ms each); the suite runs in one world and keeps its speedup. Test: `LF_Test_ConfigOverlayFolderCache` (RED-OK). |
+| A folder with no overlays cached as empty forever | same as above | On the server, an empty result stays correct for the process. In Workbench it now lasts until the world ends. |
+| Cache key collision between core and pack folders | dismissed | The key is the addon-relative folder path. `SearchResources` searches the merged file system of every addon and the collector matches by path, so an uncached search for that key returns the same rows whichever parent asked. The core and the pack share one path namespace, so a shared key is the same folder. |
+| A caller changes the shared array | dismissed | `LoadFolderOverlays` only iterates the rows. |
+
+Part 3 outcome: no live-server defect. One Workbench-only staleness fixed with a world-end reset.
