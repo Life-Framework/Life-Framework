@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
 import { rosterHas } from "./scanner-proof.mjs";
+import { graceOff } from "./_grace.mjs";
 
 // #3087: the first police call on the real island (#1014 beat sheet), in one two-player session.
 //   node agent-box/session.mjs roster 2
@@ -21,11 +22,18 @@ import { rosterHas } from "./scanner-proof.mjs";
 const FIT = "Fit_saint_philippe_";
 const VAULT = `${FIT}bank_lf_bank_vault`;
 const VAULT_ID = "bank_vault"; // LF_BankVaultComponent.m_sVaultId on the vault prefab (vaultoffer looks it up by place id)
-const DESK = `${FIT}police_Roadmap_Police_Desk`;
-const ARMORY = `${FIT}police_Roadmap_Police_Armory`;
+// The kit rows of the police slot (the Roadmap_Police_* names were the grid's; #5047 found the proof standing at nothing).
+const DESK = `${FIT}police_police_kit_duty_desk`;
+const ARMORY = `${FIT}police_police_kit_armory`;
 const ROAD = `${FIT}arrival_Place`; // the spawn lies on the south road into the square
 const DRILL_SECONDS = 30; // LF_VaultDrill.DEFAULT_SECONDS; the vault prefab does not override it
-const PLACE_WORDS = /Saint[- ]Philippe/i;
+// The call names the town by its map-location key (`#AR-MapLocation_StPhillipe`, the base game's spelling), not by words.
+export const PLACE_WORDS = /Saint[- ]Philippe|St\.? ?Phil+ipe/i;
+
+// Pure: the `lastdispatch=` field of a `seen` reply (`<offence key>@<place key>`), or "".
+export function lastDispatch(seenDetail) {
+  return /lastdispatch=(\S*)/.exec(String(seenDetail))?.[1] ?? "";
+}
 
 async function runPatrolIslandProof() {
   const h = await import("../harness.mjs");
@@ -54,6 +62,7 @@ async function runPatrolIslandProof() {
   }
   for (const n of [1, 2]) arrive(on, n, wait);
   wait(8000);
+  graceOff(on, dir, wait); // a fresh account is in its robbery grace: the vault rob would be refused
 
   // 1. Client 2 on duty.
   on(2, { verb: "stand", entityName: DESK });
@@ -96,8 +105,9 @@ async function runPatrolIslandProof() {
   const calls = [...server.matchAll(/dispatch #\d+ .* at '([^']*)': officers=(\d+)/g)];
   const last = calls.length ? calls[calls.length - 1] : null;
   check("the dispatch reaches an on-duty officer", !!last && Number(last[2]) > 0, last ? `place='${last[1]}' officers=${last[2]}` : "no dispatch line in the server log");
-  const heard = on(2, { verb: "state" }, 10000).detail;
-  check("the officer's call names Saint-Philippe", PLACE_WORDS.test(heard), heard.slice(0, 220));
+  // The officer's own copy of the call is in `seen` (`lastdispatch`); `state` does not carry it (#5047).
+  const heard = lastDispatch(on(2, { verb: "seen" }, 10000).detail);
+  check("the officer's call names Saint-Philippe", PLACE_WORDS.test(heard), heard || "no lastdispatch on the officer's client");
   on(2, { verb: "capture", mode: "ui", name: "patrol_island_dispatch_client2" }, 25000);
 
   // 5. The strip on the south road.
@@ -126,8 +136,15 @@ async function runPatrolIslandProof() {
   return failed.length ? 1 : 0;
 }
 
+function selftest() {
+  const ok = lastDispatch("x toast=y dispatches=1 lastdispatch=#LF-Offence_BreakIn@#AR-MapLocation_StPhillipe posters=1") === "#LF-Offence_BreakIn@#AR-MapLocation_StPhillipe"
+    && PLACE_WORDS.test("#LF-Offence_BreakIn@#AR-MapLocation_StPhillipe") && PLACE_WORDS.test("Saint-Philippe") && !PLACE_WORDS.test("#LF-Offence_BreakIn@#AR-MapLocation_Meaux") && lastDispatch("dispatches=0 lastdispatch= posters") === "";
+  console.log(ok ? "patrol-island-proof selftest: OK" : "patrol-island-proof selftest: FAIL");
+  return ok ? 0 : 1;
+}
+
 export default {
   name: "patrol-island-proof",
   usage: "patrol-island-proof   (roster 2, then up --mission island --clients 2 --profile full)",
-  run: () => runPatrolIslandProof(),
+  run: (ctx) => ((ctx?.args ?? process.argv.slice(2)).includes("--selftest") ? selftest() : runPatrolIslandProof()),
 };

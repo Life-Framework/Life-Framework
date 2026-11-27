@@ -2,7 +2,7 @@
 
 **Commit played:** `origin/main` `6dbb681b` (compiled-ok) plus this branch's proof fixes, worktree `ws/proof-health-1127`. 0.3.0 feature freeze: tooling and test fixes only, no game code changed.
 **Setup:** island sessions on this PC, `session up --mission island` (lowspec for logs-only proofs, full for the two-player police proofs), `--hold 20`, nobody queued, `session down` after each. Six sessions: A (2 clients, hours 0 to 10), B and C (1 client, fresh characters), D to F (2 clients, police and heist), one failed `--clients 4` boot (no lane free for 4 clients, see "Not run").
-**Before / after (43 island proofs run at least once; `dialogue-keys-proof` and `vault-offer-proof` are not standalone proofs and `island-bank-heist-proof` could not boot, see below):** first run **25 pass / 18 fail**; after this branch **38 pass / 5 fail**. Of the 13 that turned green, 7 were stale checks fixed in the proof (clothing till, export crane, truck yard, resident walk, island cop, island vault, bank door clear), and 6 were run order, a fresh-account precondition, a missing argument or one client stall (starter gates, truck haul, run plate, no-free-cars, dock stand, drill quick slot). No failure was a game bug, so there is no "RC blocker" issue; the five still red are [#5047](https://github.com/Life-Framework/Life-Framework/issues/5047) (tooling).
+**Before / after (43 island proofs run at least once; `dialogue-keys-proof` and `vault-offer-proof` are not standalone proofs ; the second pass, #5047, is under "Second pass"):** first run **25 pass / 18 fail**; after this branch **38 pass / 5 fail**. Of the 13 that turned green, 7 were stale checks fixed in the proof (clothing till, export crane, truck yard, resident walk, island cop, island vault, bank door clear), and 6 were run order, a fresh-account precondition, a missing argument or one client stall (starter gates, truck haul, run plate, no-free-cars, dock stand, drill quick slot). No failure was a game bug, so there is no "RC blocker" issue; the five still red were [#5047](https://github.com/Life-Framework/Life-Framework/issues/5047) (tooling) and are green in the second pass below.
 
 ## Result per proof
 
@@ -49,19 +49,28 @@ Hours are the X-6 checkpoint each proof belongs to (`docs/playtest/rounds/2026-1
 | extra | `drill-quickslot-proof --island` | FAIL without `--island` (it then aims at the annex vault) | pass with `--island` | not a fault; the flag is the island variant |
 | extra | `police-phoned-call-proof` | pass | pass | |
 
-## Still red or not run
+## Second pass (#5047): the five red proofs and the heist, all green
 
-| Proof | State | Why | Issue |
+Sessions on this PC from `ws/proof-health-1127-r2`, `--mission island --profile lowspec --hold 20`, each proof in a fresh session where it says so, `session down` after. No game code changed; none of the six was a game bug, so there is no "RC blocker" issue. One balance note is below.
+
+| Proof | Now | Cause | Fix |
 |---|---|---|---|
-| `patrol-island-proof` | FAIL (6 of 10) | client 2 `clocks in at the island police desk: action_not_found`, so no officer is on duty and the kit, strip and dispatch steps cascade; same family as the cop proof's stale desk rows. My quick-slot edit to it is untried | [#5047](https://github.com/Life-Framework/Life-Framework/issues/5047) |
-| `island-jail-breach-proof` | FAIL | arrests with `LF_JailArrestAction` (not offered on the island), so B is never in the cell; needs the booking desk path of `booking-desk-proof` | #5047 |
-| `postal-van-proof` | FAIL (1 of 5) | the seat step takes the nearest vehicle within 6 m, which is now the parked police UAZ, not the van 11 m away; needs `engine veh_PostalVan` and a spot beside the van | #5047 |
-| `dirty-money-island` | FAIL (3b) | the informant's greeting offers 3 replies, the proof wants 4 (zone, move, work, bye) at UNDERWORLD 100; the dialogue or the gate moved | #5047 |
-| `square-harbor-life-proof` | FAIL (2 night-bed lines) | at 23:00 the harbor night and village-night bed windows are open but no start line appears; the day beds and the outpost beds pass | #5047 |
-| `island-bank-heist-proof` | **not run** | needs `--clients 4`; the pool had no lane free for four clients (`no session lane freed on any machine within 90 min`). Patched like the vault proof (`graceOff`, quick-slot press) but unverified: run it at the start of Saturday's session on 4 clients | |
-| `dialogue-keys-proof` | N/A | a measurement tool: it needs a client already inside a talk (`flow ... ends on the clerk talk`), prints `the talk closed before every press was made` otherwise | |
-| `vault-offer-proof` | N/A on the island | targets the annex vault (`Annex_Bank_Vault`), a grid-world proof | |
-| `tracker-rejoin-proof`, `drill-scene-proof` and the shot scripts | not run | not on an X-6 hour | |
+| `square-harbor-life-proof` | **pass** (fresh session, then twice more in a used one) | **stale check, not an atmosphere bug.** In a session without sound (`-noSound`) an emitter says `is in range ... got no voice for 5 s` once, ever (`m_bRefusalSaid`, `LF_AmbientEmitterComponent.Refused`). The proof reads the night beds after a `mark`, so in a session where the harbor night and village-night beds had already been chosen (any earlier proof at night) it found only `window open <bed>`, which it did not count. The #4957 window-edge lines are right: both night beds logged `window open` at 23:00. Reproduced: run 1 in a fresh session passed, run 2 in the same session failed the same two steps; with the fix runs 2 and 3 pass | `liveOrReopened`: a `window open` after the mark counts when an earlier line already showed that bed chosen (selftest cases) |
+| `dirty-money-island` | **pass** (7 of 7) | two stale checks. The night-shift worker lives in his own house now (`saint-philippe.home.night_shift`, `Homes_saint-philippe_resident.layer`), not at the shared residents slot, so the proof stood at nothing (`stand Resident_night_shift: entity_not_found`). And the dialogue menu splits the farewell off as the `0 Goodbye` row (`d3db452da`), so `replies=` counts 3 where it used to count 4 (greet: zone, heard anything, work; work: zone, move, tip) | the doorstep is read from the pack's residents conf and the homes layer (`homeDoorOf`, selftest), the expected count is 3 |
+| `patrol-island-proof` | **pass** (10 of 10) | three stale checks. The desk and armory names (`Roadmap_Police_Desk`, `Roadmap_Police_Armory`) are the grid's; the island kit rows are `police_police_kit_duty_desk` and `police_police_kit_armory`, so `use LF_DutyAction` found no target (`action_not_found`) and the kit, strip and dispatch steps cascaded. A fresh account was in its robbery grace. And the officer's call is read from `seen` (`lastdispatch=#LF-Offence_BreakIn@#AR-MapLocation_StPhillipe`), not `state`, and names the town by the base game's key spelling `StPhillipe` | names fixed, `graceOff`, `lastDispatch` + `PLACE_WORDS` (selftest) |
+| `island-jail-breach-proof` | **pass** (12 of 12, fresh session, about 7 min) | three stale checks. The instant arrest (`LF_JailArrestAction`) is not offered on the island, so B went into the cell through the booking desk (`LF_BookingDeskBookAction`, the sheet, B's "Take the time" answer, as `booking-desk-proof`); a roster account has no Apply row; and the bail step: **every island sentence at one wanted is 900 s and bail is $150 a started minute, so $2,250 against a fresh account's $2,000 bank**; the game refuses it (`bail refused ... bank 2000 < bail 2250`). The proof now waits until the minutes left are affordable (about 100 s) and pays | booking-desk arrest, roster-aware apply, bail wait, comments say 900 s |
+| `postal-van-proof` | **pass** (5 of 5) | stale check: `engine seat` takes the nearest vehicle within 6 m, the parked police UAZ at the depot stand; the van lies 7 to 22 m from the post-box stand (`LF_PostalRun.FindVanSpot`) | the character walks round the stand until `seen` puts the van within 5.8 m (`vanDistance`, selftest), then `engine veh_PostalVan`; the server's `entry refused` is the check |
+| `island-bank-heist-proof` | **pass** (16 of 16, `ALL PASS`) | first live run, 4 clients booted at the first try (`session up --clients 4 --roster 3,4 --profile lowspec`, about 2.5 min, 18 GB of RAM free). The `graceOff` and quick-slot fixes from the first pass held. The `failures=2` in its `SUMMARY` line are the two refusals the proof expects (one officer, and the big-job lock) | none |
+
+**Balance note, not a blocker:** a new character who robs the fuel till gets 15 minutes, and bail is $2,250, which a $2,000 starting bank cannot cover for the first 100 s. The player can wait, break out or be bailed by cash from the bank once earned. `LF_JailBreak_Everon1989.conf` (`m_iBailPerMinute 150`) is the knob if a playtest finds it harsh.
+
+## Still not run
+
+| Proof | State | Why |
+|---|---|---|
+| `dialogue-keys-proof` | N/A | a measurement tool: it needs a client already inside a talk (`flow ... ends on the clerk talk`), prints `the talk closed before every press was made` otherwise |
+| `vault-offer-proof` | N/A on the island | targets the annex vault (`Annex_Bank_Vault`), a grid-world proof |
+| `tracker-rejoin-proof`, `drill-scene-proof` and the shot scripts | not run | not on an X-6 hour |
 
 ## Order for Saturday's run (what the table implies)
 
@@ -71,7 +80,8 @@ Hours are the X-6 checkpoint each proof belongs to (`docs/playtest/rounds/2026-1
 4. Hour 8 `outpost-north-proof` on a character at standing 0 (`repgrant UNDERWORLD 0`), once per session; `booking-desk-proof` with two clients.
 5. Police and crew proofs (`island-cop-proof`, `island-vault-proof`, `island-bank-door-clear-proof`) each want a fresh two-client session, or at least a character that has not used the cop kit; `island-vault-proof` and `island-bank-door-clear-proof` both take the vault's single bag.
 6. `mining-iron-chain` and `iron-chain-proof` 5 minutes apart at least.
+7. Two-client island proofs each want a fresh session where they rob, cuff or take a run: `postal-van-proof` (about 2 min), `patrol-island-proof` (2 min, needs the roster seed for client 2), `island-jail-breach-proof` (7 min, one run: the jail doors stay blown), then `island-bank-heist-proof` on 4 clients (`session up --clients 4 --roster 3,4`, 4 min). `square-harbor-life-proof` can run any time; a second run in one session is fine now.
 
 ## Files changed
 
-`agent-box/proofs/`: `clothing-till-proof`, `export-crane-proof`, `island-cop-proof`, `island-vault-proof`, `island-bank-door-clear-proof`, `island-bank-heist-proof` (unverified), `patrol-island-proof` (unverified), `resident-island-proof` (with selftest cases), `truck-yard-proof`, and the new `_grace.mjs`.
+`agent-box/proofs/`: `clothing-till-proof`, `export-crane-proof`, `island-cop-proof`, `island-vault-proof`, `island-bank-door-clear-proof`, `island-bank-heist-proof`, `patrol-island-proof`, `resident-island-proof` (with selftest cases), `truck-yard-proof`, and the new `_grace.mjs`. Second pass (#5047): `square-harbor-life-proof`, `dirty-money-island`, `patrol-island-proof`, `island-jail-breach-proof`, `postal-van-proof` (each with a selftest case for its new pure helper).
