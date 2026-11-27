@@ -403,6 +403,9 @@ class LF_HarnessSeen
 		string seen = string.Format("%1 veh=%2 door=%3 bags=%4 chop=%5 toast=%6 dispatches=%7 lastdispatch=%8 posters=%9", line, Join(s_aVehicleText), Join(s_aDoorText), s_iBags, s_iChop, toast, SCR_PlayerController.LF_GetDispatchCount(), dispatch, LF_WantedPosterBoardComponent.DescribeNearest(s_vOrigin));
 		seen = seen + " cases=" + LF_CaseBoardComponent.DescribeNearest(s_vOrigin) + " townboard=" + LF_TownBoardComponent.DescribeNearest(s_vOrigin) + " waypoint=" + LF_Waypoint.Describe(s_vOrigin) + " breach=" + Join(s_aBreachText);
 		seen = seen + " npc=" + Join(s_aNpcText) + " evidence=" + Join(s_aEvidenceText) + " clock=" + ClockToken() + " jailclock=" + LF_JailClock.Describe();
+		string downedHud = LF_DownedHud.Describe();
+		downedHud.Replace(" ", "_");
+		seen = seen + " downedhud=" + downedHud;
 		return seen + LateJoinTokens();
 	}
 
