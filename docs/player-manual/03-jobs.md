@@ -64,10 +64,10 @@ missing and where to get it.
 | Farming | 10 | First perk: pick Double yield or Swift hands at the labor office |
 | Farming | 20 | Second perk: Light touch and Good word join the choices at the labor office |
 | Mining | 2 | Coal face permit: the East Rise coal seam opens at Mining 4 |
-| Mining | 3 | Mining 3: a steady swing |
+| Mining | 3 | Copper seam permit: cut copper ore |
 | Mining | 4 | Iron seam permit: mine iron |
 | Mining | 5 | Seasoned miner license: cut any ore twice as fast |
-| Mining | 6 | Mining 6: you read the rock |
+| Mining | 6 | Gold seam permit: cut gold ore |
 | Mining | 10 | First perk: pick Double yield or Swift hands at the labor office |
 | Mining | 20 | Second perk: Light touch and Good word join the choices at the labor office |
 | Lumber | 2 | Felling permit: fell trees with an axe |
@@ -357,7 +357,7 @@ the pump says "The tanks are dry. The depot truck is due."
 ## Mining
 
 **Status:** ✅ live. Iron is mined at **Coalman's Brow**, the hill just south of the village, and at **Highstone**; coal is cut at the **East Rise** seam.
-Copper, gold and stone are not on the island yet.
+Copper and stone are not on the island yet.
 
 * **Where:** the **iron mine** (sign *Coalman's Brow mine*, map label **Iron mine**) on the wooded north side of the brow, about 350 m south of the square past the farms; the track off the road to the west leads up to it.
   It has the **miner's desk**, a **miner's supply** counter, six rust-veined **iron rocks** at the foot of a granite rock face, and a **furnace**. The **pickaxe** is sold at the
@@ -378,7 +378,7 @@ Copper, gold and stone are not on the island yet.
 * **Shift board:** a cork **shift board** stands in the mine yard near the miner's desk. **Read the shift board** lists the week's top five workers at the mine by the trade XP they earned there, with their trade level. The list empties every Monday at 06:00 UTC.
 * **Wear:** every swing at a rock wears the pickaxe you swing a little (an axe wears with each tree felled, a fishing rod with each fish landed). Each tool keeps its own condition: a new pickaxe starts in top shape whatever your old one looked like, and a worn one stays worn in your pack, on the ground, in someone else's hands and after a restart. A notice names the tool when it is getting worn, when it is badly worn, and after every use once it is worn out. A worn-out tool still works. At the hardware bench, hold the tool you want fixed: $12 and a scrap of metal bring that one tool back to top shape.
 * **Better tools:** the miners' supply till in the hardware store also sells the pickaxe, axe and fishing rod in three finishes: worn ($150), standard ($600) and fine ($1,800). A better finish wears slower: a worn tool loses twice as much per use as a standard one, a fine one half as much. The standard pickaxe or axe needs trade level 3 and the fine one level 6; below that the till refuses in words.
-* **Needs:** the miner job and a pickaxe. Mining 4 opens the coal seam and Mining 12 the rich Highstone rocks; the level-up card at Mining 2 names the coal permit and says so (the seam still needs Mining 4). The island has no copper or gold rock, so no card names a copper or gold permit. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the iron smelter takes anyone from Smelting level 1 (you earn the trade by smelting), while the copper refinery (Smelting level 15) and the cement works (level 6) are not on the island yet. At the iron smelter the level grows the run: up to 6 bars at level 2, 7 at level 5, 8 at level 8 and 10 at level 16, and the run itself drops from 60 to 45 seconds at level 7 and to 35 at level 9 (the level-up card names each one). Where a trade has a level gate, the refusal says it in words: "Needs Smelting 15".
+* **Needs:** the miner job and a pickaxe. Mining 4 opens the coal seam and Mining 12 the rich Highstone rocks; the level-up card at Mining 2 names the coal permit and says so (the seam still needs Mining 4), and the Mining 3 card names a copper permit, but there is no copper rock on the island. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the iron smelter takes anyone from Smelting level 1 (you earn the trade by smelting), while the copper refinery (Smelting level 15) and the cement works (level 6) are not on the island yet. At the iron smelter the level grows the run: up to 6 bars at level 2, 7 at level 5, 8 at level 8 and 10 at level 16, and the run itself drops from 60 to 45 seconds at level 7 and to 35 at level 9 (the level-up card names each one). Where a trade has a level gate, the refusal says it in words: "Needs Smelting 15".
 
 
 ## Export orders

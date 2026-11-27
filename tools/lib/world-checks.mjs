@@ -57,7 +57,6 @@ export const LAYER_READERS_KEPT_HARD = {
   "validate-npc-layer-overrides.mjs": "a layer override on a replicated NPC kicks clients on join (RplCreationError): never a layout call",
   "validate-grid-world.mjs": "GridWorld only (the debug grid): a legacy station outside every claimed cell; the town layers are never read",
   "validate-sound-slots.mjs":"a sound slot id a layer asks for must exist: a broken reference",
-  "validate-pack-permit-sources.mjs": "looks for a rock's prefab in the island layers, never a position: a permit offered for ore nothing places is a broken promise",
   "validate-plot-house-ids.mjs": "a plot key equal to a house id sells the house at the plot price: a config collision, not a position",
   "validate-no-town-layout-asserts.mjs": "judges new test files, and already only warns when the town moved under an old literal",
   "validate-layer-height-frame.mjs": "island layers only (never a town layer): a row in the wrong height frame stands metres in the air or under the ground",
