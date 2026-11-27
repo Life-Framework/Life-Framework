@@ -230,9 +230,15 @@ the game profile). Hooks:
   `input CharacterPitch <deg>` sets it (absolute, clamped to ±85). Use the absolute one for a
   sweep: a relative turn sent while the client stalls can be lost, and every later step then
   lands that far off. On #4803 the suspect stared at the floor and `aim` read `none` for minutes.
+  **A held tool is in the lower edge of the first-person view, not at the horizon** (#4832): after
+  `hold weapon`, `capture ui` at pitch 0 or up shows no hands and no tool, which read as "the tool
+  does not render". The vanilla pickaxe shows at `CharacterPitch -40` (lower right); the vanilla axe
+  and every tier axe sit lower and show only near `CharacterPitch -75`, the handle rising from the
+  bottom edge. Sweep `0,-40,-75` for a held-tool picture. `hold weapon` draws the FIRST slotted
+  weapon and `itemdrop` cannot empty that slot, so one tool per `session up`.
   **Camera:** `input SwitchCameraType` is accepted but did not switch to third person (the axe card, 2026-11-27: the
-  capture stayed first person). A shot that needs the character's body or the held tool in view comes from `look`, not
-  from a session.
+  capture stayed first person). A shot that needs the character's body in view comes from `look`, not from a session;
+  the held tool itself is in the first-person view when the pitch is down (above).
   **Talking to an NPC:** drive a dialogue the way a player does. Start the talk, then
   `dialogue-wait choosing <node>` (the line plays first; a Select while it plays only skips it),
   then `input MenuDown` / `MenuUp` to move the focus and `input MenuSelect` to answer, or
