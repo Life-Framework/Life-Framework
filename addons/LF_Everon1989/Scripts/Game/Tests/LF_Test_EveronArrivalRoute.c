@@ -93,6 +93,13 @@ class LF_Test_EveronArrivalRoute : LF_Test
 			ctx.Equal(PACK_CASH, register.m_iRewardMoney, "registering hands $100 in cash");
 		}
 
+		LF_QuestDefinition market = manager.GetDefinition("arrival_done");
+		if (market)
+		{
+			ctx.EqualStr("#LF-Quest_EveronMarket_TurnInTitle", market.TurnInTitle(), "the sale's closing card looks ahead (playtest 2026-11-27 finding 5)");
+			ctx.True(market.TurnInTitle() != market.m_sTitleKey, "the closing card does not keep the market step's title");
+		}
+
 		LF_QuestDefinition garageStep = manager.GetDefinition("arrival_garage");
 		if (garageStep)
 		{
