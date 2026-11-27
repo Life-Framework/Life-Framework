@@ -28,7 +28,7 @@
     "settle_fish": { "for_key": "#LF-Quest_SettleFish_Desc", "key_pin": "aee9f54d", "text": "Catch a fish and sell it at the fish counter." },
     "settle_plot": { "for_key": "#LF-Quest_SettlePlot_Desc", "key_pin": "76d2621e", "text": "Find a plot for sale and read its sign. It says what the plot costs and how to buy it." },
     "settle_plot_done": { "for_key": "#LF-Quest_SettlePlot_TurnIn", "key_pin": "65f62b06", "text": "That is how land is bought here. Save up, and the plot is yours." },
-    "settle_foundation": { "for_key": "#LF-Quest_SettleFoundation_Desc", "key_pin": "6c755fdf", "text": "Lay the foundation of your cottage. The general store sells gravel and cement." },
+    "settle_foundation": { "for_key": "#LF-Quest_SettleFoundation_Desc", "key_pin": "8b4ee406", "text": "Lay the foundation of your cottage. The hardware store sells gravel and cement." },
     "card_replaced": { "for_key": "#LF-IdCard_ClerkReplaced", "key_pin": "a2f15c4c", "text": "Here is your new card, with a new photograph. The old one is void now." },
     "card_still_carried": { "for_key": "#LF-IdCard_ClerkStillCarried", "key_pin": "4cc22075", "text": "You have your card with you. I cannot issue a second one." },
     "card_no_cash": { "for_key": "#LF-IdCard_ClerkNoCash", "key_pin": "7896b9da", "text": "A new card costs the fee, in cash. Come back when you have it." },
