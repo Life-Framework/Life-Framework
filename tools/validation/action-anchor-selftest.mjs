@@ -1,7 +1,7 @@
 // Proves the anchor math and the reach check on fixed bounds (no game files needed).
 // inputs: tools/**, agent-box/**, .githooks/**
 import { customerDistance } from "../actions/counter-npc.mjs";
-import { anchorPoint, suggestRadius, gapToBounds, reachDistance } from "../actions/action-anchor.mjs";
+import { anchorPoint, suggestRadius, gapToBounds, reachDistance, isCharacterMesh } from "../actions/action-anchor.mjs";
 
 const min = [-1, 0, -0.5];
 const max = [1, 0.8, 0.5];
@@ -24,4 +24,8 @@ eq(Math.round(across.distance * 100), 180, "customer stands 1.8 m from a clerk a
 eq(across.distance > 0.6 && across.distance <= 2.4, true, "0.6 m fails and 2.4 m reaches across the counter");
 eq(customerDistance({ x: 0, z: 0, yaw: 0 }, box(0, -1, 0.6, 0.45), [0, -1]), null, "a counter behind the clerk is not between clerk and customer");
 eq(customerDistance({ x: 0, z: 0, yaw: 90 }, box(1, 0, 0.45, 0.6), [1, 0]) !== null, true, "yaw 90 faces +X");
+eq(isCharacterMesh("Assets/Characters/Basebody/Basebody_Male_01.xob"), true, "a character body is skipped by the radius check");
+eq(isCharacterMesh("Basebody_Male_01.xob"), true, "a bare body name too");
+eq(isCharacterMesh("Assets/Props/Furniture/Chair_02.xob"), false, "a chair keeps the radius check");
+eq(isCharacterMesh(undefined), false, "no mesh is not a character");
 console.log("action-anchor-selftest: OK");
