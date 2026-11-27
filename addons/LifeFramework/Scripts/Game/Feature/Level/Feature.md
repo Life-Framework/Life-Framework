@@ -27,7 +27,7 @@ player where they stand. No screen.
   key, job), level from thresholds, per-action cooldown, per-job daily cap,
   the `joblevels` payload (save version 28) and the migration of a pre-#749
   save (single level onto CIVILIAN, delivery career onto DELIVERY).
-- Readers: `LF_CivilianJob` (DELIVERY: fuel level 2, taxi level 3),
+- Readers: `LF_CivilianJob` (DELIVERY: fuel level 4, taxi level 6),
   `LF_LicenseGate` (the licence family's job, or a `licenceGates` row),
   `LF_ChainGate` (`m_sLevelJob`), `LF_QuestTrackerComponent` (`m_sJob`),
   `LF_Lockpick` (CIVILIAN).

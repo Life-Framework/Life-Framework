@@ -7851,7 +7851,7 @@ StringTable {
     }
     CustomStringTableItem "{6DB7091FD56820C9}" {
      Id "LF-Sign_PostOffice_Needs"
-     Target_en_us "Courier work is open to all|Fuel delivery needs work level 2, taxi work level 3|Every paid run counts toward your level"
+     Target_en_us "Courier work is open to all|Fuel delivery needs work level 4, taxi work level 6|Every paid run counts toward your level"
      Comment "Sign card for the post office (delivery jobs), Needs section."
     }
     CustomStringTableItem "{1E58663948A81073}" {
