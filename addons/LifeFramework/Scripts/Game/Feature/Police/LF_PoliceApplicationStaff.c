@@ -15,7 +15,7 @@ class LF_PoliceApplicationStaff : LF_PoliceApplications
 	static const int UID_MAX_LENGTH = 64;
 	protected static const string UID_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
 
-	protected static string s_sStaffPath = "";
+	protected static string s_sStaffPath;
 
 	//------------------------------------------------------------------------------------------------
 	//! Tests point this at a private file. An empty path uses the profile file.

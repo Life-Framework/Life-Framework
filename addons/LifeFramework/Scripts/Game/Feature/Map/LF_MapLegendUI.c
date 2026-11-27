@@ -19,17 +19,24 @@ class LF_MapLegend
 	//! The legend order of the categories (the POI table's `m_sCategory` words).
 	static ref array<string> s_aOrder = {"civic", "shop", "work", "law", "health", "travel", "story", "underworld"};
 	//! Categories this viewer hid. A per-viewer preference, held by this client only and never sent.
-	protected static ref array<string> s_aHidden = {};
+	protected static ref array<string> s_aHidden;
+	protected static array<string> LzHidden()
+	{
+		if (!s_aHidden)
+			s_aHidden = new array<string>();
+		return s_aHidden;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static array<string> Hidden()
 	{
-		return s_aHidden;
+		return LzHidden();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LzHidden();
 		s_aHidden.Clear();
 		s_sSolo = "";
 	}

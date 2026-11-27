@@ -35,7 +35,13 @@ class LF_DutyIdle
 	static const float MOVE_METRES = 2;	// lf-fixed: the card's activity distance
 	static const float AIM_COS = 0.985;	// lf-fixed: about 10 degrees of view turn counts as active
 
-	protected static ref map<string, ref LF_DutyIdleWatch> s_mWatches = new map<string, ref LF_DutyIdleWatch>();
+	protected static ref map<string, ref LF_DutyIdleWatch> s_mWatches;
+	protected static map<string, ref LF_DutyIdleWatch> LzWatches()
+	{
+		if (!s_mWatches)
+			s_mWatches = new map<string, ref LF_DutyIdleWatch>();
+		return s_mWatches;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Configured idle window in seconds; 0 (or a missing config) turns the pause off.
@@ -157,6 +163,7 @@ class LF_DutyIdle
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(Sweep);
 
+		LzWatches();
 		s_mWatches.Clear();
 	}
 
@@ -185,6 +192,7 @@ class LF_DutyIdle
 			if (uid.IsEmpty())
 				continue;
 
+			LzWatches();
 			LF_DutyIdleWatch watch = s_mWatches.Get(uid);
 			if (!watch)
 				watch = new LF_DutyIdleWatch();

@@ -538,7 +538,13 @@ class LF_FilmDirector
 	protected static const float TICK_MS = 100;
 	protected static const float MAX_SECONDS = 90;
 
-	protected static ref array<ref LF_FilmActor> s_aActors = {};
+	protected static ref array<ref LF_FilmActor> s_aActors;
+	protected static array<ref LF_FilmActor> LzActors()
+	{
+		if (!s_aActors)
+			s_aActors = new array<ref LF_FilmActor>();
+		return s_aActors;
+	}
 	protected static ref map<string, EntityID> s_mVehicles = new map<string, EntityID>();
 	protected static ref array<EntityID> s_aSpawned = {};
 	protected static ref LF_FilmSceneEnv s_Saved;     // the world before the scene, restored by Clear
@@ -582,6 +588,7 @@ class LF_FilmDirector
 		s_bRunning = true;
 		s_fStartMs = GetGame().GetWorld().GetWorldTime();
 		GetGame().GetCallqueue().CallLater(Tick, TICK_MS, true);
+		LzActors();
 		return string.Format("scene %1 started, %2 actors", scene, s_aActors.Count());
 	}
 
@@ -589,7 +596,7 @@ class LF_FilmDirector
 	static string Status()
 	{
 		string text = string.Format("running=%1 scene=%2 restore=%3", s_bRunning, s_sScene, s_Saved != null);
-		foreach (LF_FilmActor actor : s_aActors)
+		foreach (LF_FilmActor actor : LzActors())
 			text += string.Format(" %1:%2", actor.Name, actor.Finished);
 		return text;
 	}
@@ -599,6 +606,7 @@ class LF_FilmDirector
 	static string Stop()
 	{
 		bool restore = s_Saved != null;
+		LzActors();
 		int removed = s_aActors.Count() + s_aSpawned.Count();
 		Clear();
 		return string.Format("scene cleared, %1 removed, clock and weather restored=%2", removed, restore);
@@ -610,7 +618,7 @@ class LF_FilmDirector
 		GetGame().GetCallqueue().Remove(Tick);
 		s_bRunning = false;
 		BaseWorld world = GetGame().GetWorld();
-		foreach (LF_FilmActor actor : s_aActors)
+		foreach (LF_FilmActor actor : LzActors())
 		{
 			IEntity entity = world.FindEntityByID(actor.Id);
 			if (entity)
@@ -628,6 +636,7 @@ class LF_FilmDirector
 			s_Saved = null;
 		}
 		s_sScene = "";
+		LzActors();
 		s_aActors.Clear();
 		s_aSpawned.Clear();
 		s_mVehicles.Clear();
@@ -654,6 +663,7 @@ class LF_FilmDirector
 		actor.Name = name;
 		actor.Id = entity.GetID();
 		LF_FilmIdentity.Set(entity, "film-" + name);
+		LzActors();
 		s_aActors.Insert(actor);
 		return actor;
 	}
@@ -708,7 +718,7 @@ class LF_FilmDirector
 	{
 		float t = (GetGame().GetWorld().GetWorldTime() - s_fStartMs) / 1000.0;
 		bool anyLeft;
-		foreach (LF_FilmActor actor : s_aActors)
+		foreach (LF_FilmActor actor : LzActors())
 		{
 			actor.Tick(t, TICK_MS / 1000.0, s_mVehicles);
 			if (!actor.Finished)

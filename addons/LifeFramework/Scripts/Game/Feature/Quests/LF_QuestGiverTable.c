@@ -221,7 +221,13 @@ class LF_QuestGiverTable
 	protected static ref LF_QuestGiverConfig s_Config;
 	protected static bool s_bLoadAttempted;
 	protected static bool s_bAuditQueued;
-	protected static ref array<string> s_aRefused = {};
+	protected static ref array<string> s_aRefused;
+	protected static array<string> LzRefused()
+	{
+		if (!s_aRefused)
+			s_aRefused = new array<string>();
+		return s_aRefused;
+	}
 
 	//! Delay before the unknown-giver audit: every placed giver has registered by then.
 	static const int AUDIT_DELAY_MS = 30000; // lf-fixed: an internal settle delay, not a server setting
@@ -308,9 +314,11 @@ class LF_QuestGiverTable
 	protected static void Refuse(string giverId, string questId)
 	{
 		string key = giverId + "/" + questId;
+		LzRefused();
 		if (s_aRefused.Find(key) != -1)
 			return;
 
+		LzRefused();
 		s_aRefused.Insert(key);
 		LF_Debug.Warn(LF_QuestGiverConfig.LOG, string.Format("quest giver table: giver '%1' already offers quest '%2'; the table's copy is refused", giverId, questId));
 	}
@@ -319,6 +327,7 @@ class LF_QuestGiverTable
 	//! \return How many table quests were refused as a duplicate id (each counted once).
 	static int RefusedCount()
 	{
+		LzRefused();
 		return s_aRefused.Count();
 	}
 

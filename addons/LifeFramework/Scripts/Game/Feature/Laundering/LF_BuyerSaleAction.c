@@ -27,7 +27,13 @@ class LF_BuyerSale
 	static const string REASON_REFUND = "buyer-sale-refund";
 
 	//! Server: world seconds of each seller's last sale attempt, for the rate limit.
-	protected static ref map<string, float> s_mLastSale = new map<string, float>();
+	protected static ref map<string, float> s_mLastSale;
+	protected static map<string, float> LzLastSale()
+	{
+		if (!s_mLastSale)
+			s_mLastSale = new map<string, float>();
+		return s_mLastSale;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Chain goods `user` carries that the price list names: `prefabs[i]` x `counts[i]` at `prices[i]`.
@@ -105,12 +111,14 @@ class LF_BuyerSale
 
 		// Find leaves `last` at 0 on a miss, so a first sale early in the world must not read as a repeat.
 		float last;
+		LzLastSale();
 		if (s_mLastSale.Find(key, last) && (nowSeconds - last) * 1000 < config.m_iMinActionMs)
 		{
 			LF_Debug.Warn(FEATURE, string.Format("buyer sale by %1 refused: asked again faster than %2 ms", key, config.m_iMinActionMs));
 			return LF_EBuyerSale.TOO_FAST;
 		}
 
+		LzLastSale();
 		s_mLastSale.Set(key, nowSeconds);
 
 		array<ResourceName> prefabs = {};
@@ -215,6 +223,7 @@ class LF_BuyerSale
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LzLastSale();
 		s_mLastSale.Clear();
 	}
 }

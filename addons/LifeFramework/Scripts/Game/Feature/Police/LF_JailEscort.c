@@ -62,7 +62,7 @@ class LF_JailEscort
 	protected static ref map<string, ref LF_JailEscortVehicle> s_mVehicles;
 	protected static ref map<string, ref LF_JailEscortSeat> s_mSeats;
 	protected static ref map<string, ref LF_JailEscortHold> s_mHolds;
-	protected static string s_sLastLog = "";
+	protected static string s_sLastLog;
 	protected static int s_iTickSteps;
 
 	//------------------------------------------------------------------------------------------------

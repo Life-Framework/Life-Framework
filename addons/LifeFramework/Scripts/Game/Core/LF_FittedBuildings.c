@@ -21,7 +21,13 @@ class LF_FittedBuildings
 	static const float BOUNDS_SLACK = 3;
 
 	//! Building EntityID -> the place id that fitted it.
-	protected static ref map<EntityID, string> s_mFitted = new map<EntityID, string>();
+	protected static ref map<EntityID, string> s_mFitted;
+	protected static map<EntityID, string> LzFitted()
+	{
+		if (!s_mFitted)
+			s_mFitted = new map<EntityID, string>();
+		return s_mFitted;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: finds the vanilla building around `at` and makes it immune to damage.
@@ -53,6 +59,7 @@ class LF_FittedBuildings
 			LF_Debug.Warn(FEATURE, string.Format("%1: building %2 is already destroyed; fitting it anyway", placeId, building.GetPrefabData().GetPrefabName()));
 
 		int parts = Shield(building);
+		LzFitted();
 		s_mFitted.Set(building.GetID(), placeId);
 		LF_Debug.Info(FEATURE, string.Format("%1: building %2 at %3 is indestructible (%4 damage managers off)", placeId, building.GetPrefabData().GetPrefabName(), building.GetOrigin(), parts));
 		return building;
@@ -62,6 +69,7 @@ class LF_FittedBuildings
 	//! \return true when Fit made this building indestructible.
 	static bool IsFitted(IEntity building)
 	{
+		LzFitted();
 		return building && s_mFitted.Contains(building.GetID());
 	}
 
@@ -69,9 +77,11 @@ class LF_FittedBuildings
 	//! Server: gives a fitted building its damage back (tests clean up with it).
 	static void Release(IEntity building)
 	{
+		LzFitted();
 		if (!building || !s_mFitted.Contains(building.GetID()))
 			return;
 
+		LzFitted();
 		s_mFitted.Remove(building.GetID());
 		if (Replication.IsServer())
 			SetHandling(building, true);
@@ -80,12 +90,14 @@ class LF_FittedBuildings
 	//------------------------------------------------------------------------------------------------
 	static int Count()
 	{
+		LzFitted();
 		return s_mFitted.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LzFitted();
 		s_mFitted.Clear();
 	}
 

@@ -80,8 +80,20 @@ class LF_RepairKit
 	//! Test seam: a value >= 0 replaces the kit's work time.
 	static float s_fSecondsOverride = -1;
 
-	protected static ref map<string, int> s_mLastRepair = new map<string, int>();
-	protected static ref array<ref LF_RepairKitJob> s_aJobs = {};
+	protected static ref map<string, int> s_mLastRepair;
+	protected static map<string, int> LzLastRepair()
+	{
+		if (!s_mLastRepair)
+			s_mLastRepair = new map<string, int>();
+		return s_mLastRepair;
+	}
+	protected static ref array<ref LF_RepairKitJob> s_aJobs;
+	protected static array<ref LF_RepairKitJob> LzJobs()
+	{
+		if (!s_aJobs)
+			s_aJobs = new array<ref LF_RepairKitJob>();
+		return s_aJobs;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The pure rule. lastMs < 0 means never repaired. health is the car's scaled health, 0..1.
@@ -142,7 +154,9 @@ class LF_RepairKit
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		LzLastRepair();
 		s_mLastRepair.Clear();
+		LzJobs();
 		s_aJobs.Clear();
 		s_fSecondsOverride = -1;
 	}
@@ -209,7 +223,7 @@ class LF_RepairKit
 			return false;
 
 		EntityID id = vehicle.GetID();
-		foreach (LF_RepairKitJob job : s_aJobs)
+		foreach (LF_RepairKitJob job : LzJobs())
 		{
 			if (job.m_VehicleId == id)
 				return true;
@@ -226,6 +240,7 @@ class LF_RepairKit
 			return LF_ERepairKitCheck.NO_VEHICLE;
 
 		int lastMs = -1;
+		LzLastRepair();
 		s_mLastRepair.Find(KeyOf(vehicle), lastMs);
 		int cooldownMs = 0;
 		IEntity kit = KitOf(user);
@@ -269,6 +284,7 @@ class LF_RepairKit
 		float restore = kit.GetRestoreScaled();
 		float before = HealthOf(vehicle);
 		Raise(vehicle, restore);
+		LzLastRepair();
 		s_mLastRepair.Set(KeyOf(vehicle), nowMs);
 		LF_Debug.Info(FEATURE, string.Format("%1 repaired: %2 -> %3", KeyOf(vehicle), before, HealthOf(vehicle)));
 		return LF_ERepairKitCheck.NONE;
@@ -330,6 +346,7 @@ class LF_RepairKit
 		if (s_fSecondsOverride >= 0)
 			job.m_fSeconds = s_fSecondsOverride;
 
+		LzJobs();
 		s_aJobs.Insert(job);
 		LF_Utils.NotifyEntity(user, "#LF-RepairKit_Started", "#LF-RepairKit_Title", 3.0);
 		if (job.m_fSeconds <= 0)
@@ -343,6 +360,7 @@ class LF_RepairKit
 	//------------------------------------------------------------------------------------------------
 	protected static void Tick(LF_RepairKitJob job)
 	{
+		LzJobs();
 		if (!job || s_aJobs.Find(job) == -1)
 			return;
 
@@ -350,6 +368,7 @@ class LF_RepairKit
 		IEntity user = GetGame().GetWorld().FindEntityByID(job.m_UserId);
 		if (!vehicle || !user)
 		{
+			LzJobs();
 			s_aJobs.RemoveItem(job);
 			LF_Debug.Info(FEATURE, "repair dropped: the car or the user is gone");
 			return;
@@ -393,6 +412,7 @@ class LF_RepairKit
 	//------------------------------------------------------------------------------------------------
 	protected static void Drop(LF_RepairKitJob job, IEntity user, string reason)
 	{
+		LzJobs();
 		s_aJobs.RemoveItem(job);
 		LF_Debug.Info(FEATURE, string.Format("repair dropped: %1", reason));
 		if (user)
@@ -405,6 +425,7 @@ class LF_RepairKit
 	{
 		IEntity vehicle = GetGame().GetWorld().FindEntityByID(job.m_VehicleId);
 		IEntity user = GetGame().GetWorld().FindEntityByID(job.m_UserId);
+		LzJobs();
 		s_aJobs.RemoveItem(job);
 		if (!vehicle || !user)
 			return;

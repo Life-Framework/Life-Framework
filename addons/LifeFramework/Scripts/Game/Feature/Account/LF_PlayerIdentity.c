@@ -22,10 +22,22 @@ class LF_PlayerIdentity
 	//! Player id -> tick (ms) of the first lookup that found no real identity.
 	protected static ref map<int, int> s_mWaitingSince = new map<int, int>();
 	//! Player id -> the name stand-in handed out while a real identity could still arrive.
-	protected static ref map<int, string> s_mStandIn = new map<int, string>();
+	protected static ref map<int, string> s_mStandIn;
+	protected static map<int, string> LzStandIn()
+	{
+		if (!s_mStandIn)
+			s_mStandIn = new map<int, string>();
+		return s_mStandIn;
+	}
 	//! Player id -> session slot (agent-box sessions, LF_SESSION_IDENTITY): the lowest slot nobody
 	//! connected holds. A client that quits and rejoins gets a new player id and the same slot back.
-	protected static ref map<int, int> s_mSlot = new map<int, int>();
+	protected static ref map<int, int> s_mSlot;
+	protected static map<int, int> LzSlot()
+	{
+		if (!s_mSlot)
+			s_mSlot = new map<int, int>();
+		return s_mSlot;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A platform identity that is not the player's own: empty, the NULL UUID, or a name-derived
@@ -77,8 +89,10 @@ class LF_PlayerIdentity
 			standIn = LF_Utils.BuildLocalIdentity(playerId);
 
 		// Only where a real identity could still arrive: the online service may answer late.
+		LzStandIn();
 		if (!dedicated && !noBackend && !s_mStandIn.Contains(playerId))
 		{
+			LzStandIn();
 			s_mStandIn.Set(playerId, standIn);
 			LF_Debug.Warn("Account", string.Format("player %1 has no platform identity after %2 s; their account is keyed by name (%3) until it arrives", playerId, waitedMs / 1000, standIn));
 		}
@@ -95,10 +109,12 @@ class LF_PlayerIdentity
 			s_mWaitingSince.Remove(playerId);
 		}
 
+		LzStandIn();
 		string standIn = s_mStandIn.Get(playerId);
 		if (standIn.IsEmpty())
 			return;
 
+		LzStandIn();
 		s_mStandIn.Remove(playerId);
 		LF_PlayerAccountManager.AdoptStandIn(standIn, identity);
 	}
@@ -116,6 +132,7 @@ class LF_PlayerIdentity
 	//------------------------------------------------------------------------------------------------
 	static bool HoldsSlot(int playerId)
 	{
+		LzSlot();
 		return s_mSlot.Contains(playerId);
 	}
 
@@ -126,6 +143,7 @@ class LF_PlayerIdentity
 	static int SlotOf(int playerId)
 	{
 		int held;
+		LzSlot();
 		if (s_mSlot.Find(playerId, held))
 			return held;
 
@@ -134,7 +152,7 @@ class LF_PlayerIdentity
 		while (taken)
 		{
 			taken = false;
-			foreach (int other, int otherSlot : s_mSlot)
+			foreach (int other, int otherSlot : LzSlot())
 			{
 				if (otherSlot == slot)
 				{
@@ -146,6 +164,7 @@ class LF_PlayerIdentity
 				slot++;
 		}
 
+		LzSlot();
 		s_mSlot.Set(playerId, slot);
 		// The harness reads this line to learn which identity a client got (agent-box/session.mjs).
 		LF_Debug.Info("Account", string.Format("session slot %1 for player %2: %3", slot, playerId, LF_Utils.BuildSessionIdentity(slot)));
@@ -157,10 +176,13 @@ class LF_PlayerIdentity
 	static void Forget(int playerId)
 	{
 		s_mWaitingSince.Remove(playerId);
+		LzStandIn();
 		s_mStandIn.Remove(playerId);
 		int slot;
+		LzSlot();
 		if (s_mSlot.Find(playerId, slot))
 		{
+			LzSlot();
 			s_mSlot.Remove(playerId);
 			LF_Debug.Info("Account", string.Format("session slot %1 released: player %2 left", slot, playerId));
 		}
@@ -170,7 +192,9 @@ class LF_PlayerIdentity
 	static void ResetStatics()
 	{
 		s_mWaitingSince.Clear();
+		LzStandIn();
 		s_mStandIn.Clear();
+		LzSlot();
 		s_mSlot.Clear();
 	}
 }

@@ -23,7 +23,13 @@ class LF_DialogueOverrides
 	static const string KEY_CAPTIONS = "captions";
 
 	//! The key's replacement text. Server: what the last reload read. Client: what the stream carried.
-	protected static ref map<string, string> s_mCaptions = new map<string, string>();
+	protected static ref map<string, string> s_mCaptions;
+	protected static map<string, string> LzCaptions()
+	{
+		if (!s_mCaptions)
+			s_mCaptions = new map<string, string>();
+		return s_mCaptions;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The text to show for a caption key: the override when there is one, else the key itself (the
@@ -31,6 +37,7 @@ class LF_DialogueOverrides
 	static string Text(string key)
 	{
 		string text;
+		LzCaptions();
 		if (s_mCaptions && s_mCaptions.Find(key, text))
 			return text;
 
@@ -41,15 +48,17 @@ class LF_DialogueOverrides
 	//! \return True when the key has an override.
 	static bool Has(string key)
 	{
+		LzCaptions();
 		return s_mCaptions && s_mCaptions.Contains(key);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static int Count()
 	{
-		if (!s_mCaptions)
+		if (!LzCaptions())
 			return 0;
 
+		LzCaptions();
 		return s_mCaptions.Count();
 	}
 
@@ -57,10 +66,10 @@ class LF_DialogueOverrides
 	//! \return The overrides, for the config stream to write. Never null.
 	static map<string, string> GetCaptions()
 	{
-		if (!s_mCaptions)
+		if (!LzCaptions())
 			s_mCaptions = new map<string, string>();
 
-		return s_mCaptions;
+		return LzCaptions();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -171,6 +180,7 @@ class LF_DialogueOverrides
 			kept.Set(keepKey, keepText);
 		}
 		s_mCaptions = kept;
+		LzCaptions();
 		return string.Format("%1 added, %2 changed, %3 removed, %4 override(s) now", added, changed, removed, s_mCaptions.Count());
 	}
 

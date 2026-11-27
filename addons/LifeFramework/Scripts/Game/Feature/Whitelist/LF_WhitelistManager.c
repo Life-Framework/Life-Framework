@@ -21,7 +21,7 @@ class LF_WhitelistManager
 
 	protected static ref map<string, ref array<LF_EFactionType>> s_mFactionWhitelist;
 	protected static ref map<string, ref array<LF_EJobType>> s_mJobWhitelist;
-	protected static string s_sSavePath = "";
+	protected static string s_sSavePath;
 	protected static int s_iMissingFileReports;
 	protected static int s_iFactionRefusals;
 

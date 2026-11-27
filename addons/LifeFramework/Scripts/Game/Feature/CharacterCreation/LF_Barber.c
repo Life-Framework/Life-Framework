@@ -26,7 +26,13 @@ class LF_Barber
 	static const string REASON = "barber";
 
 	//! Character record key -> chosen head.
-	protected static ref map<string, ResourceName> s_mLooks = new map<string, ResourceName>();
+	protected static ref map<string, ResourceName> s_mLooks;
+	protected static map<string, ResourceName> LzLooks()
+	{
+		if (!s_mLooks)
+			s_mLooks = new map<string, ResourceName>();
+		return s_mLooks;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The looks on offer: the base game's civilian heads, each with its own hair and beard.
@@ -178,6 +184,7 @@ class LF_Barber
 			return Refuse(LF_EBarberRefusal.NO_CHARACTER, characterKey);
 		}
 
+		LzLooks();
 		s_mLooks.Set(characterKey, head);
 		LF_Debug.Info(FEATURE, string.Format("haircut: %1 paid %2 for look %3 (%4)", characterKey, fee, lookIndex, head));
 		return LF_EBarberRefusal.NONE;
@@ -195,6 +202,7 @@ class LF_Barber
 	static ResourceName SavedLook(string characterKey)
 	{
 		ResourceName head;
+		LzLooks();
 		s_mLooks.Find(characterKey, head);
 		return head;
 	}
@@ -219,7 +227,7 @@ class LF_Barber
 	static array<ref LF_BarberLookRow> ExportAll()
 	{
 		array<ref LF_BarberLookRow> rows = {};
-		foreach (string key, ResourceName head : s_mLooks)
+		foreach (string key, ResourceName head : LzLooks())
 		{
 			rows.Insert(LF_BarberLookRow.Create(key, head));
 		}
@@ -232,6 +240,7 @@ class LF_Barber
 	//! \return the rows kept
 	static int ApplyAll(array<ref LF_BarberLookRow> rows)
 	{
+		LzLooks();
 		s_mLooks.Clear();
 		if (!rows)
 			return 0;
@@ -241,9 +250,11 @@ class LF_Barber
 			if (!row || row.m_sKey.IsEmpty() || row.m_sHead.IsEmpty())
 				continue;
 
+			LzLooks();
 			s_mLooks.Set(row.m_sKey, row.m_sHead);
 		}
 
+		LzLooks();
 		return s_mLooks.Count();
 	}
 
@@ -251,6 +262,7 @@ class LF_Barber
 	//! Tests: forget one key's look.
 	static void Forget(string characterKey)
 	{
+		LzLooks();
 		s_mLooks.Remove(characterKey);
 	}
 

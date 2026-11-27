@@ -62,9 +62,21 @@ class LF_MedicCarPool
 	protected static const float SETTLE_REACH = 2.5; // lf-fixed: a geometry bound of the seat trace, not a tunable
 
 	//! Account id to the car that medic drew (session only).
-	protected static ref map<string, EntityID> s_mCars = new map<string, EntityID>();
+	protected static ref map<string, EntityID> s_mCars;
+	protected static map<string, EntityID> LzCars()
+	{
+		if (!s_mCars)
+			s_mCars = new map<string, EntityID>();
+		return s_mCars;
+	}
 	//! Account id to the world time (ms) of that medic's last draw.
-	protected static ref map<string, float> s_mLastDraw = new map<string, float>();
+	protected static ref map<string, float> s_mLastDraw;
+	protected static map<string, float> LzLastDraw()
+	{
+		if (!s_mLastDraw)
+			s_mLastDraw = new map<string, float>();
+		return s_mLastDraw;
+	}
 	protected static int s_iBayHits;
 	protected static EntityID s_IgnoreId;
 	//! What the last bay check hit first, for the refusal's log line (#4878): prefab, position, distance.
@@ -122,6 +134,7 @@ class LF_MedicCarPool
 	static IEntity CarOf(string uid)
 	{
 		EntityID id;
+		LzCars();
 		if (!s_mCars.Find(uid, id) || !GetGame() || !GetGame().GetWorld())
 			return null;
 
@@ -162,6 +175,7 @@ class LF_MedicCarPool
 
 		float now = GetGame().GetWorld().GetWorldTime();
 		float last;
+		LzLastDraw();
 		if (s_mLastDraw.Find(uid, last) && now - last < COOLDOWN_SECONDS * 1000)
 			return Refuse(REFUSED_TOO_SOON, string.Format("draw refused: %1 drew a car %2 ms ago", uid, now - last), refusalKey);
 
@@ -219,7 +233,9 @@ class LF_MedicCarPool
 
 		LF_VehicleWorldSave.Hold(spawned);
 		LF_PlaceSnap.Settle(spawned, SETTLE_LIFT, SETTLE_REACH);
+		LzCars();
 		s_mCars.Set(uid, spawned.GetID());
+		LzLastDraw();
 		s_mLastDraw.Set(uid, now);
 		LF_Debug.Info(FEATURE, string.Format("%1 (rank %2) drew %3 into the bay at %4", uid, rank, car, spawned.GetOrigin()));
 		return spawned;
@@ -256,6 +272,7 @@ class LF_MedicCarPool
 	//! Tests: forget `uid`'s cooldown so a second draw can follow at once.
 	static void ClearCooldownForTest(string uid)
 	{
+		LzLastDraw();
 		s_mLastDraw.Remove(uid);
 	}
 
