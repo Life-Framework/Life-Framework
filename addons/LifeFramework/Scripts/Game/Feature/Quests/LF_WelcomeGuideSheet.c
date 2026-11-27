@@ -36,6 +36,8 @@ class LF_WelcomeGuideSheet
 	protected static ref LF_UIScreen s_Screen;
 	protected static ref LF_WelcomeGuideSheet s_Sheet;
 	protected static int s_iPage;
+	//! Whether the open page was built with the arrival errands done.
+	protected static bool s_bShownDone;
 	protected static bool s_bAutoWaiting;
 	protected static int s_iAutoTries;
 	//! A session client (agent) that asked for the auto open, for the welcome-guide proof only.
@@ -51,10 +53,18 @@ class LF_WelcomeGuideSheet
 
 	//------------------------------------------------------------------------------------------------
 	//! One page's string keys: the heading first, then its paragraphs. Past the last page: the last.
-	static array<string> PageKeys(int page)
+	//! param arrivalDone True once every arrival errand is turned in: page 1 then says what to do next
+	//! instead of sending the player to the clerk.
+	static array<string> PageKeys(int page, bool arrivalDone = false)
 	{
 		array<string> keys = {};
-		if (page == 0)
+		if (page == 0 && arrivalDone)
+		{
+			keys.Insert("#LF-WelcomeGuide_DoneHead1");
+			keys.Insert("#LF-WelcomeGuide_DoneBody1a");
+			keys.Insert("#LF-WelcomeGuide_DoneBody1b");
+		}
+		else if (page == 0)
 		{
 			keys.Insert("#LF-WelcomeGuide_Head1");
 			keys.Insert("#LF-WelcomeGuide_Body1a");
@@ -113,7 +123,7 @@ class LF_WelcomeGuideSheet
 	//------------------------------------------------------------------------------------------------
 	//! The parts of one page. Page 0 carries "Set waypoint"; the nav row drops Previous on the first
 	//! page and Next on the last.
-	static array<ref LF_UIPart> BuildParts(int page)
+	static array<ref LF_UIPart> BuildParts(int page, bool arrivalDone = false)
 	{
 		array<ref LF_UIPart> parts = {};
 		if (page < 0 || page >= PageCount())
@@ -124,14 +134,15 @@ class LF_WelcomeGuideSheet
 
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, PART_TITLE, "#LF-WelcomeGuide_Title"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_PAGE, LF_Terms.Text("#LF-WelcomeGuide_Page", (page + 1).ToString(), PageCount().ToString())));
-		array<string> keys = PageKeys(page);
+		array<string> keys = PageKeys(page, arrivalDone);
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.HEADING, PART_HEADING, LF_Terms.Text(keys[0])));
 		for (int i = 1; i < keys.Count(); i++)
 		{
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RICH, PART_BODY + i.ToString(), BodyText(keys[i])).InBody());
 		}
 
-		if (page == 0)
+		// No errand is left to mark once the chain is done, so the button goes with the clerk text.
+		if (page == 0 && !arrivalDone)
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_WAYPOINT, "#LF-WelcomeGuide_Waypoint"));
 
 		array<string> names = {};
@@ -164,7 +175,32 @@ class LF_WelcomeGuideSheet
 
 		s_iPage = page;
 		s_Sheet = new LF_WelcomeGuideSheet();
+		// The personal file's copy is the client's only word on the arrival errands; ask for a fresh one
+		// (OnFileData reprints page 1 if the answer changes it).
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (controller)
+			controller.LF_AskPlayerMenu();
+
 		return s_Sheet.Show();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the last personal-file answer says every arrival errand is turned in.
+	static bool ArrivalDone()
+	{
+		LF_PlayerMenuData data = LF_PlayerMenuSheet.Data();
+		return data && data.ArrivalFinished();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The personal file's answer came in: reprint page 1 when it changes what page 1 says.
+	static void OnFileData()
+	{
+		if (!s_Screen || !s_Screen.IsOpen() || !s_Sheet || s_iPage != 0)
+			return;
+
+		if (ArrivalDone() != s_bShownDone)
+			GetGame().GetCallqueue().CallLater(s_Sheet.ShowLater, 0, false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -197,7 +233,8 @@ class LF_WelcomeGuideSheet
 
 		LF_UISkin skin = LF_UISkin.Paper();
 		skin.m_fWidth = SHEET_WIDTH;
-		LF_UIScreen screen = LF_UIScreen.Open(BuildParts(s_iPage), skin);
+		s_bShownDone = ArrivalDone();
+		LF_UIScreen screen = LF_UIScreen.Open(BuildParts(s_iPage, s_bShownDone), skin);
 		if (!screen)
 		{
 			LF_Debug.Error(LF_WelcomeGuide.FEATURE, "welcome guide sheet failed to open");
@@ -396,6 +433,7 @@ class LF_WelcomeGuideSheet
 
 		Hide();
 		s_iPage = 0;
+		s_bShownDone = false;
 		s_bAutoWaiting = false;
 		s_iAutoTries = 0;
 		s_bHarnessAutoOpen = false;

@@ -5709,6 +5709,11 @@ StringTable {
      Target_en_us "You are on your way. For steady pay, take a job: the town board lists who is hiring, and the clerk has more errands for you. Your errands and jobs are in your player menu."
      Comment "Everon arrival closing line, shown when the juice is sold (arrival_done turn-in)."
     }
+    CustomStringTableItem "{2BF04E64189969DC}" {
+     Id "LF-Quest_EveronMarket_TurnInTitle"
+     Target_en_us "Find steady work"
+     Comment "Title of the card that closes the Everon arrival chain after the juice sale (arrival_done); the next step is a job, so the old market title does not stay on it."
+    }
     CustomStringTableItem "{F8112ED9A5186CE2}" {
      Id "LF-Quest_EveronWelcomePack_Received"
      Target_en_us "Welcome pack: your ID card, %1 in cash, bread, a sausage and a bottle of water. Your car waits in the garage at the car lot."

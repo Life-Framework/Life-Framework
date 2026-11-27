@@ -414,8 +414,16 @@ class LF_QuestTrackerComponent : ScriptComponent
 		LF_Debug.Log("Quests", string.Format("turned in quest=%1 reward=money:%2 xp:%3 items:%4 idcard:%5", questId, def.m_iRewardMoney, def.m_fRewardXp, rewardItems, def.m_bRewardIdCard));
 
 		// A chain step turned in on its own stays quiet; the next step's errand is the news.
+		// A chain step's closing card takes the step slot, so it replaces the step's own card instead of
+		// standing beside it, and carries the next step's title (TurnInTitle).
 		if (!def.m_sTurnInKey.IsEmpty())
-			Notify(def.m_sTurnInKey, def.m_sTitleKey, STORY_SECONDS);
+		{
+			string turnInSlot;
+			if (def.m_bAutoTurnIn)
+				turnInSlot = LF_NotificationManagerComponent.SLOT_STEP;
+
+			Notify(def.m_sTurnInKey, def.TurnInTitle(), STORY_SECONDS, turnInSlot);
+		}
 
 		// What was handed over, as a slip the player can read after the talk (review A13).
 		if (!def.m_sReceivedKey.IsEmpty())

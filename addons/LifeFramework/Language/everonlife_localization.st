@@ -2250,6 +2250,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1/h"
      Comment "Next tab row status. %1 is money, e.g. $470."
     }
+    CustomStringTableItem "{7E1A4C93D05B2F68}" {
+     Id "LF-Activity_PayNone"
+     Target_en_us "no wage"
+     Comment "Next tab row status for a row that pays nothing by the hour (founding a crew); it is a first step, not a job."
+    }
     CustomStringTableItem "{4835914B88D22934}" {
      Id "LF-Activity_PayUnknown"
      Target_en_us "pay varies"
@@ -2287,7 +2292,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{58A349D528905815}" {
      Id "LF-Activity_Summary"
-     Target_en_us "Ways to earn a living. Pick one and press Start: each step puts a waypoint on your map."
+     Target_en_us "Ways to earn a living, and first steps to take (a row marked no wage pays nothing). Pick one and press Start: each step puts a waypoint on your map."
      Comment "Next tab line above the activity list."
     }
     CustomStringTableItem "{51D3548DA687534E}" {
@@ -18697,6 +18702,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-WelcomeGuide_Dismissed"
      Target_en_us "The guide will not open by itself again. Press F3 to read it."
      Comment "Toast after Don't show again."
+    }
+    CustomStringTableItem "{3D6B90E2A41C85F7}" {
+     Id "LF-WelcomeGuide_DoneBody1a"
+     Target_en_us "Your arrival errands are done and your papers are in order. Open your personal file (F2) and pick What to do next: it lists ways to earn a living and first steps around {town}, and Guide me puts a waypoint on the first step."
+     Comment "Welcome guide page 1, first paragraph once every arrival errand is turned in. Core text, no place names."
+    }
+    CustomStringTableItem "{A92F17D3586E04BC}" {
+     Id "LF-WelcomeGuide_DoneBody1b"
+     Target_en_us "Press M for the map. The next pages cover money, the map, the {police} and the {medic:plural}, and where to read more."
+     Comment "Welcome guide page 1, second paragraph once every arrival errand is turned in."
+    }
+    CustomStringTableItem "{F4C80B6195DA3E27}" {
+     Id "LF-WelcomeGuide_DoneHead1"
+     Target_en_us "WHAT NEXT"
+     Comment "Welcome guide page 1 heading once every arrival errand is turned in."
     }
     CustomStringTableItem "{08C7D7374201626B}" {
      Id "LF-WelcomeGuide_Head1"

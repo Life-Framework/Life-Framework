@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { ROOT, arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
+import { ensureCuffs } from "./_preconditions.mjs";
 
 // The cop path on the real island (rc 0.2.0), two players on a dedicated server, under the flagship owner config:
 //   node agent-box/session.mjs up --mission island --clients 2 --profile full --wait
@@ -147,7 +148,10 @@ async function runIslandCopProof() {
   wait(1500);
   const up = parseState(on(2, { verb: "handsup", words: ["state"] }, 10000).detail);
   step("4a B puts his hands up", JSON.stringify(up).includes(`"p${b}":"1"`) || up.up === "1" || /1/.test(String(up[`p${b}`] ?? up.handsUp ?? "")), JSON.stringify(up));
-  const held = on(1, { verb: "hold", item: "Handcuffs" }, 10000);
+  // The duty kit is issued once per account: an officer who clocked in before has no cuffs, so the proof holds them,
+  // grants a pair through the harness when the pack has none, and only then cuffs (rc-proof-order, _preconditions.mjs).
+  const cuffs = ensureCuffs(on, wait, 1);
+  const held = { status: cuffs.ok ? "ok" : "error", detail: `cuffs ${cuffs.moves.join(",")}: ${cuffs.last.detail}` };
   wait(2500);
   on(1, { verb: "cuffing", playerId: Number(b), kind: "cuff", mode: "pin" }, 10000);
   wait(2000);

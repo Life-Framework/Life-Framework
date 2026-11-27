@@ -448,7 +448,7 @@ class LF_VehicleRetrieveAction : ScriptedUserAction
 		}
 
 		LF_PlayerInteraction.PlayGesture(pUserEntity, LF_PlayerInteraction.GESTURE_POINT);
-		LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Retrieve", "#LF-Garage_Retrieved", 5.0, LF_ENotificationType.SUCCESS, LF_VehicleOwnership.GetPlate(vehicleId));
+		LF_NotificationManagerComponent.NotifyPlayer(PlayerId(pUserEntity), "#EL-Vehicle_Retrieve", "#LF-Garage_Retrieved", 5.0, LF_ENotificationType.SUCCESS, LF_VehicleOwnership.GetPlate(vehicleId), LF_NotificationManagerComponent.SLOT_VEHICLE);
 	}
 
 	//------------------------------------------------------------------------------------------------

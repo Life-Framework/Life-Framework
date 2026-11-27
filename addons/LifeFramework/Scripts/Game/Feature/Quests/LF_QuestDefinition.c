@@ -56,6 +56,9 @@ class LF_QuestDefinition
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Localization key the giver says on turn-in (empty = the generic turned-in hint)")]
 	string m_sTurnInKey;
 
+	[Attribute(defvalue: "", UIWidgets.EditBox, "Localization key of the title on the turn-in card, for a step whose finish text points at the next step (empty = this quest's own title)")]
+	string m_sTurnInTitleKey;
+
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Localization key of a toast after the turn-in that lists what was handed over (%1 = the reward money). Shown even inside a conversation, where the turn-in line is spoken. Empty = none")]
 	string m_sReceivedKey;
 
@@ -119,6 +122,17 @@ class LF_QuestDefinition
 			return false;
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The title of the card shown at the turn-in: the step's own, unless the row names one that
+	//! looks ahead (the last arrival step must not keep its finished title on "you are on your way").
+	string TurnInTitle()
+	{
+		if (!m_sTurnInTitleKey.IsEmpty())
+			return m_sTurnInTitleKey;
+
+		return m_sTitleKey;
 	}
 
 	//------------------------------------------------------------------------------------------------
