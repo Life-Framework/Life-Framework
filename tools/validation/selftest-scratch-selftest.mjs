@@ -10,7 +10,7 @@
 // red-proof: 2026-11-17, on the code before the fix (bare mkdtempSync in 145 selftests, no scratch.mjs): the static check
 // named 145 bare callers and promote-selftest left lf-gitcfg-* in the private temp dir (2 FAIL, exit 1); green after.
 
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, relative } from "node:path";
@@ -31,7 +31,18 @@ const check = (name, ok, detail = "") => {
 // A private temp root for the child runs. It is made with a bare mkdtempSync on purpose (the guard cannot depend on
 // the helper it checks) and removed in the finally.
 const priv = mkdtempSync(join(tmpdir(), "lf-scratch-guard-"));
-const runIn = (tmp, args) => spawnSync(process.execPath, args, { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 900000, env: { ...process.env, TMP: tmp, TEMP: tmp, TMPDIR: tmp } });
+// The child runs are independent, so they run at the same time (promote-selftest alone takes most of the time).
+const runIn = (tmp, args) =>
+  new Promise((resolveRun) => {
+    let stdout = "";
+    const child = spawn(process.execPath, args, { cwd: ROOT, windowsHide: true, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, TMP: tmp, TEMP: tmp, TMPDIR: tmp } });
+    const timer = setTimeout(() => child.kill(), 900000);
+    child.stdout.on("data", (d) => { stdout += d; });
+    child.stderr.on("data", () => {});
+    child.on("error", () => { clearTimeout(timer); resolveRun({ status: 1, stdout }); });
+    child.on("close", (code) => { clearTimeout(timer); resolveRun({ status: code ?? 1, stdout }); });
+  });
+const pending = [];
 
 try {
   // ---- static: no selftest uses a bare mkdtempSync under the OS temp dir
@@ -57,10 +68,11 @@ try {
     }
     const tmp = join(priv, name);
     mkdirSync(tmp);
-    const r = runIn(tmp, [file]);
-    const left = readdirSync(tmp);
-    check(`${name} still passes`, r.status === 0, `exit ${r.status}: ${String(r.stdout ?? "").trim().split("\n").slice(-2).join(" | ")}`);
-    check(`${name} leaves no folder in the OS temp dir`, left.length === 0, `left: ${left.slice(0, 5).join(", ")}${left.length > 5 ? ` (+${left.length - 5})` : ""}`);
+    pending.push(runIn(tmp, [file]).then((r) => {
+      const left = readdirSync(tmp);
+      check(`${name} still passes`, r.status === 0, `exit ${r.status}: ${String(r.stdout ?? "").trim().split("\n").slice(-2).join(" | ")}`);
+      check(`${name} leaves no folder in the OS temp dir`, left.length === 0, `left: ${left.slice(0, 5).join(", ")}${left.length > 5 ? ` (+${left.length - 5})` : ""}`);
+    }));
   }
 
   // ---- scratchDir cleans up however the process ends
@@ -79,11 +91,13 @@ try {
       mkdirSync(sub, { recursive: true });
       const file = join(tmp, "case.mjs");
       writeFileSync(file, code);
-      const r = runIn(sub, [file]);
-      check(`scratchDir: after ${label} the exit code is kept`, r.status === exit, `exit ${r.status}, wanted ${exit}`);
-      check(`scratchDir: after ${label} nothing is left behind`, readdirSync(sub).length === 0, readdirSync(sub).join(", "));
+      pending.push(runIn(sub, [file]).then((r) => {
+        check(`scratchDir: after ${label} the exit code is kept`, r.status === exit, `exit ${r.status}, wanted ${exit}`);
+        check(`scratchDir: after ${label} nothing is left behind`, readdirSync(sub).length === 0, readdirSync(sub).join(", "));
+      }));
     });
   }
+  await Promise.all(pending);
 
   // ---- tmp-sweep plans only old lf-* folders
   {

@@ -2,7 +2,8 @@
 // inputs: tools/**, agent-box/**, .githooks/**
 // Does not boot the game and does not merge this worktree.
 import { gitSync } from "../lib/git-retry.mjs";
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { sections } from "../lib/selftest-sections.mjs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -15,10 +16,14 @@ import { mergeLintBaselines } from "../merge/union-lint-baseline.mjs";
 import { mergeIslandBaselines } from "../merge/merge-island-baseline.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const failures = [];
+// Each scene below is a section that runs in its own process, in parallel (tools/lib/selftest-sections.mjs);
+// a failure prints at once and counts.
+const S = sections(import.meta.url);
+let failed = 0;
 
 function fail(message) {
-  failures.push(message);
+  failed++;
+  console.log(`  - ${message}`);
 }
 
 function item(id, text, guid = "0000000000000001") {
@@ -38,6 +43,16 @@ const theirsTable = table([
   item("EL-A", "alpha", "0000000000000001"),
   item("EL-C", "charlie", "0000000000000003"),
 ]);
+// Markdown fixtures, CRLF like the checked-out docs.
+const md = (...lines) => lines.map((line) => `${line}\r\n`).join("");
+const count = (text, needle) => text.split(needle).length - 1;
+const jail = (first, third) => md("### `LF_Jail` — `Jail.c`", `- ${first}`, "- second bullet", `- ${third}`, "");
+const featureBase = md("## Money", "", "### `LF_A` — `A.c`", "- row a", "");
+const featureOurs = featureBase + md("### `LF_B` — `B.c`", "- row b", "");
+const featureTheirs = featureBase + md("### `LF_C` — `C.c`", "- row c", "");
+
+
+S.add("fixtures: string union, markdown, round-trips, driver plans", () => {
 const union = mergeStringTables(baseTable, oursTable, theirsTable);
 if (!union.ok) fail(`string union should succeed: ${union.error}`);
 else {
@@ -51,161 +66,164 @@ const clash = mergeStringTables(
 );
 if (clash.ok) fail("same id with different text should fail");
 
-// Markdown fixtures, CRLF like the checked-out docs.
-const md = (...lines) => lines.map((line) => `${line}\r\n`).join("");
-const count = (text, needle) => text.split(needle).length - 1;
-const jail = (first, third) => md("### `LF_Jail` — `Jail.c`", `- ${first}`, "- second bullet", `- ${third}`, "");
-const featureBase = md("## Money", "", "### `LF_A` — `A.c`", "- row a", "");
-const featureOurs = featureBase + md("### `LF_B` — `B.c`", "- row b", "");
-const featureTheirs = featureBase + md("### `LF_C` — `C.c`", "- row c", "");
+  // Both-append: each side adds a row at the end of the same section.
+  const both = mergeLines(featureBase, featureOurs, featureTheirs);
+  if (!both.ok) fail("both-append should merge clean");
+  for (const heading of ["### `LF_A`", "### `LF_B`", "### `LF_C`"]) {
+    if (count(both.text, heading) !== 1) fail(`both-append should keep ${heading} once:\n${both.text}`);
+  }
 
-// Both-append: each side adds a row at the end of the same section.
-const both = mergeLines(featureBase, featureOurs, featureTheirs);
-if (!both.ok) fail("both-append should merge clean");
-for (const heading of ["### `LF_A`", "### `LF_B`", "### `LF_C`"]) {
-  if (count(both.text, heading) !== 1) fail(`both-append should keep ${heading} once:\n${both.text}`);
-}
+  // No-op: only one side changed, or both made the same change.
+  const oneSide = mergeLines(featureBase, featureBase, featureTheirs);
+  if (!oneSide.ok || oneSide.text !== featureTheirs) fail("a one-sided change should take that side verbatim");
+  const same = mergeLines(featureBase, featureOurs, featureOurs);
+  if (!same.ok || same.text !== featureOurs) fail("identical changes should merge to that text once");
 
-// No-op: only one side changed, or both made the same change.
-const oneSide = mergeLines(featureBase, featureBase, featureTheirs);
-if (!oneSide.ok || oneSide.text !== featureTheirs) fail("a one-sided change should take that side verbatim");
-const same = mergeLines(featureBase, featureOurs, featureOurs);
-if (!same.ok || same.text !== featureOurs) fail("identical changes should merge to that text once");
+  // Duplication: both sides edit different bullets of one row and theirs adds
+  // a section. The row must appear once with both edits. The old heading-keyed
+  // driver emitted the row twice here (2026-11-08).
+  const dupBase = md("## Police", "") + jail("first bullet", "third bullet");
+  const dupOurs = md("## Police", "") + jail("first bullet, ours edit", "third bullet");
+  const dupTheirs =
+    md("## Police", "") + jail("first bullet", "third bullet, theirs edit") + md("## Hospital", "", "### `LF_Hospital` — `H.c`", "- row h", "");
+  const dup = mergeLines(dupBase, dupOurs, dupTheirs);
+  if (!dup.ok) fail(`edits to different lines of one row should merge clean:\n${dup.text}`);
+  if (count(dup.text, "### `LF_Jail`") !== 1) fail(`a row edited on both sides appears ${count(dup.text, "### `LF_Jail`")} times`);
+  if (!dup.text.includes("ours edit") || !dup.text.includes("theirs edit")) fail("a side's edit to a shared row was lost");
+  if (count(dup.text, "## Hospital") !== 1) fail("the section theirs added was not kept once");
 
-// Duplication: both sides edit different bullets of one row and theirs adds
-// a section. The row must appear once with both edits. The old heading-keyed
-// driver emitted the row twice here (2026-11-08).
-const dupBase = md("## Police", "") + jail("first bullet", "third bullet");
-const dupOurs = md("## Police", "") + jail("first bullet, ours edit", "third bullet");
-const dupTheirs =
-  md("## Police", "") + jail("first bullet", "third bullet, theirs edit") + md("## Hospital", "", "### `LF_Hospital` — `H.c`", "- row h", "");
-const dup = mergeLines(dupBase, dupOurs, dupTheirs);
-if (!dup.ok) fail(`edits to different lines of one row should merge clean:\n${dup.text}`);
-if (count(dup.text, "### `LF_Jail`") !== 1) fail(`a row edited on both sides appears ${count(dup.text, "### `LF_Jail`")} times`);
-if (!dup.text.includes("ours edit") || !dup.text.includes("theirs edit")) fail("a side's edit to a shared row was lost");
-if (count(dup.text, "## Hospital") !== 1) fail("the section theirs added was not kept once");
+  // Loss: a heading repeated inside a section (left by an earlier merge, as in
+  // c96fcfa) must not collapse. Theirs only appends a row. The old driver kept
+  // one copy per heading and dropped the other copy's lines.
+  const lossBase = md(
+    "## Jobs", "",
+    "### `LF_PlayerJobComponent`", "- copy one: job tool grant", "",
+    "### `LF_PlayerJobComponent`", "- copy two: paycheck", "",
+  );
+  const loss = mergeLines(lossBase, lossBase, lossBase + md("### `LF_C` — `C.c`", "- row c", ""));
+  if (!loss.text.includes("job tool grant") || !loss.text.includes("paycheck")) fail("a row under a repeated heading was dropped");
+  if (!loss.text.includes("### `LF_C`")) fail("the row theirs appended was dropped");
 
-// Loss: a heading repeated inside a section (left by an earlier merge, as in
-// c96fcfa) must not collapse. Theirs only appends a row. The old driver kept
-// one copy per heading and dropped the other copy's lines.
-const lossBase = md(
-  "## Jobs", "",
-  "### `LF_PlayerJobComponent`", "- copy one: job tool grant", "",
-  "### `LF_PlayerJobComponent`", "- copy two: paycheck", "",
-);
-const loss = mergeLines(lossBase, lossBase, lossBase + md("### `LF_C` — `C.c`", "- row c", ""));
-if (!loss.text.includes("job tool grant") || !loss.text.includes("paycheck")) fail("a row under a repeated heading was dropped");
-if (!loss.text.includes("### `LF_C`")) fail("the row theirs appended was dropped");
+  // Genuine conflict: both sides rewrite the same line. Markers, never a pick.
+  const clashMd = mergeLines(featureBase, featureBase.replace("row a", "row a, ours"), featureBase.replace("row a", "row a, theirs"));
+  if (clashMd.ok) fail("same-line edits should report a conflict");
+  if (!clashMd.text.includes("<<<<<<< ours") || !clashMd.text.includes("row a, ours") || !clashMd.text.includes("row a, theirs")) {
+    fail("a same-line conflict should keep both sides between markers");
+  }
 
-// Genuine conflict: both sides rewrite the same line. Markers, never a pick.
-const clashMd = mergeLines(featureBase, featureBase.replace("row a", "row a, ours"), featureBase.replace("row a", "row a, theirs"));
-if (clashMd.ok) fail("same-line edits should report a conflict");
-if (!clashMd.text.includes("<<<<<<< ours") || !clashMd.text.includes("row a, ours") || !clashMd.text.includes("row a, theirs")) {
-  fail("a same-line conflict should keep both sides between markers");
-}
+  // Triage table: both sides append a table row.
+  const rowA = md("| `a` | INFO |");
+  const tableBase = md("## Triage table", "", "| Message | Verdict |", "|---|---|") + rowA + md("", "## How to add a row");
+  const tableOurs = tableBase.replace(rowA, rowA + md("| `b` | FIXED |"));
+  const tableTheirs = tableBase.replace(rowA, rowA + md("| `c` | OPEN |"));
+  const tableMerge = mergeLines(tableBase, tableOurs, tableTheirs);
+  if (!tableMerge.ok || !tableMerge.text.includes(rowA + md("| `b` | FIXED |", "| `c` | OPEN |"))) {
+    fail(`triage rows appended on both sides should both stay:\n${tableMerge.text}`);
+  }
 
-// Triage table: both sides append a table row.
-const rowA = md("| `a` | INFO |");
-const tableBase = md("## Triage table", "", "| Message | Verdict |", "|---|---|") + rowA + md("", "## How to add a row");
-const tableOurs = tableBase.replace(rowA, rowA + md("| `b` | FIXED |"));
-const tableTheirs = tableBase.replace(rowA, rowA + md("| `c` | OPEN |"));
-const tableMerge = mergeLines(tableBase, tableOurs, tableTheirs);
-if (!tableMerge.ok || !tableMerge.text.includes(rowA + md("| `b` | FIXED |", "| `c` | OPEN |"))) {
-  fail(`triage rows appended on both sides should both stay:\n${tableMerge.text}`);
-}
+  const stPath = join(ROOT, "addons", "LifeFramework", "Language", "everonlife_localization.st");
+  const stText = readFileSync(stPath, "utf8");
+  const stRound = mergeStringTables(stText, stText, stText);
+  if (!stRound.ok || stRound.text !== stText) fail("string table does not round-trip");
 
-const stPath = join(ROOT, "addons", "LifeFramework", "Language", "everonlife_localization.st");
-const stText = readFileSync(stPath, "utf8");
-const stRound = mergeStringTables(stText, stText, stText);
-if (!stRound.ok || stRound.text !== stText) fail("string table does not round-trip");
+  for (const doc of ["features.md", "debug-log-triage.md"]) {
+    const docText = readFileSync(join(ROOT, "docs", doc), "utf8");
+    const round = mergeLines(docText, docText, docText);
+    if (!round.ok || round.text !== docText) fail(`${doc} does not round-trip`);
+  }
 
-for (const doc of ["features.md", "debug-log-triage.md"]) {
-  const docText = readFileSync(join(ROOT, "docs", doc), "utf8");
-  const round = mergeLines(docText, docText, docText);
-  if (!round.ok || round.text !== docText) fail(`${doc} does not round-trip`);
-}
+  const lintText = readFileSync(join(ROOT, "tools", "validation", "enforce-lint-baseline.json"), "utf8");
+  const lintRound = mergeLintBaselines(lintText, lintText, lintText);
+  if (!lintRound.ok || lintRound.text !== lintText) fail("enforce-lint-baseline.json does not round-trip");
 
-const lintText = readFileSync(join(ROOT, "tools", "validation", "enforce-lint-baseline.json"), "utf8");
-const lintRound = mergeLintBaselines(lintText, lintText, lintText);
-if (!lintRound.ok || lintRound.text !== lintText) fail("enforce-lint-baseline.json does not round-trip");
+  // Island baseline: round-trips, and two branches that each drop a neighboring row keep both drops.
+  const islandText = readFileSync(join(ROOT, "tools", "place", "island-baseline.json"), "utf8");
+  const islandRound = mergeIslandBaselines(islandText, islandText, islandText);
+  if (!islandRound.ok || islandRound.text !== islandText) fail("island-baseline.json does not round-trip");
+  {
+    const rows = (text) => JSON.parse(text).rows;
+    const without = (drop) => JSON.stringify({ note: "n", rows: ["a", "b", "c", "d"].filter((r) => r !== drop) });
+    const m = mergeIslandBaselines(JSON.stringify({ note: "n", rows: ["a", "b", "c", "d"] }), without("b"), without("c"));
+    if (!m.ok || rows(m.text).join(",") !== "a,d") fail(`island baseline: two neighboring drops should give a,d, got ${m.ok ? rows(m.text) : m.error}`);
+    if (mergeIslandBaselines("", "{not json", "{}").ok) fail("island baseline: an unparseable side must not merge");
+  }
 
-// Island baseline: round-trips, and two branches that each drop a neighboring row keep both drops.
-const islandText = readFileSync(join(ROOT, "tools", "place", "island-baseline.json"), "utf8");
-const islandRound = mergeIslandBaselines(islandText, islandText, islandText);
-if (!islandRound.ok || islandRound.text !== islandText) fail("island-baseline.json does not round-trip");
-{
-  const rows = (text) => JSON.parse(text).rows;
-  const without = (drop) => JSON.stringify({ note: "n", rows: ["a", "b", "c", "d"].filter((r) => r !== drop) });
-  const m = mergeIslandBaselines(JSON.stringify({ note: "n", rows: ["a", "b", "c", "d"] }), without("b"), without("c"));
-  if (!m.ok || rows(m.text).join(",") !== "a,d") fail(`island baseline: two neighboring drops should give a,d, got ${m.ok ? rows(m.text) : m.error}`);
-  if (mergeIslandBaselines("", "{not json", "{}").ok) fail("island baseline: an unparseable side must not merge");
-}
+  const locPlan = regenPlan("addons/LifeFramework/Language/everonlife_localization.en_us.conf");
+  const packLocPlan = regenPlan("addons/LF_Everon1989/Language/lf_everon1989_localization.en_us.conf");
+  if (!packLocPlan || packLocPlan.kind !== "localization") fail("a pack language conf should resolve by regen-localization -Write");
+  if (!locPlan || !locPlan.script.endsWith("regen-localization.ps1") || !locPlan.args.includes("-Write")) {
+    fail("language confs should resolve by regen-localization -Write");
+  }
 
-const locPlan = regenPlan("addons/LifeFramework/Language/everonlife_localization.en_us.conf");
-const packLocPlan = regenPlan("addons/LF_Everon1989/Language/lf_everon1989_localization.en_us.conf");
-if (!packLocPlan || packLocPlan.kind !== "localization") fail("a pack language conf should resolve by regen-localization -Write");
-if (!locPlan || !locPlan.script.endsWith("regen-localization.ps1") || !locPlan.args.includes("-Write")) {
-  fail("language confs should resolve by regen-localization -Write");
-}
-
-const attributes = readFileSync(join(ROOT, ".gitattributes"), "utf8");
-const driverConfig = readFileSync(join(ROOT, "tools", "merge", "drivers.gitconfig"), "utf8");
-// #2618: tests register themselves with [LF_TestInfo]; no registry, so no lf-regen-tests driver.
-if (/lf-regen-tests/.test(attributes) || /lf-regen-tests/.test(driverConfig)) fail("the lf-regen-tests driver is gone with the test registry (#2618)");
-if (regenPlan("addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c")) fail("the old registry path must not resolve to a generator");
-for (const [path, driver] of [
-  ["addons/LifeFramework/Language/everonlife_localization.st", "lf-string-table"],
-  ["addons/LifeFramework/Language/everonlife_localization.*.conf", "lf-regen-localization"],
-  ["addons/LF_Everon1989/Language/lf_everon1989_localization.st", "lf-string-table"],
-  ["addons/LF_Everon1989/Language/lf_everon1989_localization.*.conf", "lf-regen-localization"],
-  ["docs/features.md", "lf-markdown"],
-  ["docs/features/*.md", "lf-markdown"],
-  ["docs/debug-log-triage.md", "lf-markdown"],
-  ["tools/validation/enforce-lint-baseline.json", "lf-lint-baseline"],
-  ["tools/place/island-baseline.json", "lf-island-baseline"],
-  ["docs/asset-inventory.md", "lf-table-rows"],
-  ["docs/playtest.md", "lf-markdown"],
-  ["website/content/gallery.json", "lf-json-keys"],
-]) {
-  if (!attributes.includes(`${path} merge=${driver}`)) fail(`.gitattributes missing ${path} merge=${driver}`);
-  if (!driverConfig.includes(`[merge "${driver}"]`)) fail(`drivers.gitconfig missing ${driver}`);
-}
+  const attributes = readFileSync(join(ROOT, ".gitattributes"), "utf8");
+  const driverConfig = readFileSync(join(ROOT, "tools", "merge", "drivers.gitconfig"), "utf8");
+  // #2618: tests register themselves with [LF_TestInfo]; no registry, so no lf-regen-tests driver.
+  if (/lf-regen-tests/.test(attributes) || /lf-regen-tests/.test(driverConfig)) fail("the lf-regen-tests driver is gone with the test registry (#2618)");
+  if (regenPlan("addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c")) fail("the old registry path must not resolve to a generator");
+  for (const [path, driver] of [
+    ["addons/LifeFramework/Language/everonlife_localization.st", "lf-string-table"],
+    ["addons/LifeFramework/Language/everonlife_localization.*.conf", "lf-regen-localization"],
+    ["addons/LF_Everon1989/Language/lf_everon1989_localization.st", "lf-string-table"],
+    ["addons/LF_Everon1989/Language/lf_everon1989_localization.*.conf", "lf-regen-localization"],
+    ["docs/features.md", "lf-markdown"],
+    ["docs/features/*.md", "lf-markdown"],
+    ["docs/debug-log-triage.md", "lf-markdown"],
+    ["tools/validation/enforce-lint-baseline.json", "lf-lint-baseline"],
+    ["tools/place/island-baseline.json", "lf-island-baseline"],
+    ["docs/asset-inventory.md", "lf-table-rows"],
+    ["docs/playtest.md", "lf-markdown"],
+    ["website/content/gallery.json", "lf-json-keys"],
+  ]) {
+    if (!attributes.includes(`${path} merge=${driver}`)) fail(`.gitattributes missing ${path} merge=${driver}`);
+    if (!driverConfig.includes(`[merge "${driver}"]`)) fail(`drivers.gitconfig missing ${driver}`);
+  }
+});
 
 function git(dir, args, env) {
   return gitSync(args, { windowsHide: true, cwd: dir, encoding: "utf8", env: env ?? process.env });
 }
 
+// One spawn (`git init`); the identity and the pinned settings go straight into .git/config instead of five
+// `git config` calls per repo (about 60 spawns in all).
 function initRepo(dir) {
   mkdirSync(dir, { recursive: true });
-  git(dir, ["init", "-q"]);
-  git(dir, ["config", "user.email", "merge-selftest@example.com"]);
-  git(dir, ["config", "user.name", "merge-selftest"]);
-  git(dir, ["config", "core.autocrlf", "false"]);
-  git(dir, ["config", "commit.gpgsign", "false"]);
+  git(dir, ["init", "-q", "-b", "master"]);
+  appendFileSync(join(dir, ".git", "config"), "[user]\n\temail = merge-selftest@example.com\n\tname = merge-selftest\n[core]\n\tautocrlf = false\n[commit]\n\tgpgsign = false\n");
 }
 
-function commitAll(dir, message) {
-  git(dir, ["add", "-A"]);
-  const result = git(dir, ["commit", "-q", "-m", message]);
+// The first commit of a repo adds its files; later commits only change tracked ones, so `commit -a` is one spawn, not two.
+function commitAll(dir, message, first = false) {
+  if (first) git(dir, ["add", "-A"]);
+  const result = git(dir, first ? ["commit", "-q", "-m", message] : ["commit", "-q", "-a", "-m", message]);
   if (result.status !== 0) fail(`commit failed in ${dir}: ${result.stderr || result.stdout}`);
 }
 
+// Same settings `git config merge.<name>.name/.driver` wrote, as config text.
 function configureDriver(dir, name, script) {
   const absolute = join(ROOT, "tools", "merge", script).replace(/\\/g, "/");
-  git(dir, ["config", `merge.${name}.name`, name]);
-  git(dir, ["config", `merge.${name}.driver`, `node "${absolute}" %O %A %B %P`]);
+  appendFileSync(join(dir, ".git", "config"), `[merge "${name}"]\n\tname = ${name}\n\tdriver = "node \\"${absolute}\\" %O %A %B %P"\n`);
 }
 
+// Every section works in its own folder, removed when the section ends.
 const temp = join(tmpdir(), `lf-merge-drivers-${process.pid}`);
-if (existsSync(temp)) rmSync(temp, { recursive: true, force: true });
+function scene(name, fn) {
+  S.add(name, () => {
+    if (existsSync(temp)) rmSync(temp, { recursive: true, force: true });
+    try {
+      fn();
+    } finally {
+      rmSync(temp, { recursive: true, force: true });
+    }
+  });
+}
 
-try {
+scene("string table: union and clash", () => {
   const stringRepo = join(temp, "strings");
   initRepo(stringRepo);
   configureDriver(stringRepo, "lf-string-table", "union-string-table.mjs");
   writeFileSync(join(stringRepo, ".gitattributes"), "strings.st merge=lf-string-table\n");
   writeFileSync(join(stringRepo, "strings.st"), baseTable);
-  commitAll(stringRepo, "base");
+  commitAll(stringRepo, "base", true);
   git(stringRepo, ["checkout", "-q", "-b", "theirs"]);
   writeFileSync(join(stringRepo, "strings.st"), theirsTable);
   commitAll(stringRepo, "theirs");
@@ -233,14 +251,16 @@ try {
     }
   }
   git(stringRepo, ["merge", "--abort"]);
+});
 
+scene("markdown features: both-append and same-line clash", () => {
   const featureRepo = join(temp, "features");
   initRepo(featureRepo);
   configureDriver(featureRepo, "lf-markdown", "merge-markdown.mjs");
   writeFileSync(join(featureRepo, ".gitattributes"), "docs/features.md merge=lf-markdown\n");
   mkdirSync(join(featureRepo, "docs"), { recursive: true });
   writeFileSync(join(featureRepo, "docs", "features.md"), featureBase);
-  commitAll(featureRepo, "base");
+  commitAll(featureRepo, "base", true);
   git(featureRepo, ["checkout", "-q", "-b", "theirs"]);
   writeFileSync(join(featureRepo, "docs", "features.md"), featureTheirs);
   commitAll(featureRepo, "theirs");
@@ -266,7 +286,9 @@ try {
     fail("the conflicted features.md should hold both sides between markers");
   }
   git(featureRepo, ["merge", "--abort"]);
+});
 
+scene("lint baseline: both removals kept", () => {
   // Lint baseline: two branches each fix different debt, so each deletes a
   // different adjacent entry. A line merge conflicts on the shared hunk; the
   // driver must keep both removals and the entry theirs accepted.
@@ -283,7 +305,7 @@ try {
   const lintJson = (entries) => JSON.stringify(entries, null, 1) + "\n";
   const lintPath = join(lintRepo, "enforce-lint-baseline.json");
   writeFileSync(lintPath, lintJson([lintA, lintB, lintC, lintD]));
-  commitAll(lintRepo, "base");
+  commitAll(lintRepo, "base", true);
   git(lintRepo, ["checkout", "-q", "-b", "theirs"]);
   writeFileSync(lintPath, lintJson([lintA, lintB, lintD, lintE]));
   commitAll(lintRepo, "theirs fixes C, accepts E");
@@ -296,46 +318,45 @@ try {
     const merged = readFileSync(lintPath, "utf8");
     if (merged !== lintJson([lintA, lintE, lintD])) fail(`lint-baseline merge wrote ${JSON.stringify(merged)}`);
   }
+});
 
-  // Keyed table and JSON drivers: each proves a clean double-append and a
-  // same-key clash in a scratch repo with the real git merge.
-  function proveDriver({ name, script, file, base, sides, clash }) {
-    const repo = join(temp, name);
-    initRepo(repo);
-    configureDriver(repo, name, script);
-    writeFileSync(join(repo, ".gitattributes"), `${file} merge=${name}
-`);
-    writeFileSync(join(repo, file), base);
-    commitAll(repo, "base");
-    git(repo, ["checkout", "-q", "-b", "theirs"]);
-    writeFileSync(join(repo, file), sides.theirs);
-    commitAll(repo, "theirs");
-    git(repo, ["checkout", "-q", "master"]);
-    writeFileSync(join(repo, file), sides.ours);
-    commitAll(repo, "ours");
-    const clean = git(repo, ["merge", "theirs", "--no-edit"]);
-    if (clean.status !== 0) fail(`${name}: double append should merge clean:
-${clean.stdout}
-${clean.stderr}`);
-    else {
-      const text = readFileSync(join(repo, file), "utf8");
-      for (const needle of sides.expect) if (!text.includes(needle)) fail(`${name}: merged file lost ${needle}`);
-    }
-    git(repo, ["checkout", "-q", "-b", "left", "master~1"]);
-    writeFileSync(join(repo, file), clash.left);
-    commitAll(repo, "left");
-    git(repo, ["checkout", "-q", "-b", "right", "master~1"]);
-    writeFileSync(join(repo, file), clash.right);
-    commitAll(repo, "right");
-    const stopped = git(repo, ["merge", "left", "--no-edit"]);
+// Keyed table and JSON drivers: each proves a clean double-append and a
+// same-key clash in a scratch repo with the real git merge.
+function proveDriver({ name, script, file, base, sides, clash }) {
+  const repo = join(temp, name);
+  initRepo(repo);
+  configureDriver(repo, name, script);
+  writeFileSync(join(repo, ".gitattributes"), `${file} merge=${name}\n`);
+  writeFileSync(join(repo, file), base);
+  commitAll(repo, "base", true);
+  git(repo, ["checkout", "-q", "-b", "theirs"]);
+  writeFileSync(join(repo, file), sides.theirs);
+  commitAll(repo, "theirs");
+  git(repo, ["checkout", "-q", "master"]);
+  writeFileSync(join(repo, file), sides.ours);
+  commitAll(repo, "ours");
+  const clean = git(repo, ["merge", "theirs", "--no-edit"]);
+  if (clean.status !== 0) fail(`${name}: double append should merge clean:\n${clean.stdout}\n${clean.stderr}`);
+  else {
     const text = readFileSync(join(repo, file), "utf8");
-    if (stopped.status === 0) fail(`${name}: same row/key changed on both sides should conflict`);
-    else if (!text.includes("<<<<<<<") || !text.includes(clash.markLeft) || !text.includes(clash.markRight)) {
-      fail(`${name}: conflict should hold both sides between markers, got ${JSON.stringify(text)}`);
-    } else if (clash.keep && !text.includes(clash.keep)) fail(`${name}: unrelated entry ${clash.keep} was lost`);
-    git(repo, ["merge", "--abort"]);
+    for (const needle of sides.expect) if (!text.includes(needle)) fail(`${name}: merged file lost ${needle}`);
   }
+  git(repo, ["checkout", "-q", "-b", "left", "master~1"]);
+  writeFileSync(join(repo, file), clash.left);
+  commitAll(repo, "left");
+  git(repo, ["checkout", "-q", "-b", "right", "master~1"]);
+  writeFileSync(join(repo, file), clash.right);
+  commitAll(repo, "right");
+  const stopped = git(repo, ["merge", "left", "--no-edit"]);
+  const text = readFileSync(join(repo, file), "utf8");
+  if (stopped.status === 0) fail(`${name}: same row/key changed on both sides should conflict`);
+  else if (!text.includes("<<<<<<<") || !text.includes(clash.markLeft) || !text.includes(clash.markRight)) {
+    fail(`${name}: conflict should hold both sides between markers, got ${JSON.stringify(text)}`);
+  } else if (clash.keep && !text.includes(clash.keep)) fail(`${name}: unrelated entry ${clash.keep} was lost`);
+  git(repo, ["merge", "--abort"]);
+}
 
+scene("table-rows driver: double append and per-row clash", () => {
   const inv = (...rows) => md("# Inventory", "", "| Item | Prefab | Status |", "|---|---|---|", ...rows, "");
   const invBase = inv("| Pager | `LF_Pager.et` | placeholder |");
   proveDriver({
@@ -358,6 +379,9 @@ ${clean.stderr}`);
       keep: "LF_Tray.et",
     },
   });
+});
+
+scene("json-keys driver: gallery union, per-key clash, real files", () => {
   const gal = (captions, skip = []) => JSON.stringify({ sections: [{ id: "town", title: "Town" }], captions, skip }, null, 2) + "\n";
   proveDriver({
     name: "lf-json-keys",
@@ -385,7 +409,9 @@ ${clean.stderr}`);
   if (!playtestAppend.ok || !playtestAppend.text.includes("ours line") || !playtestAppend.text.includes("theirs line")) {
     fail("playtest.md both-append should keep both lines under lf-markdown");
   }
+});
 
+scene("regen driver in plan mode", () => {
   const regenRepo = join(temp, "regen");
   initRepo(regenRepo);
   configureDriver(regenRepo, "lf-regen-localization", "regen-generated.mjs");
@@ -394,7 +420,7 @@ ${clean.stderr}`);
     "everonlife_localization.en_us.conf merge=lf-regen-localization\n",
   );
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "ours-conf\n");
-  commitAll(regenRepo, "base");
+  commitAll(regenRepo, "base", true);
   git(regenRepo, ["checkout", "-q", "-b", "theirs"]);
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "theirs-conf\n");
   commitAll(regenRepo, "theirs");
@@ -408,8 +434,9 @@ ${clean.stderr}`);
     const conf = readFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "utf8");
     if (!conf.startsWith("regen:localization")) fail(`conf driver wrote ${JSON.stringify(conf)}`);
   }
+});
 
-
+S.add("driver time limits", () => {
   // The launcher honours the same override: a backstop of three times it for the wrapped driver.
   if (driverBackstopMs({ LF_MERGE_DRIVER_TIMEOUT_MS: "2000" }) !== 11000) fail("driverBackstopMs should be 3x the override plus 5 s");
   if (driverBackstopMs({}) !== 240_000) fail("driverBackstopMs default should be 240 s");
@@ -420,24 +447,34 @@ ${clean.stderr}`);
   if (timeoutFor(20_000, {}) !== 20_000 || timeoutFor(20_000, { LF_MERGE_DRIVER_TIMEOUT_MS: "abc" }) !== 20_000) {
     fail("timeoutFor should ignore a missing or non-numeric override");
   }
+});
 
+const langRel = "addons/LifeFramework/Language";
+const confRel = `${langRel}/everonlife_localization.en_us.conf`;
+
+// A repo whose localization conf is a three-way conflict for the lf-regen-localization driver, carrying
+// the real string table so the driver regenerates it.
+function locFixture(name) {
+  const repo = join(temp, name);
+  initRepo(repo);
+  configureDriver(repo, "lf-regen-localization", "regen-generated.mjs");
+  writeFileSync(join(repo, ".gitattributes"), "everonlife_localization.en_us.conf merge=lf-regen-localization\n");
+  mkdirSync(join(repo, langRel), { recursive: true });
+  writeFileSync(join(repo, langRel, "everonlife_localization.st"), readFileSync(join(ROOT, langRel, "everonlife_localization.st")));
+  writeFileSync(join(repo, confRel), "base-conf\n");
+  commitAll(repo, "base", true);
+  git(repo, ["checkout", "-q", "-b", "theirs"]);
+  writeFileSync(join(repo, confRel), "theirs-conf\n");
+  commitAll(repo, "theirs");
+  git(repo, ["checkout", "-q", "master"]);
+  writeFileSync(join(repo, confRel), "ours-conf\n");
+  commitAll(repo, "ours");
+  return repo;
+}
+
+scene("localization driver regenerates the conf", () => {
   // The localization driver generates the same way: real string table, scratch dir, only %A written.
-  const langRel = "addons/LifeFramework/Language";
-  const confRel = `${langRel}/everonlife_localization.en_us.conf`;
-  const locRepo = join(temp, "loc-real");
-  initRepo(locRepo);
-  configureDriver(locRepo, "lf-regen-localization", "regen-generated.mjs");
-  writeFileSync(join(locRepo, ".gitattributes"), "everonlife_localization.en_us.conf merge=lf-regen-localization\n");
-  mkdirSync(join(locRepo, langRel), { recursive: true });
-  writeFileSync(join(locRepo, langRel, "everonlife_localization.st"), readFileSync(join(ROOT, langRel, "everonlife_localization.st")));
-  writeFileSync(join(locRepo, confRel), "base-conf\n");
-  commitAll(locRepo, "base");
-  git(locRepo, ["checkout", "-q", "-b", "theirs"]);
-  writeFileSync(join(locRepo, confRel), "theirs-conf\n");
-  commitAll(locRepo, "theirs");
-  git(locRepo, ["checkout", "-q", "master"]);
-  writeFileSync(join(locRepo, confRel), "ours-conf\n");
-  commitAll(locRepo, "ours");
+  const locRepo = locFixture("loc-real");
   const locMerge = git(locRepo, ["merge", "theirs", "--no-edit"]);
   if (locMerge.status !== 0) fail(`localization driver merge should be clean:\n${locMerge.stdout}\n${locMerge.stderr}`);
   else {
@@ -446,53 +483,30 @@ ${clean.stderr}`);
     const locStatus = git(locRepo, ["status", "--porcelain"]).stdout.trim();
     if (locStatus) fail(`the localization driver left the worktree dirty:\n${locStatus}`);
   }
+});
 
-  // The scratch `git init` the driver runs has exited 1 with no output on the CI runner (main run d4c47e373: the
-  // conf left conflicted and no message). One silent failure is retried and the merge is clean; one that
-  // persists leaves the conf conflicted and the driver says why.
-  const initFixture = (name) => {
-    const repo = join(temp, name);
-    initRepo(repo);
-    configureDriver(repo, "lf-regen-localization", "regen-generated.mjs");
-    writeFileSync(join(repo, ".gitattributes"), "everonlife_localization.en_us.conf merge=lf-regen-localization\n");
-    mkdirSync(join(repo, langRel), { recursive: true });
-    writeFileSync(join(repo, langRel, "everonlife_localization.st"), readFileSync(join(ROOT, langRel, "everonlife_localization.st")));
-    writeFileSync(join(repo, confRel), "base-conf\n");
-    commitAll(repo, "base");
-    git(repo, ["checkout", "-q", "-b", "theirs"]);
-    writeFileSync(join(repo, confRel), "theirs-conf\n");
-    commitAll(repo, "theirs");
-    git(repo, ["checkout", "-q", "master"]);
-    writeFileSync(join(repo, confRel), "ours-conf\n");
-    commitAll(repo, "ours");
-    return repo;
-  };
-  const flakyRepo = initFixture("loc-init-flaky");
+// The scratch `git init` the driver runs has exited 1 with no output on the CI runner (main run d4c47e373: the
+// conf left conflicted and no message). One silent failure is retried and the merge is clean; one that
+// persists leaves the conf conflicted and the driver says why.
+scene("one silent scratch git init failure is retried", () => {
+  const flakyRepo = locFixture("loc-init-flaky");
   const flakyMerge = git(flakyRepo, ["merge", "theirs", "--no-edit"], { ...process.env, LF_GIT_FAIL_SILENTLY: "1" });
   if (flakyMerge.status !== 0) fail(`one silent scratch git init failure should be retried and the merge clean:\n${flakyMerge.stdout}\n${flakyMerge.stderr}`);
-  const deadRepo = initFixture("loc-init-dead");
+});
+
+scene("a scratch git init that always fails says so", () => {
+  const deadRepo = locFixture("loc-init-dead");
   const deadMerge = git(deadRepo, ["merge", "theirs", "--no-edit"], { ...process.env, LF_GIT_FAIL_SILENTLY: "9" });
   if (deadMerge.status === 0) fail("a scratch git init that always fails should leave the conf conflicted");
   else if (!/lf-git: git .* failed 3 times \(exit 1, signal none\) with no output/.test(deadMerge.stderr)) fail(`a persistent git init failure should say so, got:\n${deadMerge.stderr}`);
   git(deadRepo, ["merge", "--abort"]);
+});
 
-  // #2549, #2746: a generator that never exits must not hang `git merge`. The stub replaces PowerShell with a
-  // child that never ends; its own 2 s limit kills it, the driver prints one line and exits 1, and the merge
-  // stops with the conf left conflicted for the human (or `regen-localization`) to resolve.
-  const hungRepo = join(temp, "loc-hung");
-  initRepo(hungRepo);
-  configureDriver(hungRepo, "lf-regen-localization", "regen-generated.mjs");
-  writeFileSync(join(hungRepo, ".gitattributes"), "everonlife_localization.en_us.conf merge=lf-regen-localization\n");
-  mkdirSync(join(hungRepo, langRel), { recursive: true });
-  writeFileSync(join(hungRepo, langRel, "everonlife_localization.st"), readFileSync(join(ROOT, langRel, "everonlife_localization.st")));
-  writeFileSync(join(hungRepo, confRel), "base-conf\n");
-  commitAll(hungRepo, "base");
-  git(hungRepo, ["checkout", "-q", "-b", "theirs"]);
-  writeFileSync(join(hungRepo, confRel), "theirs-conf\n");
-  commitAll(hungRepo, "theirs");
-  git(hungRepo, ["checkout", "-q", "master"]);
-  writeFileSync(join(hungRepo, confRel), "ours-conf\n");
-  commitAll(hungRepo, "ours");
+// #2549, #2746: a generator that never exits must not hang `git merge`. The stub replaces PowerShell with a
+// child that never ends; its own 2 s limit kills it, the driver prints one line and exits 1, and the merge
+// stops with the conf left conflicted for the human (or `regen-localization`) to resolve.
+scene("a hung generator is killed and leaves the conf conflicted", () => {
+  const hungRepo = locFixture("loc-hung");
   const hangScript = join(temp, "hang-generator.mjs");
   writeFileSync(hangScript, "setInterval(() => {}, 1000);\n");
   const hungEnv = { ...process.env, LF_MERGE_DRIVER_GENERATOR_STUB: hangScript, LF_MERGE_DRIVER_STUB_TIMEOUT_MS: "2000" };
@@ -506,13 +520,13 @@ ${clean.stderr}`);
     if (hungSeconds > 60) fail(`a hung generator held the merge for ${hungSeconds.toFixed(0)} s`);
   }
   git(hungRepo, ["merge", "--abort"]);
-} finally {
-  rmSync(temp, { recursive: true, force: true });
-}
+});
 
-if (failures.length) {
-  console.log("merge-drivers-selftest: FAIL");
-  for (const failure of failures) console.log(`  - ${failure}`);
-  process.exit(1);
-}
-console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, the localization driver regenerates the conf, a hung generator is killed and leaves the conf conflicted, lint baseline keeps both sides' fixes, keyed table rows and gallery JSON keys union with per-key conflicts)");
+const code = await S.run({
+  failed: () => failed,
+  summary: (n) => {
+    if (n) return "merge-drivers-selftest: FAIL";
+    return "merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, the localization driver regenerates the conf, a hung generator is killed and leaves the conf conflicted, lint baseline keeps both sides' fixes, keyed table rows and gallery JSON keys union with per-key conflicts)";
+  },
+});
+process.exit(code);
