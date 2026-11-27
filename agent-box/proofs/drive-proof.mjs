@@ -33,7 +33,7 @@ export function follow(on, wait, { everyMs = 2000, maxMs = 200000, label = "driv
     const r = on({ verb: "vehicle", words: ["state"] });
     last = kv(r.detail);
     console.log(`${label} t=${((Date.now() - t0) / 1000).toFixed(0)}s pos=${last.pos} speed=${last.speed} drive=${last.drive} driven=${last.driven}`);
-    if (!/^(driving|braking|stop)$/.test(last.drive ?? "")) break;
+    if (!/^(driving|braking|stop|backing|routing)$/.test(last.drive ?? "")) break;
   }
   return last;
 }
