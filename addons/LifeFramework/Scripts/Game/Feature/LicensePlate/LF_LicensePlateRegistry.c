@@ -4,6 +4,7 @@
 //------------------------------------------------------------------------------------------------
 class LF_LicensePlateRegistry
 {
+	// lf-fixed: retry bound or retry delay of an engine-readiness wait, not a balance value
 	protected static const int MAX_ATTEMPTS = 32;
 	protected static ref map<string, string> s_mPlates;
 

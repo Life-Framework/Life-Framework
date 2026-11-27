@@ -7,6 +7,7 @@ class LF_FarmPlots
 	static const string FEATURE = "Farming";
 	//! The system id (LF_Systems, #960). Off: plots offer nothing, refuse, and stop growing; saved crops stay.
 	static const string SYSTEM = "Farming";
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int TICK_MS = 1000;
 
 	protected static ref map<string, ref LF_FarmPlotRow> s_mPending;

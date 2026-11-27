@@ -270,6 +270,7 @@ class LF_AccountOwnerIndex
 class LF_AccountReplication
 {
 	//! Seconds between the server's self-healing pass over every connected player.
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int REFRESH_INTERVAL_MS = 10000;
 
 	protected static ref LF_AccountOwnerIndex s_OwnerIndex = new LF_AccountOwnerIndex();

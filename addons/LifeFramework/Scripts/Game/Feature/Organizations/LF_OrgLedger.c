@@ -115,6 +115,7 @@ class LF_OrgLedger
 	static const string PART_NOTICE = "OrgNotice";
 	static const string PART_CLOSE = "CloseButton";
 	//! Walk this far from the desk and the page closes.
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float CLOSE_RANGE = 4.0;
 	//! The held-ground list shows one row and scrolls past that.
 	static const float SITES_LIST_HEIGHT = 52;	// lf-fixed: layout size, one list row

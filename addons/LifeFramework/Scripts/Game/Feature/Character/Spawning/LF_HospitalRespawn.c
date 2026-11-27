@@ -15,6 +15,7 @@ class LF_HospitalRespawn
 	//! A living character this close (metres, horizontal) to a bed's wake point occupies it.
 	static const float BED_CLEARANCE = 1.0;
 	//! Delay before the owner is told to wake: ownership of the new body has to reach the client.
+	// lf-fixed: UI sequencing delay (let the engine settle before the next step), not a balance value
 	static const int WAKE_NOTIFY_DELAY_MS = 1000;
 
 	protected static ref map<string, bool> s_mPendingWake;
@@ -263,8 +264,11 @@ class LF_HospitalRespawn
 //! Owner side of the hospital wake: the get-out-of-bed animation, the spawn sound, then the bill.
 class LF_HospitalWake
 {
+	// lf-fixed: retry bound or retry delay of an engine-readiness wait, not a balance value
 	static const int RETRY_MS = 500;
+	// lf-fixed: retry bound or retry delay of an engine-readiness wait, not a balance value
 	static const int MAX_START_TRIES = 6;
+	// lf-fixed: retry bound or retry delay of an engine-readiness wait, not a balance value
 	static const int MAX_WAIT_TRIES = 40;
 	//! The spawn put the body this close (horizontal metres) to the origin of the bed it wakes in.
 	static const float BED_SEARCH = 2.0;

@@ -31,6 +31,7 @@ class LF_QuantityComponent : ScriptComponent
 	//! World time (ms) each intent was set. An intent whose move never produced an OnItemAdded
 	//! (the transfer failed) goes stale after INTENT_TTL_MS instead of steering a later, unrelated add.
 	protected static ref map<IEntity, float> s_mQuantityTransferIntentTimes;
+	// lf-fixed: staleness window of a transfer intent flag, a mechanic, not a balance value
 	static const float INTENT_TTL_MS = 5000;
 
 	[RplProp(onRplName: "OnQuantityChanged")]

@@ -25,6 +25,7 @@ class LF_Carry
 	static const string FEATURE = "Medic";
 	static const string KIND_LOAD = "load";
 
+	// lf-fixed: UI sequencing delay (let the engine settle before the next step), not a balance value
 	protected static const int LOAD_VERIFY_MS = 1500;
 	protected static const int LOAD_TRIES = 4;
 

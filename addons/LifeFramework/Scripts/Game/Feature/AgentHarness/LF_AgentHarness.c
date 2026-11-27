@@ -1164,6 +1164,7 @@ class LF_AgentHarness
 	protected static const string RESULT_PATH = "$profile:agent-box/result.txt";
 	//! Root widget name of LF_UITheme.FRAME_LAYOUT: everything a UI kit sheet draws sits under it.
 	protected static const string KIT_FRAME = "LF_UIFrame";
+	// lf-fixed: agent harness only, never a player-facing value
 	protected static const int UI_TEXT_MAX = 80;
 	//! stand puts the character this far along +X from the entity, facing it.
 	static const float STAND_SIDE = 1.2;
@@ -1178,6 +1179,7 @@ class LF_AgentHarness
 	//! Metres in front of a sign's face (its local +Z) where stand puts the reader.
 	static const float SIGN_STAND_FRONT = 1.4;
 	//! How far an unnamed part may sit from the named prop it belongs to (CollectActionEntity).
+	// lf-fixed: agent harness only, never a player-facing value
 	static const float PART_REACH = 1.5;
 
 	protected static bool s_bLoop;

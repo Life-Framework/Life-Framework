@@ -328,6 +328,7 @@ class LF_FineTicketItem
 //! The ticket as a paper card. Client-only, on LF_UIScreen.
 class LF_FineTicketCard
 {
+	// lf-fixed: UI close distance of an interaction sheet, an interaction-feel constant, not a balance value
 	static const float CLOSE_DISTANCE = 4;
 
 	protected static ref LF_UIScreen s_Screen;

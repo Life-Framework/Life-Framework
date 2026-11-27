@@ -28,6 +28,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 	//! Reentrancy guard: a turn-in inside SettleChain settles again at its end.
 	protected bool m_bSettling;
+	// lf-fixed: loop guard against a runaway turn-in chain, not a balance value
 	static const int MAX_CHAIN_PASSES = 16;
 	static const string HANDOVER_SOUND = "SOUND_PICK_UP";
 

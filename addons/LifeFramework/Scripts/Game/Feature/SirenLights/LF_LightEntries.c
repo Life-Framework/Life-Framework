@@ -26,6 +26,7 @@ class LF_TimedEntry : LF_BaseEntry
 // Updates the LV of the LightEntity
 class LF_UpdateLVEntry : LF_TimedEntry
 {
+	// lf-fixed: unit constant, ten seconds of a light cycle step
 	protected const float TEN_SECONDS = 10;
 	protected int m_Day;
 

@@ -135,6 +135,7 @@ class LF_HotwireAttempt : Managed
 class LF_Hotwire
 {
 	static const string FEATURE = "Hotwire";
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const float TICK_SECONDS = 0.5;
 
 	//! Test seam: a value >= 0 replaces the skill-based attempt time.

@@ -9,6 +9,7 @@
 class LF_BleedOut
 {
 	static const string FEATURE = "Medic";
+	// lf-fixed: poll cadence of a loop, not a balance value
 	static const int TICK_MS = 1000;
 
 	//! The replicated copy moves when it differs from the real value by at least this many seconds.
