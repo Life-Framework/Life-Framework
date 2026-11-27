@@ -54,6 +54,8 @@ async function run(args) {
     wait(1000);
     status = parseDetail(on({ verb: "map", words: ["status"] }).detail);
     if (status.open === "1" && Number(status.view_m) > 0) break;
+    // The paper map in hand but the map still shut: `map open` on a held map switches the map mode on.
+    if (status.open !== "1" && i % 8 === 7) on({ verb: "map", words: ["open"] });
   }
   if (status.open !== "1") return fail("the map did not open after map open");
 
@@ -61,6 +63,7 @@ async function run(args) {
   console.log(`known places on this map: ${known.known}`);
 
   const missed = [];
+  const raw = [];
   for (const word of words) {
     const r = on({ verb: "maplegend", words: ["search", word] });
     if (r.status !== "ok") return fail(`maplegend search ${word}: ${r.detail}`);
@@ -68,11 +71,14 @@ async function run(args) {
     const names = String(r.detail).replace(/^.*names=/, "");
     console.log(`search ${word}: ${count} -> ${names}`);
     if (!(count > 0)) missed.push(word);
+    // A raw {Term} placeholder in a result name is a name that skipped the terms path (#5135).
+    if (names.includes("{")) raw.push(word);
   }
 
   on({ verb: "maplegend", words: ["close"] });
   on({ verb: "map", words: ["close"] });
   if (missed.length) return fail(`no result for: ${missed.join(", ")} (known=${known.known})`);
+  if (raw.length) return fail(`a raw {term} placeholder shows in the results for: ${raw.join(", ")}`);
   console.log(`SUMMARY map-search-proof ok ${words.length} word(s) found: ${words.join(", ")}`);
   return 0;
 }
