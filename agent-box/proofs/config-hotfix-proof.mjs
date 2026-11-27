@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { ROOT, arrive, clientBox, sessionDir, sessionPaths } from "../session.mjs";
+import { firstMoney } from "./_money.mjs";
 
 // #1487 (the #310 acceptance, driven by an agent): a price fix goes live in one restart, with no Workshop
 // build and no script change. On `up --clients 1 --mission playtest` (restart needs the playtest mission):
@@ -35,8 +36,7 @@ export function withDrinkPrice(text, price) {
 
 // The first dollar amount on a screen text, or -1.
 export function firstPrice(text) {
-  const m = /\$\s?(\d+)/.exec(String(text || ""));
-  return m ? Number(m[1]) : -1;
+  return firstMoney(text) ?? -1;
 }
 
 async function runConfigHotfixProof(args) {

@@ -13,6 +13,22 @@ import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 //   prints their directory).
 const DESK = "Fit_saint_philippe_clinic_lf_medic_duty_desk";
 
+// The medic's action list, read once the body is in front of them. A `look` taken while the medic still faces the
+// duty desk lists the desk's rows (and a `Revive` that sorts after `Introduce` is just a half-settled list), so the
+// order is judged only on a list that holds Revive, and a list that has not settled is read again.
+//   { state: "pass" }                      Revive is listed, and before Introduce when both are.
+//   { state: "unsettled", why }            no Revive yet (still the desk's list) or Revive after Introduce: read again.
+export function judgeActionOrder(list) {
+  const text = String(list ?? "");
+  const revive = text.search(/LF_ReviveAction|Revive/);
+  const intro = text.search(/LF_IntroduceAction|Introduce/);
+  if (revive < 0) return { state: "unsettled", why: /LF_DutyAction/.test(text) ? "Revive is not in the medic's list (the duty desk rows are showing)" : "Revive is not in the medic's list" };
+  if (intro >= 0 && revive > intro) return { state: "unsettled", why: "Revive is listed after Introduce" };
+  return { state: "pass", why: "" };
+}
+
+export const LIST_READS = 5;
+
 async function runDownedFlowProof() {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
@@ -46,14 +62,23 @@ async function runDownedFlowProof() {
   if (!/Bleeding_out/.test(wait1) || !/give_up_in/.test(wait1)) fails.push(`client 2 HUD line while waiting: "${wait1}"`);
 
   // The medic's list, the body in front of them.
-  on(1, { verb: "stand", entityName: patient });
-  wait(2500);
-  const list = on(1, { verb: "look" }, 10000).detail;
+  // Stand beside the body, look down at it, and read the list again until it holds Revive in order: the first `look`
+  // after a stand can still be the duty desk's list (the 2026-11-27 flake). Only the last read is judged.
+  let list = "";
+  let verdict = { state: "unsettled", why: "no list read" };
+  for (let read = 1; read <= LIST_READS; read++) {
+    on(1, { verb: "stand", entityName: patient });
+    wait(2500);
+    on(1, { verb: "input", action: "CharacterPitch", value: -35 }, 8000);
+    wait(800);
+    list = on(1, { verb: "look" }, 10000).detail;
+    verdict = judgeActionOrder(list);
+    if (verdict.state === "pass") break;
+    console.log(`medic list read ${read}/${LIST_READS} not settled: ${verdict.why}`);
+  }
   shot(1, "medic_action_order");
-  const revive = list.search(/LF_ReviveAction|Revive/);
-  const intro = list.search(/LF_IntroduceAction|Introduce/);
-  if (revive < 0) fails.push("Revive is not in the medic's list");
-  else if (intro >= 0 && revive > intro) fails.push("Revive is listed after Introduce");
+  on(1, { verb: "input", action: "CharacterPitch", value: 0 }, 8000);
+  if (verdict.state !== "pass") fails.push(`${verdict.why} (after ${LIST_READS} reads)`);
 
   wait(22000);
   const mid = hud(2);

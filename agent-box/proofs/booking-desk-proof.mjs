@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { ROOT, arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
+import { AMOUNT, MONEY, parseMoney } from "./_money.mjs";
 import { ensureCuffs } from "./_preconditions.mjs";
 
 // The police booking desk walked end to end on the real island (#4699, #4629 pay now, #4662 licence seizure),
@@ -97,7 +98,7 @@ async function runBookingDeskProof() {
     on(n, { verb: "input", action: "CharacterPitch", value: 0 }, 8000);
     return { ...r, aim: String(aim.detail), waited };
   };
-  const PAY = /\$\d/;
+  const PAY = new RegExp(MONEY);
   const TIME = /min/;
   const lastOffer = () => (serverLog().match(/booking offer: .*/g) ?? ["none"]).slice(-1)[0];
   const toastOf = (detail) => (/toast=(.*?)( dispatches=|$)/.exec(detail ?? "") ?? [0, ""])[1];
@@ -210,7 +211,7 @@ async function runBookingDeskProof() {
   const before = state(2);
   bookAndSign("1c");
   const offerLine = lastOffer();
-  const fine = Number((/fine=\$(\d+)/.exec(offerLine) ?? [0, 0])[1]);
+  const fine = parseMoney((new RegExp(String.raw`fine=\$(${AMOUNT})`).exec(offerLine) ?? [0, 0])[1]);
   step("1d the signed sheet made an offer with a fine to pay", /payable=1/.test(offerLine) && fine > 0, `offer line: ${offerLine}`);
   const lookB = on(2, { verb: "look" }, 10000);
   step("1e B's action list at the desk shows both answers", (lookB.detail.match(/LF_BookingDeskAnswerAction/g) ?? []).length >= 2, lookB.detail);
@@ -240,7 +241,7 @@ async function runBookingDeskProof() {
   step("1f B pays: cash and bank drop by exactly the fine", pay.status === "ok" && money(before) - money(after) === fine, `use=${pay.status}; ${money(before)} -> ${money(after)}, fine $${fine}`);
   step("1g paid: the cuffs come off and the wanted level clears", after.cuffed === "0" && Number(after.wanted) === 0, `cuffed=${after.cuffed} wanted=${after.wanted}`);
   const lines = serverLog();
-  step("1h the fine goes to the treasury sink, logged", /treasury \+\$\d+ \(fine from/.test(lines), "no 'treasury +$' line");
+  step("1h the fine goes to the treasury sink, logged", new RegExp(String.raw`treasury \+\$${AMOUNT} \(fine from`).test(lines), "no 'treasury +$' line");
   step("1i the signed sheet seized the firearm permit", logCount(/seized [1-9]\d* licence/g) > seizedBefore || /charge sheet of [^\n]* seized [1-9]/.test(lines), `seized lines: ${(lines.match(/charge sheet of [^\n]*seized \d+ licence[^\n]*/g) ?? ["none"]).slice(-1)[0]}`);
   const seen = on(2, { verb: "seen" }, 10000);
   step("1j B reads the licence-seized toast (the last of the booking toasts)", /LicenceSeized|[Pp]aid/.test(toastOf(seen.detail)), `toast: ${toastOf(seen.detail)}`);
