@@ -308,7 +308,7 @@ class LF_VehiclePricesConfig
 	//! Writes the effective values a client reads into the config stream (#285): the percents, the
 	//! chop cap and every vehicle in list order, keyed "0".."n-1" (ApplyStream replaces the list).
 	//! \param[in] ctx A save context with this section's object open.
-	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	void WriteStream(notnull JsonSaveContext ctx)
 	{
 		ctx.WriteValue("buyPercent", m_iBuyPercent);
 		ctx.WriteValue("sellBackPercent", m_iSellBackPercent);

@@ -131,8 +131,8 @@ class LF_Test_MapShares : LF_Test
 	//------------------------------------------------------------------------------------------------
 	protected void RunCases(LF_TestContext ctx)
 	{
-		SCR_JsonLoadContext json = new SCR_JsonLoadContext(false);
-		bool parsed = json.ImportFromString(LF_MapShareCasesData.Json());
+		JsonLoadContext json = new JsonLoadContext(false);
+		bool parsed = json.LoadFromString(LF_MapShareCasesData.Json());
 		ctx.True(parsed, "the shared case table is valid JSON");
 		if (!parsed)
 			return;

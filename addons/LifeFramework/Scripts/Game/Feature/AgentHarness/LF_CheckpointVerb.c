@@ -100,8 +100,8 @@ class LF_Checkpoint
 			return -1;
 		}
 
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext(false);
-		if (json.IsEmpty() || !ctx.ImportFromString(json))
+		JsonLoadContext ctx = new JsonLoadContext(false);
+		if (json.IsEmpty() || !ctx.LoadFromString(json))
 		{
 			LF_Debug.Error(FEATURE, "checkpoint refused: the file is not valid JSON");
 			return -1;
@@ -121,7 +121,7 @@ class LF_Checkpoint
 
 	//------------------------------------------------------------------------------------------------
 	//! \return True and the int at `key` of the open object; false when it is absent or not a number.
-	protected static bool ReadInt(notnull SCR_JsonLoadContext ctx, string key, out int value)
+	protected static bool ReadInt(notnull JsonLoadContext ctx, string key, out int value)
 	{
 		if (LF_ConfigReader.KindOf(ctx, key) != LF_EConfigJsonKind.NUMBER)
 			return false;
@@ -141,7 +141,7 @@ class LF_Checkpoint
 
 	//------------------------------------------------------------------------------------------------
 	//! Carried cash to exactly `cash`. The playtest top-up tick leaves it alone from then on.
-	protected static int ApplyCash(notnull SCR_JsonLoadContext ctx, string uid, IEntity character)
+	protected static int ApplyCash(notnull JsonLoadContext ctx, string uid, IEntity character)
 	{
 		int cash;
 		if (!ReadInt(ctx, "cash", cash) || cash < 0)
@@ -165,7 +165,7 @@ class LF_Checkpoint
 
 	//------------------------------------------------------------------------------------------------
 	//! The bank balance to exactly `bank`, through deposit and withdraw so the ledger stays whole.
-	protected static int ApplyBank(notnull SCR_JsonLoadContext ctx, string uid)
+	protected static int ApplyBank(notnull JsonLoadContext ctx, string uid)
 	{
 		int bank;
 		if (!ReadInt(ctx, "bank", bank) || bank < 0)
@@ -196,7 +196,7 @@ class LF_Checkpoint
 	//------------------------------------------------------------------------------------------------
 	//! Every job in `levels` to its level (the XP that reaches it; the daily cap is skipped and not booked). A job
 	//! with no track in this build's jobs config is logged and counted as failed, never a VME.
-	protected static int ApplyLevels(notnull SCR_JsonLoadContext ctx, string uid)
+	protected static int ApplyLevels(notnull JsonLoadContext ctx, string uid)
 	{
 		array<string> jobs = {};
 		if (LF_ConfigReader.KindOf(ctx, "levels") != LF_EConfigJsonKind.OBJECT || !LF_ConfigReader.ListKeys(ctx, "levels", jobs))
@@ -229,7 +229,7 @@ class LF_Checkpoint
 
 	//------------------------------------------------------------------------------------------------
 	//! Standing with each faction in `standing` to exactly that many points (the harness set, not an award).
-	protected static int ApplyStanding(notnull SCR_JsonLoadContext ctx, string uid)
+	protected static int ApplyStanding(notnull JsonLoadContext ctx, string uid)
 	{
 		array<string> factions = {};
 		if (LF_ConfigReader.KindOf(ctx, "standing") != LF_EConfigJsonKind.OBJECT || !LF_ConfigReader.ListKeys(ctx, "standing", factions))
@@ -258,7 +258,7 @@ class LF_Checkpoint
 
 	//------------------------------------------------------------------------------------------------
 	//! Police and medic rank indexes, kept inside the shipped ladders. A rank 0 with no account stays as it is.
-	protected static int ApplyRanks(notnull SCR_JsonLoadContext ctx, string uid)
+	protected static int ApplyRanks(notnull JsonLoadContext ctx, string uid)
 	{
 		int police = -1;
 		int medic = -1;
@@ -289,7 +289,7 @@ class LF_Checkpoint
 
 	//------------------------------------------------------------------------------------------------
 	//! Unlocks every licence named in the comma list that the character does not hold yet; starter licences stay.
-	protected static int ApplyLicences(notnull SCR_JsonLoadContext ctx, IEntity character)
+	protected static int ApplyLicences(notnull JsonLoadContext ctx, IEntity character)
 	{
 		string list;
 		if (LF_ConfigReader.KindOf(ctx, "licences") != LF_EConfigJsonKind.STRING || !ctx.ReadValue("licences", list))

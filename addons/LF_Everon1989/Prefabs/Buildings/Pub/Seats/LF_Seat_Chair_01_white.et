@@ -23,7 +23,7 @@ GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_whi
     }
    }
   }
-  RplComponent "{A6392EEA44139A68}" {
+  RplComponent "{5624A88DC2D9928D}" {
    Enabled 1
   }
  }

@@ -402,7 +402,7 @@ class LF_ItemCatalogueConfig
 	//! price list shows what the server charges. Removed records are written with removed: true, so
 	//! the client drops what the server dropped.
 	//! \param[in] ctx A save context with this section's object open.
-	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	void WriteStream(notnull JsonSaveContext ctx)
 	{
 		ctx.StartObject("items");
 		if (m_aItems)

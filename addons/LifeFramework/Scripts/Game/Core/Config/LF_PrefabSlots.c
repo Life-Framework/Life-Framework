@@ -338,7 +338,7 @@ class LF_PrefabSlots
 		foreach (LF_PrefabSlot extra : layered.m_aSlots)
 		{
 			if (extra && !core.Find(extra.m_sSlot))
-				LF_Debug.Warn(FEATURE, string.Format("slot '%1' is not a core slot; no system asks for it, ignored", extra.m_sSlot));
+				LF_Debug.Info(FEATURE, string.Format("slot '%1' is pack-only (not a core slot); only a feature that names it reads it (the gang flag wall reads gang_flag_01..20)", extra.m_sSlot));
 		}
 	}
 }

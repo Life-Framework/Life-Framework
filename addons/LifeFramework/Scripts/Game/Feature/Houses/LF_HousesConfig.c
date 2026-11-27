@@ -86,7 +86,7 @@ class LF_HousesConfig
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the client-relevant field for the config stream.
-	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	void WriteStream(notnull JsonSaveContext ctx)
 	{
 		ctx.WriteValue("salePercent", m_iSalePercent);
 	}

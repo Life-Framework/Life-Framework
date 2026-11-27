@@ -216,9 +216,12 @@ class LF_Test_EveronRumors : LF_Test
 			string speaker = ownerByKey.Get(spoken);
 			ctx.True(!line.m_sEvent.IsEmpty(), where + ": has a sound event");
 			ctx.True(line.m_fSeconds > 0, where + ": has a length");
-			string clip = "$LF_Everon1989:Sounds/Dialogue/" + speaker + "/" + speaker + "_" + line.m_sId + ".wav";
-			Resource wav = Resource.Load(clip);
-			ctx.True(wav && wav.IsValid(), where + ": has its clip on disk");
+			// The clip is a wav the speaker's audio project names by {GUID}path (validate-guid-paths checks each one);
+			// loading it by a bare path logged "Wrong GUID/name" for every line, so the project is what loads here.
+			Resource project;
+			if (voiceConfig && !voiceConfig.m_sSoundProject.IsEmpty())
+				project = Resource.Load(voiceConfig.m_sSoundProject);
+			ctx.True(project && project.IsValid(), where + ": its audio project loads");
 
 			// Words: US English, and a crime row prints only a public fact.
 			ctx.True(HasText(def.m_sLineKey), where + ": has its caption");

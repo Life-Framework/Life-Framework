@@ -10,6 +10,9 @@ class LF_ShopCatalogItem
 	int m_iBuyPrice;
 	int m_iSellPrice;
 	bool m_bHidden;
+	//! False for a row built by the catalog: its name skipped the pack's item-name key probe (that probe logs a
+	//! "Missing string ID" for every absent key, and the catalog holds the whole arsenal). BuildCatalogItem resolves it.
+	bool m_bNameResolved;
 };
 
 class LF_ShopManagerComponentClass : GameComponentClass
@@ -359,7 +362,9 @@ class LF_ShopManagerComponent : GameComponent
 		catalogItem.m_iBuyPrice = buyPrice;
 		catalogItem.m_iSellPrice = sellPrice;
 		catalogItem.m_bHidden = hidden;
-		catalogItem.m_sDisplayName = ResolveDisplayName(prefab);
+		// No pack-key probe here: it would log a "Missing string ID" per arsenal prefab at every boot. The name
+		// is only shown through LF_ShopComponent.BuildCatalogItem, which resolves it with the probe on first use.
+		catalogItem.m_sDisplayName = ResolveDisplayName(prefab, false);
 		m_aCatalog.Insert(catalogItem);
 		m_mCatalogByGuid.Set(LF_Utils.PrefabGuid(prefab), catalogItem);
 	}
@@ -394,11 +399,36 @@ class LF_ShopManagerComponent : GameComponent
 		return SCR_BaseContainerTools.FindComponentSource(resource, InventoryItemComponent) != null;
 	}
 
+	//! Whether the item-name row for a file name exists, asked once per key per boot: the engine logs a "Missing string ID"
+	//! warning on every Translate of an absent key, and a shop re-asks for each row each time it opens.
+	protected static ref map<string, bool> s_mNameKeys;
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		s_mNameKeys = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool HasNameKey(string fileKey)
+	{
+		if (!s_mNameKeys)
+			s_mNameKeys = new map<string, bool>();
+
+		bool known;
+		if (s_mNameKeys.Find(fileKey, known))
+			return known;
+
+		known = WidgetManager.Translate(fileKey) != fileKey;
+		s_mNameKeys.Set(fileKey, known);
+		return known;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Best available name for the menu: a string-table row keyed by the prefab's file name (a pack names a base-game
 	//! item that has no good name of its own: the entrenching tool, "Waterbottle"; #5080), else the item's own UI display
 	//! name (often a #key; text widgets translate it), else the prefab file name without the folder or the .et extension.
-	static string ResolveDisplayName(ResourceName prefab)
+	static string ResolveDisplayName(ResourceName prefab, bool probePackKey = true)
 	{
 		string path = prefab.GetPath();
 		int lastSlash = path.LastIndexOf("/");
@@ -408,7 +438,7 @@ class LF_ShopManagerComponent : GameComponent
 			path = path.Substring(0, path.Length() - 3);
 
 		string fileKey = "#" + NAME_KEY_PREFIX + path;
-		if (WidgetManager.Translate(fileKey) != fileKey)
+		if (probePackKey && HasNameKey(fileKey))
 			return fileKey;
 
 		UIInfo info = LF_UIInfoUtils.GetInfo(prefab);
@@ -422,3 +452,17 @@ class LF_ShopManagerComponent : GameComponent
 		return path;
 	}
 };
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ShopManagerComponent's name-key cache (LF_StaticReset finds it by reflection).
+class LF_ShopManagerComponent_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_ShopManagerComponent";
+	}
+
+	override void Apply()
+	{
+		LF_ShopManagerComponent.ResetStatics();
+	}
+}
