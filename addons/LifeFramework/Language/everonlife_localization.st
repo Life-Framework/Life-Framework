@@ -1972,12 +1972,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4A64CBDDC70A3B14}" {
      Id "LF-ATM_Deposited"
-     Target_en_us "DEPOSITED: %1"
+     Target_en_us "DEPOSITED %1"
      Comment "ATM terminal status line after a deposit. %1 is the amount."
     }
     CustomStringTableItem "{CAF4A9272F7A5651}" {
      Id "LF-ATM_Dispensed"
-     Target_en_us "TAKE YOUR CASH: %1"
+     Target_en_us "TAKE CASH %1"
      Comment "ATM terminal status line after a withdrawal. %1 is the amount paid out."
     }
     CustomStringTableItem "{2028FAF6D9D3BF5C}" {
@@ -2042,7 +2042,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{7880A378781D2C8D}" {
      Id "LF-ATM_NoReply"
-     Target_en_us "NO REPLY FROM THE BANK. TRY AGAIN."
+     Target_en_us "NO REPLY. RETRY"
      Comment "ATM terminal status line when the server did not answer within 5 seconds."
     }
     CustomStringTableItem "{C69157C8E92DD27F}" {
@@ -2122,37 +2122,37 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{234C990779F19F26}" {
      Id "LF-ATM_RefuseAccount"
-     Target_en_us "REFUSED: ACCOUNT UNAVAILABLE"
+     Target_en_us "ACCOUNT ERROR"
      Comment "ATM refusal: the player's account could not be found."
     }
     CustomStringTableItem "{8839595C4DED196B}" {
      Id "LF-ATM_RefuseAmount"
-     Target_en_us "REFUSED: KEY IN AN AMOUNT ABOVE ZERO"
+     Target_en_us "CHECK AMOUNT"
      Comment "ATM refusal: the amount is zero or outside the transaction limit."
     }
     CustomStringTableItem "{FA6C0202EB152BE3}" {
      Id "LF-ATM_RefuseBalance"
-     Target_en_us "REFUSED: INSUFFICIENT FUNDS IN ACCOUNT"
+     Target_en_us "NOT ENOUGH FUNDS"
      Comment "ATM refusal: a withdrawal larger than the account balance."
     }
     CustomStringTableItem "{B166036CBE991244}" {
      Id "LF-ATM_RefuseCannotAct"
-     Target_en_us "REFUSED: YOUR HANDS ARE NOT FREE"
+     Target_en_us "HANDS NOT FREE"
      Comment "ATM refusal: the player is dead, downed or cuffed."
     }
     CustomStringTableItem "{4FE6F21A50365940}" {
      Id "LF-ATM_RefuseCash"
-     Target_en_us "REFUSED: YOU DO NOT CARRY THAT MUCH CASH"
+     Target_en_us "NOT ENOUGH CASH"
      Comment "ATM refusal: a deposit larger than the cash the player carries."
     }
     CustomStringTableItem "{2FA569A76F73369A}" {
      Id "LF-ATM_RefuseFar"
-     Target_en_us "REFUSED: STAND AT THE MACHINE"
+     Target_en_us "STAND AT MACHINE"
      Comment "ATM refusal: the server found no ATM within 5 m of the player."
     }
     CustomStringTableItem "{9AC0372760E9657E}" {
      Id "LF-ATM_RefusePockets"
-     Target_en_us "REFUSED: NO ROOM IN YOUR POCKETS FOR THE CASH"
+     Target_en_us "POCKETS FULL"
      Comment "ATM refusal: the withdrawn cash does not fit in the inventory; the balance is restored."
     }
     CustomStringTableItem "{2B2DD7DA486A3225}" {
