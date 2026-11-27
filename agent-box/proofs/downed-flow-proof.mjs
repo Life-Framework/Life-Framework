@@ -6,24 +6,35 @@ import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 //   node agent-box/session.mjs pull <dir>      (pictures; then `down`)
 // Client 1 clocks in at the Saint-Philippe clinic desk and downs client 2 (a harness `shoot`; the
 // harness has no fall damage), so client 1 is the downer. Reads:
-//   #5155 action order: client 1 faces the body; `look` lists Revive before Introduce.
+//   #5155 action order: client 1 faces the body; the in-game menu (`aim`) puts Revive first and selected.
 //   #5155 HUD line: client 2's `seen downedhud=` shows the wait, then the ready line.
 //   #5154 VME: client 2 gives up while the downer is online; the three console logs carry no
 //   `GetCharacterControlType` exception (the caller greps the logs after `down`; this proof
 //   prints their directory).
 const DESK = "Fit_saint_philippe_clinic_lf_medic_duty_desk";
+// Open ground outside every safe zone, away from the clinic's doctor and till (the arrival lamps are a safe zone: a
+// `shoot` there is refused; inside the clinic the view ray meets the doctor or the till first).
+// A medic looks straight at the body. At -50 and steeper the aim sits on the body itself (the vanilla LowerTorso context,
+// which used to offer Loot and Inspect and no Revive); only a glance above it (-30) used to reach the LF_ID context.
+const AIM_PITCH = -60;
+const DOWN_SPOT ="Fit_saint_philippe_dock_bus_stops_drop_b03";
 
-// The medic's action list, read once the body is in front of them. A `look` taken while the medic still faces the
-// duty desk lists the desk's rows (and a `Revive` that sorts after `Introduce` is just a half-settled list), so the
-// order is judged only on a list that holds Revive, and a list that has not settled is read again.
-//   { state: "pass" }                      Revive is listed, and before Introduce when both are.
-//   { state: "unsettled", why }            no Revive yet (still the desk's list) or Revive after Introduce: read again.
-export function judgeActionOrder(list) {
-  const text = String(list ?? "");
-  const revive = text.search(/LF_ReviveAction|Revive/);
-  const intro = text.search(/LF_IntroduceAction|Introduce/);
-  if (revive < 0) return { state: "unsettled", why: /LF_DutyAction/.test(text) ? "Revive is not in the medic's list (the duty desk rows are showing)" : "Revive is not in the medic's list" };
-  if (intro >= 0 && revive > intro) return { state: "unsettled", why: "Revive is listed after Introduce" };
+// The medic's action menu on the body. `aim` is the real thing: it prints `GetFilteredActions` of the player's
+// interaction handler, the list the in-game menu shows and the F key acts on, in menu order, with `selected=` the row the
+// F key would run (#5155, #5182). `look` is NOT the menu: it walks each prop's actions in declaration order, whatever their
+// Sort Priority, and stops at 12 hits across everything within 4 m, so near the clinic it never reached Revive.
+//   { state: "pass" }               the menu's first row, and the selected one, is Revive.
+//   { state: "unsettled", why }     aim lands on something else (the clinic doctor, the till: `context=` says what) or Revive
+//                                   is not first: read again.
+export function judgeActionOrder(aim) {
+  const text = String(aim ?? "");
+  const offered = /offered=(\S+)/.exec(text)?.[1] ?? "";
+  const rows = offered === "" || offered === "none" ? [] : offered.split(",").map((r) => r.replace(/:\d$/, ""));
+  const revive = rows.findIndex((r) => /^LF_ReviveAction/.test(r));
+  const context = /context=(\S+)/.exec(text)?.[1] ?? "none";
+  if (revive < 0) return { state: "unsettled", why: `Revive is not in the medic's menu (aim context=${context}, rows: ${rows.join(" ") || "none"})` };
+  if (revive > 0) return { state: "unsettled", why: `Revive is row ${revive + 1} of the menu, after ${rows.slice(0, revive).join(" ")}` };
+  if (!/selected=LF_ReviveAction/.test(text)) return { state: "unsettled", why: "Revive is first but not the selected row" };
   return { state: "pass", why: "" };
 }
 
@@ -47,11 +58,14 @@ async function runDownedFlowProof() {
   wait(8000);
   on(1, { verb: "stand", entityName: DESK });
   wait(2500);
-  on(1, { verb: "look" });
   on(1, { verb: "use", className: "LF_DutyAction", entityName: DESK }, 10000);
   wait(2500);
   if (!parseState(on(1, { verb: "state" }, 10000).detail).faction?.includes("MEDIC")) fails.push("client 1 did not clock in as a medic");
-  on(2, { verb: "stand", entityName: DESK });
+  // The body goes down in the open. At the duty desk the clinic's doctor stands in the view ray, so the medic's aim lands on
+  // him ("Talk") and the body's own menu never shows; that is where the player is looking, not a missing Revive.
+  on(2, { verb: "stand", entityName: DOWN_SPOT });
+  wait(2500);
+  on(1, { verb: "stand", entityName: DOWN_SPOT, side: "s" });
   wait(2500);
 
   on(1, { verb: "shoot", playerId: 2 }, 10000);
@@ -61,20 +75,20 @@ async function runDownedFlowProof() {
   shot(2, "downed_hud_wait");
   if (!/Bleeding_out/.test(wait1) || !/give_up_in/.test(wait1)) fails.push(`client 2 HUD line while waiting: "${wait1}"`);
 
-  // The medic's list, the body in front of them.
-  // Stand beside the body, look down at it, and read the list again until it holds Revive in order: the first `look`
-  // after a stand can still be the duty desk's list (the 2026-11-27 flake). Only the last read is judged.
+  // The medic's menu, the body in front of them: stand beside the body, look down at it, and `aim` until the menu's first
+  // and selected row is Revive. A read before the view settles can still name the last thing aimed at. Only the last read
+  // is judged.
   let list = "";
-  let verdict = { state: "unsettled", why: "no list read" };
+  let verdict = { state: "unsettled", why: "no menu read" };
   for (let read = 1; read <= LIST_READS; read++) {
     on(1, { verb: "stand", entityName: patient });
     wait(2500);
-    on(1, { verb: "input", action: "CharacterPitch", value: -35 }, 8000);
+    on(1, { verb: "input", action: "CharacterPitch", value: AIM_PITCH }, 8000);
     wait(800);
-    list = on(1, { verb: "look" }, 10000).detail;
+    list = on(1, { verb: "aim", words: [] }, 10000).detail;
     verdict = judgeActionOrder(list);
     if (verdict.state === "pass") break;
-    console.log(`medic list read ${read}/${LIST_READS} not settled: ${verdict.why}`);
+    console.log(`medic menu read ${read}/${LIST_READS} not settled: ${verdict.why}`);
   }
   shot(1, "medic_action_order");
   on(1, { verb: "input", action: "CharacterPitch", value: 0 }, 8000);
