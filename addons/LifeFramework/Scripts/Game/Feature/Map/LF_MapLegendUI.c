@@ -1153,16 +1153,28 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void HarnessSearch(string word)
+	//! `maplegend search <word>`: types the word and presses Find. \return `results=N names=A|B|C`, the rows as the
+	//! list shows them (the names a player reads, `|` between); `sheet=0` when the sheet would not open.
+	string HarnessSearch(string word)
 	{
 		if (!m_Sheet)
 			OpenSheet();
 
 		if (!m_Sheet)
-			return;
+			return "sheet=0 results=0 names=";
 
 		m_Sheet.SetFieldText("SearchField", word);
 		RunSearch();
+		string names;
+		foreach (int i, LF_MapPoi poi : m_aResults)
+		{
+			if (i > 0)
+				names += "|";
+
+			names += LF_MapLegend.NameOf(poi);
+		}
+
+		return string.Format("results=%1 names=%2", m_aResults.Count(), names);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1232,7 +1244,7 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 //! Session harness for the legend (#2244). FINAL PROOF ONLY (`map-legend-shots`):
 //!   maplegend open            open the Map key sheet on the open map
 //!   maplegend demo <x> <z>     add four stand-in places around a point (no world has POIs yet)
-//!   maplegend search <word>   type the word into the search blank and press Find
+//!   maplegend search <word>   type the word into the search blank, press Find, answer results=N names=A|B|C
 //!   maplegend toggle <cat>    Hide / Show a category as its button does
 //!   maplegend close           close the sheet
 //!   maplegend status          sheet open flag, hidden categories, places drawn and known
@@ -1279,7 +1291,10 @@ class LF_MapLegendHarness
 		else if (action == "close")
 			legend.HarnessClose();
 		else if (action == "search")
-			legend.HarnessSearch(argument);
+		{
+			detail = legend.HarnessSearch(argument);
+			return true;
+		}
 		else if (action == "toggle")
 			legend.HarnessToggle(argument);
 		else if (action == "icons")
