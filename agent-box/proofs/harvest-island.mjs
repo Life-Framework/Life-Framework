@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { arrive, clientBox, newestLog, parseState, readSession, sessionDir, sessionPaths } from "../session.mjs";
+import { AMOUNT, parseMoney } from "./_money.mjs";
 import { parseKv, parsePos } from "./hitch-sync.mjs";
 
 // The whole harvester loop on the island (#3302 and its cards), one dedicated session, one or two clients:
@@ -41,11 +42,11 @@ export function judgeSale(before, after, hopperBefore, hopperAfter, soldLine) {
   const paid = after.cash - before.cash;
   if (paid <= 0) fails.push(`cash did not rise (${before.cash} -> ${after.cash})`);
   if (hopperAfter !== hopperBefore - n * LOT_KG) fails.push(`hopper ${hopperBefore} -> ${hopperAfter} kg, wanted ${hopperBefore - n * LOT_KG} (whole lots go, the remainder stays)`);
-  const m = /grain sold: (\d+) kg for \$(\d+)/.exec(soldLine ?? "");
+  const m = new RegExp(String.raw`grain sold: (\d+) kg for \$(${AMOUNT})`).exec(soldLine ?? "");
   if (!m) fails.push("no `grain sold` line in the server log");
   else {
     if (Number(m[1]) !== n * LOT_KG) fails.push(`the server sold ${m[1]} kg, wanted ${n * LOT_KG}`);
-    if (Number(m[2]) !== paid) fails.push(`the server paid $${m[2]} but cash moved $${paid}`);
+    if (parseMoney(m[2]) !== paid) fails.push(`the server paid $${m[2]} but cash moved $${paid}`);
   }
   return fails;
 }
