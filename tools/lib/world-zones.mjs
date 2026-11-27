@@ -267,16 +267,49 @@ export function mainClaims(root, { fetch = true, ref = "origin/main" } = {}) {
   const ls = git(["ls-tree", "--name-only", "-r", ref, "--", `${CELLS_DIR}/`]);
   if (ls.status !== 0) return { claims: [], note: note || `no ${ref} here; claims on main were not checked` };
   const claims = [];
-  for (const file of ls.stdout.split(/\r?\n/).filter((f) => f.endsWith(".json"))) {
-    const show = git(["show", `${ref}:${file}`]);
-    if (show.status !== 0) continue;
+  const files = ls.stdout.split(/\r?\n/).filter((f) => f.endsWith(".json"));
+  // One `git cat-file --batch` for every claim file: a `git show` each was 116 spawns in one validate run.
+  const blobs = files.length ? spawnSync("git", ["cat-file", "--batch"], { cwd: root, input: files.map((f) => `${ref}:${f}\n`).join(""), timeout: 20000, maxBuffer: 64 * 1024 * 1024 }) : { status: 0, stdout: Buffer.alloc(0) };
+  const texts = blobs.status === 0 ? parseCatFileBatch(blobs.stdout, files.length) : null;
+  files.forEach((file, i) => {
+    let text = texts ? texts[i] : null;
+    if (texts === null) {
+      const show = git(["show", `${ref}:${file}`]); // the batch failed as a whole: the old way, one file at a time
+      text = show.status === 0 ? show.stdout : null;
+    }
+    if (text === null) return;
     try {
-      claims.push({ file, ...JSON.parse(show.stdout) });
+      claims.push({ file, ...JSON.parse(text) });
     } catch (e) {
       claims.push({ file, error: String(e.message || e) });
     }
-  }
+  });
   return { claims, note };
+}
+
+// The contents `git cat-file --batch` printed for `count` requested objects, in request order: each is
+// "<sha> <type> <size>\n<bytes>\n", or "<name> missing\n" (null here). Null for the whole when the stream does
+// not parse as `count` entries.
+export function parseCatFileBatch(buf, count) {
+  const out = [];
+  let pos = 0;
+  for (let i = 0; i < count; i++) {
+    const nl = buf.indexOf(10, pos);
+    if (nl < 0) return null;
+    const header = buf.toString("utf8", pos, nl);
+    pos = nl + 1;
+    if (header.endsWith(" missing") || header.endsWith(" ambiguous")) {
+      out.push(null);
+      continue;
+    }
+    const m = /^[0-9a-f]{40,64} \w+ (\d+)$/.exec(header);
+    if (!m) return null;
+    const size = Number(m[1]);
+    if (pos + size > buf.length) return null;
+    out.push(buf.toString("utf8", pos, pos + size));
+    pos += size + 1;
+  }
+  return out;
 }
 
 // ------------------------------------------------------------------ claims in sibling worktrees

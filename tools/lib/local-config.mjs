@@ -25,6 +25,7 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
+import { commonDirFromFiles } from "./git-common-dir.mjs";
 
 export const LOCAL_CONFIG_NAME = "lf.local.json";
 
@@ -35,6 +36,8 @@ function mainRoot(root) {
 }
 
 function mainRootUncached(root) {
+  const fromFiles = commonDirFromFiles(root); // no git spawn; null when unsure
+  if (fromFiles) return dirname(fromFiles);
   const res = spawnSync("git", ["-C", root, "rev-parse", "--git-common-dir"], { windowsHide: true, encoding: "utf8" });
   if (res.status !== 0) return root;
   return dirname(resolve(root, res.stdout.trim()));

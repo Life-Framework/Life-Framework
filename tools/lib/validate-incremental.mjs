@@ -36,6 +36,7 @@ import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "no
 import { dirname, isAbsolute, join, resolve } from "node:path";
 import { writeFileAtomic } from "./atomic-file.mjs";
 import { importClosure } from "./import-closure.mjs";
+import { commonDirFromFiles } from "./git-common-dir.mjs";
 
 const STATE_VERSION = 2; // 2: content-addressed fingerprints (1 used mtimes)
 const SHARED_KEEP = 12; // green fingerprints kept per check in the shared file
@@ -86,7 +87,8 @@ export function blobId(buf) {
 const lsz = (root, args) =>
   execFileSync("git", ["ls-files", "-z", ...args], { cwd: root, encoding: "utf8", maxBuffer: 1 << 28 }).split("\0").filter(Boolean);
 
-// Three `git ls-files` calls for the whole run; only modified and untracked files are read.
+// Two `git ls-files` calls for the whole run (the staged ids; the modified and untracked names together, which
+// were two calls before 2026-11-27); only modified and untracked files are read.
 export function snapshotFiles(root) {
   const sig = new Map();
   for (const rec of lsz(root, ["-s", "--cached"])) {
@@ -94,7 +96,7 @@ export function snapshotFiles(root) {
     const id = rec.slice(0, tab).split(" ")[1];
     sig.set(rec.slice(tab + 1), id);
   }
-  const dirty = new Set([...lsz(root, ["-m"]), ...lsz(root, ["--others", "--exclude-standard"])]);
+  const dirty = new Set(lsz(root, ["-m", "--others", "--exclude-standard"]));
   for (const rel of dirty) {
     let id = "gone";
     try {
@@ -161,7 +163,7 @@ export function sharedFile(root, env = process.env) {
   const ci = ciGreenFile(env, root);
   if (ci) return ci;
   try {
-    let dir = execFileSync("git", ["rev-parse", "--git-common-dir"], { cwd: root, encoding: "utf8" }).trim();
+    let dir = commonDirFromFiles(root) ?? execFileSync("git", ["rev-parse", "--git-common-dir"], { cwd: root, encoding: "utf8" }).trim();
     if (!isAbsolute(dir)) dir = join(root, dir);
     return join(dir, "lf", "validate-green.json");
   } catch {

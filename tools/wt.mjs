@@ -24,6 +24,7 @@ import { fileURLToPath } from "node:url";
 import { findReparsePoints, recycleWorktree, removeWorktree, safeRemoveTree } from "./link-safety.mjs";
 import { localSetting, wtParent } from "./lib/local-config.mjs";
 import { describeRun } from "./lib/git-retry.mjs";
+import { commonDirFromFiles } from "./lib/git-common-dir.mjs";
 export { wtParent };
 import { ADDONS } from "./lib/addons.mjs";
 import { sessionDirOf } from "./lib/session-lease.mjs";
@@ -90,6 +91,11 @@ const commonDirs = new Map();
 export function gitCommonDir(root) {
   const hit = commonDirs.get(root);
   if (hit) return hit;
+  const fromFiles = commonDirFromFiles(root); // no git spawn (tools/lib/git-common-dir.mjs); null when unsure
+  if (fromFiles) {
+    commonDirs.set(root, fromFiles);
+    return fromFiles;
+  }
   const res = git(root, ["rev-parse", "--git-common-dir"]);
   if (res.status !== 0) throw new Error(`not a git checkout: ${root}`);
   const dir = resolve(root, res.stdout.trim());

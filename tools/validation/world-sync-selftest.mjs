@@ -18,6 +18,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { scratchDir } from "../lib/scratch.mjs";
+import { FastStream, fastImport } from "../lib/selftest-git.mjs";
 import { sections } from "../lib/selftest-sections.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -62,18 +63,12 @@ const OT = `${LAYERS}/Other.layer`;
 function scene() {
   const tmp = scratchDir("lf-world-sync-");
   const origin = join(tmp, "origin.git");
-  const seed = join(tmp, "seed");
   git(tmp, "init", "-q", "--bare", "-b", "main", origin);
-  git(tmp, "init", "-q", "-b", "main", seed);
-  put(seed, SJ, "street jobs v1\n");
-  put(seed, AL, "a layer v1\n");
-  put(seed, OT, "other v1\n");
-  put(seed, "docs/a.md", "doc a v1\n");
-  put(seed, "docs/b.md", "doc b v1\n");
-  put(seed, "notes.txt", "notes v1\n");
-  put(seed, "scripts/x.c", "x v1\n");
-  git(seed, "add", "-A"); git(seed, "commit", "-qm", "seed");
-  git(seed, "remote", "add", "origin", origin); git(seed, "push", "-q", "origin", "main");
+  // The seed commit goes straight into the bare origin with one fast-import (was init, add, commit, remote add and
+  // push in a throwaway "seed" clone: 5 spawns more per scene, 11 scenes).
+  fastImport(origin, new FastStream().commit("refs/heads/main", { mark: 1, message: "seed", files: {
+    [SJ]: "street jobs v1\n", [AL]: "a layer v1\n", [OT]: "other v1\n", "docs/a.md": "doc a v1\n", "docs/b.md": "doc b v1\n", "notes.txt": "notes v1\n", "scripts/x.c": "x v1\n",
+  } }));
   const work = join(tmp, "Life-Framework-ws-town");
   git(tmp, "clone", "-q", origin, work);
   git(work, "checkout", "-q", "-b", "ws/town");

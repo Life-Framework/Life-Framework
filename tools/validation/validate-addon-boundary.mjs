@@ -69,6 +69,42 @@ function walk(dir, out = []) {
 
 const rel = (base, path) => relative(base, path).split(sep).join("/");
 
+// Finding every pack path in every core line was an indexOf per pack path per line (23 of this check's 30 s).
+// A reference starts at the line start or after "}" ({GUID}path), a quote, or whitespace, so Prefabs/X.et does
+// not match inside Prefabs/Props/X.et; those are the only places a path can start, and each is looked up by its
+// first KEY characters. A path shorter than KEY is matched with startsWith.
+const KEY = 20;
+const REF_START = /["}\s]/g;
+export function indexPaths(paths) {
+  const byKey = new Map();
+  const short = [];
+  for (const p of paths) {
+    if (p.length < KEY) {
+      short.push(p);
+      continue;
+    }
+    const k = p.slice(0, KEY);
+    const list = byKey.get(k);
+    if (list) list.push(p);
+    else byKey.set(k, [p]);
+  }
+  return { byKey, short };
+}
+
+export function pathRefsIn(line, index) {
+  const found = [];
+  if (!index.byKey.size && !index.short.length) return found;
+  const at = (i) => {
+    for (const p of index.short) if (line.startsWith(p, i)) found.push(p);
+    const list = index.byKey.get(line.substr(i, KEY));
+    if (list) for (const p of list) if (line.startsWith(p, i)) found.push(p);
+  };
+  at(0);
+  REF_START.lastIndex = 0;
+  for (let m = REF_START.exec(line); m; m = REF_START.exec(line)) at(m.index + 1);
+  return found;
+}
+
 // Everything the pack owns that the core must not name.
 export function packSurface(packDir) {
   const guids = new Map(); // GUID -> pack file that owns it
@@ -131,6 +167,7 @@ function checkPackBoundary(addonsDir, PACK) {
 
   const corePaths = new Set(walk(coreDir).map((f) => rel(coreDir, f)));
   const packOnlyPaths = new Set([...pack.paths].filter((p) => !corePaths.has(p)));
+  const packPathIndex = indexPaths(packOnlyPaths);
   // Whole word: a pack LF_Test is not named by the core class LF_TestOrgSign.
   const packNameRe = new RegExp(`\\b${PACK}\\b`);
   const classNames = [...pack.classes.keys()];
@@ -155,12 +192,7 @@ function checkPackBoundary(addonsDir, PACK) {
         }
       }
       if (!isMeta) {
-        for (const p of packOnlyPaths) {
-          const i = line.indexOf(p);
-          // A reference starts after "}" ({GUID}path), a quote, or whitespace,
-          // so Prefabs/X.et does not match inside Prefabs/Props/X.et.
-          if (i >= 0 && (i === 0 || /["}\s]/.test(line[i - 1]))) errors.push(`${at} references pack path ${p}`);
-        }
+        for (const p of pathRefsIn(line, packPathIndex)) errors.push(`${at} references pack path ${p}`);
       }
       if (classRe && ext(file) === ".c") {
         const m = line.match(classRe);
