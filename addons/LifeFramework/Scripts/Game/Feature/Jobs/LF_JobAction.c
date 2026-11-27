@@ -288,7 +288,7 @@ class LF_JobStartRunAction : ScriptedUserAction
 		// A first-time courier does not know where the drop is; the toast says.
 		string startedKey = LF_CivilianJob.RunStartedKey(m_eJob);
 		if (!startedKey.IsEmpty())
-			LF_Utils.NotifyEntity(pUserEntity, startedKey, LF_CivilianJob.NameKey(m_eJob), 8.0);
+			LF_Utils.NotifyEntity(pUserEntity, startedKey, LF_CivilianJob.NameKey(m_eJob), 8.0, deposit.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
