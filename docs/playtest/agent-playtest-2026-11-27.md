@@ -223,3 +223,54 @@ Findings 1 to 3 are core strings in `everonlife_localization.st` (en_us rows; `r
 2. `use LF_ATMQuickAction__<n>`: 0 to 3 withdraw $20, $50, $100, $500, 4 withdraw all, 5 deposit all.
 3. The org name field takes only one plain token from `type` (letters, digits): no space, `_` or `-`.
 4. `harness.mjs flow <name> --verbose` prints each `look`, `state` and `ui text` answer; the compact run hides them.
+
+---
+
+# Round 5: a bought house with a second player, a crew, the informant
+
+**Build played:** `ws/playtest-1127-r5` on `origin/main` `2ca3f0b0` (`compiled-ok`) plus this round's harness verb, before round 4 merged; the 0.3.0 feature freeze. Game client 1.9.0.42.
+**Setup:** one `--profile full` island session on lf-testbox (`up --mission island --clients 2 --profile full --hold 20`), two fresh accounts (rules quiz, form R-89), about 15 minutes up, `session down` straight after. The flagship owner config (`server/flagship/config.json`) was loaded, so houses sell at 50% as on the alpha. The server and client logs hold no `SCRIPT (E)` or `VME` line from the route.
+**Grants (what skipped grind, never the step under test):** `send checkpoint 8` on both clients (cash $350, bank $6,950, `UNDERWORLD` 140); one `itemgive` of the gang radio to client 2 (client 1 bought its radio at the gun counter); `itemdrop` of the house key on client 1 to stand in for the drop key the inventory screen does; the informant leg is `session.mjs dirty-money-island` with its own grants (`resetplayer` $1,000, `repgrant UNDERWORLD 100`, three moonshine `itemgive`). Every position is a harness `stand`. A new client verb, `invstore`, does the inventory-screen moves the route needed (pick up a dropped item, start "Place where I aim", start a carried item's action; `agent-box/README.md`).
+**Route:**
+- **House.** ATM withdraw $2,500, buy cottage `sp-b83` ($2,000), the owner at the door, a stranger (client 2) at the door, the furniture counter (a $90 chest), the chest placed inside, the key dropped by the owner and picked up by client 2, client 2 at the door with the key, client 2 relogs (`session.mjs rejoin 2`) and tries the door again.
+- **Crew.** Found "Rivercrew" at the registry desk ($250), take the lease, invite client 2 face to face, a gang radio each, "Tune to gang channel" on both, the map with both members in Saint-Philippe.
+- **Informant.** `session.mjs dirty-money-island` (7 of 7 steps): the night-shift worker at dawn, the tip ($150), the buyer at the marked spot, moonshine sold.
+
+## Findings, ranked by what a player hits
+
+| # | Rank | Finding | Where | Picture | What I did |
+|---|---|---|---|---|---|
+| 1 | High | **A house owner cannot place the furniture they bought, so a bought Everon house has no storage.** With the chest bought ($90) and dropped on the cottage floor, "Place where I aim" was not offered (`invstore aim` answered `cannot_perform`, the action hidden). The client looks for the house the player stands in with a `STATIC` sphere query; every island house is a mesh-less `LF_HouseMarker.et` inside a vanilla building, which a static query never returns, so the client saw "no house within 30 m" in the owner's own hallway. #3361's test used a mesh building, which is static, so it passed. Storage furniture (chest, wardrobe, crate) is the only storage a house has, so "put items in, take them out, after a relog" cannot start | Any island house (`LF_PlacementPolicy.NearestReplicatedHouse`) | [inside the cottage](../../website/public/docs-images/playtest-1127-r5/house_inside_owner.jpg), [furniture counter](../../website/public/docs-images/playtest-1127-r5/furniture_counter_list.jpg) | **Fixed in this PR**: the query covers every entity (`EQueryEntitiesFlags.ALL`); test `placement/client-offer-marker` (red on the old query: "has no house within 30 m" for the owner and the key holder; green after). The placement, put, take and relog in a session is a manual step |
+| 2 | Medium | **No crew robbery on Everon for a two-player crew.** The crew till (`LF_CrewTill.et`, the hold-the-spot job of #3404) stands only in the debug grid; the island's one crew job, the bank (`LF_HeistBank_Everon1989.conf`), needs two police on duty (`m_iMinPoliceOnDuty 2`). Two friends who found a crew have nothing to rob together until cops are online | Island crime sites | none (layer and config read) | Tracked: #3407 (the petrol-station crew job) and #781 |
+| 3 | Medium | **The leased hideout has no stash.** Taking the lease binds the farm compound (`assigned hideout=farm_compound`, the barn door locks), but no island layer places `LF_HideoutStash.et`: a crew's "hideout stash" exists only in the playtest village. The compound holds a site strongbox, which is the contested-site loot box, not a members' stash | Farm compound | none (log and layers) | Tracked: #4146 (hideouts across Everon with perks, a stash among them) |
+| 4 | Low | **An Everon house door has no Lock/Unlock row.** `look` at the cottage door lists only `SCR_DoorUserAction`; `LF_HouseLockAction` sits on `EL_Door_Base.et`, which island houses do not use. The door is gated by the building lock instead (a stranger is refused, see below), so a house is never open to guests without a key | Cottage door | [stranger refused](../../website/public/docs-images/playtest-1127-r5/stranger_door_refused.jpg) | Tracked: #3208 (lock and unlock at the house sign) |
+
+Two more findings of this round were fixed by round 4 before this PR (commit `3066a741`): the purchase toast printed the internal house id ("You bought house saint-philippe.home.sp-b83"), and the ledger called the farm compound "Alley yard lease". I had the same fixes ready and dropped them.
+
+## What read well
+
+- **Buying.** ATM menu, key in 2500, Withdraw: "TAKE CASH $2,500", bank $6,950 to $4,450. The sign's "Buy house" took exactly $2,000 (the flagship half price); the server log reads `bought by ... for 2000`. A first press with $350 was refused with nothing taken.
+- **The door.** The owner opens it; a stranger (client 2) gets `cannot_perform` at the same door ([picture](../../website/public/docs-images/playtest-1127-r5/stranger_door_refused.jpg)). After the owner drops the key and client 2 picks it up, client 2 opens it ([picture](../../website/public/docs-images/playtest-1127-r5/key_holder_door_open.jpg)). **After a relog** (client 2 quits and rejoins, same identity) the key is still carried and the door still opens for them; the crew membership is kept too.
+- **The furniture counter.** A plain list with prices (chair $60, table $120, bed $150, chest $90, ...), a search field that filtered "Chest" to one row, "Pay cash" took $90 ([picture](../../website/public/docs-images/playtest-1127-r5/furniture_counter_list.jpg)).
+- **A crew.** "Organization Register - 1989 ledger", sign for $250, take the lease ("Yours", the farm compound locks to members); the leader's Invite and client 2's Join face to face, client 2's state reads `org=Rivercrew` ([picture](../../website/public/docs-images/playtest-1127-r5/crew_joined.jpg)).
+- **The gang radio.** "Gang radio $60" at the Saint-Philippe gun counter, open to anyone ([picture](../../website/public/docs-images/playtest-1127-r5/gang_radio_bought.jpg)). "Tune to gang channel" on both radios: `band assigned ... frequency=46200`, both members tuned to it. The voice itself was not heard (the session runs without sound).
+- **The informant loop** (`dirty-money-island`, 7 of 7): Remi Duval at his doorstep at dawn answers a tier-1 character, the work reply opens the tip, the tip costs $150 (cash $1,000 to $850) and puts a private mark on `drop_b64`, the buyer appears there, three bottles sell for **$240 in marked notes** and the cash stays at $850. $240 for $150 of tip and three bottles is a small but real margin.
+
+## Not reached (say so, do not read it as a pass)
+
+- **Furniture storage in use.** Put items in, take them out, a relog with items inside, and a key holder at the chest: all blocked by finding 1 in this session. The fix is tested by `placement/client-offer-marker` only; the session steps are in the PR's manual testing.
+- **Members on the map.** The map opened at island zoom with both members in Saint-Philippe shows cluster circles over the town ([picture](../../website/public/docs-images/playtest-1127-r5/map_two_members.jpg)); I did not zoom in on the town, so a member's own mark was not read.
+- **Robbery as a crew.** Nothing to rob as two (finding 2); the bank needs four clients.
+- **Selling the marked notes or laundering them**, the radio's voice, and any walking (every position is a `stand`).
+
+## Noticed (no action)
+
+- After the purchase the cottage's sign board still reads "FOR SALE" in the world (the action row says Sold, the replicated flag is `sold=1`); a passer-by reads it as for sale ([picture](../../website/public/docs-images/playtest-1127-r5/key_holder_door_open.jpg)).
+- The ATM's first open in this session showed the TRANSFER page with my keyed amount, not the main menu ([picture](../../website/public/docs-images/playtest-1127-r5/atm_opened_on_transfer.jpg)); the second open showed the menu. Not reproduced, so it may be the harness's first key press landing on the Transfer key.
+- The "Give item" row hands over only what is in the hands; a house key cannot be held, so a key changes hands by dropping it.
+
+## Tooling notes
+
+1. `invstore list|put|take|pickup|aim|act` (new): the inventory-screen moves a route needs; `put`/`take` were not exercised (finding 1), `pickup`, `aim` and `act` were.
+2. `session.mjs rejoin <n>` is the relog: same identity, a new player id.
+3. The island ATM: `stand Fit_saint_philippe_atms_drop_b79`, `use LF_ATMAction`, `MenuButton` if it opens on Transfer, `Key<d>Button`, `WithdrawButton`.
