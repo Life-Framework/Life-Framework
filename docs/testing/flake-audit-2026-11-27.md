@@ -52,6 +52,19 @@ the test counts from the real tick (`t0`), in `LF_Test_ContractTracker` and the 
 `LF_Test_ContractTrackerResend`. 5 runs in a row green, `--no-cache`. A workspace cannot be forced on the dedicated
 test server, so there is no red run for this one.
 
+### `investigation/locker-fill` fails alone (#5166, order dependence)
+
+`test --only LF_Test_EvidenceLockerFill` failed `- the cool-down is spent` on unmodified main; the full suite passed.
+Cause: `LF_GameModeRoleplay` installs the real convoy subscriber (`LF_EvidenceConvoy.Install()`). Run alone, it hears
+every `LF_OnEvidenceConvoyDue` the test raises; `RearmNow` re-checks the still-full locker, the subscriber's
+`Start` is refused in the minimal LOGIC world (no route), it calls `ScheduleRearm`, and `IsRearmPending()` is true when
+the test asserts it is false. In the full suite an earlier test (`LF_Test_EvidenceConvoy` reset, or a world-end reset)
+had already dropped that subscriber, so the test only passed by what another test left behind. The game is right. Fix:
+the test calls `LF_EvidenceConvoy.ResetStatics()` (its own feature's reset, never `ResetAll`) before subscribing its
+listener, so only the listener hears the order. Red then green: unfixed `--only` failed (`locker-fill`), fixed `--only`
+x3 green with `--no-cache`. The other Evidence tests (`Convoy`, `LockerPersist`, `BagHeld`, `Casing`, `BreachEvidence`,
+`PlacesEvidenceLocker`) each pass alone.
+
 ### `booking-desk-proof` 1f0 frame gap (RC dry run 5, 11-27, one flake)
 
 Flake-log line (a proof, not a main-guard step, so written here by hand):

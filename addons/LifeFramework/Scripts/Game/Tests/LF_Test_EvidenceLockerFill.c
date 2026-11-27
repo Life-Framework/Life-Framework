@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-19 with `tools/cli test --no-build --red LF_Test_EvidenceLockerFill` (RED PROOF OK): with the crossing row and the locker's break-in reset skipped it failed `- the locker is due once it crossed`, `- a break-in reset raises it early (expected 3, got 2)` and `- the event says why (expected 'break-in', got 'full')`. Without the hook it passes. Re-arm fix 2026-11-21: `--red LF_Test_EvidenceLockerFill,LF_Test_EvidenceConvoy` RED PROOF OK (skipping RearmNow fails "after the cool-down the still-full locker orders another convoy (expected 3, got 2)"; the convoy test fails "a refused start arms the re-order cool-down"), `--only` passed=3 failed=0.
+// red-proof: #5166 2026-11-27: `--only LF_Test_EvidenceLockerFill` failed alone on main with `- the cool-down is spent` (the game mode's convoy subscriber re-armed after a refused start); with `LF_EvidenceConvoy.ResetStatics()` at the start it passes alone. Observed 2026-11-19 with `tools/cli test --no-build --red LF_Test_EvidenceLockerFill` (RED PROOF OK): with the crossing row and the locker's break-in reset skipped it failed `- the locker is due once it crossed`, `- a break-in reset raises it early (expected 3, got 2)` and `- the event says why (expected 'break-in', got 'full')`. Without the hook it passes. Re-arm fix 2026-11-21: `--red LF_Test_EvidenceLockerFill,LF_Test_EvidenceConvoy` RED PROOF OK (skipping RearmNow fails "after the cool-down the still-full locker orders another convoy (expected 3, got 2)"; the convoy test fails "a refused start arms the re-order cool-down"), `--only` passed=3 failed=0.
 //! The evidence locker knows how full it is (#3378): seized rows below the configured threshold
 //! raise nothing; crossing it raises LF_OnEvidenceConvoyDue once; emptying the locker re-arms; a
 //! break-in reset of the locker (LF_Breach.Reset on its target) raises it early, once.
@@ -15,6 +15,9 @@ class LF_Test_EvidenceLockerFill : LF_Test
 		array<ref LF_EvidenceLockerRow> before = LF_EvidenceLocker.ExportAll();
 		LF_EvidenceLocker.ApplyAll(null);
 		LF_EvidenceLockerFill.ResetStatics();
+		// The game mode installs the real convoy subscriber; run alone it answers every order, its start is
+		// refused in this world (no route) and it re-arms the cool-down (#5166). Only this test's listener hears the order.
+		LF_EvidenceConvoy.ResetStatics();
 
 		LF_EvidenceConvoyListener listener = new LF_EvidenceConvoyListener();
 		LF_EventBus.Subscribe(LF_OnEvidenceConvoyDue, listener);
