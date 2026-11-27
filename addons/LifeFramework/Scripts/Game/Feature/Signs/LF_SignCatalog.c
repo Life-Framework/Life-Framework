@@ -19,6 +19,7 @@ class LF_SignDef : LF_ConfigRecord
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional diagram under the title: an imageset made by tools/cli ui-image", params: "imageset")]
 	ResourceName m_sImage;
 
+	// lf-lint-ok: a name, not a number; an empty name selects nothing, so "full" is the only useful unset value (LF_Test_SignImage pins it)
 	[Attribute("full", UIWidgets.EditBox, "Image name inside the imageset")]
 	string m_sImageName = "full";
 

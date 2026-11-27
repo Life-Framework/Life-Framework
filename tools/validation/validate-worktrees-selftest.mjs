@@ -177,11 +177,12 @@ process.exit(r.status ?? 1);
   check(!/stalex/.test(r1.out), "a worktree with no change in 24 h gets no warning (it is not checked)");
   check(statusCalls(r1).every((l) => !l.includes("wt-stalex")), "a stale worktree gets no git status");
   check(/INFO\s+1 worktree\(s\) with no change in 24 h not checked/.test(r1.out), "the stale worktree is counted in one INFO line");
-  check(/WARN\s+worktree 'freshx' is merged into origin\/main but has 1 uncommitted change/.test(r1.out), "a fresh dirty merged worktree is reported");
-  check(/WARN\s+worktree 'cleanx' is merged into origin\/main and clean/.test(r1.out), "a fresh clean merged worktree is reported");
+  // Merged-by-ancestry is one INFO count, never a WARN per worktree (a fresh worktree is an ancestor too).
+  check(!/WARN\s+worktree '(freshx|cleanx)'/.test(r1.out), "a merged-by-ancestry worktree gets no WARN of its own");
+  check(/INFO\s+worktree hygiene: 1 clean and 1 edited worktree\(s\)/.test(r1.out), `one INFO line counts the clean and the edited ones (${r1.out.slice(0, 400)})`);
   check(statusCalls(r1).length === 2, `the first run reads status for the two fresh merged worktrees (calls: ${statusCalls(r1).join(" | ")})`);
   check(statusCalls(r2).length === 1 && statusCalls(r2)[0].includes("wt-freshx"), `a second run serves the clean worktree from the cache (calls: ${statusCalls(r2).join(" | ")})`);
-  check(/WARN\s+worktree 'cleanx' is merged into origin\/main and clean/.test(r2.out), "a cached clean worktree still gets its warning");
+  check(/INFO\s+worktree hygiene: 1 clean and 1 edited/.test(r2.out), "a cached clean worktree is still counted");
   // The git budget (main guard 2026-11-24: three 600 s timeouts with hundreds of merged worktrees): with no seconds
   // left, a merged worktree not in the cache gets no status call and is counted in one INFO line; the check still passes.
   const r3 = runLive("three", { LF_VALIDATE_WORKTREES_GIT_BUDGET_S: "0" });

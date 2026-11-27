@@ -100,9 +100,31 @@ foreach ($vp in $vanillaShadowPaths) {
 }
 
 # lowercase 'data/' references in text resources (reintroduction guard)
-$refs = git grep -l -E '/data/' -- "*.meta" "*.emat" "*.et" "*.conf" "*.layer" 2>$null
-if ($LASTEXITCODE -eq 0) {
-  foreach ($r in $refs) { Add-Warning "lowercase 'data/' path reference: $r (should be 'Data/')" }
+#
+# Base-game assets keep a lowercase `data/` folder (Assets/Props/Furniture/LightWall_01/data/..., checked against
+# the game paks), so a lowercase hit is a bug only when it names one of OUR files whose folder is `Data/`: the
+# path then resolves on Windows and fails on the Linux dedicated server. A hit that matches no tracked mod
+# file under any casing is a base-game reference and is left alone.
+$dataHits = @(git grep -n -o -E '[A-Za-z0-9_./-]*/data/[A-Za-z0-9_./ -]*' -- "*.meta" "*.emat" "*.et" "*.conf" "*.layer" 2>$null)
+if ($LASTEXITCODE -eq 0 -and $dataHits.Count -gt 0) {
+  $modFiles = @(git ls-files -- addons)
+  $exact = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::Ordinal)
+  $folded = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+  foreach ($mf in $modFiles) {
+    $rel = ($mf -replace '^addons/[^/]+/', '')
+    [void]$exact.Add($rel)
+    [void]$folded.Add($rel)
+  }
+  foreach ($h in $dataHits) {
+    $m = [regex]::Match([string]$h, '^(?<file>[^:]+):(?<line>\d+):(?<ref>.+)$')
+    if (-not $m.Success) { continue }
+    $ref = $m.Groups['ref'].Value.Trim()
+    if ($ref -match '^\{[0-9A-Fa-f]{16}\}(.*)$') { $ref = $Matches[1] }
+    if ($exact.Contains($ref)) { continue }
+    if ($folded.Contains($ref)) {
+      Add-Error "lowercase 'data/' path reference: $($m.Groups['file'].Value):$($m.Groups['line'].Value) $ref (the mod file's folder is 'Data/')"
+    }
+  }
 }
 
 # placeholder / invalid (non-16-hex) GUID tokens in text resources.

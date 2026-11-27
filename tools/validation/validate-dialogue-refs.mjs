@@ -116,10 +116,16 @@ export function checkDialogueRefs(files) {
     if (start && (start.lists.m_aOptions || []).length <= 1) thin.set(id, (start.lists.m_aOptions || []).length);
   }
   // A thin sheet (a greeting, then only "Goodbye") is the core's neutral example; a pack NPC on one is a placeholder.
+  // These two are the core's shipped neutral sheets: no place names or flavour (core-vs-pack.md), so the greeting has
+  // nothing to branch on. A pack NPC that uses one still fails below; only the core-only warning is allowed.
+  const THIN_CORE_EXAMPLES = new Map([
+    ["resident", "neutral core Resident sheet: a greeting and Goodbye; the pack's residents carry their own sheets"],
+    ["dispatcher", "neutral core Dispatcher sheet: a greeting with no menu behind it; no pack NPC talks through it"],
+  ]);
   for (const [id, replies] of thin) {
     const packUsers = [...files].filter(([p, t]) => /\.(et|layer)$/.test(p) && !isTest(p) && !p.startsWith("addons/LifeFramework/") && t.includes(`m_sDialogueId "${id}"`)).map(([p]) => p);
     if (packUsers.length) fail("talk", `${packUsers[0]}: talks through dialogue '${id}', whose greeting offers ${replies} reply (a placeholder sheet; give the NPC its own dialogue)`);
-    else warns.push(`dialogue '${id}': the greeting offers ${replies} reply (core neutral example)`);
+    else if (!THIN_CORE_EXAMPLES.has(id)) warns.push(`dialogue '${id}': the greeting offers ${replies} reply (add a real sheet, or allow it in THIN_CORE_EXAMPLES with a reason)`);
   }
 
   // talk: a prefab's chain, by its parent GUID.
