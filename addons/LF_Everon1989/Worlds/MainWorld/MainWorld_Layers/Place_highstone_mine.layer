@@ -213,3 +213,12 @@ GameEntity Fit_highstone_mine_mine_lamp_sign : "{2CB0AA2A87842C18}Prefabs/Props/
 GenericEntity Fit_highstone_mine_mine_glow_sign : "{86D9B6CC9F81ADAF}Prefabs/Props/Lights/LF_LanternGlow.et" {
  coords 4960.4 114.41 8458.6
 }
+GenericEntity Fit_highstone_mine_mine_beacon_turn : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4992 0 8449
+}
+ParticleEffectEntity Fit_highstone_mine_mine_fire_turn : "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et" {
+ coords 4989 112.119 8451
+}
+GenericEntity Fit_highstone_mine_mine_beacon_bend : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 5013 0 8500
+}

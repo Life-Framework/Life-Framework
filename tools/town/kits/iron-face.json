@@ -773,6 +773,58 @@
       "floor": "f0",
       "mount": "terrain",
       "lift": 0.785
+    },
+    {
+      "id": "mine-beacon-turn",
+      "name": "Mine_Beacon_Turn",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        36,
+        0,
+        -17
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "mine-fire-turn",
+      "name": "Mine_Fire_Turn",
+      "prefab": "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        33,
+        0,
+        -15
+      ],
+      "yaw": 0,
+      "class": "ParticleEffectEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "lift": 0.15
+    },
+    {
+      "id": "mine-beacon-bend",
+      "name": "Mine_Beacon_Bend",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        57,
+        0,
+        34
+      ],
+      "yaw": 0,
+      "class": "GenericEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
     }
   ]
 }
