@@ -407,8 +407,8 @@
   `LF_Jail.Arrest` after the rank gate and no longer clears wanted or teleports
   to `"127 1 137"`.
 - ✅ **Hands-on only** (2026-11-07): arrest refuses a
-  target that is not connected or stands beyond `LF_PoliceUtils.POLICE_REACH`
-  (5 m, the in-world arrest range) and shows `#EL-Police_TooFar`. Neither the
+  target that is not connected or stands beyond `LF_PoliceConfig.ArrestReach()`
+  (`m_fArrestReach`, owner key `arrestReach`, 5 m by default, the in-world arrest range) and shows `#EL-Police_TooFar`. Neither the
   framework nor vanilla has a restraint state, so reach is the requirement.
   Test: `security/police-abuse`.
 
@@ -477,8 +477,7 @@
   a swap (dev only).
 - ✅ **Duty pay at the desk** (verified 2026-11-08: LOGIC test `jobs/duty-pay`;
   the 2-client cash check is manual). Going off duty pays the shift's on-duty
-  seconds times `m_fPoliceDutyPayPerSecond` (`Configs/Jobs/LF_Jobs.conf`, flagship
-  0.25 since 2026-11-18, was 0.5) as cash through `LF_DutyPay.PayAtClockOut`, with the pick-up sound and a
+  seconds times the rank's `m_fPayPerSecond` (a negative rank rate defers to `m_fPoliceDutyPayPerSecond`, `Configs/Jobs/LF_Jobs.conf`, core 0.5; the flagship's ladder pays 0.0972 for a cadet up to 0.125 since 2026-11-22, see money-economy.md) as cash through `LF_DutyPay.PayAtClockOut`, with the pick-up sound and a
   `#EL-Duty_Paid` toast. Seconds settled by an armory draw mid-shift are kept
   for the clock-out. A second clock-out, a clock-out with no clock-in, and a
   non-police account pay nothing. Unpaid seconds are session state: a restart
@@ -775,7 +774,7 @@
   (on in `GameMode_Roleplay_Debug.et`, off on the flagship prefab) picks the drop:
   on, the run uses `Roadmap_Convoy_Drop_Near` (`466 0 304`, 27 m from the barn pallet, a
   second crate cage in `Street_Contraband.layer`); off, the pub's `Roadmap_Convoy_Drop`.
-  `LF_Contraband.DropIdFor(bool)` / `ActiveDropId()` choose it; the inactive cage hides its
+  `LF_Contraband.IsNearDropActive()` and `LF_ConvoyMarkerComponent.FindDrop(bool)` choose it; the inactive cage hides its
   Deliver prompt (`LF_ConvoyDeliverAction`) and refuses. Pickup sign and loaded toast now say
   "the convoy drop", not "the pub". Test: `roadmap/contraband`, `e2e/roadmap-contraband`.
 - ⚠️ Not driven end to end by automation: whether a player can board with the

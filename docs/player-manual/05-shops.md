@@ -27,7 +27,8 @@ The numbers in the first column are the numbers on the [Saint-Philippe map](maps
 |---|---|
 | **Town hall** (town clerk) | Driving licence **$100** |
 | **Gun store** | Firearm permit **$250** (instant in the alpha). Weapons need the permit |
-| **Car lot** | Seven cars, $560 to $6,400 at the alpha price. Paid from the bank. A driving licence is needed |
+| **Car lot** | Six cars, $560 to $3,200 at the alpha price. Paid from the bank. A driving licence is needed |
+| **Truck yard** (north-east compound) | Ural 4320 $7,600 and M923A1 $9,600 at the alpha price. Paid from the bank. Needs the truck licence ($300 truck check at the yard) |
 | **Paint bay** (Saint-Philippe east districts, the mechanic's workshop yard) | Drive your own car onto the pad beside the bench and walk up to the bench: one row per paint job for your car, with its price (a livery $250 to $400; a police livery shows only to police; a car with no paint job on offer shows only the hint row). Pick a row and the car comes back on the pad in the new paint, keeping its key, plate, lock and cargo. No window |
 | **Garage** | Car parts **$200**, repair kit **$80**. Buys scrap metal **$4**, copper wire **$12**, rubber scrap **$5** |
 | **Filling station** pumps | **$2 per litre**. Pick *Fill the tank* with your car at the pump |
