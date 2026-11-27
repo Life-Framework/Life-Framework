@@ -1,12 +1,13 @@
 // red-proof: the pack leg's first run (2026-11-27, #5080) failed every row whose item has no inventory name of its own
 // (`ETool_ALICE` among them) with `shows a raw prefab name`; `tools\cli test --no-build --red LF_Test_EveronShopNames` puts the raw file
 // name on every row and fails them all. Duplicate-name check (2026-11-27): on the unfixed names the run failed `stock pharmacy: Gauze_02 shows
-// 'Gauze'` and `Tourniquet_USSR_01 shows 'Tourniquet'`; with the four pack name keys it passes.
+// 'Gauze'` and `Tourniquet_USSR_01 shows 'Tourniquet'`; with the four pack name keys it passes. Outlet lists (2026-11-27): the same check on the unfixed clothing catalogue failed 10 rows (`Shirt_CottonShirt_01_V1/V3/V4/V5/V6`
+// 'Cotton Shirt', `Jacket_Raincoat_01_green` twice, `Hat_Ushanka_01_unfolded`, `Watch_SandY184A`, workwear `Jacket_Denim_01_strippedShirt`, `CombatBoots_Soviet_01`); with the 14 name keys and the pack's redundant `jacket_raincoat_green` offer dropped it passes.
 //! 2026-11-27 UI sweep: every name a shop list can print resolves to words. A row takes its name from the stock line's key, else from
 //! the item's own inventory name, else (the bug) from the prefab's file name, which is how the hardware store showed `ETool_ALICE`
 //! (#5080). Checked over every merged pack stock row, every buyback line, every catalogue item an outlet sells, every licence row
 //! and every extra priced item: the name is not empty, is not the prefab file name, and its translation holds no `#` key, `%` slot
-//! or `Foo_Bar` id. No two rows of one stock or buyback list show the same name.
+//! or `Foo_Bar` id. No two rows of one stock, buyback or outlet list (clothing rack, workwear counter, ...) show the same name.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronShopNames : LF_Test
 {
@@ -82,7 +83,8 @@ class LF_Test_EveronShopNames : LF_Test
 		ctx.True(problem.IsEmpty(), string.Format("%1: %2 %3 (key '%4', shows '%5')", where, FileName(prefab), problem, key, shown));
 
 		// Two rows of one shop list that read the same leave the player guessing (the pharmacy listed Gauze and Tourniquet twice,
-		// UI sweep 2026-11-27). Only a stock list is one sheet; the outlet and extra lists are not read side by side.
+		// UI sweep 2026-11-27; the clothing rack listed six Cotton Shirt rows, two Ushankas, two Wristwatches and the green raincoat
+		// twice). A stock list and an outlet list are each one sheet; the priced extras are not read side by side.
 		if (!stockList)
 			return;
 
@@ -160,7 +162,7 @@ class LF_Test_EveronShopNames : LF_Test
 					continue;
 				}
 
-				CheckRow(ctx, "outlet " + offer.m_sOutlet, entry.m_Prefab, "");
+				CheckRow(ctx, "outlet " + offer.m_sOutlet, entry.m_Prefab, "", true);
 			}
 		}
 
