@@ -58,6 +58,8 @@ function selftest() {
   if (dollarsPerHour(100, 15) !== 400 || dollarsPerHour(5, 0) !== 0) f.push("dollars per hour");
   if (parseEconomy("  LOOP truck hardwood -> boards, firewood: ~45.6 logs/h, steady $742/h, first hour $786/h; duty")?.steady !== 742) f.push("economy row");
   if (posOf("seat=pilot pos=1.5,2,-3 speed=0")?.join() !== "1.5,2,-3") f.push("posOf");
+  const t = stuckTally([{ status: "arrived" }, { status: "close" }, { status: "stuck" }, { status: "timeout" }]);
+  if (t.arrived !== 1 || t.close !== 1 || t.stuck !== 2 || !reached({ status: "close" }) || reached({ status: "stuck" })) f.push("stuck tally");
   for (const x of f) console.log(`FAIL  ${x}`);
   console.log(f.length ? "drive-haul-proof selftest: FAIL" : "drive-haul-proof selftest: PASS");
   return f.length ? 1 : 0;
@@ -104,14 +106,14 @@ async function run(args) {
       wait(1500);
     }
     const t0 = Date.now();
-    let r = driveAndFollow(on, wait, [how, `${tx},${tz}`, `speed=${speed}`, "timeout=200", `tol=${tol}`, "mode=input"], { label });
+    let r = driveAndFollow(on, wait, [how, `${tx},${tz}`, `speed=${speed}`, "timeout=400", `tol=${tol}`, "mode=input"], { label });
     if (r.started.status !== "ok" && how === "road") {
       console.log(`drive road refused (${r.started.detail}); straight drive`);
-      r = driveAndFollow(on, wait, ["to", `${tx},${tz}`, `speed=${speed}`, "timeout=200", `tol=${tol}`, "mode=input"], { label });
+      r = driveAndFollow(on, wait, ["to", `${tx},${tz}`, `speed=${speed}`, "timeout=400", `tol=${tol}`, "mode=input"], { label });
     }
-    const leg = { label, status: r.end.status, driven: parseFloat(r.end.driven ?? "0"), time: parseFloat(r.end.time ?? "0"), err: r.end.err, backups: r.end.backups, wall: (Date.now() - t0) / 1000, from: here };
+    const leg = { label, status: r.end.status, driven: parseFloat(r.end.driven ?? "0"), time: parseFloat(r.end.time ?? "0"), err: r.end.err, backups: r.end.backups, approach: r.end.approach, creepbackups: r.end.creepbackups, why: r.end.why, wall: (Date.now() - t0) / 1000, from: here };
     legs.push(leg);
-    console.log(`LEG ${label}: ${leg.status} ${leg.driven} m in ${leg.time} s game time (${leg.wall.toFixed(0)} s wall), err ${leg.err} m, backups ${leg.backups}`);
+    console.log(`LEG ${label}: ${leg.status} ${leg.driven} m in ${leg.time} s game time (${leg.wall.toFixed(0)} s wall), err ${leg.err} m, backups ${leg.backups}${leg.approach ? `, creep ${leg.approach} m (${leg.creepbackups} creep backups)` : ""}${leg.why ? `, why ${leg.why}` : ""}`);
     on({ verb: "vehicle", words: ["stop"] });
     wait(1500);
     return leg;
@@ -190,7 +192,7 @@ async function run(args) {
     const gate = Math.hypot(spawn[0] - TRUCK_PAD[0], spawn[2] - TRUCK_PAD[1]) < 25 ? driveLeg("yard_to_gate", "to", YARD_GATE_OUT, 4, 15) : null;
     const first = driveLeg("yard_to_woodlot", "road", SAW_PARK, 4);
     if (gate) console.log(`LEG yard_to_gate counted with the road leg: ${gate.status} ${gate.driven} m`);
-    step("0b the truck is driven from the truck yard to the woodlot by road", (!gate || gate.status === "arrived") && first.status === "arrived" && first.driven > 500, `${gate ? `gate ${gate.status} ${gate.driven} m, ` : ""}${first.status} ${first.driven} m in ${first.time} s, stopped ${first.err} m from the pad`);
+    step("0b the truck is driven from the truck yard to the woodlot by road", (!gate || reached(gate)) && reached(first) && first.driven > 500, `${gate ? `gate ${gate.status} ${gate.driven} m, ` : ""}${first.status} ${first.driven} m in ${first.time} s, stopped ${first.err} m from the pad`);
   } else console.log("the truck already stands at the woodlot: leg 0 skipped");
   leave();
   const park0 = truckAt();
@@ -209,7 +211,11 @@ async function run(args) {
   }
   console.log(`seen after the unlock tries: ${String(on({ verb: "seen", words: ["14"] }).detail).slice(0, 200)}`);
 
-  // ---- 1..3. a full cycle ------------------------------------------------------------------------------------------
+  // ---- 1..3. a full cycle, `--cycles N` in a row --------------------------------------------------------------------
+  const cycles = Math.max(1, Math.min(5, tc(args.indexOf("--cycles")) || 1));
+  for (let cy = 1; cy <= cycles; cy++) {
+  const tag = cycles > 1 ? `c${cy} ` : "";
+  const legsBefore = legs.length;
   const startedAt = Date.now();
   let walkM = 0;
   let loadedM = 0;
@@ -223,14 +229,14 @@ async function run(args) {
     const found = on({ verb: "treefall", words: ["find", "300", "hardwood"] }, 20000);
     const m = /key=(\S+) pos=(-?[\d.e+-]+) (-?[\d.e+-]+) (-?[\d.e+-]+)/.exec(String(found.detail));
     if (!m) {
-      step(`1a a standing hardwood tree is found (tree ${tree + 1})`, false, String(found.detail).slice(0, 120));
+      step(`${tag}1a a standing hardwood tree is found (tree ${tree + 1})`, false, String(found.detail).slice(0, 120));
       break;
     }
     const [key, tx, ty, tz] = [m[1], Number(m[2]), Number(m[3]), Number(m[4])];
     // Drive to within 9 m of the trunk: by road to the nearest clear road point, then across the ground (a straight
     // line from the saw runs through the woodlot sheds and wood piles).
     const toTree = driveLeg(`to_tree_${tree + 1}`, "road", [tx - 9, tz], 5, 25);
-    if (tree === 0) step("1a the truck is driven off the road to a hardwood tree", /arrived|distance/.test(toTree.status), `${toTree.status} ${toTree.driven} m in ${toTree.time} s, tree at ${tx.toFixed(0)},${tz.toFixed(0)}`);
+    if (tree === 0) step(`${tag}1a the truck is driven off the road to a hardwood tree`, reached(toTree), `${toTree.status} ${toTree.driven} m in ${toTree.time} s, tree at ${tx.toFixed(0)},${tz.toFixed(0)}`);
     leave();
     const truck = truckAt() ?? here;
     world("drive_haul_tree", tx, ty, tz, -2, 1.6, 0);
@@ -242,7 +248,7 @@ async function run(args) {
       wait(1000);
       felled = /\[LFDebug:Lumber\] felled \S+ \((\d+) logs?, (\w+)\)/.exec(log().slice(mark))?.[0] ?? "";
     }
-    if (tree === 0) step("1b a hardwood tree is felled", /HARDWOOD/.test(felled), felled || "no `Lumber] felled` line");
+    if (tree === 0) step(`${tag}1b a hardwood tree is felled`, /HARDWOOD/.test(felled), felled || "no `Lumber] felled` line");
     if (!felled) break;
     felledTrees++;
     chopSeconds += CHOP_SECONDS[Number(/\((\d+) logs?/.exec(felled)?.[1] ?? 2)] ?? 45;
@@ -269,20 +275,20 @@ async function run(args) {
       const before = logsLoaded;
       const ok = atTailgate(truck);
       if (!ok) {
-        step(`1c log ${before + 1} loads at the tailgate of the driven truck`, false, "no standing point round the truck loaded it");
+        step(`${tag}1c log ${before + 1} loads at the tailgate of the driven truck`, false, "no standing point round the truck loaded it");
         break;
       }
       logsLoaded++;
-      if (logsLoaded === 1) step("1c the first hoisted log loads at the tailgate of the driven truck", true, `from offset ${gatePoint.join(",")}`);
+      if (logsLoaded === 1) step(`${tag}1c the first hoisted log loads at the tailgate of the driven truck`, true, `from offset ${gatePoint.join(",")}`);
     }
   }
   const unitsLine = [...log().slice(serverMark).matchAll(/\[LFDebug:Cargo\] (?:un)?loaded \w+ \((\d+)\/\d+ units\)/g)].pop();
   const units = unitsLine ? Number(unitsLine[1]) : 0;
-  step("1d the bed holds the felled logs", logsLoaded >= 1 && units === logsLoaded * HARDWOOD_UNITS, `${logsLoaded} log(s), ${units}/${BED_UNITS} units, ${felledTrees} tree(s)`);
+  step(`${tag}1d the bed holds the felled logs`, logsLoaded >= 1 && units === logsLoaded * HARDWOOD_UNITS, `${logsLoaded} log(s), ${units}/${BED_UNITS} units, ${felledTrees} tree(s)`);
 
   // 2. back to the saw by road (the way a player drives out of a stand), unload and saw.
   const back = driveLeg("tree_to_saw", "road", SAW_PARK, 4);
-  step("2a the loaded truck is driven back to the saw (within 12 m of the pad)", back.status === "arrived" || (back.status === "stuck" && parseFloat(back.err) < 12), `${back.status} ${back.driven} m in ${back.time} s, ${back.err} m off the pad, ${back.backups} backups`);
+  step(`${tag}2a the loaded truck is driven back to the saw (arrived, or close beside the taken pad)`, reached(back), `${back.status} ${back.driven} m in ${back.time} s, ${back.err} m off the pad, ${back.backups} backups`);
   leave();
   const sawTruck = truckAt() ?? park0;
   let sawn = 0;
@@ -303,7 +309,7 @@ async function run(args) {
     if (proc.status !== "ok" || !out) break;
     sawn++;
   }
-  step("2b every log is unloaded at the saw and sawn", sawn >= 1 && sawn === logsLoaded, `${sawn} of ${logsLoaded} log(s) sawn`);
+  step(`${tag}2b every log is unloaded at the saw and sawn`, sawn >= 1 && sawn === logsLoaded, `${sawn} of ${logsLoaded} log(s) sawn`);
 
   // Sell: boards at the woodlot buyer (premium purse), what it refuses at the wholesale counter beside it.
   const cashBefore = cash();
@@ -334,7 +340,7 @@ async function run(args) {
     }
   }
   const earned = cash() - cashBefore;
-  step("2c the boards sell at the woodlot buyers", earned > 0, `+$${earned}: ${premium} premium + ${wholesale} wholesale sale(s)`);
+  step(`${tag}2c the boards sell at the woodlot buyers`, earned > 0, `+$${earned}: ${premium} premium + ${wholesale} wholesale sale(s)`);
   const demand = [...log().slice(serverMark).matchAll(/\[LFDebug:Market\] demand hardware\/[^\n]*HardwoodBoard[^\n]* (\d+)\/(\d+) \(sold (\d+), refused (\d+), paid (\d+)\)/g)].pop();
   if (demand) console.log(`premium purse after the cycle: ${demand[1]}/${demand[2]} boards`);
 
@@ -351,7 +357,7 @@ async function run(args) {
     on({ verb: "vehicle", words: ["enter", "driver", `at=${p[0]},${p[2]}`, "r=12"] }, 15000);
     wait(1500);
     merchantLeg = driveLeg("saw_to_merchant", "road", MERCHANT_PARK, 4);
-    step("3a the truck is driven from the saw to the timber counter at the hardware store (within 12 m)", merchantLeg.status === "arrived" || (merchantLeg.status === "stuck" && parseFloat(merchantLeg.err) < 12), `${merchantLeg.status} ${merchantLeg.driven} m in ${merchantLeg.time} s, ${merchantLeg.err} m off the pad`);
+    step(`${tag}3a the truck is driven from the saw to the timber counter at the hardware store (arrived or close)`, reached(merchantLeg), `${merchantLeg.status} ${merchantLeg.driven} m in ${merchantLeg.time} s, ${merchantLeg.err} m off the pad`);
     leave();
     on({ verb: "stand", entityName: MERCHANT });
     wait(1500);
@@ -359,29 +365,49 @@ async function run(args) {
     const s1 = on({ verb: "use", className: "LF_TraderSellAction", entityName: MERCHANT });
     wait(1500);
     merchantEarned = cash() - c0;
-    step("3b the timber counter pays for the boards", s1.status === "ok" && merchantEarned > 0, `${s1.status} ${s1.detail}; +$${merchantEarned}`);
+    step(`${tag}3b the timber counter pays for the boards`, s1.status === "ok" && merchantEarned > 0, `${s1.status} ${s1.detail}; +$${merchantEarned}`);
     const mt = truckAt() ?? p;
     world("drive_haul_merchant", mt[0], mt[1], mt[2], 6, 1.6, 6);
   }
 
   // 4. minutes and dollars. Drive legs are the game's own clock (the truck is really driven); the rest is the
   // truck-haul-proof model (the harness teleports): walking, carrying under a log, felling holds.
-  const driveSec = legs.filter((l) => /^(to_tree|tree_to_saw)/.test(l.label)).reduce((s, l) => s + l.time, 0);
+  const cycleLegs = legs.slice(legsBefore).filter((l) => /^(to_tree|tree_to_saw)/.test(l.label));
+  const driveSec = cycleLegs.reduce((s, l) => s + l.time, 0);
   const handlingMin = (walkM / JOG_MPS + loadedM / LOADED_MPS + chopSeconds) / 60;
   const cycleMin = driveSec / 60 + handlingMin;
   const total = earned;
+  console.log(`RUN  ${tag}${logsLoaded} logs loaded, ${sawn} sawn, ${felledTrees} tree(s); drive legs ${driveSec.toFixed(0)} s (${cycleLegs.map((l) => `${l.label} ${l.driven.toFixed(0)} m ${l.time.toFixed(0)} s`).join(", ")}); handling ${handlingMin.toFixed(1)} min (carry ${Math.round(loadedM)} m, chop ${chopSeconds} s); wall clock ${((Date.now() - startedAt) / 60000).toFixed(1)} min`);
+  console.log(`RUN  ${tag}woodlot sales +$${total}, merchant +$${merchantEarned}: cycle ${cycleMin.toFixed(1)} min, $${dollarsPerHour(total + merchantEarned, cycleMin)}/h (woodlot only $${dollarsPerHour(total, cycleMin)}/h)`);
+  step(`${tag}4 the run's minutes and dollars are measured`, total > 0 && cycleMin > 0, `${cycleMin.toFixed(1)} min, +$${total + merchantEarned}, $${dollarsPerHour(total + merchantEarned, cycleMin)}/h`);
+  }
+
   let econ = null;
   try {
     econ = parseEconomy(execFileSync("node", [join(root, "../../tools/cli.mjs"), "economy"], { encoding: "utf8", timeout: 120000 }));
   } catch (e) {
     console.log(`economy: ${e.message.split("\n")[0]}`);
   }
-  console.log(`RUN  ${logsLoaded} logs loaded, ${sawn} sawn, ${felledTrees} tree(s); drive legs ${driveSec.toFixed(0)} s (${legs.filter((l) => /^(to_tree|tree_to_saw)/.test(l.label)).map((l) => `${l.label} ${l.driven.toFixed(0)} m ${l.time.toFixed(0)} s`).join(", ")}); handling ${handlingMin.toFixed(1)} min (carry ${Math.round(loadedM)} m, chop ${chopSeconds} s); wall clock ${((Date.now() - startedAt) / 60000).toFixed(1)} min`);
-  console.log(`RUN  woodlot sales +$${total}, merchant +$${merchantEarned}: cycle ${cycleMin.toFixed(1)} min, $${dollarsPerHour(total + merchantEarned, cycleMin)}/h (woodlot only $${dollarsPerHour(total, cycleMin)}/h)`);
   console.log(`RUN  tools\\cli economy hardwood by truck: ${econ ? `steady $${econ.steady}/h, first hour $${econ.first}/h` : "row not read"}`);
-  step("4 the run's minutes and dollars are measured", total > 0 && cycleMin > 0, `${cycleMin.toFixed(1)} min, +$${total + merchantEarned}, $${dollarsPerHour(total + merchantEarned, cycleMin)}/h`);
+  // Every driven leg, and how many ended stuck (or out of time) instead of at the goal or close to it.
+  const ends = stuckTally(legs);
+  console.log(`STUCK ${ends.stuck} of ${ends.legs} driven legs (${ends.close} close, ${ends.arrived} arrived): ${legs.map((l) => `${l.label}=${l.status}${l.status === "arrived" ? "" : `(${l.err} m)`}`).join(" ")}`);
   return finish(results);
 }
+
+// Legs by how they ended: arrived, close (stopped within `near` of a goal it could not reach), or stuck/timeout.
+export function stuckTally(legs) {
+  const out = { legs: legs.length, arrived: 0, close: 0, stuck: 0 };
+  for (const l of legs) {
+    if (l.status === "arrived") out.arrived++;
+    else if (l.status === "close") out.close++;
+    else out.stuck++;
+  }
+  return out;
+}
+
+// A leg that got there: at the goal, or close (the goal's own spot taken, the last metres shut) within its `near`.
+export const reached = (leg) => /^(arrived|close)$/.test(String(leg?.status ?? ""));
 
 function finish(results) {
   const failed = results.filter((r) => !r.ok);
@@ -393,6 +419,6 @@ export default {
   name: "drive-haul-proof",
   // Straight after truck-check-proof the character holds the truck's key: the per-proof reset would clear it.
   noReset: true,
-  usage: "drive-haul-proof [--trees N] [--no-merchant] [--selftest]   (after truck-check-proof on `up --mission island --profile full`; the truck is driven)",
+  usage: "drive-haul-proof [--cycles N] [--trees N] [--no-merchant] [--selftest]   (after truck-check-proof on `up --mission island --profile full`; the truck is driven)",
   run: (ctx) => run(ctx?.args ?? []),
 };

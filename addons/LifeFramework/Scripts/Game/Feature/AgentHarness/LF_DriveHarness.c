@@ -114,6 +114,41 @@ class LF_DriveHarness
 	//! `drive plan ... near=x,z` lists the route points this close to that point.
 	static const float PLAN_NEAR_M = 45; // lf-fixed: harness geometry
 
+	// Final approach: the last metres off the road (a yard, a stand of trees, a bank) at a creep, the
+	// heading picked each quarter second from a fan of short rays round the way to the goal.
+	static const float CREEP_KMH = 9; // lf-fixed: harness tuning
+	static const float CREEP_SLOW_KMH = 4; // lf-fixed: harness tuning
+	static const float BACKUP_MAX_KMH = 6; // lf-fixed: harness guard
+	static const float ROLLBACK_KMH = 2.5; // lf-fixed: harness guard
+	// A normal drive stuck twice with this much route left creeps the rest.
+	static const float APPROACH_REACH_M = 320; // lf-fixed: harness geometry
+	static const float APPROACH_LOOK_M = 7; // lf-fixed: harness geometry
+	static const int FAN_STEPS = 8; // lf-fixed: harness guard
+	static const float FAN_STEP_DEG = 15; // lf-fixed: harness geometry
+	static const float FAN_REACH_M = 8; // lf-fixed: harness geometry
+	static const float FAN_CLEAR_M = 4.5; // lf-fixed: harness geometry
+	static const float FAN_EVERY_MS = 250; // lf-fixed: harness tuning
+	static const float SLOPE_ARM_M = 6; // lf-fixed: harness geometry
+	// Nose up this far is a climb: the stuck test waits longer and the box is held in first.
+	static const float CLIMB_DEG = 6; // lf-fixed: harness tuning
+	static const float CLIMB_SOFT_DEG = 11; // lf-fixed: harness tuning
+	static const float CLIMB_MAX_DEG = 24; // lf-fixed: harness tuning
+	static const float DROP_MAX_DEG = 30; // lf-fixed: harness tuning
+	static const float GROUND_STEP_M = 1; // lf-fixed: harness geometry
+	static const float GROUND_WINDOW_M = 2; // lf-fixed: harness geometry
+	static const float CLIMB_STILL_KMH = 0.6; // lf-fixed: harness tuning
+	static const float CLIMB_STUCK_S = 5; // lf-fixed: harness tuning
+	static const float CLIMB_NO_PROGRESS_S = 14; // lf-fixed: harness tuning
+	static const float APPROACH_NO_PROGRESS_S = 14; // lf-fixed: harness tuning
+	// Back-ups in a row that gain under STRIKE_GAIN_M on the goal end the creep (a long climb gets more).
+	static const int MAX_APPROACH_STRIKES = 8; // lf-fixed: harness guard
+	static const float STRIKE_GAIN_M = 10; // lf-fixed: harness geometry
+	static const float LIP_M = 2.5; // lf-fixed: harness geometry
+	static const float AVOID_S = 30; // lf-fixed: harness tuning
+	static const float AVOID_DEG = 25; // lf-fixed: harness geometry
+	static const float NEAR_MIN_M = 8; // lf-fixed: harness geometry
+	static const float NEAR_TOL_SHARE = 3; // lf-fixed: harness geometry
+
 	// Drive state, all on the driving client.
 	protected static ref array<vector> s_aRoute = {};
 	protected static ref array<float> s_aCum = {};
@@ -147,6 +182,8 @@ class LF_DriveHarness
 	protected static float s_fWheelbase = 2.7;
 	protected static float s_fFrontM = 2;
 	protected static float s_fHalfWidthM = 0.8;
+	protected static float s_fBottomM;
+	protected static float s_fTopM = 1.8;
 	protected static float s_fBackupS = BACKUP_S;
 	protected static float s_fLateral = LATERAL_MPS2;
 	protected static float s_fBackupSteer;
@@ -166,6 +203,35 @@ class LF_DriveHarness
 	protected static string s_sResult;
 	protected static string s_sWhy;
 	protected static string s_sStuckAt;
+
+	// Final approach state.
+	protected static bool s_bApproach;
+	protected static bool s_bApproachTail; // enter at the off-road tail (road drives, approach=1)
+	protected static bool s_bApproachFallback = true; // enter when stuck near the end (approach=off clears)
+	protected static float s_fTailFrom;
+	protected static float s_fNear;
+	protected static float s_fCreepKmh = CREEP_KMH;
+	protected static float s_fApproachBest;
+	protected static float s_fApproachProgress;
+	protected static float s_fApproachEndMs; // lf-float: world time in ms, harness only
+	protected static float s_fApproachDriven;
+	protected static float s_fFanAtMs; // lf-float: world time in ms, harness only
+	protected static float s_fFanYaw;
+	protected static float s_fFanClear;
+	protected static float s_fGoalClear;
+	protected static bool s_bFanOpen;
+	protected static bool s_bFanHeld;
+	protected static int s_iApproachBackups;
+	protected static int s_iStrikes;
+	protected static float s_fStrikeBest;
+	protected static int s_iApproaches;
+	protected static ref array<float> s_aAvoid; // yaw, until (ms), yaw, until, ...
+	protected static array<float> LzAvoid()
+	{
+		if (!s_aAvoid)
+			s_aAvoid = new array<float>();
+		return s_aAvoid;
+	}
 
 	// The inputs this frame.
 	static float s_fThrust;
@@ -200,6 +266,19 @@ class LF_DriveHarness
 
 		CompartmentAccessComponent access = character.GetCompartmentAccessComponent();
 		return access && PilotCompartmentSlot.Cast(access.GetCompartment()) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Speed along the car's nose (km/h): negative while it rolls backwards.
+	static float ForwardKmh(IEntity car, vector forward)
+	{
+		Physics physics = car.GetPhysics();
+		if (!physics)
+			return 0;
+
+		vector v = physics.GetVelocity();
+		v[1] = 0;
+		return vector.Dot(v, forward) * 3.6;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -511,7 +590,7 @@ class LF_DriveHarness
 
 		string line = string.Format("seat=%1 veh=%2 speed=%3kmh pos=%4,%5,%6 heading=%7 engine=%8 gear=%9", seat, prefab, Round1(SpeedKmh(car)), Round1(at[0]), Round1(at[1]), Round1(at[2]), Math.Round(angles[0]), engine, gear);
 		line += string.Format(" handbrake=%1 health=%2 owner=%3 lights=%4 fuel=%5", handbrake, Math.Round(LF_RepairKit.HealthOf(car) * 100) / 100, owner, lightsOn, Math.Round(FuelShare(car) * 100) / 100);
-		line += string.Format(" drive=%1 driven=%2m mode=%3 ticks=%4 prep=%5", s_sStatus, Math.Round(s_fDriven), s_sMode, s_iTicks, s_iPrepares);
+		line += string.Format(" drive=%1 driven=%2m mode=%3 ticks=%4 prep=%5 creep=%6", s_sStatus, Math.Round(s_fDriven), s_sMode, s_iTicks, s_iPrepares, s_bApproach);
 		return line;
 	}
 
@@ -540,6 +619,12 @@ class LF_DriveHarness
 		if (sub == "plan")
 		{
 			Plan(id, tokens);
+			return;
+		}
+
+		if (sub == "probe")
+		{
+			Probe(id, tokens);
 			return;
 		}
 
@@ -671,6 +756,65 @@ class LF_DriveHarness
 		StartDrive(id, s_aRouteTokens, car, route);
 	}
 
+	protected static string s_sProbe;
+	protected static vector s_vProbeAt;
+	protected static int s_iProbeCount;
+
+	//------------------------------------------------------------------------------------------------
+	//! drive probe <x,z> [r=<m>]: what stands within r metres (default 4) of a spot where a drive got
+	//! stuck: each entity's prefab (or class), flat distance and bounds height, nearest first not
+	//! guaranteed; the ground height and the ground's climb either way. Debugging a stall, not a drive.
+	static void Probe(int id, array<string> tokens)
+	{
+		vector at;
+		if (tokens.Count() < 2 || !ParsePoint(tokens[1], at))
+		{
+			LF_AgentHarness.Answer(id, "error", "need_x,z");
+			return;
+		}
+
+		float radius = 4;
+		string r = Option(tokens, "r");
+		if (!r.IsEmpty())
+			radius = Math.Clamp(r.ToFloat(), 0.5, 30);
+
+		BaseWorld world = GetGame().GetWorld();
+		at[1] = world.GetSurfaceY(at[0], at[2]);
+		s_vProbeAt = at;
+		s_sProbe = "";
+		s_iProbeCount = 0;
+		world.QueryEntitiesBySphere(at, radius, CollectProbe, null, EQueryEntitiesFlags.ALL);
+		string line = string.Format("probe ground=%1 n=%2 %3", Round1(at[1]), s_iProbeCount, s_sProbe);
+		LF_Debug.Info(FEATURE, "drive " + line);
+		LF_AgentHarness.Answer(id, "ok", line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectProbe(IEntity entity)
+	{
+		if (!entity || GenericTerrainEntity.Cast(entity) || s_iProbeCount >= 40)
+			return true;
+
+		string name = LF_Utils.GetPrefabName(entity);
+		if (name.IsEmpty())
+			name = entity.ClassName();
+
+		int slash = name.LastIndexOf("/");
+		if (slash >= 0)
+			name = name.Substring(slash + 1, name.Length() - slash - 1);
+
+		vector mins, maxs;
+		entity.GetBounds(mins, maxs);
+		vector o = entity.GetOrigin();
+		string door;
+		if (IsDoor(entity))
+			door = ",door";
+
+		s_sProbe += string.Format("%1@%2m,h%3,at=%4;%5;%6%7 ", name, Round1(vector.DistanceXZ(o, s_vProbeAt)), Round1(maxs[1] - mins[1]), Round1(o[0]), Round1(o[1]), Round1(o[2]), door);
+		s_iProbeCount++;
+		return true;
+	}
+
 	protected static int s_iPlanId;
 	protected static vector s_vPlanFrom;
 	protected static string s_sPlanNear;
@@ -793,6 +937,26 @@ class LF_DriveHarness
 		s_bRoad = sub == "road";
 		s_vGoal = route[route.Count() - 1];
 		s_vGoal[1] = 0;
+
+		// The final approach: a road drive creeps its off-road tail; `approach=1` makes a straight
+		// drive creep the whole way, `approach=off` keeps the old drive even when it gets stuck.
+		string approach = Option(tokens, "approach");
+		s_bApproachTail = s_bRoad || approach == "1" || approach == "on";
+		s_bApproachFallback = approach != "off" && approach != "0";
+		if (!s_bApproachFallback)
+			s_bApproachTail = false;
+
+		s_fCreepKmh = CREEP_KMH;
+		string creep = Option(tokens, "creep");
+		if (!creep.IsEmpty())
+			s_fCreepKmh = Math.Clamp(creep.ToFloat(), 3, 25);
+
+		// Close enough: within `near` of the goal with the way on shut ends the drive `close`.
+		s_fNear = Math.Max(s_fTolerance * NEAR_TOL_SHARE, NEAR_MIN_M);
+		string near = Option(tokens, "near");
+		if (!near.IsEmpty())
+			s_fNear = Math.Max(near.ToFloat(), s_fTolerance);
+
 		ReadCar(car);
 
 		BeginTicks(car, "driving");
@@ -842,6 +1006,8 @@ class LF_DriveHarness
 		s_fWheelbase = Math.Clamp((maxs[2] - mins[2]) * 0.6, 2.2, 5.5);
 		s_fFrontM = maxs[2];
 		s_fHalfWidthM = Math.Max((maxs[0] - mins[0]) * 0.5 - 0.15, 0.3);
+		s_fBottomM = mins[1];
+		s_fTopM = maxs[1];
 		s_fBackupS = BACKUP_S;
 		s_fLateral = LATERAL_MPS2;
 		Physics physics = car.GetPhysics();
@@ -881,6 +1047,11 @@ class LF_DriveHarness
 
 		for (int i = first; i < points.Count(); i++)
 			raw.Insert(Vector(points[i][0], 0, points[i][2]));
+
+		// The off-road tail is the last stretch, from the last road point (or yard waypoint) to the goal.
+		s_fTailFrom = 0;
+		for (int j = 1; j < raw.Count() - 1; j++)
+			s_fTailFrom += vector.DistanceXZ(raw[j - 1], raw[j]);
 
 		Resample(raw, STEP_M, s_aRoute);
 		s_aCum.Clear();
@@ -997,6 +1168,14 @@ class LF_DriveHarness
 		s_iReplanId = 0;
 		s_sWhy = "";
 		s_sStuckAt = "";
+		s_bApproach = false;
+		s_iApproaches = 0;
+		s_iApproachBackups = 0;
+		s_iStrikes = 0;
+		s_fApproachDriven = 0;
+		s_fFanAtMs = 0;
+		s_bFanHeld = false;
+		LzAvoid().Clear();
 		s_vStart = car.GetOrigin();
 		s_vLast = s_vStart;
 		s_fStartMs = GetGame().GetWorld().GetWorldTime();
@@ -1024,6 +1203,9 @@ class LF_DriveHarness
 
 		string line = string.Format("%1 driven=%2m time=%3s err=%4m max=%5kmh at=%6,%7 backups=%8 mode=%9", s_sStatus, Round1(s_fDriven), Round1(seconds), Round1(err), Round1(s_fMaxKmh), Round1(at[0]), Round1(at[2]), s_iBackups, s_sMode);
 		line += string.Format(" progress=%1m route=%2m leg=%3/%4 replans=%5", Math.Round(s_fProgress), Math.Round(s_fRouteLength), LF_Utils.MinInt(s_iLeg + 1, s_iLegCount), s_iLegCount, s_iReplans);
+		if (s_iApproaches > 0)
+			line += string.Format(" approach=%1m creepbackups=%2 near=%3m", Math.Round(s_fDriven - s_fApproachDriven), s_iApproachBackups, Round1(s_fNear));
+
 		if (!s_sWhy.IsEmpty())
 			line += " why=" + s_sWhy;
 
@@ -1041,6 +1223,7 @@ class LF_DriveHarness
 
 		s_bActive = false;
 		s_bReplanning = false;
+		s_bApproach = false;
 		s_iReplanId = 0;
 		s_sStatus = status;
 		s_fDoneMs = GetGame().GetWorld().GetWorldTime();
@@ -1174,7 +1357,7 @@ class LF_DriveHarness
 			s_fLegFrom = s_fProgress;
 			s_fLegStartMs = now;
 		}
-		else if (s_fBackupUntilMs <= 0 && now - s_fLegStartMs > s_fLegTimeoutS * 1000)
+		else if (!s_bApproach && s_fBackupUntilMs <= 0 && now - s_fLegStartMs > s_fLegTimeoutS * 1000)
 		{
 			s_sWhy = string.Format("leg_%1_over_%2s_%3", s_iLeg + 1, Math.Round(s_fLegTimeoutS), Blocker(car, forward));
 			Finish("timeout");
@@ -1190,8 +1373,13 @@ class LF_DriveHarness
 		{
 			if (now < s_fBackupUntilMs && vector.DistanceXZ(at, s_vBackupFrom) < BACKUP_M)
 			{
+				// The reverse pedal only up to a walking pace: a truck backing at 20 km/h down a yard
+				// hits something hard enough to knock its driver out.
 				s_fThrust = 0;
 				s_fBrake = 1;
+				if (-ForwardKmh(car, forward) > BACKUP_MAX_KMH)
+					s_fBrake = 0;
+
 				s_fHand = 0;
 				s_fSteer = s_fBackupSteer;
 				Push(car);
@@ -1205,6 +1393,30 @@ class LF_DriveHarness
 				Push(car);
 				return;
 			}
+		}
+
+		// Still rolling backwards after a back-up (or down a bank): the brake pedal is the reverse
+		// pedal in an automatic box, so only the handbrake stops it.
+		if (-ForwardKmh(car, forward) > ROLLBACK_KMH)
+		{
+			s_fThrust = 0;
+			s_fBrake = 0;
+			s_fHand = 1;
+			s_fSteer = 0;
+			s_fStillSinceMs = 0;
+			s_fProgressAtMs = Math.Max(s_fProgressAtMs, now - NO_PROGRESS_S * 500); // lf-float: world time in ms, harness only
+			Push(car);
+			return;
+		}
+
+		// The off-road tail (or a creep the stuck test started): its own steering and stuck rules.
+		if (!s_bApproach && s_bApproachTail && s_fProgress >= s_fTailFrom - 1 && s_fRouteLength - s_fTailFrom > 3)
+			BeginApproach(at, now, "tail");
+
+		if (s_bApproach)
+		{
+			ApproachTick(car, at, transform, speed, now, toGoal);
+			return;
 		}
 
 		// A road drive that has left its route (pushed off it, or took a wrong branch) asks again.
@@ -1247,10 +1459,17 @@ class LF_DriveHarness
 		float stopKmh = Math.Sqrt(2 * DECEL * Math.Max(toGoal - s_fTolerance * 0.5, 0)) * 3.6;
 		want = Math.Min(want, Math.Max(stopKmh, 4));
 
+		float climb = ClimbDeg(transform);
 		if (speed < want)
 		{
 			s_fThrust = Math.Clamp((want - speed) / 10 + 0.2, 0, 1);
 			s_fBrake = 0;
+			// Up a bank: more pedal, first gear held, so a slow climb does not die on the slope.
+			if (climb > CLIMB_DEG && speed < 15)
+			{
+				s_fThrust = Math.Max(s_fThrust, Math.Clamp(0.6 + climb / 30, 0, 1));
+				HoldLowGear(car);
+			}
 		}
 		else
 		{
@@ -1261,8 +1480,9 @@ class LF_DriveHarness
 				s_fBrake = 0;
 		}
 
-		// Stuck: the pedal is down and the car stands, or the route has not moved on for a while.
-		if (s_fThrust > 0.2 && speed < STILL_KMH)
+		// Stuck: the pedal is down and the car stands, or the route has not moved on for a while. A car
+		// still crawling up a steep bank is climbing, not stuck.
+		if (s_fThrust > 0.2 && speed < StillKmh(climb))
 		{
 			if (s_fStillSinceMs <= 0)
 				s_fStillSinceMs = now;
@@ -1272,11 +1492,15 @@ class LF_DriveHarness
 			s_fStillSinceMs = 0;
 		}
 
+		float noProgressS = NO_PROGRESS_S;
+		if (climb > CLIMB_DEG && speed >= CLIMB_STILL_KMH)
+			noProgressS = CLIMB_NO_PROGRESS_S;
+
 		string reason;
 		bool starting = now - s_fStartMs < START_GRACE_S * 1000;
-		if (s_fStillSinceMs > 0 && now - s_fStillSinceMs > STUCK_S * 1000 && !starting)
+		if (s_fStillSinceMs > 0 && now - s_fStillSinceMs > StuckS(climb) * 1000 && !starting)
 			reason = "stalled";
-		else if (now - s_fProgressAtMs > NO_PROGRESS_S * 1000)
+		else if (now - s_fProgressAtMs > noProgressS * 1000)
 			reason = "no_progress";
 
 		if (!reason.IsEmpty())
@@ -1315,6 +1539,13 @@ class LF_DriveHarness
 		if (blocker == "out_of_fuel")
 		{
 			Finish("out_of_fuel");
+			return false;
+		}
+
+		// A shut gate across the way: a player gets out and opens it; backing up does not help.
+		if (blocker.StartsWith("shut_door"))
+		{
+			Finish("stuck");
 			return false;
 		}
 
@@ -1357,6 +1588,22 @@ class LF_DriveHarness
 	{
 		s_fBackupUntilMs = 0;
 		s_sStatus = "driving";
+		if (s_bApproach)
+		{
+			s_fProgressAtMs = now;
+			s_fStillSinceMs = 0;
+			s_fFanAtMs = 0;
+			s_bFanHeld = false;
+			return;
+		}
+
+		// Stuck twice near the end (a tree on a forest track, a bank, a yard): creep the rest.
+		if (s_bApproachFallback && s_iBackups >= 2 && s_fRouteLength - Project(at, 1000) <= APPROACH_REACH_M)
+		{
+			BeginApproach(at, now, "stuck_" + s_sWhy);
+			return;
+		}
+
 		SCR_ChimeraCharacter character = Character();
 		if (s_bRoad && s_iBackups >= 2 && s_iReplans < MAX_REPLANS && character)
 		{
@@ -1375,6 +1622,447 @@ class LF_DriveHarness
 		s_fProgressAtMs = now;
 		s_fStillSinceMs = 0;
 		s_fLegStartMs = Math.Max(s_fLegStartMs, now - s_fLegTimeoutS * 500);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// Final approach
+	//------------------------------------------------------------------------------------------------
+	//! Leaves the normal drive for the creep: the rest of the route at walking pace, the heading picked
+	//! from a fan of short rays round the way on, its own stuck rules and back-ups.
+	protected static void BeginApproach(vector at, float now, string why)
+	{
+		s_bApproach = true;
+		s_iApproaches++;
+		s_fApproachDriven = s_fDriven;
+		s_fProgress = Project(at, 1000);
+		s_fApproachProgress = s_fProgress;
+		s_fApproachBest = vector.DistanceXZ(at, s_vGoal);
+		s_fProgressAtMs = now;
+		s_fStillSinceMs = 0;
+		s_fFanAtMs = 0;
+		s_bFanHeld = false;
+		float left = Math.Max(s_fRouteLength - s_fProgress, s_fApproachBest);
+		s_fApproachEndMs = now + (60 + left * 2.5) * 1000;
+		LF_Debug.Info(FEATURE, string.Format("drive final approach from %1 (%2): %3 m of route left, %4 m straight to the goal, creep %5 km/h, close within %6 m", at, why, Math.Round(s_fRouteLength - s_fProgress), Math.Round(s_fApproachBest), s_fCreepKmh, Round1(s_fNear)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One frame of the creep.
+	protected static void ApproachTick(IEntity car, vector at, vector transform[4], float speed, float now, float toGoal)
+	{
+		vector forward = Vector(transform[2][0], 0, transform[2][2]).Normalized();
+		vector right = Vector(transform[0][0], 0, transform[0][2]).Normalized();
+		if (now > s_fApproachEndMs)
+		{
+			ApproachEnd(car, forward, toGoal, "creep_budget_over");
+			return;
+		}
+
+		bool moved = false;
+		if (toGoal < s_fApproachBest - 1)
+		{
+			s_fApproachBest = toGoal;
+			moved = true;
+		}
+
+		if (s_fProgress > s_fApproachProgress + 1.5)
+		{
+			s_fApproachProgress = s_fProgress;
+			moved = true;
+		}
+
+		if (moved)
+			s_fProgressAtMs = now;
+
+		// The way on: the route point a few metres ahead (on the tail, the goal itself).
+		vector aim = PointAt(s_fProgress + APPROACH_LOOK_M);
+		if (vector.DistanceXZ(aim, at) < 1)
+			aim = s_vGoal;
+
+		float aimYaw = Math.Atan2(aim[0] - at[0], aim[2] - at[2]);
+		if (s_fFanAtMs <= 0 || now - s_fFanAtMs > FAN_EVERY_MS)
+		{
+			Fan(car, at, forward, now, toGoal, aimYaw);
+			s_fFanAtMs = now;
+		}
+
+		// Close enough: near the goal with something right in front of the nose between it and the car.
+		if (toGoal <= s_fNear && s_fGoalClear < Math.Min(3, toGoal - s_fFrontM))
+		{
+			ApproachEnd(car, forward, toGoal, "near_goal_way_shut");
+			return;
+		}
+
+		if (!s_bFanOpen)
+		{
+			ApproachStuck(car, at, forward, right, now, toGoal, "boxed_in");
+			return;
+		}
+
+		vector dir = Vector(Math.Sin(s_fFanYaw), 0, Math.Cos(s_fFanYaw));
+		vector toTarget = dir * 6;
+		float alpha = Math.Atan2(vector.Dot(toTarget, right), vector.Dot(toTarget, forward));
+		float delta = Math.Atan2(2 * s_fWheelbase * Math.Sin(alpha), 6);
+		if (Math.AbsFloat(alpha) > Math.PI * 0.5)
+		{
+			delta = MAX_STEER_DEG * Math.DEG2RAD;
+			if (alpha < 0)
+				delta = -delta;
+		}
+
+		s_fSteer = s_fSteerSign * Math.Clamp(delta * Math.RAD2DEG / MAX_STEER_DEG, -1, 1);
+		s_fHand = 0;
+
+		float want = s_fCreepKmh;
+		if (s_fFanClear < 3 || Math.AbsFloat(alpha) * Math.RAD2DEG > 45)
+			want = CREEP_SLOW_KMH;
+
+		float stopKmh = Math.Sqrt(2 * DECEL * Math.Max(toGoal - s_fTolerance * 0.5, 0)) * 3.6;
+		want = Math.Min(want, Math.Max(stopKmh, 3));
+
+		float climb = ClimbDeg(transform);
+		if (speed < want)
+		{
+			s_fThrust = Math.Clamp((want - speed) / 6 + 0.25, 0, 1);
+			s_fBrake = 0;
+			if (climb > CLIMB_DEG)
+			{
+				s_fThrust = Math.Max(s_fThrust, Math.Clamp(0.6 + climb / 30, 0, 1));
+				HoldLowGear(car);
+			}
+		}
+		else
+		{
+			s_fThrust = 0;
+			s_fBrake = 0;
+			if (speed >= 3)
+				s_fBrake = Math.Clamp((speed - want) / 5, 0, 1);
+		}
+
+		if (s_fThrust > 0.2 && speed < StillKmh(climb))
+		{
+			if (s_fStillSinceMs <= 0)
+				s_fStillSinceMs = now;
+		}
+		else
+		{
+			s_fStillSinceMs = 0;
+		}
+
+		if (s_fStillSinceMs > 0 && now - s_fStillSinceMs > StuckS(climb) * 1000)
+		{
+			ApproachStuck(car, at, forward, right, now, toGoal, "stalled");
+			return;
+		}
+
+		if (now - s_fProgressAtMs > APPROACH_NO_PROGRESS_S * 1000)
+		{
+			ApproachStuck(car, at, forward, right, now, toGoal, "no_progress");
+			return;
+		}
+
+		Push(car);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The creep ends short of the goal: `close` within `near` (a reachable spot), else `stuck`.
+	protected static void ApproachEnd(IEntity car, vector forward, float toGoal, string reason)
+	{
+		s_sWhy = reason + "_" + Blocker(car, forward);
+		if (toGoal <= s_fNear)
+		{
+			s_bStopping = true;
+			s_sResult = "close";
+			s_sStatus = "braking";
+			StopInputs(car, SpeedKmh(car));
+			Push(car);
+			return;
+		}
+
+		Finish("stuck");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A creep stuck spot: close enough ends it; otherwise the heading it was on is avoided for a while
+	//! and the car backs up with the wheels turned so the nose swings toward the way on (every third
+	//! try the other way round), downhill on a bank it could not climb.
+	protected static void ApproachStuck(IEntity car, vector at, vector forward, vector right, float now, float toGoal, string reason)
+	{
+		if (!s_sStuckAt.IsEmpty())
+			s_sStuckAt += "|";
+
+		s_sStuckAt += string.Format("%1,%2", Math.Round(at[0]), Math.Round(at[2]));
+		string blocker = Blocker(car, forward);
+		LF_Debug.Info(FEATURE, string.Format("drive creep stuck at %1 (%2, %3) %4 m from the goal, fan %5", at, reason, blocker, Round1(toGoal), FanLine(car, at, toGoal)));
+		if (blocker == "out_of_fuel" || blocker.StartsWith("shut_door"))
+		{
+			s_sWhy = "creep_" + reason + "_" + blocker;
+			if (blocker == "out_of_fuel")
+				Finish("out_of_fuel");
+			else
+				Finish("stuck");
+
+			return;
+		}
+
+		// A strike is a back-up with under STRIKE_GAIN_M won since the last one that counted.
+		if (s_iStrikes == 0 || s_fApproachBest < s_fStrikeBest - STRIKE_GAIN_M)
+		{
+			s_iStrikes = 0;
+			s_fStrikeBest = s_fApproachBest;
+		}
+
+		s_iStrikes++;
+		if (toGoal <= s_fNear || s_iStrikes > MAX_APPROACH_STRIKES)
+		{
+			ApproachEnd(car, forward, toGoal, "creep_" + reason);
+			return;
+		}
+
+		s_sWhy = "creep_" + reason + "_" + blocker;
+		s_iApproachBackups++;
+		float heading = Math.Atan2(forward[0], forward[2]);
+		if (s_bFanHeld)
+			heading = s_fFanYaw;
+
+		array<float> avoid = LzAvoid();
+		avoid.Insert(heading);
+		avoid.Insert(now + AVOID_S * 1000);
+
+		vector toGoalDir = s_vGoal - at;
+		toGoalDir[1] = 0;
+		float side = 1;
+		if (vector.Dot(toGoalDir, right) < 0)
+			side = -1;
+
+		if (s_iApproachBackups % 3 == 0)
+			side = -side;
+
+		s_fBackupSteer = -s_fSteerSign * side * BACKUP_LOCK;
+		s_vBackupFrom = at;
+		s_fBackupUntilMs = now + s_fBackupS * 1000;
+		s_fStillSinceMs = 0;
+		s_bFanHeld = false;
+		s_sStatus = "backing";
+		s_fThrust = 0;
+		s_fBrake = 1;
+		s_fHand = 0;
+		s_fSteer = s_fBackupSteer;
+		Push(car);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Picks the creep heading: headings FAN_STEP_DEG apart either side of the way on; one is open when
+	//! the rays along it are clear FAN_CLEAR_M past the nose and the ground does not climb past
+	//! CLIMB_MAX_DEG. The cheapest open one wins: off the way on, a sharp turn from the nose, a steep
+	//! climb, a heading that got stuck lately, a short clear all cost; the held heading gets a bonus.
+	protected static void Fan(IEntity car, vector at, vector forward, float now, float toGoal, float aimYaw)
+	{
+		float fwdYaw = Math.Atan2(forward[0], forward[2]);
+		float step = FAN_STEP_DEG * Math.DEG2RAD;
+		float need = Math.Clamp(toGoal - 0.5, 1.5, FAN_CLEAR_M);
+		float reach = Math.Max(Math.Min(FAN_REACH_M, toGoal + 1), need);
+		float best = 1000000;
+		bool open = false;
+		float bestYaw = aimYaw;
+		float bestClear = 0;
+		for (int k = -FAN_STEPS; k <= FAN_STEPS; k++)
+		{
+			float yaw = aimYaw + k * step;
+			vector dir = Vector(Math.Sin(yaw), 0, Math.Cos(yaw));
+			float clear = ClearAlong(car, at, dir, reach);
+			// A bank too steep to climb or a drop into a ditch shuts the heading where it starts.
+			float lead = Math.Max(s_fFrontM * 0.85, 1.2);
+			float shutAt = GroundShutAt(at, dir, lead + reach);
+			if (shutAt >= 0)
+				clear = Math.Min(clear, Math.Max(shutAt - lead, 0));
+
+			if (k == 0)
+				s_fGoalClear = clear;
+
+			if (clear < need)
+				continue;
+
+			float slope = SlopeDeg(at, dir);
+
+			float cost = Math.AbsInt(k) + 0.35 * AngleDiff(yaw, fwdYaw) / step + Math.Max(slope - CLIMB_SOFT_DEG, 0) * 0.5 + AvoidPenalty(yaw, now) + (reach - clear) * 0.15;
+			if (s_bFanHeld && AngleDiff(yaw, s_fFanYaw) < step * 0.6)
+				cost -= 0.75;
+
+			if (cost < best)
+			{
+				best = cost;
+				bestYaw = yaw;
+				bestClear = clear;
+				open = true;
+			}
+		}
+
+		s_bFanOpen = open;
+		if (!open)
+			return;
+
+		s_fFanYaw = bestYaw;
+		s_fFanClear = bestClear;
+		s_bFanHeld = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The fan's clear metres per heading for the log, the way on in the middle.
+	protected static string FanLine(IEntity car, vector at, float toGoal)
+	{
+		vector aim = PointAt(s_fProgress + APPROACH_LOOK_M);
+		float aimYaw = Math.Atan2(aim[0] - at[0], aim[2] - at[2]);
+		float reach = Math.Max(Math.Min(FAN_REACH_M, toGoal + 1), 1.5);
+		string line;
+		for (int k = -FAN_STEPS; k <= FAN_STEPS; k += 2)
+		{
+			float yaw = aimYaw + k * FAN_STEP_DEG * Math.DEG2RAD;
+			vector dir = Vector(Math.Sin(yaw), 0, Math.Cos(yaw));
+			line += string.Format("%1:%2/%3d ", k * FAN_STEP_DEG, Round1(ClearAlong(car, at, dir, reach)), Math.Round(SlopeDeg(at, dir)));
+		}
+
+		return line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Clear metres ahead of the car's body along `dir` (up to `reach`): rays at both sides of the car's
+	//! track and its middle, at a low and a bumper height above the car's floor, rising and falling with
+	//! the ground. Entities only: the ground itself is the slope test's business.
+	protected static float ClearAlong(IEntity car, vector at, vector dir, float reach)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		vector perp = Vector(dir[2], 0, -dir[0]);
+		float lead = Math.Max(s_fFrontM * 0.85, 1.2);
+		float width = s_fHalfWidthM + 0.2;
+		float groundHere = world.GetSurfaceY(at[0], at[2]);
+		float floor = Math.Max(at[1] + s_fBottomM, groundHere);
+		float clear = reach;
+		// Low, bumper and roof height: a boom barrier's bar passes over the bumper and meets the windscreen.
+		array<float> heights = {0.55, 1.2, Math.Max(s_fTopM - s_fBottomM - 0.3, 1.5)};
+		for (int side = -1; side <= 1; side++)
+		{
+			vector from = at + dir * lead + perp * (side * width);
+			vector to = from + dir * reach;
+			float rise = world.GetSurfaceY(to[0], to[2]) - world.GetSurfaceY(from[0], from[2]);
+			foreach (float h : heights)
+			{
+				// WORLD as well as ENTS: placed static props (a tin wall, a wreck) answer only to WORLD.
+				// The ground itself is the profile test's business.
+				TraceParam trace = new TraceParam();
+				trace.Start = Vector(from[0], floor + h, from[2]);
+				trace.End = Vector(to[0], floor + h + rise, to[2]);
+				trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+				trace.LayerMask = EPhysicsLayerPresets.Main;
+				trace.Exclude = car;
+				float fraction = world.TraceMove(trace, null);
+				if (fraction >= 1)
+					continue;
+
+				// The ground met by the low ray right at the bumper is a lip the wheels cannot take (a
+				// road cut's bank); further on it is only a crest, the profile test's business.
+				bool ground = !trace.TraceEnt || GenericTerrainEntity.Cast(trace.TraceEnt);
+				if (ground && (h > 1 || fraction * reach > LIP_M))
+					continue;
+
+				if (fraction * reach < clear)
+					clear = fraction * reach;
+			}
+		}
+
+		return clear;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How steeply the ground climbs (degrees, downhill negative) over SLOPE_ARM_M along `dir`.
+	protected static float SlopeDeg(vector at, vector dir)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		vector ahead = at + dir * SLOPE_ARM_M;
+		float rise = world.GetSurfaceY(ahead[0], ahead[2]) - world.GetSurfaceY(at[0], at[2]);
+		return Math.Atan2(rise, SLOPE_ARM_M) * Math.RAD2DEG;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where along `dir` (metres from `at`, up to `length`) the ground first climbs past CLIMB_MAX_DEG
+	//! or drops past DROP_MAX_DEG over a GROUND_WINDOW_M stretch (a bank, a ditch's wall), or -1.
+	static float GroundShutAt(vector at, vector dir, float length)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		float up = Math.Tan(CLIMB_MAX_DEG * Math.DEG2RAD) * GROUND_WINDOW_M;
+		float down = Math.Tan(DROP_MAX_DEG * Math.DEG2RAD) * GROUND_WINDOW_M;
+		for (float s = GROUND_WINDOW_M; s <= length + 0.01; s += GROUND_STEP_M)
+		{
+			vector p = at + dir * s;
+			vector q = at + dir * (s - GROUND_WINDOW_M);
+			float rise = world.GetSurfaceY(p[0], p[2]) - world.GetSurfaceY(q[0], q[2]);
+			if (rise > up || rise < -down)
+				return s - GROUND_WINDOW_M;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float AngleDiff(float a, float b)
+	{
+		float d = a - b;
+		while (d > Math.PI)
+			d -= 2 * Math.PI;
+
+		while (d < -Math.PI)
+			d += 2 * Math.PI;
+
+		return Math.AbsFloat(d);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float AvoidPenalty(float yaw, float now)
+	{
+		array<float> avoid = LzAvoid();
+		float penalty = 0;
+		for (int i = 0; i + 1 < avoid.Count(); i += 2)
+		{
+			if (avoid[i + 1] > now && AngleDiff(yaw, avoid[i]) < AVOID_DEG * Math.DEG2RAD)
+				penalty += 4;
+		}
+
+		return penalty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far the nose points up (degrees, nose down negative).
+	static float ClimbDeg(vector transform[4])
+	{
+		return Math.Asin(Math.Clamp(transform[2][1], -1, 1)) * Math.RAD2DEG;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Below this speed with the pedal down the car stands; up a bank a crawl still counts as moving.
+	static float StillKmh(float climb)
+	{
+		if (climb > CLIMB_DEG)
+			return CLIMB_STILL_KMH;
+
+		return STILL_KMH;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float StuckS(float climb)
+	{
+		if (climb > CLIMB_DEG)
+			return CLIMB_STUCK_S;
+
+		return STUCK_S;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! First gear held on a slow climb (an automatic box can shift up and lose the bank).
+	protected static void HoldLowGear(IEntity car)
+	{
+		VehicleWheeledSimulation sim = VehicleWheeledSimulation.Cast(car.FindComponent(VehicleWheeledSimulation));
+		if (sim && sim.GetGear() > EVehicleGearboxGear.FORWARD)
+			sim.SetGear(EVehicleGearboxGear.FORWARD);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1428,12 +2116,12 @@ class LF_DriveHarness
 			return "out_of_fuel";
 
 		// Three rays (both front corners and the middle) at a kerb height and a bumper height.
-		array<float> heights = {0.35, 0.9};
+		array<float> heights = {0.35, 0.9, Math.Max(s_fTopM - 0.3, 1.4)};
 		array<float> sides = {0, -1, 1};
-		for (int ray = 0; ray < 6; ray++)
+		for (int ray = 0; ray < 9; ray++)
 		{
-			float side = sides[ray / 2];
-			float h = heights[ray % 2];
+			float side = sides[ray / 3];
+			float h = heights[ray % 3];
 			TraceParam trace = new TraceParam();
 			trace.Start = car.CoordToParent(Vector(side * s_fHalfWidthM, h, s_fFrontM - 0.2));
 			trace.End = trace.Start + forward * BLOCKER_LOOK_M;
@@ -1466,11 +2154,31 @@ class LF_DriveHarness
 			else if (side > 0)
 				corner = "right";
 
+			// A shut door or gate (a boom barrier is a door): a car does not push through it.
+			if (IsDoor(hit))
+				return string.Format("shut_door_%1_at_%2m_%3", name, Round1(fraction * BLOCKER_LOOK_M), corner);
+
 			return string.Format("blocked_by_%1_at_%2m_%3", name, Round1(fraction * BLOCKER_LOOK_M), corner);
 		}
 
 		vector angles = car.GetYawPitchRoll();
 		return string.Format("clear_pitch_%1", Math.Round(angles[1]));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A door, a yard gate or a boom barrier's bar (each a DoorComponent), or a part of one.
+	static bool IsDoor(IEntity hit)
+	{
+		IEntity e = hit;
+		while (e)
+		{
+			if (e.FindComponent(DoorComponent))
+				return true;
+
+			e = e.GetParent();
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1499,8 +2207,8 @@ class LF_DriveHarness
 		s_fSteer = 0;
 		s_fBrake = 1;
 		s_fHand = 1;
-		// At a crawl the brake would start reversing: the handbrake holds it.
-		if (speed < 3)
+		// At a crawl, or rolling backwards, the brake would drive it in reverse: the handbrake holds it.
+		if (speed < 3 || ForwardKmh(car, ForwardOf(car)) < 0)
 			s_fBrake = 0;
 	}
 
@@ -2167,6 +2875,15 @@ class LF_DriveRoute
 			return true;
 
 		dir.Normalize();
+		// Ground no car takes (a bank, a ditch's wall) shuts the line as a wall does.
+		float shut = LF_DriveHarness.GroundShutAt(Vector(a[0], 0, a[2]), dir, vector.DistanceXZ(a, b));
+		if (shut >= 0)
+		{
+			vector at = a + dir * shut;
+			s_sLastHit = string.Format("steep_ground_at_%1,%2", Math.Round(at[0]), Math.Round(at[2]));
+			return false;
+		}
+
 		vector side = Vector(dir[2], 0, -dir[0]) * LF_DriveHarness.SWEEP_HALF_M;
 		array<float> offsets = {0, -1, 1};
 		foreach (float o : offsets)

@@ -2,7 +2,7 @@ import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { extname, join } from "node:path";
 import { ROOT } from "../session.mjs";
 import { openKit } from "./_island-kit.mjs";
-import { LOT, LOT_PAD, enterWhenThere, kv } from "./drive-proof.mjs";
+import { LOT, LOT_PAD, enterWhenThere, kv, openShutGate } from "./drive-proof.mjs";
 import { EAST_COMPOUND, TRUCK_YARD, SCRAPYARD, planOf } from "./drive-long-proof.mjs";
 
 // The night tour (2026-11-27, `docs/playtest/rounds/2026-11-27-night-drive.md`): one car from the Saint-Philippe lot, headlights
@@ -152,9 +152,21 @@ async function run(args) {
     on({ verb: "vehicle", words: ["lights", "on"] });
     const from = posOf(veh());
     const words = ["road", goal.join(","), `speed=${speed}`, "tol=10", "mode=input"];
-    const started = on({ verb: "drive", words }, 60000);
     const t0 = Date.now();
     let end = { status: "not_started" };
+    // A shut gate or boom barrier across the way ends the drive (`why=...shut_door_...`): open it as a player does and
+    // drive on, at most twice.
+    for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) {
+      if (!/shut_door/.test(end.why ?? "")) break;
+      const carAt = String(veh().pos ?? "").split(",").map(Number);
+      if (carAt.length !== 3) break;
+      const gate = openShutGate(on, wait, carAt);
+      console.log(`GATE ${leg.id}: ${gate.doors} door(s) round the car, opened ${gate.opened || "none"}, back at the wheel ${gate.entered}`);
+      if (!gate.opened || !gate.entered) break;
+      on({ verb: "vehicle", words: ["lights", "on"] });
+    }
+    const started = on({ verb: "drive", words }, 60000);
     let n = 0;
     let approach = false;
     let lastShot = Date.now();
@@ -185,8 +197,9 @@ async function run(args) {
       end.status = String(done.detail ?? "").split(" ")[0];
       end.route = started.detail;
     } else end.why = started.detail;
+    }
     // The off-road tail (the north outpost's track, the truck yard's gate): a straight drive from the road end to the goal.
-    if (!leg.atRoadEnd && /arrived|distance/.test(end.status) && dist(posOf(veh()) ?? goal, leg.to) > 25) {
+    if (!leg.atRoadEnd && /arrived|distance|close/.test(end.status) && dist(posOf(veh()) ?? goal, leg.to) > 25) {
       const tail = on({ verb: "drive", words: ["to", leg.to.join(","), "speed=20", "timeout=120", "tol=8", "mode=input"] }, 30000);
       if (tail.status === "ok") {
         shot(`${leg.id}_tail_start`);
@@ -237,7 +250,7 @@ async function run(args) {
     }
     on({ verb: "vehicle", words: ["lights", "on"] });
     const row = driveLeg(leg);
-    const arrived = /arrived|distance/.test(row.end.status);
+    const arrived = /arrived|distance|close/.test(row.end.status);
     step(`${leg.id} ${leg.label}`, arrived, `${row.end.status} ${row.end.driven} m in ${row.end.time} s, err ${row.end.err}, ${row.end.backups} back-ups${row.end.why ? `, why ${row.end.why}` : ""}`);
     arriveAt(leg);
   }
