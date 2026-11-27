@@ -142,7 +142,7 @@ class LF_ProcessAction : ScriptedUserAction
 				int left = processingOutput.m_iOutputAmount;
 				while (left > 0)
 				{
-					IEntity outputEntity = LF_Utils.SpawnEntityPrefab(processingOutput.m_OutputPrefab, pOwnerEntity.GetOrigin() + m_vDropOffset, m_vRotation);
+					IEntity outputEntity = LF_Utils.SpawnEntityPrefab(processingOutput.m_OutputPrefab, LF_ProcessDrop.PointFor(pOwnerEntity, pUserEntity, m_vDropOffset), m_vRotation);
 					if (outputEntity)
 					{
 						spawnedOutputs.Insert(outputEntity);
