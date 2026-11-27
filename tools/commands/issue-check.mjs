@@ -5,9 +5,9 @@
 // defaults to LF_STALE_LIST when that is set.
 import { existsSync, readFileSync } from "node:fs";
 import { ghBin, run } from "../wt.mjs";
-import { keywords, namedIssues, render, skipListNumbers, verdict } from "../lib/issue-preflight.mjs";
+import { keySymbols, keywords, namedIssues, render, skipListNumbers, slicedIssues, verdict } from "../lib/issue-preflight.mjs";
 
-export const help = "issue-check <N...> [--skip-list f] [--json]   before dispatch: is the issue already done under another number? (LIKELY DONE: a merged PR or commit that is for it, i.e. title ends (#N) or a Refs/Closes/Fixes #N line, or a done label; a plain mention is only CHECK)";
+export const help = "issue-check <N...> [--skip-list f] [--json]   before dispatch: is the issue already done under another number? (LIKELY DONE: a merged PR or commit that is for it, i.e. title ends (#N) or a Refs/Closes/Fixes #N line, a PR titled like the issue, every slice card a \"Sliced: #N\" comment names done, or a done label; a plain mention or a commit naming its classes is only CHECK)";
 
 function gh(root, args) {
   const bin = ghBin();
@@ -18,8 +18,18 @@ function gh(root, args) {
 }
 
 export function gather(root, n, { skipList = new Set() } = {}) {
-  const issue = gh(root, ["issue", "view", String(n), "--json", "number,title,body,labels,state,comments"]);
+  const issue = gh(root, ["issue", "view", String(n), "--json", "number,title,body,labels,state,comments,createdAt"]);
   const prs = gh(root, ["pr", "list", "--state", "merged", "--search", `${n} in:title,body`, "--limit", "30", "--json", "number,title,body,mergedAt"]);
+  // A PR that never cites the number but is titled like the issue (2026-11-27 sweep).
+  const phrase = issue.title.replace(/[^A-Za-z0-9' -]+/g, " ").replace(/\s+/g, " ").trim();
+  if (phrase.length >= 24) {
+    try {
+      for (const p of gh(root, ["pr", "list", "--state", "merged", "--search", `"${phrase}" in:title,body`, "--limit", "10", "--json", "number,title,body,mergedAt"]))
+        if (!prs.some((q) => q.number === p.number)) prs.push(p);
+    } catch {
+      /* search hiccup: the number search still stands */
+    }
+  }
   const g = run("git", ["log", "origin/main", "-E", `--grep=#${n}([^0-9]|$)`, "--no-merges", "--format=%H%x09%s", "-n", "10"], { cwd: root, timeout: 30000 });
   const commits = (g.status === 0 ? g.stdout : "")
     .split("\n")
@@ -42,7 +52,29 @@ export function gather(root, n, { skipList = new Set() } = {}) {
       /* a PR number or a deleted issue */
     }
   }
-  return { issue, prs, commits, similar, named, skipList };
+  // The cards the lead cut it into ("Sliced: #2547" in a comment): their PRs cite the card, not this number.
+  const sliced = slicedIssues(issue.comments, n);
+  const slices = [];
+  for (const m of sliced.numbers.slice(0, 14)) {
+    try {
+      const s = gh(root, ["issue", "view", String(m), "--json", "number,title,state,labels,url"]);
+      if (!/\/pull\//.test(s.url || "")) slices.push(s); // "Sliced the follow-up from #2491" names a PR
+    } catch {
+      /* a PR number or a deleted issue */
+    }
+  }
+  // Commits after the issue was filed whose message names its classes.
+  const symbolCommits = [];
+  for (const sym of keySymbols(issue.body, 4)) {
+    const s = run("git", ["log", "origin/main", "-F", `--grep=${sym}`, "--no-merges", `--since=${issue.createdAt || "2020-01-01"}`, "--format=%H%x09%s", "-n", "5"], { cwd: root, timeout: 30000 });
+    for (const l of (s.status === 0 ? s.stdout : "").split("\n").filter(Boolean)) {
+      const sha = l.split("\t")[0];
+      const hit = symbolCommits.find((c) => c.sha === sha);
+      if (hit) hit.symbols.push(sym);
+      else symbolCommits.push({ sha, subject: l.split("\t").slice(1).join("\t"), symbols: [sym] });
+    }
+  }
+  return { issue, prs, commits, similar, named, slices, slicesPartial: sliced.partial, symbolCommits, skipList };
 }
 
 export async function main(args, { root = process.cwd() } = {}) {

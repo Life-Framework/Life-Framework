@@ -11,11 +11,15 @@
 //
 //   5. 2026-11-19: PRs and commits that only mention #N (#3260, #3263, #3208, #3274, #3287, real text) -> CHECK.
 //
+//   6. 2026-11-27: the slice cards named in a comment, a PR titled like the issue, and commits naming its classes.
+//
+// red-proof 3: 2026-11-27, on the lib before the sweep change (no slice, title or symbol evidence) the run printed
+// `FAIL #2497: every slice done must be LIKELY DONE, got CHECK` and the matching title, symbol and parse lines, exit 1.
 // red-proof 2: 2026-11-19, on the unfixed lib (any citation was strong) the run printed seven
 // `FAIL ... must be CHECK` lines (all five issues among them) and exited 1; with the fix it passes.
 // red-proof: 2026-11-18, with citesIssue() matching `#${n}` without the digit boundary the run printed
 // `FAIL #24930 must not count as a citation of #2493` and exited 1; restored, it passes.
-import { citesIssue, keywords, namedIssues, skipListNumbers, verdict } from "../lib/issue-preflight.mjs";
+import { citesIssue, keySymbols, keywords, namedIssues, quotesTitle, skipListNumbers, slicedIssues, verdict } from "../lib/issue-preflight.mjs";
 
 const failures = [];
 const check = (ok, msg) => {
@@ -64,6 +68,39 @@ check(verdict(mention(3287, [{ number: 1, title: "Builds on #3287 (see notes)", 
 check(verdict(mention(3287, [], [{ sha: "2222222222222", subject: "Field entity (#3287)" }])).level === "LIKELY DONE", "a commit whose subject ends in (#N) must be LIKELY DONE");
 check(verdict({ ...open(3287, "card"), issue: { number: 3287, title: "card", labels: [{ name: "needs-playtest" }], state: "OPEN", comments: [] } }).level === "LIKELY DONE", "the needs-playtest label must stay LIKELY DONE");
 
+// 2026-11-27 sweep: #2497, #2488, #2462, #2435, #4301 were fixed while the issue stayed open and issue-check said
+// CHECK. The fixtures carry the real comment text and the real slice states.
+const slice = (number, state = "CLOSED", labels = ["verified", "slice"]) => ({ number, title: `card ${number}`, state, labels: labels.map((name) => ({ name })) });
+const sliceComment = (body) => ({ body });
+const sl = slicedIssues([sliceComment("Sliced items 4 and 1+2: #2511 adds the host path, and #2512 makes sheets hide. Both ready, Sonnet."), sliceComment("Sliced item 3: #2545. Ready."), sliceComment("thanks, see #9999")], 2497);
+check(JSON.stringify(sl.numbers) === "[2511,2512,2545]" && !sl.partial, `slicedIssues read ${JSON.stringify(sl)}`);
+check(slicedIssues([sliceComment("Sliced parts 1-3: #2470, #2471, #2472. Part 4 is not sliced: it needs the purchase flow designed first.")], 2435).partial, "a 'not sliced' note must mark the slicing partial");
+check(slicedIssues([sliceComment("Sliced: #2547. Ready, Opus.")], 2488).numbers.join() === "2547", "a self-citing slice list keeps the card");
+check(slicedIssues([sliceComment("Sliced as #2473: a UI kit sheet grows to fit its content, then scrolls. It changes LF_UIScreen.c, not LF_ShopPriceList.c (draft #1865 owns that file). Dev slice #1829 also owns it.")], 2462).numbers.join() === "2473", "prose numbers after the first sentence are not slices");
+check(slicedIssues([sliceComment("Checked on main: already fixed by #2498 (slice #2473). Can be closed after verification.")], 2462).numbers.length === 0, "a comment that does not start with Sliced names no slices");
+check(slicedIssues([sliceComment("Sliced parts 1-3: #2470 per-item key names, #2471 Lock action, #2472 locked door (default 20 s). All ready. Part 4 is not sliced.")], 2435).numbers.join() === "2470,2471,2472", "a slice list with a decimal-free sentence keeps every card");
+const v2497 = verdict({ ...open(2497, "UI lifecycle: sheets, HUD handlers and key listeners that may outlive a world"), prs: [{ number: 2565, title: "Remove once-per-controller key listeners with their controller (#2545)", body: "Refs #2545\nFixes part of #2497" }], slices: [slice(2511), slice(2512), slice(2545)] });
+check(v2497.level === "LIKELY DONE" && v2497.reasons.some((r) => r.includes("all 3 slice")), `#2497: every slice done must be LIKELY DONE, got ${v2497.level}`);
+check(verdict({ ...open(2462, "Shop price list"), slices: [slice(2473, "OPEN", ["slice"])] }).level === "CLEAR", "an open slice alone says nothing");
+const v2435 = verdict({ ...open(2435, "Houses follow-up"), slices: [slice(2470), slice(2471), slice(2472), slice(2505)], slicesPartial: true });
+check(v2435.level === "CHECK" && v2435.reasons.some((r) => r.includes("not sliced")), `#2435: part not sliced must stay CHECK, got ${v2435.level}`);
+const v4301 = verdict({ ...open(4301, "x"), slices: [slice(4821, "OPEN", ["needs-playtest", "slice"]), slice(4822, "OPEN", ["slice"])] });
+check(v4301.level === "CHECK" && v4301.reasons.some((r) => r.includes("1 of 2")), `one open slice must be CHECK, got ${v4301.level}`);
+check(verdict({ ...open(1, "x"), slices: [{ number: 1015, title: "M5 chapter: Story: The relocated", state: "CLOSED", labels: [] }] }).level === "CLEAR", "a closed chapter named as a slice must be ignored");
+
+const T = "Shop price list: Receipt and Leave buttons sit below the sheet edge";
+check(quotesTitle("fix: shop price list - Receipt and Leave buttons sit below the sheet edge!", T), "a title match ignores case and punctuation");
+check(!quotesTitle("Receipt buttons", T) && !quotesTitle("anything", "Short title"), "a partial or a short title must not match");
+check(verdict({ ...open(2462, T), prs: [{ number: 2498, title: "Shop price list: Receipt and Leave buttons sit below the sheet edge", body: "" }] }).level === "LIKELY DONE", "a PR titled like the issue must be LIKELY DONE");
+check(verdict({ ...open(2462, T), prs: [{ number: 7, title: "Review notes", body: `Open: ${T}.` }] }).level === "CHECK", "a body that only quotes the title must be CHECK");
+check(verdict({ ...open(2462, T), prs: [{ number: 3100, title: "roadmap outline", body: T }] }).level === "CLEAR", "a planning PR that quotes the title must be ignored");
+check(verdict({ ...open(2462, T), prs: [{ number: 5, title: `Rework: ${T}`, body: "Refs #2400" }] }).level === "LIKELY DONE", "a title quoted inside a longer PR title counts");
+
+check(JSON.stringify(keySymbols("`LF_PersistenceKeep.ApplyAfterLoad` and `LF_StorageSnapshot.SLOT_CARRIED`, `validate-rpc-host-path`, LF_Test_Foo, LF_Debug.Info, LF_PersistenceKeep again")) === JSON.stringify(["LF_PersistenceKeep", "LF_StorageSnapshot", "validate-rpc-host-path"]), "keySymbols picks classes and checks, drops tests, the logger and repeats");
+const vsym = verdict({ ...open(2488, "x"), symbolCommits: [{ sha: "abcdef0123456789", subject: "keepCarriedGear reaches the stash", symbols: ["LF_PersistenceKeep", "LF_DutyLocker"] }] });
+check(vsym.level === "CHECK" && vsym.reasons[0].includes("LF_PersistenceKeep, LF_DutyLocker"), "a commit naming the symbols must be a CHECK that names them");
+check(verdict({ ...open(2488, "x"), commits: [{ sha: "abcdef0123456789", subject: "Hmm (#2488)" }], symbolCommits: [{ sha: "abcdef0123456789", subject: "Hmm (#2488)", symbols: ["LF_DutyLocker"] }] }).reasons.length === 1, "a commit already listed by number must not repeat as a symbol hit");
+
 const kw = keywords("Events: a late joiner gets the current phase, and events count players near their place");
 check(kw.length === 4 && !kw.includes("the") && kw.includes("players"), `keywords picked ${JSON.stringify(kw)}`);
 check(!keywords("Fix 2493 (review 2026-11-17) map").some((w) => /[0-9]/.test(w)), "keywords must drop numbers and parentheses");
@@ -76,4 +113,4 @@ if (failures.length) {
   for (const f of failures) console.log(`FAIL ${f}`);
   process.exit(1);
 }
-console.log("issue-preflight-selftest: OK (citations with a number boundary, done labels, comments, skip list, planning PRs, similar PRs, named issues, keywords)");
+console.log("issue-preflight-selftest: OK (citations with a number boundary, done labels, comments, skip list, planning PRs, similar PRs, named issues, keywords, slice cards, title quotes, key symbols)");
