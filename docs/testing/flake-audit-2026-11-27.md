@@ -52,6 +52,37 @@ the test counts from the real tick (`t0`), in `LF_Test_ContractTracker` and the 
 `LF_Test_ContractTrackerResend`. 5 runs in a row green, `--no-cache`. A workspace cannot be forced on the dedicated
 test server, so there is no red run for this one.
 
+### `booking-desk-proof` 1f0 frame gap (RC dry run 5, 11-27, one flake)
+
+Flake-log line (a proof, not a main-guard step, so written here by hand):
+
+```
+2026-11-27T15:11:28Z 12cb371c booking-desk-proof: 1f0 longest gap 3616 ms failed once, passed on rerun at 533 ms (D:\LF\worktrees\Life-Framework-ws-rc-dryrun-5\tmp\logs\booking-desk-proof-20261127-161128.log)
+```
+
+Surviving log: the transcript above; the client console of that session is gone. Step 1f0 reset `framegap` before
+the aim sweep, so the window held the sweep, a `capture ui` screenshot (`booking_desk_1_answer_in_view`), the
+confirm and the settle. The box had 0.5 GB of VRAM free.
+
+The pay path itself does no heavy client step: `PayNow` and `LF_ChargePayment.Settle` run on the server; the client
+gets the cash stack's removal (one `FindItemsByPrefab` walk for the HUD recount since #4892), the uncuff and the
+closed offer. No save, no UI rebuild, no `GetDepositItemCountByResource`.
+
+A screenshot does stall a client past 1 s on a loaded box: in a `drive-gate-ahead` session the same day, 4 of 12
+logged `client frame gap` lines sat on a `Screenshot successfully saved` line; in this fix's own session 1 of 6 did
+(1092 ms, `booking_desk_2_offer_time_only`). None was in a pay window.
+
+Fix (`agent-box/proofs/booking-desk-proof.mjs`): `framegap` is reset just before the confirm key, so 1f0 measures the
+pay alone; the sweep and shot gap is still printed beside it. The 1 s threshold stays (#4824 was 15-30 s). Three runs
+on one session, two clients, with three other agents' sessions on the box and 0.1 GB of VRAM free (no quiet box was
+available):
+
+| Run | Sweep and shot | Pay (1f0) | Result |
+|---|---|---|---|
+| 1 | 480 ms | 467 ms | PASS, 24 steps |
+| 2 | 616 ms | 580 ms | PASS, 24 steps |
+| 3 | 656 ms | 677 ms | PASS, 24 steps |
+
 ## Pipeline
 
 - `tools/main-guard.mjs` copies the raw transcripts a failing run names (`log=...`) to `tmp/logs/flakes/` (newest 80 kept)

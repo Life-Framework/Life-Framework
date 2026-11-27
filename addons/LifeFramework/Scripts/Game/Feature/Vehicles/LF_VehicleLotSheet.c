@@ -35,6 +35,18 @@ class LF_VehicleLot
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The row's name text. A truck row (the capacity class Buy checks for the truck license,
+	//! LF_VehicleLotComponent.TruckRefusal) says so beside the name, so the player learns it before
+	//! saving up; a car row, or a row with no class, keeps the plain name.
+	static string RowLabel(string nameText, string capacityClass)
+	{
+		if (capacityClass != LF_VehicleLotComponent.CLASS_TRUCK)
+			return nameText;
+
+		return WidgetManager.Translate("#LF-Lot_RowNeedsTruck", nameText);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The sheet title's own key for a lot id: TITLE_ID_PREFIX plus the id with its dashes as
 	//! underscores. The row lives in a string table, so a pack titles its lot by adding a row;
 	//! no row (or no lot id) is the default title.
@@ -258,7 +270,17 @@ class LF_VehicleLotSheet
 				action = string.Empty;
 			}
 
-			s_Screen.AddListRow(LIST, ROW_PREFIX + i.ToString(), WidgetManager.Translate(nameKeys[i]), status, action);
+			// The offers are layer data, present on the client; the row's class comes from the same
+			// price config the server's Buy reads.
+			string capacityClass;
+			if (lotComponent)
+			{
+				LF_VehicleOffer offer = lotComponent.GetOfferAt(i);
+				if (offer)
+					capacityClass = offer.CapacityClassIn(LF_VehiclePricesConfig.Get());
+			}
+
+			s_Screen.AddListRow(LIST, ROW_PREFIX + i.ToString(), LF_VehicleLot.RowLabel(WidgetManager.Translate(nameKeys[i]), capacityClass), status, action);
 		}
 
 		if (locksPrice > 0)

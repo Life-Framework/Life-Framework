@@ -156,6 +156,10 @@ class LF_ConfigOverlay
 	static const string OP_PATCH = "patch";
 	static const string OP_REMOVE = "remove";
 
+	//! Folder -> the rows FolderRows found there. Dropped at world end: a dedicated server's database
+	//! is fixed for the process, but Workbench adds a `.conf` created between two plays.
+	protected static ref map<string, ref array<string>> s_mFolderRows;
+
 	//------------------------------------------------------------------------------------------------
 	//! The pack overlays of one core file whose root class is `type`, loaded, in load order. A file
 	//! that does not resolve, or the core file listed as its own overlay, is logged and skipped; a
@@ -195,6 +199,47 @@ class LF_ConfigOverlay
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The `.conf` rows ("path|{GUID}path", ordered by path) under one folder. A search walks every `.conf` of every
+	//! loaded addon (~19 ms) and every overlay load asked it once per listed overlay, ~15 times per config load, so a
+	//! dialogue or catalogue test spent a quarter second per config in the search (suite speed, 2026-11-27). Every addon is
+	//! mounted before any script runs, so a folder is searched once per world (the world-end hook drops the cache: in
+	//! Workbench a file made between two plays joins the database while the script module lives on).
+	protected static array<string> FolderRows(string folder)
+	{
+		if (!s_mFolderRows)
+			s_mFolderRows = new map<string, ref array<string>>();
+
+		array<string> rows;
+		if (s_mFolderRows.Find(folder, rows))
+			return rows;
+
+		LF_PackFolderCollector collector = new LF_PackFolderCollector(folder);
+		SearchResourcesFilter filter = new SearchResourcesFilter();
+		filter.fileExtensions = { "conf" };
+		filter.recursive = true;
+		ResourceDatabase.SearchResources(filter, collector.OnFound);
+		rows = collector.GetSorted();
+		s_mFolderRows.Set(folder, rows);
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return How many folders the search cache holds (tests).
+	static int CachedFolderCount()
+	{
+		if (!s_mFolderRows)
+			return 0;
+		return s_mFolderRows.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the folder search cache; the next load searches again.
+	static void ResetStatics()
+	{
+		s_mFolderRows = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The folder beside a listed overlay: `Configs/Signs/LF_Signs_X.conf` owns every `.conf` under
 	//! `Configs/Signs/LF_Signs_X/`. Each file is one more overlay of the same class, loaded right
 	//! after its parent in path order, so a feature adds its own file instead of appending to a
@@ -207,13 +252,7 @@ class LF_ConfigOverlay
 			return;
 
 		string folder = path.Substring(0, path.Length() - 5) + "/"; // lf-bounded: a resource path
-		LF_PackFolderCollector collector = new LF_PackFolderCollector(folder);
-		SearchResourcesFilter filter = new SearchResourcesFilter();
-		filter.fileExtensions = { "conf" };
-		filter.recursive = true;
-		ResourceDatabase.SearchResources(filter, collector.OnFound);
-
-		array<string> sorted = collector.GetSorted();
+		array<string> sorted = FolderRows(folder);
 		foreach (string entry : sorted)
 		{
 			ResourceName overlay = entry.Substring(entry.IndexOf("|") + 1, entry.Length() - entry.IndexOf("|") - 1);
@@ -429,5 +468,20 @@ class LF_PackFolderCollector
 	{
 		m_aRows.Sort();
 		return m_aRows;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ConfigOverlay's folder search cache (LF_StaticReset finds it by reflection).
+class LF_ConfigOverlay_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_ConfigOverlay";
+	}
+
+	override void Apply()
+	{
+		LF_ConfigOverlay.ResetStatics();
 	}
 }

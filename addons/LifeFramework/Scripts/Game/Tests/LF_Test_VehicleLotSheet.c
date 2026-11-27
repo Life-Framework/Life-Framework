@@ -2,6 +2,8 @@
 // LF_VehicleLot.Shortfall comparing bank > price:
 // [LFTEST]   - a $1,000 car is buyable with $1,000 in the bank (expected '', got 'needs $1,000 in the bank')
 // Restored to >=; green.
+// red-proof (truck license hint): observed 2026-11-27 with `tools\cli test --no-build --red LF_Test_VehicleLotSheet`:
+// RED-OK vehicles/lot-sheet; red: a truck row carries the truck license hint (expected 'Ural-4320 (needs truck license)', got 'Ural-4320')
 
 //! The car lot's price sheet (maintainer playtest 2026-11-08): every car is listed; a row has Buy
 //! when the reader can pay, otherwise the line says what is missing. Cars up to the cash ceiling
@@ -29,6 +31,20 @@ class LF_Test_VehicleLotSheet : LF_Test
 		// A lot with no id, or an id with no title row, keeps the default sheet title.
 		ctx.EqualStr(LF_VehicleLot.DEFAULT_TITLE, LF_VehicleLot.TitleKeyFor(""), "a lot with no id keeps the default title");
 		ctx.EqualStr(LF_VehicleLot.DEFAULT_TITLE, LF_VehicleLot.TitleKeyFor("no-such-lot"), "a lot id with no title row keeps the default title");
+
+		// A truck row says it needs the truck license before Buy; a car row stays silent (#4417,
+		// playtest 2026-11-27). The hint comes through the same class Buy checks.
+		string truckLabel = "Ural-4320";
+		if (!RedProof())
+			truckLabel = LF_VehicleLot.RowLabel("Ural-4320", LF_VehicleLotComponent.CLASS_TRUCK);
+
+		ctx.True(truckLabel.Contains("Ural-4320"), "a truck row keeps the truck's name");
+		ctx.EqualStr(WidgetManager.Translate("#LF-Lot_RowNeedsTruck", "Ural-4320"), truckLabel, "a truck row carries the truck license hint");
+		ctx.EqualStr("Sedan", LF_VehicleLot.RowLabel("Sedan", ""), "a car row with no class gets no hint");
+		ctx.EqualStr("Sedan", LF_VehicleLot.RowLabel("Sedan", "car"), "a car row of another class gets no hint");
+
+		LF_VehicleOffer plain = LF_VehicleOffer.Make("", 1000, "#LF-Lot_Title");
+		ctx.EqualStr("", plain.CapacityClassIn(null), "an offer with no price config names no class, so no hint");
 
 		LF_SpawnLogic spawnLogic = LF_SpawnLogic.GetInstance();
 		if (spawnLogic)

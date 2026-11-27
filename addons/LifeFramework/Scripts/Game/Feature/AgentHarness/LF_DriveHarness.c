@@ -92,6 +92,27 @@ class LF_DriveHarness
 	static const float DOOR_LOOK_M = 4; // lf-fixed: harness geometry
 	//! A door ray steps past this many parts of the car itself before it gives up.
 	static const int DOOR_HOPS = 6; // lf-fixed: harness geometry
+	// A shut gate on the route is looked for ahead while driving: the car comes to rest GATE_STOP_M short of the bar
+	// (4 to 6 m), so the gate step can open it with the car out of the way; the look reaches its braking distance plus
+	// GATE_MARGIN_M, within GATE_REACH_MIN_M..GATE_REACH_MAX_M, every GATE_EVERY_MS.
+	static const float GATE_STOP_M = 5; // lf-fixed: harness geometry
+	static const float GATE_MARGIN_M = 10; // lf-fixed: harness geometry
+	static const float GATE_REACH_MIN_M = 20; // lf-fixed: harness geometry
+	static const float GATE_REACH_MAX_M = 70; // lf-fixed: harness geometry
+	static const float GATE_EVERY_MS = 400; // lf-fixed: harness tuning
+	//! The stop starts at this speed once the bar is within GATE_STOP_M + 1; the speed cap runs down to it.
+	static const float GATE_STOP_KMH = 8; // lf-fixed: harness tuning
+	//! A shut door stops the car only when it crosses the car's centre line (within this many metres of it): a bar or a
+	//! gate across the way does, a leaf standing at the edge of a yard gate's opening does not (the truck yard's did).
+	static const float GATE_CENTRE_M = 0.4; // lf-fixed: harness geometry
+	//! A gate this near the route (metres) is on it; a yard gate across a field beside a bend is not.
+	static const float GATE_ROUTE_M = 5; // lf-fixed: harness geometry
+	//! The route 12 m on from a gate lies at least this (cosine) along the car's heading from it.
+	static const float GATE_THROUGH = 0.3; // lf-fixed: harness geometry
+	//! A car at rest nearer than this to a shut bar backs off (at most BACKUP_MAX_KMH) before the gate is opened.
+	static const float GATE_BACK_MIN_M = 3.5; // lf-fixed: harness geometry
+	static const int GATE_BACKS = 2; // lf-fixed: harness guard
+	static const float GATE_BACK_MAX_M = 9; // lf-fixed: harness guard
 	//! A leg is LEG_M of route; its budget is LEG_BASE_S plus the leg at LEG_MIN_MPS.
 	static const float LEG_M = 400; // lf-fixed: harness tuning
 	static const float LEG_BASE_S = 45; // lf-fixed: harness tuning
@@ -207,6 +228,21 @@ class LF_DriveHarness
 	protected static string s_sResult;
 	protected static string s_sWhy;
 	protected static string s_sStuckAt;
+
+	// Shut gate ahead (see GateGuard).
+	protected static float s_fGateAtMs; // lf-float: world time in ms, harness only
+	protected static float s_fGateM; // metres from the bumper at the last look, -1 none
+	protected static float s_fGateCapKmh = 999; // the speed that still stops short of it, 999 none
+	protected static vector s_vGateFrom;
+	protected static string s_sGateFound;
+	protected static bool s_bGateStop; // the stop under way is the gate's
+	protected static bool s_bGateReverse; // the back-up under way is the gate's
+	protected static int s_iGateBacks;
+	protected static float s_fBackupLimitM = BACKUP_M;
+	// Where the last shut-door look found one: metres from the bumper (negative: the bar is over the car) and the hit.
+	protected static float s_fShutDoorM;
+	protected static vector s_vShutDoorAt;
+	protected static bool s_bShutDoorAt; // the last Blocker found a shut door and s_vShutDoorAt is where
 
 	// Final approach state.
 	protected static bool s_bApproach;
@@ -1252,6 +1288,13 @@ class LF_DriveHarness
 		s_iReplanId = 0;
 		s_sWhy = "";
 		s_sStuckAt = "";
+		s_fGateAtMs = 0;
+		s_fGateM = -1;
+		s_sGateFound = "";
+		s_bGateStop = false;
+		s_bGateReverse = false;
+		s_iGateBacks = 0;
+		s_fBackupLimitM = BACKUP_M;
 		s_bApproach = false;
 		s_iApproaches = 0;
 		s_iApproachBackups = 0;
@@ -1380,6 +1423,13 @@ class LF_DriveHarness
 			StopInputs(car, speed);
 			if (speed < STILL_KMH)
 			{
+				// At rest short of a shut gate: too close to its bar, back off first.
+				if (s_bGateStop && GateStopDone(car, at, now))
+				{
+					Push(car);
+					return;
+				}
+
 				string done = "arrived";
 				if (!s_sResult.IsEmpty())
 					done = s_sResult;
@@ -1455,7 +1505,7 @@ class LF_DriveHarness
 		// Backing up out of a stuck spot: brake held at a standstill reverses an automatic box.
 		if (s_fBackupUntilMs > 0)
 		{
-			if (now < s_fBackupUntilMs && vector.DistanceXZ(at, s_vBackupFrom) < BACKUP_M)
+			if (now < s_fBackupUntilMs && vector.DistanceXZ(at, s_vBackupFrom) < s_fBackupLimitM)
 			{
 				// The reverse pedal only up to a walking pace: a truck backing at 20 km/h down a yard
 				// hits something hard enough to knock its driver out.
@@ -1471,12 +1521,19 @@ class LF_DriveHarness
 			}
 
 			EndBackup(car, at, now);
-			if (s_bReplanning)
+			if (s_bReplanning || s_bStopping)
 			{
 				StopInputs(car, speed);
 				Push(car);
 				return;
 			}
+		}
+
+		// A shut gate on the route ahead: slow for it and stop GATE_STOP_M short.
+		if (GateGuard(car, at, forward, speed, now, toGoal))
+		{
+			Push(car);
+			return;
 		}
 
 		// Still rolling backwards after a back-up (or down a bank): the brake pedal is the reverse
@@ -1542,6 +1599,7 @@ class LF_DriveHarness
 
 		float stopKmh = Math.Sqrt(2 * DECEL * Math.Max(toGoal - s_fTolerance * 0.5, 0)) * 3.6;
 		want = Math.Min(want, Math.Max(stopKmh, 4));
+		want = Math.Min(want, s_fGateCapKmh);
 
 		float climb = ClimbDeg(transform);
 		if (speed < want)
@@ -1626,9 +1684,14 @@ class LF_DriveHarness
 			return false;
 		}
 
-		// A shut gate across the way: a player gets out and opens it; backing up does not help.
-		if (blocker.StartsWith("shut_door"))
+		// A shut gate across the way: a player gets out and opens it. A car against its bar (the bar stays
+		// shut under a car) backs off first; one with room ends the drive.
+		if (blocker.StartsWith("shut_door") && IsGateOnWay(forward, vector.DistanceXZ(at, s_vGoal)))
 		{
+			s_sGateFound = blocker;
+			if (BeginGateReverse(car, at, now, s_fShutDoorM))
+				return true;
+
 			Finish("stuck");
 			return false;
 		}
@@ -1671,7 +1734,19 @@ class LF_DriveHarness
 	protected static void EndBackup(IEntity car, vector at, float now)
 	{
 		s_fBackupUntilMs = 0;
+		s_fBackupLimitM = BACKUP_M;
 		s_sStatus = "driving";
+		// Backed off a shut gate: stand still here, then the drive ends at it.
+		if (s_bGateReverse)
+		{
+			s_bGateReverse = false;
+			s_bGateStop = true;
+			s_bStopping = true;
+			s_sResult = "stuck";
+			s_sStatus = "braking";
+			return;
+		}
+
 		if (s_bApproach)
 		{
 			s_fProgressAtMs = now;
@@ -1803,6 +1878,7 @@ class LF_DriveHarness
 
 		float stopKmh = Math.Sqrt(2 * DECEL * Math.Max(toGoal - s_fTolerance * 0.5, 0)) * 3.6;
 		want = Math.Min(want, Math.Max(stopKmh, 3));
+		want = Math.Min(want, s_fGateCapKmh);
 
 		float climb = ClimbDeg(transform);
 		if (speed < want)
@@ -1878,14 +1954,24 @@ class LF_DriveHarness
 		s_sStuckAt += string.Format("%1,%2", Math.Round(at[0]), Math.Round(at[2]));
 		string blocker = Blocker(car, forward);
 		LF_Debug.Info(FEATURE, string.Format("drive creep stuck at %1 (%2, %3) %4 m from the goal, fan %5", at, reason, blocker, Round1(toGoal), FanLine(car, at, toGoal)));
-		if (blocker == "out_of_fuel" || blocker.StartsWith("shut_door"))
+		if (blocker == "out_of_fuel" || (blocker.StartsWith("shut_door") && IsGateOnWay(forward, toGoal)))
 		{
 			s_sWhy = "creep_" + reason + "_" + blocker;
 			if (blocker == "out_of_fuel")
+			{
 				Finish("out_of_fuel");
-			else
-				Finish("stuck");
+				return;
+			}
 
+			s_sGateFound = blocker;
+			if (BeginGateReverse(car, at, now, s_fShutDoorM))
+			{
+				s_bFanHeld = false;
+				Push(car);
+				return;
+			}
+
+			Finish("stuck");
 			return;
 		}
 
@@ -2191,6 +2277,236 @@ class LF_DriveHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A shut gate on the route, looked for ahead of the bumper every GATE_EVERY_MS (Projectile rays, the layer a
+	//! boom barrier's bar answers to): the speed cap that still stops GATE_STOP_M short of it goes to
+	//! s_fGateCapKmh (999 when none). True once the stop has begun (the caller returns); the drive then ends
+	//! `stuck` with `why=gate_ahead_shut_door_...` and the night tour opens the gate with the car out of its way.
+	//! A gate off the route (a yard gate across a field beside a bend) or past the goal does not count.
+	protected static bool GateGuard(IEntity car, vector at, vector forward, float speed, float now, float toGoal)
+	{
+		s_fGateCapKmh = 999;
+		if (now >= s_fGateAtMs)
+		{
+			s_fGateAtMs = now + GATE_EVERY_MS;
+			s_fGateM = -1;
+			float v = speed / 3.6;
+			float reach = Math.Clamp(v * v / (2 * DECEL) + GATE_STOP_M + GATE_MARGIN_M, GATE_REACH_MIN_M, GATE_REACH_MAX_M);
+			string found = GateLook(car, reach);
+			if (!found.IsEmpty() && GateOnRoute(s_vShutDoorAt, reach, forward) && toGoal - s_fTolerance > s_fShutDoorM + s_fFrontM)
+			{
+				s_fGateM = s_fShutDoorM;
+				s_vGateFrom = at;
+				s_sGateFound = found;
+			}
+		}
+
+		if (s_fGateM < 0)
+			return false;
+
+		// The look is up to GATE_EVERY_MS old: take what the car has driven since off it.
+		float metres = s_fGateM - vector.DistanceXZ(at, s_vGateFrom);
+		float stopAt = GATE_STOP_M + 1;
+		if ((metres <= stopAt && speed <= GATE_STOP_KMH + 2) || metres <= 2.5)
+		{
+			s_bGateStop = true;
+			s_bStopping = true;
+			s_sResult = "stuck";
+			s_sStatus = "braking";
+			s_sWhy = "gate_ahead_" + s_sGateFound;
+			LF_Debug.Info(FEATURE, string.Format("drive stops for a shut gate %1 m ahead at %2 km/h (%3)", Round1(metres), Round1(speed), s_sGateFound));
+			StopInputs(car, speed);
+			return true;
+		}
+
+		s_fGateCapKmh = GATE_STOP_KMH + Math.Sqrt(2 * DECEL * Math.Max(metres - stopAt, 0)) * 3.6;
+		return false;
+	}
+
+	protected static float s_fLookReach;
+	protected static float s_fLookBest;
+	protected static string s_sLookFound;
+	protected static vector s_vLookAt;
+
+	//------------------------------------------------------------------------------------------------
+	//! A shut gate-sized door whose bounds (sampled every half metre along their longest side) cross the car's lane
+	//! between its bumper and `reach` metres on: `shut_door_<prefab>_at_<m>m_ahead`, "" when none. By geometry, not
+	//! rays: a level ray from the bumper passes over or into the ground on a rise, and a bar beyond one is unseen.
+	//! The nearest wins; s_fShutDoorM (metres from the bumper) and s_vShutDoorAt are left for the caller.
+	protected static string GateLook(IEntity car, float reach)
+	{
+		float half = Math.Max(s_fFrontM, 1.5);
+		s_pDoorCar = car;
+		s_fLookReach = reach;
+		s_fLookBest = reach + 1;
+		s_sLookFound = "";
+		vector centre = car.CoordToParent(Vector(0, 0, half + reach * 0.5));
+		GetGame().GetWorld().QueryEntitiesBySphere(centre, reach * 0.5 + 10, CollectGate, null, EQueryEntitiesFlags.ALL);
+		s_pDoorCar = null;
+		if (!s_sLookFound.IsEmpty())
+		{
+			s_fShutDoorM = s_fLookBest;
+			s_vShutDoorAt = s_vLookAt;
+		}
+
+		return s_sLookFound;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One door of the look's sphere query: shut, gate-sized, not the car's own, with a sample on the car's centre
+	//! line (GATE_CENTRE_M, within 8 m of its height) ahead of the bumper.
+	protected static bool CollectGate(IEntity door)
+	{
+		if (!door || !s_pDoorCar)
+			return true;
+
+		BaseDoorComponent component = BaseDoorComponent.Cast(door.FindComponent(DoorComponent));
+		if (!component || component.IsOpen() || !IsGateSized(door))
+			return true;
+
+		IEntity top = door;
+		while (top.GetParent())
+			top = top.GetParent();
+
+		if (top == s_pDoorCar)
+			return true;
+
+		float half = Math.Max(s_fFrontM, 1.5);
+		vector mins, maxs;
+		door.GetBounds(mins, maxs);
+		vector size = maxs - mins;
+		int axis = 0;
+		if (size[1] > size[axis])
+			axis = 1;
+
+		if (size[2] > size[axis])
+			axis = 2;
+
+		float dt = Math.Max(0.5 / Math.Max(size[axis], 0.5), 0.02);
+		float carY = s_pDoorCar.GetOrigin()[1];
+		float nearest = s_fLookBest;
+		vector nearestAt;
+		for (float t = 0; t <= 1.0001; t += dt)
+		{
+			vector p = (mins + maxs) * 0.5;
+			p[axis] = mins[axis] + size[axis] * t;
+			vector world = door.CoordToParent(p);
+			vector local = s_pDoorCar.CoordToLocal(world);
+			if (Math.AbsFloat(local[0]) > GATE_CENTRE_M || local[2] < half || local[2] > half + s_fLookReach)
+				continue;
+
+			if (Math.AbsFloat(world[1] - carY) > 8)
+				continue;
+
+			float metres = local[2] - half;
+			if (metres < nearest)
+			{
+				nearest = metres;
+				nearestAt = world;
+			}
+		}
+
+		if (nearest >= s_fLookBest)
+			return true;
+
+		s_fLookBest = nearest;
+		s_vLookAt = nearestAt;
+		string name = LF_Utils.GetPrefabName(door);
+		if (name.IsEmpty())
+			name = door.ClassName();
+
+		int slash = name.LastIndexOf("/");
+		if (slash >= 0)
+			name = name.Substring(slash + 1, name.Length() - slash - 1);
+
+		name.Replace(".et", "");
+		s_sLookFound = string.Format("shut_door_%1_at_%2m_ahead", name, Round1(nearest));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the route runs through `p`: a route point within GATE_ROUTE_M of it, from just behind the car to
+	//! `reach` (plus the margin) on, and the route 12 m further on lying the way the car faces from `p`. A building
+	//! door beside the pad the route leaves (or a door at the goal) is not a gate: the route turns away from it.
+	protected static bool GateOnRoute(vector p, float reach, vector forward)
+	{
+		float first = Math.Max(s_fProgress - 4, 0);
+		float last = s_fProgress + reach + GATE_MARGIN_M;
+		for (float along = first; along <= last; along += 2)
+		{
+			if (vector.DistanceXZ(PointAt(along), p) > GATE_ROUTE_M)
+				continue;
+
+			vector beyond = PointAt(along + 12) - p;
+			beyond[1] = 0;
+			if (beyond.Length() < 3)
+				return false;
+
+			return vector.Dot(beyond.Normalized(), forward) > GATE_THROUGH;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A drive stuck at a shut door (the last Blocker's): a gate only when the route runs through it and the goal is
+	//! not this side of it. Any other shut door is a wall to the stuck rules (a back-up, a new try).
+	protected static bool IsGateOnWay(vector forward, float toGoal)
+	{
+		if (!s_bShutDoorAt)
+			return false;
+
+		if (toGoal - s_fTolerance <= s_fShutDoorM + s_fFrontM)
+			return false;
+
+		return GateOnRoute(s_vShutDoorAt, DOOR_LOOK_M + 8, forward);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stop at a shut gate has come to rest: say how far the bar is now in `why`. A car nearer the bar than
+	//! GATE_BACK_MIN_M backs off first (true: the back-up has begun, its inputs set).
+	protected static bool GateStopDone(IEntity car, vector at, float now)
+	{
+		s_bGateStop = false;
+		string found = ShutDoorAhead(car, ForwardOf(car), DOOR_LOOK_M + GATE_STOP_M + 4, true);
+		if (found.IsEmpty())
+			found = ShutDoorInReach(car);
+
+		if (found.IsEmpty())
+			return false;
+
+		s_sGateFound = found;
+		s_sWhy = "gate_ahead_" + found;
+		return BeginGateReverse(car, at, now, s_fShutDoorM);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A car `metres` from a shut gate's bar (negative: under it) nearer than GATE_BACK_MIN_M backs straight
+	//! off, at most BACKUP_MAX_KMH (the back-up rules), to about GATE_STOP_M from it: a bar that a car is
+	//! under or against does not open. False when it has room, or has backed off GATE_BACKS times.
+	protected static bool BeginGateReverse(IEntity car, vector at, float now, float metres)
+	{
+		if (metres >= GATE_BACK_MIN_M || s_iGateBacks >= GATE_BACKS)
+			return false;
+
+		s_iGateBacks++;
+		s_bGateReverse = true;
+		s_bStopping = false;
+		s_bGateStop = false;
+		s_fBackupLimitM = Math.Clamp(GATE_STOP_M + 0.5 - metres, 1.5, GATE_BACK_MAX_M);
+		s_vBackupFrom = at;
+		s_fBackupSteer = 0;
+		s_fBackupUntilMs = now + (4 + s_fBackupLimitM * 1.5) * 1000;
+		s_fStillSinceMs = 0;
+		s_sStatus = "backing";
+		LF_Debug.Info(FEATURE, string.Format("drive backs off a shut gate %1 m ahead (%2 m, try %3 of %4)", Round1(metres), Round1(s_fBackupLimitM), s_iGateBacks, GATE_BACKS));
+		s_fThrust = 0;
+		s_fBrake = 1;
+		s_fHand = 0;
+		s_fSteer = 0;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! What stands in front of the bumper: a prefab name, `terrain`, or `clear` (then the pitch, since
 	//! a lip or a steep bank stops a car with nothing in front of it).
 	protected static string Blocker(IEntity car, vector forward)
@@ -2201,7 +2517,8 @@ class LF_DriveHarness
 
 		// A boom barrier's bar is on the Projectile layer only (a probe across it: Main, Vehicle and Static
 		// hit just its post), so the rays below never see it: look for shut doors on that layer first.
-		string shut = ShutDoorAhead(car, forward);
+		s_bShutDoorAt = false;
+		string shut = ShutDoorAhead(car, forward, DOOR_LOOK_M, true);
 		if (shut.IsEmpty())
 			shut = ShutDoorInReach(car);
 
@@ -2249,7 +2566,12 @@ class LF_DriveHarness
 
 			// A shut door or gate (a boom barrier is a door): a car does not push through it.
 			if (IsDoor(hit) && IsGateSized(hit))
+			{
+				s_fShutDoorM = fraction * BLOCKER_LOOK_M;
+				s_vShutDoorAt = trace.Start + (trace.End - trace.Start) * fraction;
+				s_bShutDoorAt = true;
 				return string.Format("shut_door_%1_at_%2m_%3", name, Round1(fraction * BLOCKER_LOOK_M), corner);
+			}
 
 			return string.Format("blocked_by_%1_at_%2m_%3", name, Round1(fraction * BLOCKER_LOOK_M), corner);
 		}
@@ -2259,21 +2581,25 @@ class LF_DriveHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! `shut_door_<prefab>_at_<m>m_<corner>` when a door that is not open stands within DOOR_LOOK_M ahead of
+	//! `shut_door_<prefab>_at_<m>m_<corner>` when a door that is not open stands within `lookM` ahead of
 	//! the bumper, else "". Rays on the Projectile layer (the only one a boom barrier's bar answers to) at
 	//! several heights, since a bar passes over the bumper; only a hit on a door counts, so trees and people
-	//! on that layer are ignored. The nearest door hit wins.
-	static string ShutDoorAhead(IEntity car, vector forward)
+	//! on that layer are ignored. The nearest door hit wins; its distance (from the bumper) and place are left in
+	//! s_fShutDoorM and s_vShutDoorAt. `fromRear`: the rays start at the car's rear (a car stopped against a bar
+	//! has it over its bonnet, past a ray from the bumper), else at the bumper (a look down the road).
+	static string ShutDoorAhead(IEntity car, vector forward, float lookM, bool fromRear)
 	{
 		array<float> heights = {0.4, 0.7, 1.0, 1.3, 1.6};
 		array<float> sides = {0, -1, 1};
-		// A car that stopped against a bar has the bar over its bonnet or at the windscreen, past a ray from the
-		// bumper: the rays start at the rear and run to DOOR_LOOK_M beyond the bumper. `metres` below is
-		// measured from the bumper (negative: the bar is over the car).
+		// `metres` below is measured from the bumper (negative: the bar is over the car).
 		float half = Math.Max(s_fFrontM, 1.5);
-		float rear = -half;
-		float length = 2 * half + DOOR_LOOK_M;
-		float best = DOOR_LOOK_M + 1;
+		float rear = half;
+		if (fromRear)
+			rear = -half;
+
+		float behind = half - rear;
+		float length = behind + lookM;
+		float best = lookM + 1;
 		string found;
 		foreach (float side : sides)
 		{
@@ -2321,11 +2647,15 @@ class LF_DriveHarness
 				if (door && door.IsOpen())
 					continue;
 
-				float metres = vector.Distance(origin, start + (end - start) * fraction) - 2 * half;
+				vector hitAt = start + (end - start) * fraction;
+				float metres = vector.Distance(origin, hitAt) - behind;
 				if (metres >= best)
 					continue;
 
 				best = metres;
+				s_fShutDoorM = metres;
+				s_vShutDoorAt = hitAt;
+				s_bShutDoorAt = true;
 				string name = LF_Utils.GetPrefabName(hit);
 				if (name.IsEmpty())
 					name = hit.ClassName();
@@ -2403,23 +2733,31 @@ class LF_DriveHarness
 			axis = 2;
 
 		float nearest = s_fDoorBest;
+		vector nearestAt;
 		for (int k = 0; k <= 12; k++)
 		{
 			vector p = (mins + maxs) * 0.5;
 			p[axis] = mins[axis] + size[axis] * k / 12;
-			vector local = s_pDoorCar.CoordToLocal(door.CoordToParent(p));
+			vector world = door.CoordToParent(p);
+			vector local = s_pDoorCar.CoordToLocal(world);
 			if (Math.AbsFloat(local[0]) > s_fHalfWidthM + 0.3 || local[2] < -half || local[2] > half + DOOR_LOOK_M || local[1] < -0.5 || local[1] > s_fTopM + 0.5)
 				continue;
 
 			float metres = local[2] - half;
 			if (metres < nearest)
+			{
 				nearest = metres;
+				nearestAt = world;
+			}
 		}
 
 		if (nearest >= s_fDoorBest)
 			return true;
 
 		s_fDoorBest = nearest;
+		s_fShutDoorM = nearest;
+		s_vShutDoorAt = nearestAt;
+		s_bShutDoorAt = true;
 		string name = LF_Utils.GetPrefabName(door);
 		if (name.IsEmpty())
 			name = door.ClassName();

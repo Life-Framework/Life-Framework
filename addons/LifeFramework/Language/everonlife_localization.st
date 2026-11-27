@@ -10682,6 +10682,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Trucks need the truck license first. The license desk runs the truck check for %1."
      Comment "Vehicle lot refusal for a truck without the truck license (#4417). %1 is the truck check fee. Neutral core text."
     }
+    CustomStringTableItem "{5C1E7A94D2B03F68}" {
+     Id "LF-Lot_RowNeedsTruck"
+     Target_en_us "%1 (needs truck license)"
+     Comment "Vehicle lot sheet: a truck row says it needs the truck license before Buy (#4417). %1 is the truck's name."
+    }
     CustomStringTableItem "{B58D71B1650E8EBB}" {
      Id "LF-Lot_Rule"
      Target_en_us "Cars up to %1 are paid in cash. Dearer cars are paid from your bank: deposit cash at the ATM first."
@@ -14760,7 +14765,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9D4E21B7C0A35F86}" {
      Id "LF-Process_Started"
-     Target_en_us "Running. The parts come out here in %1 seconds; the time left shows on the machine, so get on with something else meanwhile."
+     Target_en_us "Running. The finished goods come out here in %1 seconds; the time left shows on the machine, so get on with something else meanwhile."
      Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{11D3E9515907FBC7}" {
@@ -14815,7 +14820,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{E8139375F9985FE0}" {
      Id "LF-Property_HouseNoCash"
-     Target_en_us "You do not carry enough cash for this house."
+     Target_en_us "You do not carry enough cash for this house. Take the price out of the bank at an ATM, then try the sign again."
      Comment "Toast: house purchase refused, short of cash; nothing was taken (#3207)."
     }
     CustomStringTableItem "{32F7CFE0FED0514B}" {
