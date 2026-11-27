@@ -13,7 +13,10 @@ class LF_ShopPriceList
 	static const float CLOSE_DISTANCE = 3.5;
 	//! Lines drawn at once; typing narrows a larger catalog to its matches.
 	static const int MAX_ROWS = 40;
-	static const float LIST_HEIGHT = 170;	// lf-fixed: leaves the slip, preview, keys and Leave room on the 900-unit sheet
+	//! UI sweep 2026-11-27: the list showed two or three 76-unit rows at once between the search field and the slip, so a shop of
+	//! 20 to 80 lines was all scrolling. Compact rows (LF_UICompactRow, 39 units each) and eight of them give 6 to 8 whole rows
+	//! at 1080p and at 720p alike (the sheet is laid out in 1080-unit height either way) with the slip, keys and Leave kept.
+	static const float LIST_HEIGHT = 312;	// lf-fixed: eight compact rows of LF_UIScreen.COMPACT_ROW_PITCH (39), leaving the slip, preview, keys and Leave room under the sheet's screen cap
 	static const int SEARCH_POLL_MS = 250;
 	static const int REPLY_TIMEOUT_MS = 5000;
 	//! After a till reply the Cash line keeps the server's figure this long before the poll reads the
@@ -214,7 +217,7 @@ class LF_ShopPriceList
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Hint", m_Shop.GetShopHint()));
 
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, "Search", "#LF-Shop_LookFor"));
-		parts.Insert(LF_UIPart.CreateList("Prices"));
+		parts.Insert(LF_UIPart.CreateList("Prices").Compact());
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Order", "#LF-Shop_SlipEmpty"));
 		parts.Insert(LF_ShopItemPreview.Part());
 		parts.Insert(LF_ATMTerminal.Keys("Quantity", LESS + "," + MORE, "#LF-Shop_Less,#LF-Shop_More"));
