@@ -182,7 +182,8 @@ check(/validate RED \(validate-docs\.mjs after #12\)/.test(g.statusLine({ valida
 
 // 6. The wiring: the worker validates before it compiles, probes rerun only the failing checks, and the validate command honours it.
 const main = readFileSync(join(repoRoot, "tools", "main-guard.mjs"), "utf8");
-check(main.indexOf("validateHead(root, cdir, head)") > 0 && main.indexOf("validateHead(root, cdir, head)") < main.indexOf("await compileHead(root, cdir, head)"), "the worker validates a new head before it compiles it");
+// Stage 0 starts (in the background, its own worktree: main-guard-stall-selftest) before the compile on the same tick.
+check(main.indexOf("validateHead(root, vdir, head)") > 0 && main.indexOf("validateHead(root, vdir, head)") < main.indexOf("await compileHead(root, cdir, head)"), "the worker starts validating a new head before it compiles it");
 check(/mg\.VALIDATE_ONLY_ENV/.test(main) && /mg\.validateGate\(/.test(main) && /earlierRevertFor\(dir, b\.culprit/.test(main), "main-guard.mjs runs the gate, the probe env and the earlier-revert rule");
 check(/mg\.staleRefusal\(drift\)/.test(main.slice(main.indexOf("async function validateHead"))), "the validate stage honours the stale-code rule");
 check(/mg\.earlierRefusal\(/.test(main), "stage 2 refuses to revert the follow-up of a reverted PR");

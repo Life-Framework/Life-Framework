@@ -188,7 +188,7 @@ toolscli main-guard start | stop | status | watch   # status is also a line in `
 ```
 
 0. **Stage 0, validate (#2889).** On a new head (batched to one run per 3 min, retried at ~10 min after a no-verdict) the guard
-   runs `validate --all` (about 3 min, no Workbench) in the compile worktree before the compile; it never holds the
+   starts `validate --all` (about 3 min, no Workbench) in its own worktree, in the background, before the compile; it never holds the
    compile or stage 2 and never marks the head red on GitHub. A failure reruns just the failing checks at the same
    head (`LF_VALIDATE_ONLY=<script,...>`, read by `validate`); green on the rerun is a flake
    (`main-guard-flakes.log`). Red twice bisects the merges since the last green validate by the failing check set
@@ -293,6 +293,17 @@ toolscli main-guard start | stop | status | watch   # status is also a line in `
    the lease is over 15 min old: `lead` prints `!! MAIN GUARD DOWN: main-guard down for N min; you are X commit(s)
    behind main` and `wt new` prints the same as `WARNING:` (a live local worker with a late lease is only a warning
    past 45 min). `main-guard-watch-selftest` proves the rule.
+   **Stall watchdog (2026-11-27).** On 2026-11-26 a stage-0 validate wrote nothing for 37 min while the tick awaited it,
+   so four merges sat unchecked under a "watching" worker with a fresh heartbeat until a stop and start. Stage 0 now runs
+   in the background in `Life-Framework-ws-main-guard-validate` with a 30-min budget (`VALIDATE_BUDGET_MS`; killed with its
+   tree, no verdict, retried), and the tick's fetch has a 2-min timeout and records `fetchErr`/`fetchOkAt`. Each tick the
+   worker notes since when origin/main has been unchecked (`uncheckedSince`; checked = a stage-1 verdict). Unchecked over
+   30 min (`LF_MAIN_GUARD_STALL_MIN`) with no compile started in that window, or a fetch failing that long, is a stall
+   (`stallCheck`): the worker logs `STALL:` and a staff line, fetches again and drops the batching clocks (a kick); past
+   60 min with no stage 0 or 2 running it restarts its own loop, at most once per 2 h (`stallAction`). A loop that has not
+   ticked for 30 min under a stall is restarted by `watch` (`restart-stalled`, stop then start, never under a running stage
+   2, inside the restart cap). `main-guard status` prints `STALLED: ...` for it. `main-guard-stall-selftest` replays the
+   incident.
 4. **Reverts.** `git revert -m 1` on `ws/revert-pr<N>-guard`, a PR `Revert #N (main guard: <what>)` with auto-merge, a
    comment on #N, its issues reopened as `regression`, one line to the staff webhook (`LF_STAFF_WEBHOOK_URL` or
    `"mainGuard": { "webhookUrl" }` in `lf.local.json`).
