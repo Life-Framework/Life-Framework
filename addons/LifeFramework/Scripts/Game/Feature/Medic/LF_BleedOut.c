@@ -88,6 +88,14 @@ class LF_BleedOut
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether the replicated "seconds downed" copy (`synced`, whole seconds) trails the real clock
+	//! (`downedFor`) by a full step. The client counts between copies, so a rejoiner reads the true wait.
+	static bool NeedsDownedSync(int synced, float downedFor)
+	{
+		return downedFor - synced >= SYNC_STEP_SECONDS;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: start the countdown for a character that has just gone down.
 	static void Begin(notnull SCR_ChimeraCharacter character)
 	{
@@ -311,6 +319,11 @@ modded class SCR_ChimeraCharacter
 	[RplProp()]
 	protected int m_iLF_BleedSecondsLeft = -1;
 
+	//! Whole seconds downed at the last server write (moved every SYNC_STEP_SECONDS): the start time of
+	//! the downed HUD's give-up wait, so a client that takes the body over mid-fall counts from it.
+	[RplProp()]
+	protected int m_iLF_DownedForSecs;
+
 	protected float m_fLF_BleedLeft;
 	protected float m_fLF_DownedFor;
 
@@ -319,6 +332,7 @@ modded class SCR_ChimeraCharacter
 	{
 		m_fLF_BleedLeft = seconds;
 		m_fLF_DownedFor = 0;
+		m_iLF_DownedForSecs = 0;
 		m_iLF_BleedSecondsLeft = Math.Ceil(seconds);
 		Replication.BumpMe();
 	}
@@ -328,6 +342,7 @@ modded class SCR_ChimeraCharacter
 	{
 		m_fLF_BleedLeft = 0;
 		m_fLF_DownedFor = 0;
+		m_iLF_DownedForSecs = 0;
 		if (m_iLF_BleedSecondsLeft == -1)
 			return;
 
@@ -339,7 +354,7 @@ modded class SCR_ChimeraCharacter
 	//! Server: `dt` seconds passed. \return True when the time has run out.
 	bool LF_BleedStep(float dt)
 	{
-		m_fLF_DownedFor += dt;
+		LF_AdvanceDownedFor(dt);
 		m_fLF_BleedLeft = LF_BleedOut.Elapse(m_fLF_BleedLeft, dt);
 		if (LF_BleedOut.NeedsSync(m_iLF_BleedSecondsLeft, m_fLF_BleedLeft))
 		{
@@ -355,6 +370,19 @@ modded class SCR_ChimeraCharacter
 	void LF_AdvanceDownedFor(float dt)
 	{
 		m_fLF_DownedFor += dt;
+		if (LF_BleedOut.NeedsDownedSync(m_iLF_DownedForSecs, m_fLF_DownedFor))
+		{
+			m_iLF_DownedForSecs = Math.Floor(m_fLF_DownedFor);
+			Replication.BumpMe();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whole seconds downed as the client last heard (up to SYNC_STEP_SECONDS stale; the downed HUD
+	//! counts on from it).
+	int LF_GetDownedForShown()
+	{
+		return m_iLF_DownedForSecs;
 	}
 
 	//------------------------------------------------------------------------------------------------
