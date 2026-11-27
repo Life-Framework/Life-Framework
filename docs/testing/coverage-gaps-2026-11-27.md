@@ -2,7 +2,8 @@
 
 A scan of what core gameplay logic has no `LF_Test` reference, taken during the 0.3.0 feature freeze (tests only, no
 behaviour change). The repo had 1,488 test files at the time and `--tier fast` ran 639 tests with the first nine included.
-Round 2 (`ws/test-coverage-1127-r2`) added twelve more; its table is below the first one.
+Round 2 (`ws/test-coverage-1127-r2`) added twelve more and round 3 (`ws/test-coverage-1127-r3`) eleven; their tables are below the
+first one.
 
 ## How the scan worked
 
@@ -59,6 +60,31 @@ candidates. Each was read; the money, save, licence, jail and shop-counter ones 
 
 All twelve carry a `RedProof()` hook; the batched run failed all twelve (`RED PROOF OK (all 12 listed test(s) fail with the hook on)`).
 
+## Round 3: 11 tests, 0 bugs found
+
+Round 3 (`ws/test-coverage-1127-r3`) scanned every `static` method (any signature without an entity, widget or vector
+argument) whose name no test mentions: 1,031 candidates. Most of the big hits (`LF_ChessBoard`, `LF_BanRecord`, `LF_HeistRun`,
+`LF_PoliceRanks` settle calls, `LF_VehicleOwnership`) were reached under other names, so each class was checked against the
+tests that name it before a test was written. What was left was the save-id rewrites of the record kinds round 2 listed as
+open, the poster, board and bus text builders, the job kind lists, the gang flag claim order, the case board wire format and
+two small helpers.
+
+| Test | Feature | What it pins |
+|---|---|---|
+| `LF_Test_SaveIdsPlaceRows` | Persistence | Renamed place ids rewrite on load in hideout, held-ground, house-lock, vehicle (shop) and store stock and unpaid rows; the other fields (lock, owner, stock, price, points) stay as saved; a place alias never renames a crop or job of the same text; null list and row survive |
+| `LF_Test_SaveIdsCropJobRows` | Persistence | Renamed crop (farm plot), chain and station place (chain station), job (XP and playtime rows) rewrite on load and keep growth, work, XP and seconds; each kind follows only its own aliases |
+| `LF_Test_WantedBoardText` | Police | Five-mark star row clamps below 0 and above 5, `#key` translated and plain text passes, a grid place is built from the grid term, headline names an unidentified suspect, description joins clothing (empty pieces dropped), on foot or driving, and the last-seen place only when known |
+| `LF_Test_ExportBoardLine` | Jobs | Export board row: label count, goods, destination (keys translated), open order shows pay and deadline only, taken order shows the known hauler or the word taken |
+| `LF_Test_BusTicketCancelName` | Travel | "Cancel trip" action shows the refund and the seconds left; a late bus reads 0, never a minus |
+| `LF_Test_KnownNamesSameKey` | Interaction | A learned name survives while the character key matches, drops when another character takes the player id, survives an unknown key, matches exactly |
+| `LF_Test_JobKindRules` | Jobs (save) | Delivery jobs are exactly parcel, fuel and taxi (the sign-up list saved and restored), cargo is parcel and fuel only, sign-up and run-start toast keys per job with the courier fallback, the client's Complete-the-run offer |
+| `LF_Test_OrgFlagClaimOrder` | Organizations | Flag claim order behind the plain-cloth rule: id order with no claims, unclaimed before claimed, later claim is later, re-picking the own flag keeps the place, a new flag moves to the back, reset forgets |
+| `LF_Test_CaseBoardEncode` | Police | Case and card entry shapes, separators and newlines cannot split a field, identified flag, round trip through `Decode`, four cards per case and three cases per board |
+| `LF_Test_ReputationWireRange` | Reputation | Wire faction order and slots, the lowest and highest tier (-16, +15) round trip, out-of-range tiers clamp without spilling into the next digit, values below the flag or at twice it are not packed |
+| `LF_Test_UtilsInheritChecks` | Core | `IsAnyInherited` and `IsInstanceAnyInherited` (itself, base, empty list, null), `PrefabInherits` empty name or ancestor, the same prefab, a moved prefab (GUID decides), path compare with no GUID |
+
+All eleven carry a `RedProof()` hook; the batched run failed all eleven (`RED PROOF OK (all 11 listed test(s) fail with the hook on)`).
+
 ### Looked at and left alone (notes, no refactor in the freeze)
 
 - **The five money action wrappers** (`LF_StallBuyAction`, `LF_StallRentAction`, `LF_LockerRentAction`, `LF_LicenceDeskAction`
@@ -95,11 +121,12 @@ hints for these were all reached through their callers.
    fixture character would cover all five. Round 2 read them: no pure rule to pull out (see "Looked at and left alone").
 3. **`LF_CharacterShopComponent`** (315 lines): the shop component's buy and sell serve path. `LF_ShopRules` is now covered; the
    component that applies it is not.
-4. **`LF_SaveIds`** (partly done in round 2): `PrefabSourcesOf`, `PrefabLoads`, `NoteMissing`, `ResolveSignUps`,
-   `ResolveProgression` and the chain limit now have tests. Still open: the record helpers that rewrite prefab ids inside
-   a payload (`ResolveAccounts`, `ResolveHideouts`, `ResolveVehicles`, `ResolveSnapshots`, `ResolveItemState`,
-   `ResolveStoreStock`, `ResolveFarmPlots` and the rest) and `NoteHeld`. Each needs a record of its own kind; they are
-   covered end to end by `LF_Test_E2E_ContentIds`.
+4. **`LF_SaveIds`** (mostly done in rounds 2 and 3): `PrefabSourcesOf`, `PrefabLoads`, `NoteMissing`, `ResolveSignUps`,
+   `ResolveProgression`, the chain limit and the place, crop, chain and job rewrites of hideout, held-ground, house, vehicle
+   (shop), store, farm plot, chain station, job XP and playtime rows now have tests. Still open: the rewrites that go through
+   `ResolvePrefab` (the prefab fields of vehicle, store and snapshot rows; they need a prefab that loads) and `ResolveAccounts`,
+   `ResolveSnapshots`, `ResolveItemState`, `ResolveItemSerials`, `ResolveItemKeys`, `ResolveItemStolen`, `ResolveFenceSerials`,
+   `ResolveEvidenceLocker` and `NoteHeld`. They are covered end to end by `LF_Test_E2E_ContentIds`.
 5. **`LF_QuestOwnerStanding`**: three one-line live-character readers; nothing pure to test (round 2 read it).
 6. **`LF_Jail` placement and release**: `GroundedReleasePoint` (trace-based) and `SetReleaseOffset` are only touched through
    the full arrest tests.
