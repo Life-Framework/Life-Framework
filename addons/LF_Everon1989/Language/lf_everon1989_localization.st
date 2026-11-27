@@ -4239,6 +4239,21 @@ StringTable {
      Target_en_us "He is buying tonight. I marked the spot on your map; it will not keep past this shift."
      Comment "Informant answer (#2922, 1989 pack voice): the fee was paid and the buyer's spot is on the map."
     }
+    CustomStringTableItem "{0CB25C9772152DDA}" {
+     Id "LF-ItemName_AspirinBottle"
+     Target_en_us "Aspirin"
+     Comment "Shop row name for the base-game aspirin bottle wherever a list has no row key of its own (the priced extras); found by file name (UI sweep 2026-11-27)."
+    }
+    CustomStringTableItem "{A0C7F324DEA458FE}" {
+     Id "LF-ItemName_LF_Reaper_01"
+     Target_en_us "Reaper"
+     Comment "Farm supply row name for the tractor reaper, an implement with no inventory name; found by file name (UI sweep 2026-11-27)."
+    }
+    CustomStringTableItem "{5E7C2A90D13B4F68}" {
+     Id "LF-ItemName_WaterBottle"
+     Target_en_us "Water bottle"
+     Comment "Shop row name for the base-game water bottle, whose own name reads Waterbottle; found by file name (UI sweep 2026-11-27)."
+    }
     CustomStringTableItem "{3465F00000000002}" {
      Id "LF-Item_AnniversaryLetter_Desc"
      Target_en_us "Yellowed paper in a careful hand. It is addressed to Gaspard Lenoir, the old fisherman, and signed D. Bouvier, three years ago. Bring it to him."
