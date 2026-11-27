@@ -224,6 +224,51 @@ class LF_VehicleLotSheet
 
 	protected static ref LF_UIScreen s_Screen;
 	protected static RplId s_LotId;
+	//! What the open sheet shows, one line per row (RowLine), for the harness `lotsheet` verb.
+	protected static ref array<string> s_aRowLines = {};
+	protected static string s_sTitle;
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: one row as the harness reads it back, "Car0=<label> | <status> | <button or none>".
+	static string RowLine(string rowName, string label, string status, string action)
+	{
+		string button = action;
+		if (button.IsEmpty())
+			button = "no button";
+
+		return rowName + "=" + label + " | " + status + " | " + button;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while the sheet is on screen.
+	static bool IsOpen()
+	{
+		return s_Screen && s_Screen.IsOpen();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The open sheet's title and rows as one harness answer, "" when no sheet is open.
+	static string ReadBack()
+	{
+		if (!IsOpen())
+			return string.Empty;
+
+		string text = string.Format("title=%1 rows=%2", s_sTitle, s_aRowLines.Count());
+		foreach (string line : s_aRowLines)
+		{
+			text = text + " ## " + line;
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		s_Screen = null;
+		s_aRowLines.Clear();
+		s_sTitle = string.Empty;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static void Open(array<string> nameKeys, array<int> prices, int cashCeiling, int cash, int bank, int locksPrice, string locksPlate, RplId lotId)
@@ -239,6 +284,8 @@ class LF_VehicleLotSheet
 			lotKey = lotComponent.GetLotId();
 
 		array<ref LF_UIPart> parts = {};
+		s_aRowLines.Clear();
+		s_sTitle = WidgetManager.Translate(LF_VehicleLot.TitleKeyFor(lotKey));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "LotTitle", LF_VehicleLot.TitleKeyFor(lotKey)));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LotMoney", WidgetManager.Translate("#LF-Lot_Money", LF_MoneyFormat.FormatMoney(bank), LF_MoneyFormat.FormatMoney(cash))));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "LotRule", WidgetManager.Translate("#LF-Lot_Rule", LF_MoneyFormat.FormatMoney(cashCeiling))));
@@ -280,11 +327,18 @@ class LF_VehicleLotSheet
 					capacityClass = offer.CapacityClassIn(LF_VehiclePricesConfig.Get());
 			}
 
-			s_Screen.AddListRow(LIST, ROW_PREFIX + i.ToString(), LF_VehicleLot.RowLabel(WidgetManager.Translate(nameKeys[i]), capacityClass), status, action);
+			string label = LF_VehicleLot.RowLabel(WidgetManager.Translate(nameKeys[i]), capacityClass);
+			s_Screen.AddListRow(LIST, ROW_PREFIX + i.ToString(), label, status, action);
+			s_aRowLines.Insert(RowLine(ROW_PREFIX + i.ToString(), label, status, WidgetManager.Translate(action)));
 		}
 
 		if (locksPrice > 0)
-			s_Screen.AddListRow(LIST, LOCKS_ROW, WidgetManager.Translate("#LF-Lot_ChangeLocksRow", locksPlate), LF_MoneyFormat.FormatMoney(locksPrice), "#LF-Lot_ChangeLocksButton");
+		{
+			string locksLabel = WidgetManager.Translate("#LF-Lot_ChangeLocksRow", locksPlate);
+			string locksPrices = LF_MoneyFormat.FormatMoney(locksPrice);
+			s_Screen.AddListRow(LIST, LOCKS_ROW, locksLabel, locksPrices, "#LF-Lot_ChangeLocksButton");
+			s_aRowLines.Insert(RowLine(LOCKS_ROW, locksLabel, locksPrices, WidgetManager.Translate("#LF-Lot_ChangeLocksButton")));
+		}
 
 		s_Screen.GetOnButton().Insert(OnButton);
 		LF_Debug.Info(LF_VehicleLot.FEATURE, string.Format("lot sheet open: %1 car(s), bank %2", count, bank));
