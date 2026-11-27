@@ -4,11 +4,6 @@ GenericEntity {
   MeshObject "{39292FCC7A8D6728}" {
    Object "{827CD0B3816D10CD}Assets/Props/Civilian/NoticeBoardCork_01/NoticeBoard_Motor_Pool.xob"
   }
-  RigidBody "{EA5A2BB11855BF54}" {
-   Mass 10
-   ModelGeometry 1
-   Static 1
-  }
   LF_PoliceCarPoolComponent "{A58F7104644916E4}" {
   }
   ActionsManagerComponent "{7C8D6D653F7243C5}" {

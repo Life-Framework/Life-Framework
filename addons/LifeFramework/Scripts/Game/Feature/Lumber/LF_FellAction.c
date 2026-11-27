@@ -93,6 +93,14 @@ class LF_FellAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The helper entity is local to the player holding the axe and has no RplComponent: the action runs
+	//! on that machine only and asks the server through the player controller (LF_AskFell).
+	override bool HasLocalEffectOnlyScript()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		// The prompt helper lives on the machine of the player who holds the axe (LF_FellPrompt), so this
