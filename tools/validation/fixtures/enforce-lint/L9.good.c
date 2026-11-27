@@ -19,3 +19,10 @@ class LF_FixtureConfig
 		return config;
 	}
 }
+
+class LF_FixtureAllowedConfig
+{
+	// lf-lint-ok: a name whose empty value selects nothing, so the shipped name is the only useful unset value
+	[Attribute("full", UIWidgets.EditBox, "Name")]
+	string m_sName = "full";
+}

@@ -1238,6 +1238,7 @@ class LF_AgentHarness
 		if (s_bLoop)
 		{
 			s_bLoop = false;
+			GetGame().GetCallqueue().Remove(Poll);
 			GetGame().GetCallqueue().Remove(HoldInput);
 			s_iEnsureTries = 0;
 			s_iCaptureId = 0;

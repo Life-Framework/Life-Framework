@@ -1,5 +1,6 @@
+// inputs: tools/lib/slice.mjs, tools/commands/slice.mjs
 // Proves the waiting/working split of `tools\cli slice record` and `slice stats` (#3200) on a fixture worktree, with no
-// GitHub and no game. inputs: tools/lib/slice.mjs, tools/commands/slice.mjs
+// GitHub and no game.
 //   1. a worktree's tmp/logs yields the waits per step: explicit `waited N s` (pool lines, a look summary, a session line)
 //      counts, a log with no waited value falls back to its `(N s)` figures, a line naming no step is ignored;
 //   2. record writes that waitMin map onto the ledger row; stats skips an older row that has none;

@@ -29,8 +29,23 @@ if (existsSync(EXAMPLE_PATH) && existsSync(SCHEMA_PATH)) {
   if (!rt) console.log("WARN config-schema: could not rebuild the example LF_ConfigService.WriteExample writes; runtime example not checked");
   else {
     for (const e of validateJson(rt, schema)) fails.push(`runtime example (LF_ConfigService.WriteExample) ${e}`);
-    if (JSON.stringify(rt) !== JSON.stringify(gen.example)) {
-      console.log("WARN config-schema: the runtime example differs from docs/config/config.example.json; align WriteExample or tools/config/schema-overrides.json");
+    // WriteExample is a starter file: it writes only the sections a first-time owner edits (today `shops`), while
+    // docs/config/config.example.json is the full document generated from every config class. So the runtime
+    // example must be a subset of the generated one (same keys, same values where it names them), not equal to it.
+    const notSubset = (a, b, path) => {
+      if (a === null || typeof a !== "object") return JSON.stringify(a) === JSON.stringify(b) ? "" : `${path}: ${JSON.stringify(a)} vs ${JSON.stringify(b)}`;
+      if (Array.isArray(a)) return JSON.stringify(a) === JSON.stringify(b) ? "" : `${path}: array differs`;
+      if (b === null || typeof b !== "object" || Array.isArray(b)) return `${path}: not an object in config.example.json`;
+      for (const k of Object.keys(a)) {
+        if (!(k in b)) return `${path}.${k}: missing from config.example.json`;
+        const m = notSubset(a[k], b[k], `${path}.${k}`);
+        if (m) return m;
+      }
+      return "";
+    };
+    const drift = notSubset(rt, gen.example, "$");
+    if (drift) {
+      console.log(`WARN config-schema: the runtime example disagrees with docs/config/config.example.json at ${drift}; align WriteExample or tools/config/schema-overrides.json`);
     }
   }
 }

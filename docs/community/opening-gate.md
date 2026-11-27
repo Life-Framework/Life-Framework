@@ -62,9 +62,10 @@ names; the lines after them are the ones the command cannot read.
       Checked: <date, what was refused>
 
 - [ ] Password removed
-      `tools\cli host open` *(planned, #1512)* removes the alpha password once the
-      gate passes. Until it merges, the maintainer removes it on the host by hand.
-      The password never appears in this repository or in a public channel.
+      `tools\cli host open --confirm <host dir name>` (#1512) refuses unless
+      `host gate` passes, then clears the alpha password from the host's
+      `secrets.json`, re-applies the config and prints a draft announcement
+      (`--dry-run` writes nothing). Maintainer only. The password never appears in this repository or in a public channel.
 ```
 
 ## Where each piece of evidence lives
@@ -77,4 +78,4 @@ names; the lines after them are the ones the command cannot read.
 | Administrator uid in the roster | `tools\cli staff roster check` | `server/flagship/staff.txt` |
 | Gate check | `tools\cli host gate --target 16` | Four PASS/FAIL lines and one `SUMMARY host-gate` line |
 | Password refusal | A join with no password or a wrong one | The client's refusal, by hand |
-| Password removal | `tools\cli host open` *(planned, #1512)* | The host's server config |
+| Password removal | `tools\cli host open --confirm <host dir name>` | The host's `secrets.json` and server config |

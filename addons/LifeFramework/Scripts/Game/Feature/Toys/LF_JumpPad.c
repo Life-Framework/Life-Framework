@@ -173,11 +173,13 @@ class LF_JumpPadComponent : ScriptComponent
 	//! The system a server switches the pads off with (#1075).
 	static const string SYSTEM = "Toys";
 
-	[Attribute("1", UIWidgets.CheckBox, desc: "When disabled, entering applies no velocity.")]
-	protected bool m_bEnabled = true;
+	// No initializer on either field (#1077): a prefab value of 0 is not serialized, so an initializer would beat it.
+	// "Start disabled" is the zero-default polarity; a speed of 0 or less means "use the shipped speed".
+	[Attribute("0", UIWidgets.CheckBox, desc: "When set, the pad starts disabled and entering applies no velocity.")]
+	protected bool m_bStartDisabled;
 
-	[Attribute("12", UIWidgets.EditBox, desc: "Upward speed in meters per second, applied once per enter.")]
-	protected float m_fUpwardSpeed = 12;
+	[Attribute("12", UIWidgets.EditBox, desc: "Upward speed in meters per second, applied once per enter. 0 uses the default (12).")]
+	protected float m_fUpwardSpeed;
 
 	protected ref LF_JumpPad m_Pad;
 	protected ref LF_JumpPadSeen m_Seen;
@@ -190,8 +192,11 @@ class LF_JumpPadComponent : ScriptComponent
 		if (!m_Pad)
 			m_Pad = new LF_JumpPad();
 
-		m_Pad.SetEnabled(m_bEnabled);
-		m_Pad.SetUpwardSpeed(m_fUpwardSpeed);
+		m_Pad.SetEnabled(!m_bStartDisabled);
+		if (m_fUpwardSpeed > 0)
+			m_Pad.SetUpwardSpeed(m_fUpwardSpeed);
+		else
+			m_Pad.SetUpwardSpeed(LF_JumpPad.DEFAULT_UPWARD_SPEED);
 
 		if (!owner)
 		{
