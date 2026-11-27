@@ -153,6 +153,8 @@ class LF_DriveHarness
 	static const float FAN_REACH_M = 8; // lf-fixed: harness geometry
 	static const float FAN_CLEAR_M = 4.5; // lf-fixed: harness geometry
 	static const float FAN_EVERY_MS = 250; // lf-fixed: harness tuning
+	static const float FAN_SURFACE_M = 6; // lf-fixed: harness geometry
+	static const float FAN_SURFACE_BONUS = 1.5; // lf-fixed: harness tuning
 	static const float SLOPE_ARM_M = 6; // lf-fixed: harness geometry
 	// Nose up this far is a climb: the stuck test waits longer and the box is held in first.
 	static const float CLIMB_DEG = 6; // lf-fixed: harness tuning
@@ -261,6 +263,7 @@ class LF_DriveHarness
 	protected static float s_fGoalClear;
 	protected static bool s_bFanOpen;
 	protected static bool s_bFanHeld;
+	protected static string s_sTrackMat; // the ground material under the car where the creep began, for the log
 	protected static int s_iApproachBackups;
 	protected static int s_iStrikes;
 	protected static float s_fStrikeBest;
@@ -1796,13 +1799,16 @@ class LF_DriveHarness
 		s_fProgress = Project(at, 1000);
 		s_fApproachProgress = s_fProgress;
 		s_fApproachBest = vector.DistanceXZ(at, s_vGoal);
+		s_sTrackMat = SurfaceAt(at);
 		s_fProgressAtMs = now;
 		s_fStillSinceMs = 0;
 		s_fFanAtMs = 0;
 		s_bFanHeld = false;
 		float left = Math.Max(s_fRouteLength - s_fProgress, s_fApproachBest);
 		s_fApproachEndMs = now + (60 + left * 2.5) * 1000;
-		LF_Debug.Info(FEATURE, string.Format("drive final approach from %1 (%2): %3 m of route left, %4 m straight to the goal, creep %5 km/h, close within %6 m", at, why, Math.Round(s_fRouteLength - s_fProgress), Math.Round(s_fApproachBest), s_fCreepKmh, Round1(s_fNear)));
+		// The creep has its own budget; the drive's must not cut it off first (a tail of a few hundred metres at 9 km/h).
+		s_fEndMs = Math.Max(s_fEndMs, s_fApproachEndMs); // lf-float: world time in ms, harness only
+		LF_Debug.Info(FEATURE, string.Format("drive final approach from %1 (%2): %3 m of route left, %4 m straight to the goal, creep %5 km/h, close within %6 m, ground %7", at, why, Math.Round(s_fRouteLength - s_fProgress), Math.Round(s_fApproachBest), s_fCreepKmh, Round1(s_fNear), s_sTrackMat));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2059,6 +2065,10 @@ class LF_DriveHarness
 			if (s_bFanHeld && AngleDiff(yaw, s_fFanYaw) < step * 0.6)
 				cost -= 0.75;
 
+			// A road or track under the heading beats a line through the trees beside it.
+			if (IsTrackSurface(SurfaceAt(at + dir * FAN_SURFACE_M)) || IsTrackSurface(SurfaceAt(at + dir * FAN_SURFACE_M * 2)))
+				cost -= FAN_SURFACE_BONUS;
+
 			if (cost < best)
 			{
 				best = cost;
@@ -2184,6 +2194,32 @@ class LF_DriveHarness
 			d += 2 * Math.PI;
 
 		return Math.AbsFloat(d);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A road, track or path ground material (by its resource name) as against grass, forest floor, rock or sand.
+	protected static bool IsTrackSurface(string material)
+	{
+		if (material.IsEmpty())
+			return false;
+
+		string lower = material;
+		lower.ToLower();
+		return lower.Contains("road") || lower.Contains("track") || lower.Contains("path") || lower.Contains("asphalt") || lower.Contains("gravel");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ground's material name at a point (the terrain's own: a road, a track, a forest floor), or empty.
+	protected static string SurfaceAt(vector p)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		TraceParam trace = new TraceParam();
+		trace.Start = Vector(p[0], world.GetSurfaceY(p[0], p[2]) + 2, p[2]);
+		trace.End = Vector(p[0], trace.Start[1] - 5, p[2]);
+		trace.Flags = TraceFlags.WORLD;
+		trace.LayerMask = EPhysicsLayerPresets.Main;
+		world.TraceMove(trace, null);
+		return trace.TraceMaterial;
 	}
 
 	//------------------------------------------------------------------------------------------------
