@@ -2218,7 +2218,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{917EF52F3C24A83B}" {
      Id "LF-Activity_Guided"
      Target_en_us "The waypoint is back on your current step."
-     Comment "Next tab line after Guide me."
+     Comment "Next tab line after Resume."
     }
     CustomStringTableItem "{366A7B92337FE227}" {
      Id "LF-Activity_Kilometres"
@@ -18705,7 +18705,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3D6B90E2A41C85F7}" {
      Id "LF-WelcomeGuide_DoneBody1a"
-     Target_en_us "Your arrival errands are done and your papers are in order. Open your personal file (F2) and pick What to do next: it lists ways to earn a living and first steps around {town}, and Guide me puts a waypoint on the first step."
+     Target_en_us "Your arrival errands are done and your papers are in order. Open your personal file (F2) and pick What to do next: it lists ways to earn a living and first steps around {town}. Press Start on one and it puts a waypoint on the first step; Resume puts the waypoint back on one you already started."
      Comment "Welcome guide page 1, first paragraph once every arrival errand is turned in. Core text, no place names."
     }
     CustomStringTableItem "{A92F17D3586E04BC}" {

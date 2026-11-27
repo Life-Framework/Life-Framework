@@ -101,7 +101,7 @@ class LF_MapPoi
 	string m_sIcon;
 	string m_sLabel;
 	float m_fMinZoom;
-	//! The nearest named place (a town), for the label "Bank, Saint-Philippe". Empty in logic tests.
+	//! The nearest settlement, for the label "Bank, Saint-Philippe" (never a factory or farm label). Empty in logic tests.
 	string m_sTown;
 }
 
@@ -224,7 +224,7 @@ class LF_MapPois
 
 	//------------------------------------------------------------------------------------------------
 	//! What this audience sees on the map now: the live places, the table and the rule, with each
-	//! POI's town from the nearest named place. Null config (the table did not load) lists nothing.
+	//! POI's town from the nearest settlement. Null config (the table did not load) lists nothing.
 	//! \return How many POIs were added to into.
 	static int CollectLive(notnull LF_MapPoiAudience audience, notnull array<ref LF_MapPoi> into)
 	{
@@ -238,7 +238,7 @@ class LF_MapPois
 		int added = Collect(config, audience, places, into);
 		for (int i = first; i < into.Count(); i++)
 		{
-			into[i].m_sTown = LF_NamedPlaces.Nearest(into[i].m_vPos);
+			into[i].m_sTown = LF_NamedPlaces.NearestSettlement(into[i].m_vPos);
 		}
 
 		return added;
