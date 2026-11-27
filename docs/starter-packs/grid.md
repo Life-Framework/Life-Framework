@@ -25,6 +25,7 @@ takes a block of cells for a big item; `--cell` is its south-west corner.
 - A sibling worktree's uncommitted claim is invisible until #2221 lands; run `grid list` last before you ship.
 - A pack prefab cannot be named by a core grid layer (`validate-addon-boundary`): `grid place` routes a cell with pack content to
   the pack grid world on its own (`--pack` forces it; `world-zones.md` "Pack cells").
+- A prop with a user action needs an `RplComponent` or its action works only for a host (`validate-actions-have-rpl`).
 - A placement meant to look odd goes in `agent-box/place-audit-allow.json` with a reason.
 - `look` needs a Workbench on a pool machine; use a session only for UI, motion, a second player, sound or filming.
 - Core tests keep annex names; never assert a town coordinate. Tests run on the grid, not the town.

@@ -68,7 +68,8 @@ Two findings for #392:
   the actor's position and heading. Not tested.
 - First person of an actor: place the camera at the actor's head each frame.
   Not tested. For the controlled player, the normal player camera is already
-  first person, and `SwitchCameraType` is a harness input action.
+  first person, and `SwitchCameraType` is a harness input action that did not
+  switch to third person when tried (2026-11-27).
 
 ## Actors
 

@@ -119,6 +119,13 @@ tools\cli wt prune <slug>       # remove a merged worktree + branch
 `wt <command> <slug>` can be run from anywhere; it always uses the latest
 tooling against the named worktree.
 
+**Before building an old issue, `tools\cli issue-check <N>`** (`tools/lib/issue-preflight.mjs`, advice, exit 0). One
+verdict per issue. LIKELY DONE: a merged PR or commit that is for it (title ends `(#N)`, a `Refs`/`Closes`/`Fixes #N`
+line, a PR titled like the issue, every card a `Sliced: #N` comment names done, or a done label). CHECK: a plain mention
+or a commit naming the issue's key `LF_` classes and `validate-*` checks. CLEAR: nothing found. It cites the PRs: read
+them before writing code. On 2026-11-27 three of five old bugs were already fixed; say "already fixed (PR #N)" and ship
+nothing. `--skip-list <file>` takes the lead's stale-issue file (`LF_STALE_LIST`).
+
 ## Workbench per worktree
 
 Each linked checkout has its own `addons/LifeFramework/LifeFramework.gproj`, so
