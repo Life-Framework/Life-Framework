@@ -185,20 +185,20 @@ class LF_TraderQuoteLive
 	protected static float s_fAskedAt = -100000;
 
 	protected static RplId s_ReplyTraderId = RplId.Invalid();
-	protected static ref array<string> s_aGoods = {};
-	protected static ref array<int> s_aOne = {};
-	protected static ref array<int> s_aAll = {};
+	protected static ref array<string> s_aGoods;
+	protected static ref array<int> s_aOne;
+	protected static ref array<int> s_aAll;
 
 	protected static IEntity s_RowsOwner;
 	protected static float s_fRowsAt = -1;
-	protected static ref array<ref LF_TraderSellGood> s_aRows = {};
+	protected static ref array<ref LF_TraderSellGood> s_aRows;
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: the goods `user` carries that the trader on `owner` buys, counted at most once a frame.
 	static array<ref LF_TraderSellGood> Rows(IEntity owner, IEntity user)
 	{
 		float now = Now();
-		if (owner == s_RowsOwner && now == s_fRowsAt)
+		if (s_aRows && owner == s_RowsOwner && now == s_fRowsAt)
 			return s_aRows;
 
 		s_RowsOwner = owner;
@@ -266,7 +266,8 @@ class LF_TraderQuoteLive
 	static int Price(IEntity owner, ResourceName prefab, bool all)
 	{
 		RplId traderId = LF_NetworkUtils.GetRplId(owner);
-		if (!traderId.IsValid() || traderId != s_ReplyTraderId)
+		// The reply arrays are created by the first reply (no static initializer, #2755).
+		if (!traderId.IsValid() || traderId != s_ReplyTraderId || !s_aGoods || !s_aOne || !s_aAll)
 			return LF_TraderSellRows.UNKNOWN;
 
 		for (int i = 0; i < s_aGoods.Count(); i++)

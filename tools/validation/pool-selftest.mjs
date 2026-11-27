@@ -18,6 +18,8 @@
 //      use every lane behind the holder's RAM and heat gate; a machine that goes away requeues the run.
 //   7. burst starts (#1195): N queued runs start together on N free lanes, in queue order, behind the RAM of the
 //      starts in flight; a granted ticket stops blocking; atomic lane locks across racing holders; one snapshot per burst.
+// Sections (2026-11-27): nine parallel processes, each with the isolation below and the guard check at its end. red-proof: the
+// session-folder guard check inverted and the holder-config lane list changed printed their FAIL lines in two sections; restored.
 // red-proof 2026-11-17 (pool VRAM end to end, #2634), on main before the change: "pool settings do not carry the VRAM reserves (undefined, floor undefined)"; "the remote state read does not carry free and total VRAM"; "a 2-client full session went to a PC whose card has 1000 MB free (local) while the laptop had 6000 MB"; "a session started on a laptop with 1000 MB of VRAM free (lf-testbox)"; after it the file passes.
 // red-proof 2026-11-17 (pool-budget-lanes, #1700 #1699), each broken alone: with the boot budget flat 30 s (the old budgetsFor) "CoreOnEveron still gets the 30 s boot budget that killed it (#1700)"; with LF_POOL_THIS_LANES ignored (the old loadMachines) "the leg on lf-cloud still sees 2 session lane(s), the router counted 9 (#1699; this PC: 2)"; with withoutAvoided returning every machine "an avoided machine was still ranked"; with a flat 3 s retry "the lane refusal backoff is 3000,3000,3000,3000,3000,3000".
 // red-proof 2026-11-16 (place-probe-pool): with `local: true` back in place.mjs serverRun "probe: the server run goes through the pool and is not hard-local" (place-tool-selftest); with preferRoomy unused "a probe does not take this PC while it has room".
@@ -128,15 +130,31 @@ const check = (ok, msg) => {
   if (!ok) failures.push(msg);
 };
 
+// Speed (2026-11-27): the pool selftest was one 1,500-line story of about 50 s. Its parts share no state beyond the isolation above, which every
+// process sets up, so they are sections run in parallel child processes (tools/lib/selftest-sections.mjs). Every section ends with the
+// guard check (nothing touched the real pool) and prints its failures; the parent adds them up.
+import { sections } from "../lib/selftest-sections.mjs";
+const S = sections(import.meta.url);
+const section = (name, fn) => S.add(name, async () => {
+  try {
+    await fn();
+  } catch (e) {
+    failures.push(`section '${name}' threw: ${e.stack || e.message}`);
+  }
+  const touched = guard.violations();
+  check(touched.length === 0, `the selftest touched the real pool (${touched.length}): ${[...new Set(touched)].slice(0, 5).join(' | ')}`);
+  for (const m of failures) console.log(`FAIL  ${m}`);
+});
+
+const deadPid = spawnSync(process.execPath, ["-e", ""]).pid;
+const ago = (min) => new Date(Date.now() - min * 60000).toISOString();
+
+section("isolation guard and remote verdicts", () => {
 check(guard.expectViolation(() => readdirSync(join(REAL_HUB, "locks"))), "the guard does not stop a read of the real tmp/wt/locks");
 check(guard.expectViolation(() => writeFileSync(join(REAL_HUB, "locks", "server-2001.lock"), "{}")), "the guard does not stop a write of the real server-2001 lock");
 check(guard.expectViolation(() => readdirSync(REAL_SESSION_BASE)), "the guard does not stop a listing of the real session folders");
 check(guard.expectViolation(() => spawnSync("taskkill", ["/T", "/F", "/PID", "4"])), "the guard does not stop a taskkill of a process this selftest did not start");
 check(!existsSync(join(ISO, "home", "AppData", "Local", "LifeFramework", "session", "x")) && pool.poolSettings(join(ISO, "cwd")) !== null, "the pool does not run on the fixture pool.json and session base");
-
-const deadPid = spawnSync(process.execPath, ["-e", ""]).pid;
-const ago = (min) => new Date(Date.now() - min * 60000).toISOString();
-
 // 1. dead owner of a remote slot
 const remote = { name: "server-2001", pid: 4242, token: "t", rDir: "C:/LF/x", slug: "s", purpose: "test only", origin: hostname(), at: ago(1), serverAlive: true };
 check(pool.remoteBusyVerdict({ ...remote, originPid: deadPid }, [])?.kind === "dead-owner", "dead owner pid on this PC: no reclaim verdict");
@@ -159,8 +177,10 @@ try {
 } catch (e) {
   failures.push(`holder script: ${e.message}`);
 }
+});
 
 const dir = scratchDir("lf-pool-selftest-");
+section("config flip, hung holder, lanes, queue, reaper, hold cap", async () => {
 try {
   gitSync(["init", "-q", dir], { windowsHide: true });
 
@@ -608,7 +628,18 @@ try {
     } catch {}
     rmSync(rdir, { recursive: true, force: true });
   }
+} finally {
+  rmSync(dir, { recursive: true, force: true });
+}
+});
 
+section("run folders, retention, budgets, lane env, bundle checkout", async () => {
+try {
+  gitSync(["init", "-q", dir], { windowsHide: true });
+  // what the earlier part of this story declared and the rest still reads
+  const local = { name: "local", via: "local", slots: 1 };
+  const lanes = { name: "local", via: "local", slots: 1, lanes: { test: 2, session: 1 } };
+  const T0 = Date.parse("2026-01-01T00:00:00Z");
   // #542: three stacked requests from one worktree are one queue entry; the older ones are dropped.
   {
     const sk = (file, slug, pid, lane = "session") => ({ file, slug, pid, lane, at: new Date(T0).toISOString() });
@@ -897,14 +928,14 @@ try {
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }
+});
 
 const dir0 = () => {
   const d = scratchDir("lf-holdercfg2-");
   gitSync(["init", "-q", d], { windowsHide: true });
   return d;
 };
-// 6. Throughput (pool-throughput): sessions of any size on any machine, live RAM per machine,
-// a machine that goes away requeues the job.
+section("throughput: laptop verdicts, holder config and its RAM gate", async () => {
 {
   const laptop = { name: "lf-testbox", via: "ssh", host: "lf-testbox", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 3, session: 3 }, caps: ["server", "clients"] };
   const settings = { minFreeMb: 1500, sessionReserveServerMb: 600, sessionReserveClientMb: 850, sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } } };
@@ -944,6 +975,15 @@ const dir0 = () => {
     check(/lf-pool: pass/.test(gate(0, 1)), "the holder's RAM gate refused a test with RAM to spare");
     rmSync(ld, { recursive: true, force: true });
   }
+}
+});
+
+section("throughput: burst starts", async () => {
+{
+  const laptop = { name: "lf-testbox", via: "ssh", host: "lf-testbox", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 3, session: 3 }, caps: ["server", "clients"] };
+  const settings = { minFreeMb: 1500, sessionReserveServerMb: 600, sessionReserveClientMb: 850, sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } } };
+  const st = pool.parseRemoteState(['lf-pool: lock server-2001 True {"pid":5,"purpose":"session","clients":2,"profile":"full","at":"2026-01-01T00:00:00Z"}', "lf-pool: lock server-2011 free", 'lf-pool: lock server-2021 False {"pid":6}', "lf-pool: ram 2867 15606"].join(String.fromCharCode(13, 10)));
+  const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
   // Burst starts (#1195): with N free lanes and N queued runs for a machine, all N start together.
   // Before, only the head of a machine's queue tried it and each remote start (2-3 s, 22 s for a new
   // run folder) held everyone behind it: 14 runs on a 16-lane box never ran more than 7 at once.
@@ -1110,6 +1150,15 @@ const dir0 = () => {
     check(shas.every(Boolean) && new Set(shas).size === 1 && took === 1, "six runs asked together did not share one snapshot (" + took + " takes, " + new Set(shas).size + " shas; " + sixRuns.find((o) => !/sha /.test(o))?.slice(0, 200) + ")");
     rmSync(sr, { recursive: true, force: true });
   }
+}
+});
+
+section("throughput: heat, idle sessions, a machine that goes away", async () => {
+{
+  const laptop = { name: "lf-testbox", via: "ssh", host: "lf-testbox", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 3, session: 3 }, caps: ["server", "clients"] };
+  const settings = { minFreeMb: 1500, sessionReserveServerMb: 600, sessionReserveClientMb: 850, sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } } };
+  const st = pool.parseRemoteState(['lf-pool: lock server-2001 True {"pid":5,"purpose":"session","clients":2,"profile":"full","at":"2026-01-01T00:00:00Z"}', "lf-pool: lock server-2011 free", 'lf-pool: lock server-2021 False {"pid":6}', "lf-pool: ram 2867 15606"].join(String.fromCharCode(13, 10)));
+  const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
   // Heat (the laptop powers itself off at ~95 °C): a fresh reading at or over thermalHoldC holds new jobs there.
   check(pool.parseRemoteState("lf-pool: ram 4000 15606" + String.fromCharCode(10) + "lf-pool: thermal 93.1").thermalC === 93.1, "parseRemoteState drops the temperature");
   const hot = pool.remoteSessionVerdict({ ...laptop, thermalHoldC: 90 }, { ...st, freeMb: 9000, thermalC: 93.1 }, settings, { clients: 1, profile: "lowspec" });
@@ -1163,6 +1212,15 @@ const dir0 = () => {
     check(pool.machineGone(groot, { local: true }, 255) === false, "a local run counts as a lost machine");
     rmSync(groot, { recursive: true, force: true });
   }
+}
+});
+
+section("throughput: busy but answering machines, a machine that comes back", async () => {
+{
+  const laptop = { name: "lf-testbox", via: "ssh", host: "lf-testbox", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 3, session: 3 }, caps: ["server", "clients"] };
+  const settings = { minFreeMb: 1500, sessionReserveServerMb: 600, sessionReserveClientMb: 850, sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } } };
+  const st = pool.parseRemoteState(['lf-pool: lock server-2001 True {"pid":5,"purpose":"session","clients":2,"profile":"full","at":"2026-01-01T00:00:00Z"}', "lf-pool: lock server-2011 free", 'lf-pool: lock server-2021 False {"pid":6}', "lf-pool: ram 2867 15606"].join(String.fromCharCode(13, 10)));
+  const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
   // 2026-11-14: lf-cloud ran 3 servers, 6 clients and 2 Workbenches with 18 GB free, one ssh probe
   // timed out, and `pool status` said DOWN. A busy machine that answered lately stays in use as "slow".
   {
@@ -1266,6 +1324,15 @@ const dir0 = () => {
       rmSync(croot, { recursive: true, force: true });
     }
   }
+}
+});
+
+section("throughput: VRAM and RAM headroom choice", async () => {
+{
+  const laptop = { name: "lf-testbox", via: "ssh", host: "lf-testbox", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 3, session: 3 }, caps: ["server", "clients"] };
+  const settings = { minFreeMb: 1500, sessionReserveServerMb: 600, sessionReserveClientMb: 850, sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } } };
+  const st = pool.parseRemoteState(['lf-pool: lock server-2001 True {"pid":5,"purpose":"session","clients":2,"profile":"full","at":"2026-01-01T00:00:00Z"}', "lf-pool: lock server-2011 free", 'lf-pool: lock server-2021 False {"pid":6}', "lf-pool: ram 2867 15606"].join(String.fromCharCode(13, 10)));
+  const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
   // GPU memory end to end (#2634, tools/lib/pool-vram.mjs): the router (chooseSessionMachine) reads free VRAM
   // per machine (this PC through opts.localVramMb, the laptop through remoteState's vramFreeMb) and sends a
   // client session to the machine whose card holds its clients, though the other has the RAM and is faster.
@@ -1402,11 +1469,9 @@ const dir0 = () => {
     rmSync(mroot, { recursive: true, force: true });
   }
 }
+});
 
-// Lane run folders (run-overhead): a remote test runs in its lane's shared folder, owned through the lane
-// lock; sessions and gate syncs keep per-worktree folders; the bundle ref is unique per process; the
-// box-side checkout of a shared folder drops what the last run left under addons/ (rdb kept), through
-// the box clone's link-safe delete, and never follows a junction.
+section("lane run folders and the rdb plan", async () => {
 {
   const lroot = scratchDir("lf-lanes-");
   try {
@@ -1458,9 +1523,6 @@ const dir0 = () => {
   }
 }
 
-// The rdb of a remote run (run-overhead item 4): a pool machine with Workbench refreshes a stale one in
-// its own run, so this PC neither starts its Workbench for it nor sends it the stale copy; a fresh rdb
-// is still sent by hash, and a machine without Workbench still gets this PC's.
 {
   const rr = scratchDir("lf-rdbplan-");
   try {
@@ -1486,17 +1548,12 @@ const dir0 = () => {
     rmSync(rr, { recursive: true, force: true });
   }
 }
+});
 
-const touched = guard.violations();
-check(touched.length === 0, `the selftest touched the real pool (${touched.length}): ${[...new Set(touched)].slice(0, 5).join(" | ")}`);
-guard.uninstall();
-try {
-  safeRemoveTree(ISO);
-} catch {}
-
-if (failures.length) {
-  console.log("pool-selftest: FAIL");
-  for (const f of failures) console.log(`  ${f}`);
-  process.exit(1);
-}
-console.log("pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine, a failed bundle fetch shows git's error, retries, then asks for a full bundle, stacked session requests collapse to one, old session folders are removed link-safely, a low disk refuses a start, a session of any size takes whichever machine has the lane and the RAM, a machine that comes back is used, a starved RAM head drains its machine, the laptop is never over-committed, remote tests use every lane behind a RAM gate, a machine that goes away requeues the run)");
+process.exitCode = await S.run({
+  failed: () => failures.length,
+  summary: (n) => {
+    guard.uninstall();
+    return n ? 'pool-selftest: FAIL' : "pool-selftest: OK (dead remote owner reclaimed, config re-read per poll, hung holder reclaimed + logged, lanes, priority order + promotion, RAM gate, self-deadlock, idle-session reaper, session hold cap + warning + record, queue age kept across retries, runtime budgets, a machine's own hostname entry is local there, sessions consider every machine, a failed bundle fetch shows git's error, retries, then asks for a full bundle, stacked session requests collapse to one, old session folders are removed link-safely, a low disk refuses a start, a session of any size takes whichever machine has the lane and the RAM, a machine that comes back is used, a starved RAM head drains its machine, the laptop is never over-committed, remote tests use every lane behind a RAM gate, a machine that goes away requeues the run)";
+  },
+});

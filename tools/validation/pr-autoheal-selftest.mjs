@@ -1,3 +1,4 @@
+// inputs: tools/pr-autoheal.mjs, .github/workflows/pr-autoheal.yml
 // pr-autoheal-selftest: the pure parts of tools/pr-autoheal.mjs (which PRs it looks at, which conflicts it may
 // heal, which parked runs it approves: every parked pull_request run on a head it pushed) and the workflow's
 // wiring. The end-to-end proof ran on GitHub with scratch PRs (#5035, #5040, 2026-11-27); this pins its rules.
