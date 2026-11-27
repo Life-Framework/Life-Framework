@@ -1,17 +1,19 @@
 // red-proof: the pack leg's first run (2026-11-27, #5080) failed every row whose item has no inventory name of its own
 // (`ETool_ALICE` among them) with `shows a raw prefab name`; `tools\cli test --no-build --red LF_Test_EveronShopNames` puts the raw file
-// name on every row and fails them all.
+// name on every row and fails them all. Duplicate-name check (2026-11-27): on the unfixed names the run failed `stock pharmacy: Gauze_02 shows
+// 'Gauze'` and `Tourniquet_USSR_01 shows 'Tourniquet'`; with the four pack name keys it passes.
 //! 2026-11-27 UI sweep: every name a shop list can print resolves to words. A row takes its name from the stock line's key, else from
 //! the item's own inventory name, else (the bug) from the prefab's file name, which is how the hardware store showed `ETool_ALICE`
 //! (#5080). Checked over every merged pack stock row, every buyback line, every catalogue item an outlet sells, every licence row
 //! and every extra priced item: the name is not empty, is not the prefab file name, and its translation holds no `#` key, `%` slot
-//! or `Foo_Bar` id.
+//! or `Foo_Bar` id. No two rows of one stock or buyback list show the same name.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronShopNames : LF_Test
 {
 	protected static const string LOWER = "abcdefghijklmnopqrstuvwxyz";
 	protected static const string UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	protected int m_iRows;
+	protected ref array<string> m_aSeen = {};
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -66,7 +68,7 @@ class LF_Test_EveronShopNames : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void CheckRow(LF_TestContext ctx, string where, ResourceName prefab, string stockName)
+	protected void CheckRow(LF_TestContext ctx, string where, ResourceName prefab, string stockName, bool stockList = false)
 	{
 		string key = stockName;
 		if (RedProof())
@@ -78,12 +80,27 @@ class LF_Test_EveronShopNames : LF_Test
 		string problem = Problem(key, shown);
 		m_iRows++;
 		ctx.True(problem.IsEmpty(), string.Format("%1: %2 %3 (key '%4', shows '%5')", where, FileName(prefab), problem, key, shown));
+
+		// Two rows of one shop list that read the same leave the player guessing (the pharmacy listed Gauze and Tourniquet twice,
+		// UI sweep 2026-11-27). Only a stock list is one sheet; the outlet and extra lists are not read side by side.
+		if (!stockList)
+			return;
+
+		string listed = shown;
+		if (RedProof())
+			listed = "Same";
+		string seenKey = where + "|" + listed;
+		if (m_aSeen.Find(seenKey) >= 0)
+			ctx.Fail(string.Format("%1: %2 shows '%3', the same as another row of this list", where, FileName(prefab), shown));
+		else
+			m_aSeen.Insert(seenKey);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
 		m_iRows = 0;
+		m_aSeen.Clear();
 		LF_ShopStockConfig stocks = LF_ShopStockConfig.Get();
 		ctx.NotNull(stocks, "the merged shop stocks load");
 		if (stocks && stocks.m_aStocks)
@@ -98,14 +115,14 @@ class LF_Test_EveronShopNames : LF_Test
 					foreach (LF_ShopStockItem line : stock.m_aItems)
 					{
 						if (line && !line.m_Prefab.IsEmpty())
-							CheckRow(ctx, "stock " + stock.m_sId, line.m_Prefab, line.m_sDisplayName);
+							CheckRow(ctx, "stock " + stock.m_sId, line.m_Prefab, line.m_sDisplayName, true);
 					}
 				}
 
 				if (stock.m_Buyback && stock.m_Buyback.m_aPrefabs)
 				{
 					foreach (ResourceName wanted : stock.m_Buyback.m_aPrefabs)
-						CheckRow(ctx, "stock " + stock.m_sId + " buyback", wanted, "");
+						CheckRow(ctx, "stock " + stock.m_sId + " buyback", wanted, "", true);
 				}
 			}
 		}
