@@ -212,7 +212,17 @@ tools\cli main-guard start | stop | status | watch   # status is also a line in 
 2. **Stage 2, the rest**, on the newest `compiled-ok` head, at most every 10 min, in `Life-Framework-ws-main-guard-run`:
    `build`, `test --no-build --tier all`, `audit placement --strict`, `e2e --pre-move 502ebf39 --mission playtest`.
    All pass: `green`. A red step reruns at the same head; a pass on the rerun is a flake
-   (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts.
+   (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts. Two rules from the revert audit
+   (`docs/testing/revert-audit-2026-11-27.md`, class D), proven by `main-guard-bisect-selftest.mjs` on the real cases
+   (#2369, #2881, #2887, #3017):
+   - **Several red merges and no compiler output is infra.** When a `build` bisect covers two or more merges, every run
+     (first, recheck, each probe) is red and none printed a compile error or a failing test, the build died before it
+     compiled anything: nothing is reverted, the head is marked `infra` (not red), the staff webhook gets one line per
+     head, and a later tick runs it again (`infraRun`; a held lock was already infra, #2759).
+   - **A test-only merge is bisected with the merge it follows.** A merge that changes only tests (`isTestOnly`)
+     directly after another is probed at the test fix, never between the two (`groupFollowUps`), so a data PR whose
+     test fix landed is not blamed. After the data PR is reverted, a test-only merge in the same range is explained by
+     that landed revert with no shared file needed: comment, no revert, ships with the re-land.
    **A pre-move-only red is `needs-skip`, not a revert (#2812).** When `pre-move e2e` reproduces, the guard runs the
    plain `e2e` at the same head; if that passes, a pass-2 check needs data the pinned ref build's pass 1 cannot write
    (the #2480 and #2798 shape). The bisect still names the PR, which gets a PR comment and a fix card, and nothing is
