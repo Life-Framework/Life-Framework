@@ -51,6 +51,39 @@ export function driveAndFollow(on, wait, words, opts) {
   return { started, end };
 }
 
+// The doors `drive probe` lists (`name@<d>m,h<h>,at=x;y;z,door`): a boom barrier's bar, a yard gate.
+export function doorsOf(detail) {
+  const out = [];
+  for (const m of String(detail ?? "").matchAll(/(\S+?)@[\d.]+m,h[\d.]+,at=(-?[\d.]+);(-?[\d.]+);(-?[\d.]+),door/g)) out.push({ name: m[1], at: [Number(m[2]), Number(m[3]), Number(m[4])] });
+  return out;
+}
+
+// A drive that ended `why=...shut_door_...` stands at a shut gate or boom barrier: get out, open it with its door action
+// the way a player does (standing round it until the action shows), and get back in. Returns what it did.
+export function openShutGate(on, wait, car) {
+  on({ verb: "vehicle", words: ["stop"] });
+  wait(1000);
+  on({ verb: "vehicle", words: ["exit", "force"] }, 10000);
+  wait(1500);
+  const doors = doorsOf(on({ verb: "drive", words: ["probe", `${car[0]},${car[2]}`, "r=10"] }, 20000).detail);
+  let opened = "";
+  for (const d of doors) {
+    for (const r of [1.5, 2.5, 3.5]) {
+      for (let k = 0; k < 8 && !opened; k++) {
+        const a = (k * Math.PI) / 4;
+        on({ verb: "capture", mode: "world", name: "drive_gate", x: d.at[0], y: d.at[1], z: d.at[2], ox: Number((r * Math.cos(a)).toFixed(2)), oy: 0, oz: Number((r * Math.sin(a)).toFixed(2)) }, 30000);
+        wait(800);
+        if (on({ verb: "use", className: "SCR_DoorUserAction" }, 10000).status === "ok") opened = d.name;
+      }
+    }
+    if (opened) break;
+  }
+  wait(4000);
+  const enter = on({ verb: "vehicle", words: ["enter", "driver", `at=${car[0]},${car[2]}`, "r=10"] }, 15000);
+  wait(1500);
+  return { doors: doors.length, opened, entered: enter.status === "ok" };
+}
+
 // A car handed out on a pad can take a few seconds to stand there: ask again while none is in reach.
 export function enterWhenThere(on, wait, pad, radius, tries = 8) {
   let r;
@@ -66,6 +99,8 @@ function selftest() {
   const f = [];
   const s = kv("seat=pilot veh=S105.et speed=12.5kmh pos=1,2,3 drive=driving");
   if (s.seat !== "pilot" || s.pos !== "1,2,3" || s.drive !== "driving") f.push("kv reads a state line");
+  const doors = doorsOf("probe ground=43.6 n=2 BarGate_01_bar.et@4.4m,h0.5,at=7450.1;44.9;8283.2,door GuardHouse_01_beige.et@11.9m,h8.1,at=7460;44.4;8290");
+  if (doors.length !== 1 || doors[0].name !== "BarGate_01_bar.et" || doors[0].at[2] !== 8283.2) f.push("doorsOf reads the doors a probe lists");
   if (Math.round(Math.hypot(BAY_PAD[0] - LOT_PAD[0], BAY_PAD[1] - LOT_PAD[1])) < 250) f.push("the pads are about 300 m apart");
   for (const x of f) console.log(`FAIL  ${x}`);
   console.log(f.length ? "drive-proof selftest: FAIL" : "drive-proof selftest: PASS");
