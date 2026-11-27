@@ -134,7 +134,7 @@ class LF_FeedFromVehicle
 			int left = output.m_iOutputAmount - toVehicle - toUser;
 			while (left > 0)
 			{
-				IEntity item = LF_Utils.SpawnEntityPrefab(output.m_OutputPrefab, station.GetOrigin() + dropOffset, rotation);
+				IEntity item = LF_Utils.SpawnEntityPrefab(output.m_OutputPrefab, LF_ProcessDrop.PointFor(station, user, dropOffset), rotation);
 				if (!item)
 				{
 					LF_Debug.Error(FEATURE, string.Format("feed from vehicle: output spawn failed for %1", output.m_OutputPrefab));

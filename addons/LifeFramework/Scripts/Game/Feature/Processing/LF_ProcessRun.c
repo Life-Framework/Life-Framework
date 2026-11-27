@@ -93,7 +93,7 @@ class LF_ProcessRun
 		job.m_Machine = machine.GetID();
 		if (user)
 			job.m_User = user.GetID();
-		job.m_vDrop = machine.GetOrigin() + offset;
+		job.m_vDrop = LF_ProcessDrop.PointFor(machine, user, offset);
 		job.m_vRotation = rotation;
 		job.m_iBatches = batches;
 		job.m_fDue = Now() + seconds;
