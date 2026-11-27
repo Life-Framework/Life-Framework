@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 import { allServerLogs } from "./_island-kit.mjs";
+import { AMOUNT, parseMoney } from "./_money.mjs";
 import { driveAndFollow, kv, yes } from "./drive-proof.mjs";
 
 // The truck haul on the hardwood stand with the truck DRIVEN (#5044's `vehicle` and `drive`), not set down by `parkat`.
@@ -44,8 +45,8 @@ export function dollarsPerHour(dollars, minutes) {
 }
 
 export function parseEconomy(text) {
-  const m = /LOOP truck hardwood -> boards, firewood:[^\n]*?steady \$(\d+)\/h, first hour \$(\d+)\/h/.exec(String(text));
-  return m ? { steady: Number(m[1]), first: Number(m[2]) } : null;
+  const m = new RegExp(String.raw`LOOP truck hardwood -> boards, firewood:[^\n]*?steady \$(${AMOUNT})\/h, first hour \$(${AMOUNT})\/h`).exec(String(text));
+  return m ? { steady: parseMoney(m[1]), first: parseMoney(m[2]) } : null;
 }
 
 export function posOf(detail) {
