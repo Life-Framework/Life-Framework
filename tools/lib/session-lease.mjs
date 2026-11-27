@@ -36,11 +36,15 @@ function writeLease(dir, lease) {
   } catch {}
 }
 
-// A harness or session command ran now. Never throws.
-export function touchLease(dir, verb = "") {
+// A harness or session command ran now. Never throws. busyMs > 0 (the heartbeat of a running proof or restart,
+// session-heartbeat.mjs) also says the session is busy until now + busyMs: the pool judges a busy session as active
+// and does not close it on the hold cap until the command is done (pool-queue.mjs busyDefersClose).
+export function touchLease(dir, verb = "", busyMs = 0) {
   if (!dir || !existsSync(dir)) return;
   const lease = readLease(dir);
-  writeLease(dir, { ...lease, lastCommandAt: new Date().toISOString(), lastVerb: String(verb).slice(0, 40) });
+  const now = Date.now();
+  const busy = busyMs > 0 ? { busyUntil: new Date(now + busyMs).toISOString(), busyVerb: String(verb).slice(0, 40) } : {};
+  writeLease(dir, { ...lease, lastCommandAt: new Date(now).toISOString(), lastVerb: String(verb).slice(0, 40), ...busy });
 }
 
 // `session.mjs lease [minutes]`: this session stays up for that long even idle.
@@ -112,10 +116,11 @@ export function lastActiveMs(dir, lockAt) {
     session = JSON.parse(readFileSync(join(dir, "session.json"), "utf8"));
   } catch {}
   const lease = readLease(dir);
-  const t = [lease.lastCommandAt, session?.readyAt, session?.startedAt, lockAt].map((x) => Date.parse(x)).filter(Number.isFinite);
+  const t = [lease.lastCommandAt, lease.busyUntil, session?.readyAt, session?.startedAt, lockAt].map((x) => Date.parse(x)).filter(Number.isFinite);
   // A harness of before the lease (no lease.json) still writes command.txt / result.txt in
   // each client's box on every command: their mtimes show a session is being driven.
-  for (let n = 1; n <= 3; n++) {
+  // Every client, not the first three: a 4-client session driven on client 4 only looked idle.
+  for (let n = 1; n <= 8; n++) {
     for (const f of ["command.txt", "result.txt"]) {
       try {
         t.push(statSync(join(dir, `client${n}`, "profile", "agent-box", f)).mtimeMs);

@@ -942,6 +942,19 @@ it, picks a lane and a budget, and prints one line per outcome.
   `session up --hold`. `wt gate` and `wt ship` hold a test lane only for the suite run itself,
   never while `validate --full` or the build runs (`cmdCi` takes no lane; the selftest asserts
   that no gate function acquires one).
+  **A proof or restart is never closed under itself (2026-11-27, `tools/lib/session-heartbeat.mjs`).** A
+  `session.mjs <proof>`, `restart`, `wait` or `run` starts a detached heartbeat that stamps `lease.json` every 30 s
+  (`busyUntil`, three beats ahead) until the command's process ends, at most 45 min. The idle rule counts a busy
+  session as active, and the hold cap waits for it, up to `sessionBusyExtraMin` (20) past cap plus grace so a hung
+  proof cannot keep a lane for ever. `--hold` only raises the hold cap: it never stops the idle rule, which is why a
+  `--hold 20` session was still closed after 5-6 idle minutes. What idles a session is a command that never reaches it:
+  a harness command with no `--client` used to write the default profile (now it goes to client 1, `agent-box/README.md`
+  "session-scoped"). Selftests: `tools/validation/session-tooling-selftest.mjs`, `pool-selftest` "A proof or restart
+  in progress".
+  **`session up --wait` and `maxClients`.** The heat cap `maxClients` limits what the router sends to a pool machine over
+  ssh; the machine you run on is never excluded by it (`up` without `--wait` starts any client count there). With
+  `--wait`, a request no machine can run at all (no machine with the `clients` cap) now refuses at once with the
+  machines it looked at, instead of saying "no session lane freed within 90 min" after a second.
 - **RAM gate (every machine, read live).** A job starts on a machine only when that machine's
   free RAM, read at that moment (`freemem` here, one ssh read on a pool machine, the same check in
   the box's slot holder), covers it. A session reserves its server (`sessionReserveServerMb`, 600)

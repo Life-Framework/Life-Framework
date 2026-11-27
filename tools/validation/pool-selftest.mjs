@@ -530,6 +530,27 @@ try {
       const old = lease();
       writeFileSync(join(sdir, "lease.json"), JSON.stringify({ ...old, lastCommandAt: new Date().toISOString(), holdSeenAt: new Date(Date.now() - 5 * 60000).toISOString(), holdWarnedAt: new Date(Date.now() - 10 * 60000).toISOString() }));
       check(reapHold(sessWait).length === 0, "a warning whose waiters left closed the session at once");
+
+      // A proof or restart in progress (a fresh heartbeat, tools/lib/session-heartbeat.mjs) is never closed under it:
+      // not as idle, not by the hold cap once the grace is over; a stale heartbeat or a hung proof past the extra window is.
+      // 2026-11-27: two sessions were closed as idle 5-6 min after `ready` while their agent's command waited.
+      {
+        const busySettings = { ...settings, sessionBusyExtraMin: 20 };
+        const reapBusy = (lease, held = 25) => {
+          const at = new Date(Date.now() - held * 60000).toISOString();
+          writeFileSync(join(sdir, "session.json"), JSON.stringify({ startedAt: at, readyAt: at, heldSince: at, holdCap: true, holdMin: 20 }));
+          writeFileSync(join(sdir, "lease.json"), JSON.stringify(lease));
+          rmSync(join(sdir, "reaped.json"), { force: true });
+          return pool.reapIdleSessions(rdir, [lanes], sessWait, busySettings, { sessionDir: sdir, close: (i) => closed.push(i.pid) }).length;
+        };
+        const iso = (offMs) => new Date(Date.now() + offMs).toISOString();
+        const warned = { holdSeenAt: iso(0), holdWarnedAt: iso(-10 * 60000) };
+        check(reapBusy({ lastCommandAt: iso(-30 * 60000), busyUntil: iso(60000), ...warned }) === 0, "a session with a fresh heartbeat was closed (idle or hold cap) under its running proof");
+        check(reapBusy({ lastCommandAt: iso(-30 * 60000) }) === 1, "a session idle 30 min with no heartbeat was kept");
+        check(reapBusy({ lastCommandAt: iso(-30 * 60000), busyUntil: iso(-20 * 60000) }) === 1, "a session whose heartbeat stopped 20 min ago was kept as busy");
+        check(reapBusy({ lastCommandAt: iso(0), busyUntil: iso(-1000), ...warned }) === 1, "a driven session past its hold cap and grace, heartbeat gone, was kept");
+        check(reapBusy({ lastCommandAt: iso(0), busyUntil: iso(60000), ...warned }, 50) === 1, "a hung proof (heartbeat on, 50 min held, cap 20 + 5 + 20) kept its lane for ever");
+      }
     }
 
     // Short timeout end to end: a queued session request closes an idle session and takes the slot.
