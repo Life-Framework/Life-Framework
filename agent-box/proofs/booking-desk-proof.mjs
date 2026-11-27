@@ -61,7 +61,8 @@ async function runBookingDeskProof() {
   // the server-side `use` cannot tell apart (it cannot see the client's offer), so scroll to the row and confirm.
   // The two rows are one class, so the row is picked by its label (`aim` name=): the handler remembers the row last
   // used, so "scroll 0" took the time instead of paying on a second booking (#4791).
-  const answer = (n, want, label) => {
+  // `beforeConfirm` runs after the sweep and the shot, just before the confirm key.
+  const answer = (n, want, label, beforeConfirm) => {
     // A player looks down at a desk; the harness's level ray passes over a 0.75 m desk and finds no context.
     // Sweep the pitch until the interact key selects the desk's answer, then look level again. The pitch is absolute
     // (`input CharacterPitch`): the suspect's client stalls for about 20 s after paying a fine, a relative turn sent
@@ -90,6 +91,7 @@ async function runBookingDeskProof() {
       wait(700);
       aim = on(n, { verb: "aim", words: [] }, 10000);
     }
+    if (beforeConfirm) beforeConfirm();
     const r = on(n, { verb: "interact", step: "confirm" }, 8000);
     wait(3500);
     on(n, { verb: "input", action: "CharacterPitch", value: 0 }, 8000);
@@ -214,9 +216,16 @@ async function runBookingDeskProof() {
   step("1e B's action list at the desk shows both answers", (lookB.detail.match(/LF_BookingDeskAnswerAction/g) ?? []).length >= 2, lookB.detail);
   shot(2, "1_offer_pay_and_time");
   // Paying froze the suspect's client for about 20 s (#4824): `framegap` reads the longest wall time between two
-  // harness polls (400 ms apart) from just before the answer until the pay has settled.
+  // harness polls (400 ms apart) from the confirm key until the pay has settled. The window starts at the
+  // confirm, not before the aim sweep: the sweep takes a `capture ui` screenshot, the harness's own work, and a
+  // capture stalls a client past 1 s on a loaded box (4 of 12 logged gaps in one 2026-11-27 session sat on a
+  // "Screenshot successfully saved" line). Dry run 5's 3616 ms gap fell in the old window, which held that
+  // shot. The sweep's gap is still printed, so a stall there shows, but it is not the pay's.
   on(2, { verb: "framegap" }, 10000);
-  const pay = answer(2, PAY, "1_answer_in_view");
+  const pay = answer(2, PAY, "1_answer_in_view", () => {
+    const pre = on(2, { verb: "framegap" }, 20000);
+    console.log(`client 2: longest frame gap across the aim sweep and shot (not the pay) ${pre.status === "ok" ? pre.detail : pre.status}`);
+  });
   const after = state(2);
   wait(3000);
   // A client can answer no_session for a moment; ask again, and an answer that never comes is its own failure.

@@ -104,3 +104,51 @@ At 15:03 every `session up` on lf-testbox failed with "Client uses unsupported p
 1. The map is driven through `send map open|close|pan <x> <z> <zoom>|hover <x> <z>|descriptors|help open|status`, not `playermenu`; `map open` equips `PaperMap_01_folded` itself.
 2. The town board cards are `use LF_TownBoardCardAction__<0..8> Fit_saint_philippe_board_sign_town_map`; the sheet's buttons are `MarkButton` and `Close` (round 1's `LF_BoardAction` on `..._Place_MapBoard` was the wrong class and entity).
 3. `session.mjs pull` writes BMPs; `bmpFileToPng` in `agent-box/bmp.mjs` makes PNGs the viewer can read.
+
+---
+
+# Round 3: hours 3 to 6 (mining, smelter, truck yard, lumber, a house)
+
+**Build played:** `ws/playtest-1127-r3` on `origin/main` `eb1857d3` (`compiled-ok`), the 0.3.0 feature freeze. Game client 1.9.0.42.
+**Setup:** one `--profile full` island session on lf-testbox (`up --mission island --clients 1 --hold 20`), one fresh account (rules quiz, form R-89), about 20 minutes up, `session down` straight after. The first step was `send checkpoint 5` (Miner 7, Smelting 1, the `MINER_COAL` and `MINER_IRON` licences, $150 cash, $4,750 bank); the lumber leg is `session.mjs lumber-arc` (its own `resetplayer`: $700, Lumberjack 3). The server log holds no `SCRIPT (E)`, `VME`, `Unable to find` or `Can't find` line from the route.
+**Route:**
+- **Mining.** The Miner's supply till at the Saint-Philippe hardware store (price list), a pickaxe in hand (`itemgive`; the till sells it), real melee swings at the Highstone iron rock (3 swings a piece, 2 nuggets picked up) and the East Rise coal rock (1 lump).
+- **Smelter.** The centre-east furnace: prompt, run, 60 s wait, the bar picked up (Smelting XP 28 arrived on the run's end).
+- **Selling.** One iron bar at the dock wholesale iron counter.
+- **Truck yard.** The hut counter's price list and the examiner's "Take the truck check ($300)" prompt.
+- **Lumber.** `lumber-arc` (13 of 13 steps): Standard axe at the Miner's till ($600), a real felling hold on a softwood, a log to the woodlot saw, 8 planks sold at the timber buyer.
+- **A house.** The "for sale" sheet and the Buy house row on two signs (`sp-b83`, `di-b05`) with $170 in the pocket.
+
+## Findings, ranked by what a player hits
+
+| # | Rank | Finding | Where | Picture | What I did |
+|---|---|---|---|---|---|
+| 1 | Medium | A player with $4,750 in the bank who tries to buy a house is told only "You do not carry enough cash for this house." The for-sale sheet says "the price in carried cash", the toast does not say where the cash comes from, and the player has the money, just not in the pocket. The next step (the ATM) is never named. The price is on the F prompt ("Buy house (tier, price)"); the server log read `costs 4000, carried 170` | House for-sale sign (`LF-Property_HouseNoCash`) | [no-cash toast](../../website/public/docs-images/playtest-1127-r3/house_no_cash_toast.jpg), [sheet](../../website/public/docs-images/playtest-1127-r3/house_for_sale_sheet.jpg) (old text) | **Fixed in this PR**: the toast now ends "Take the price out of the bank at an ATM, then try the sign again." (en_us only; the key is unchanged) |
+| 2 | Low | Every processor's start toast says "Running. **The parts come out here** in 60 seconds ..." The smelter makes iron bars, the juicer apple juice, the saw planks: "parts" names none of them, and it is the one sentence a new smelter user reads | Smelter, juicer, saw, any `LF_ProcessAction` (`LF-Process_Started`) | [smelter toast](../../website/public/docs-images/playtest-1127-r3/smelter_running_toast_parts.jpg) (old text) | **Fixed in this PR**: "The finished goods come out here in %1 seconds" (en_us only; no test pinned the old words) |
+| 3 | Low | The truck yard's price list shows "Cargo truck needs $12,000" and "Ural 4320 cargo truck needs $9,500" and says nothing about the truck license. Both rows are `needs $X`, so a player who saves $12,000 first meets "Trucks need the truck license first" only at the Buy press; the examiner's "Take the truck check ($300)" prompt is a separate stop at the yard. The rows are also in price order descending and the two names read alike | Truck yard hut counter (`LF-Lot_Rule` is shared by every lot) | [price list](../../website/public/docs-images/playtest-1127-r3/truck_yard_sheet.jpg), [examiner](../../website/public/docs-images/playtest-1127-r3/truck_check_prompt.jpg) | Noticed: the sheet text is shared with the car lots, so a truck-only line needs a pack override and a layout check; not a freeze fix |
+
+## What read well
+
+- **The Miner's supply till.** Worn, Standard and Fine pickaxes, axes and rods at $150, $600 and $1,800 in a clean list, "Order slip: pick a line from the list", and "Leave" ([till](../../website/public/docs-images/playtest-1127-r3/miners_till_price_list.jpg)). The $150 Worn pickaxe is exactly the starter purse; nothing sells a tool a new player cannot afford.
+- **Mining feels like work.** Three swings a piece, five to six pieces a rock, the nugget lands 1 to 2 m from the rock and is picked up from where the miner stands ([iron rock](../../website/public/docs-images/playtest-1127-r3/iron_rock_swung.jpg)). No floating or clipping piece in the pictures; the ore rocks, the cart and the timber stack at Highstone sit on the ground.
+- **The smelter.** One use takes 2 nuggets and 1 lump, the toast names the wait, the run ends on the 60 s mark with "1 output dropped" and Smelting XP 28 ([bar](../../website/public/docs-images/playtest-1127-r3/iron_bar_carried.jpg)). The first-shift "double xp for 1800 s" log line fired.
+- **Selling.** The dock iron counter paid $20 for the bar ("Sold for $20!", round 1's wording fix) and the cash readout showed "+$20 $170".
+- **Lumber, end to end.** Standard axe $600 at the till, a "Fell tree (softwood, 25 s)" prompt on the tree ([prompt](../../website/public/docs-images/playtest-1127-r3/fell_prompt_stump.jpg)), 2 logs, 8 planks from the saw ([saw](../../website/public/docs-images/playtest-1127-r3/woodlot_saw.jpg)), sold for $64 in two bundles; 6.5 minutes with the walk, **$587/h**.
+- **Pay against the ladder.** `tools\cli economy`: iron at Coalman's Brow $447/h net and iron by pickup $515/h, hand-haul lumber $446 to $473/h steady, truck hardwood $742/h; police patrol $350/h up to lieutenant $450/h. Every mining and lumber loop sits over the police entry rung; the measured lumber run ($587/h) is above its model. A truck pays $742/h against $446 by hand, so the $9,500 Ural pays itself back in about 32 hours of hauling.
+- **House prices.** The two signs asked $4,000 (`sp-b83`) and $13,000 (`di-b05`), 9 and 29 hours of lumber by hand: a house is a long goal, a cottage within a day's saving.
+
+## Not reached (say so, do not read it as a pass)
+
+- **A purchase.** No truck (needs $12,000 and the truck license), no house (needs cash in hand) and no car upgrade was bought: the character never held the money, and the harness has no cash verb for a character that has not earned it. Only the refusals and the sheets were read.
+- **Hauling a load in a truck.** The truck-haul proof needs a bought truck; round 3 covered the lumber chain on foot only (`lumber-arc`).
+- **The house sign face and the door.** `stand` put the camera at the door, not on the sign; the "for sale" sheet was read from its action.
+- **Selling coal** (the power plant buys it at $8 a lump) and **copper**. Only iron bars were sold.
+- **Audio** (`-noSound`), and a **walk** (every position was a harness `stand`, so the walk to the dock, the smelter and the truck yard was not timed).
+- The F2 "What to do next" and the HUD still read "First get your papers from the clerk" and "Next: New in town" with a waypoint 2,240 m away: the checkpoint jumped the character past the clerk, so this is the setup, not a game finding.
+
+## Noticed (no action)
+
+- The buyer's prompt reads "Sell goods / Sell" with a greyed icon and no reason when the pockets are empty ([picture](../../website/public/docs-images/playtest-1127-r3/woodlot_buyer_empty_hands.jpg), [dock](../../website/public/docs-images/playtest-1127-r3/iron_buyer_after_sale.jpg)); the next step is obvious on the first sale and not on the second.
+- The Miner's supply sheet shows "Pick a line from the list first." under the buttons before a row is chosen; pressing "Sell these" with no row chosen kept the same sheet and the same line ([picture](../../website/public/docs-images/playtest-1127-r3/miners_till_price_list.jpg) shows the sheet). I did not test it with a row chosen, so I do not know whether this till buys anything.
+- The Highstone mine has no desk and no pickaxe seller; the tools come from the hardware store in town, so a player at the mine sign cannot buy a pick there.
+- `itemgive` and `pickup` are verbs, not flow steps (`pickup` and `send itemgive` fail in a `.txt` flow); a node driver calling `sendCommand` is the way for a mining run.
