@@ -81,6 +81,7 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
       Name "#LF-Revive_Action"
      }
      Duration 4
+     "Sort Priority" -10
     }
     LF_LoadPatientAction "{6D1C0A1E7B3F4A04}" {
      ParentContextList {
@@ -89,6 +90,7 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
      UIInfo UIInfo "{6D1C0A1E7B3F4A14}" {
       Name "#LF-Carry_Load"
      }
+     "Sort Priority" -9
     }
     LF_ConfiscateAction "{5D4BEB8233CF0FEC}" {
      ParentContextList {

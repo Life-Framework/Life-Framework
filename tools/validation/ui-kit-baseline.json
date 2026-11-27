@@ -49,6 +49,7 @@
     "addons/LifeFramework/UI/Layouts/HUD/LF_RobHold.layout": "A HUD strip, not a screen: the held-robbery timer, bar and distance shown over the game while the player keeps moving (#936). Takes no input.",
     "addons/LifeFramework/UI/Layouts/Investigation/LF_CaseBoardString.layout": "A face part, not a screen: the red string and its two pins drawn into the case board render target (LF_CaseBoardFace, #148).",
     "addons/LifeFramework/UI/Layouts/Character/LogoutBodyTag.layout": "A world-space label, not a screen: the Logged out tag over a logged-out body (LF_LogoutBodyTagHud).",
+    "addons/LifeFramework/UI/Layouts/HUD/LF_DownedClock.layout": "A HUD strip, not a screen: one small text line with a downed player's bleed-out time and the wait before give-up opens (LF_DownedHud, #5155). Takes no input.",
     "addons/LifeFramework/UI/Layouts/HUD/LF_JailClock.layout": "A HUD strip, not a screen: one small text line with a prisoner's jail time left (LF_JailClock).",
     "addons/LifeFramework/UI/Layouts/HUD/LF_ATMScreen.layout": "Not a screen: the green figures drawn over the cash machine's CRT for the player standing at it (LF_ATMLive), pinned to the machine and sized to its glass.",
     "addons/LifeFramework/UI/Layouts/HUD/LF_LevelUpCard.layout": "A HUD card, not a screen: the trade, level, tier word and Opens line for five seconds after a level-up (LF_LevelUpCardView, #4404). No input, no focus.",

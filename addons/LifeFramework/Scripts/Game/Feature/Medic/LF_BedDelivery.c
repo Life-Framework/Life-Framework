@@ -198,20 +198,23 @@ class LF_BedDelivery
 		bedComponent.GetWakeTransform(transform);
 		bool seated = IsLoaded(patient) || LF_Carry.IsSeatedIn(patient);
 		LF_Jail.MoveBody(patient, transform[3]);
+		// The floor spot to step down to; none (a bed boxed in by walls) leaves the patient on the mattress.
+		vector standPosition;
+		bool hasStand = bedComponent.FindStandSpot(patient, standPosition);
 		// A seated body is dismounted by its owning client a moment later; the wake waits for it so
 		// the patient never comes to in the seat.
 		if (seated && GetGame().GetCallqueue())
 		{
-			GetGame().GetCallqueue().CallLater(Complete, DISMOUNT_WAIT_MS, false, medic, patient, bedComponent.GetOwner(), transform[3], bedComponent.GetStandPosition());
+			GetGame().GetCallqueue().CallLater(Complete, DISMOUNT_WAIT_MS, false, medic, patient, bedComponent.GetOwner(), transform[3], standPosition, hasStand);
 			return LF_EDeliveryRefusal.NONE;
 		}
 
-		return Complete(medic, patient, bedComponent.GetOwner(), transform[3], bedComponent.GetStandPosition());
+		return Complete(medic, patient, bedComponent.GetOwner(), transform[3], standPosition, hasStand);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The wake itself: the revive path, the reduced bill, the events, the step off the mattress.
-	protected static LF_EDeliveryRefusal Complete(IEntity medic, IEntity patient, IEntity bed, vector position, vector standPosition)
+	protected static LF_EDeliveryRefusal Complete(IEntity medic, IEntity patient, IEntity bed, vector position, vector standPosition, bool hasStand)
 	{
 		if (!medic || !patient)
 			return LF_EDeliveryRefusal.NO_PATIENT;
@@ -237,7 +240,7 @@ class LF_BedDelivery
 		LF_EventBus.Publish(LF_OnPatientDelivered.Create(patientUid, medicUid, billNumber, position));
 		LF_Utils.NotifyEntity(medic, "#LF-Bed_Done", "", 4.0);
 		LF_Utils.NotifyEntity(patient, "#LF-Revive_Revived", "", 6.0);
-		if (GetGame().GetCallqueue())
+		if (hasStand && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().CallLater(StepOff, STEP_OFF_MS, false, patient, standPosition);
 
 		return LF_EDeliveryRefusal.NONE;

@@ -397,6 +397,7 @@ modded class SCR_ChimeraCharacter
 		if (!rpl || !rpl.IsOwner())
 			return;
 
+		LF_DownedHud.OnLocal(this);
 		SCR_CharacterDamageManagerComponent damageManager = SCR_CharacterDamageManagerComponent.Cast(FindComponent(SCR_CharacterDamageManagerComponent));
 		if (!damageManager)
 			return;
@@ -476,6 +477,9 @@ modded class SCR_ChimeraCharacter
 	{
 		LF_StunBuzz.Sync(this);
 		LF_Knockout.Sync(this);
+		RplComponent rpl = RplComponent.Cast(FindComponent(RplComponent));
+		if (rpl && rpl.IsOwner())
+			LF_DownedHud.OnLocal(this);
 	}
 
 	//! Server only: world time (s) the current knockout ends at.
