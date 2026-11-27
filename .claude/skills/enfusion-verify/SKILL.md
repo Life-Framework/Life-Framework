@@ -25,7 +25,12 @@ prove it; `AGENTS.md` defines the ladder and the proof classes.
    `look` cannot show" and "Night").
 7. Read a proof or flow by its `PASS`/`FAIL` verdict and `FAIL <step>` lines. `failures=` counts failed steps;
    `verb-errors=` counts harness answers retried by design. Session discipline (`--hold 20`, `session down`
-   straight after, never a proof twice inside 5 minutes) is in **agent-scope** "Sessions".
+   straight after, never a proof twice inside 5 minutes) is in **agent-scope** "Sessions". `down` deletes the client
+   pictures: `session.mjs pull <dir>` first.
+8. Pick the existing proof before writing one (`agent-box/README.md`, "Proofs added 2026-11-27"): `crime-playtest-proof`
+   (crime and police loop, two clients), `downed-call` and `downed-flow-proof` (downed, medic call, HUD, action order),
+   `clinic-bed-proof`, `lot-sheet-proof` (`lotsheet` verb), `map-search-proof` (`maplegend search`), `jip-sweep-proof`
+   (late joiner: `seen` plate, door, house, flag; `peers worn=`).
 
 If automation cannot cover the path, write the exact manual actions and pass
 criteria into the PR description. Report what was proven and what was not.

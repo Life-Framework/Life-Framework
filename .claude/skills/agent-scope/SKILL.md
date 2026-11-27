@@ -105,3 +105,7 @@ unfinished. Run it in the foreground (timeout up to 600000 ms) or call
   (`widget_not_found`, `not_carried`); the verdict is the `PASS` or `FAIL` line. Never run a proof twice inside 5
   minutes without a restart (rocks and smelters do not reset). A proof failing on a stale expectation (a changed first
   lot row, a character who already holds the licence) is a proof to fix, not a feature bug.
+  `session down` deletes each client's screenshot folders: `session.mjs pull <dir>` first, or the pictures are gone.
+  `session up` answering `GAME UPDATE PENDING` is Steam, not your change: stop, never retry it (each retry starts a
+  server that blocks the update), run `tools\cli game-update --check` and tell the lead (`docs/worktrees.md` "Game
+  update guard"). The proofs for a feature are listed in `agent-box/README.md`.
