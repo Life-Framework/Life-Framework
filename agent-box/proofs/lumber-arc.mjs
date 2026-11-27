@@ -3,6 +3,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
+import { AMOUNT, parseMoney } from "./_money.mjs";
 
 // The lumber hour, played the way a player plays it (#4833). On a running island session
 // (`tools\cli session up --mission island --profile full --wait`, one client):
@@ -45,8 +46,8 @@ function serverLog() {
 
 // `tools\cli economy`'s hand-haul planks row: "steady $398/h, first hour $478/h".
 export function parseEconomy(text) {
-  const m = /LOOP hand-haul softwood -> planks:[^\n]*?steady \$(\d+)\/h, first hour \$(\d+)\/h/.exec(String(text));
-  return m ? { steady: Number(m[1]), first: Number(m[2]) } : null;
+  const m = new RegExp(String.raw`LOOP hand-haul softwood -> planks:[^\n]*?steady \$(${AMOUNT})\/h, first hour \$(${AMOUNT})\/h`).exec(String(text));
+  return m ? { steady: parseMoney(m[1]), first: parseMoney(m[2]) } : null;
 }
 
 // `Lumber] felled <key> (N logs, SOFTWOOD)` -> { key, logs, wood }.

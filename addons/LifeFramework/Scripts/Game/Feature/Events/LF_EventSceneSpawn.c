@@ -278,6 +278,8 @@ class LF_EventSceneSpawn
 			return null;
 		}
 
+		// A walker is session state: a restart drops the walk, so a saved copy would stand there for good.
+		LF_WorldSaveHold.Hold(person);
 		LF_NpcSpots.Claim(person);
 		LF_Debug.Info(FEATURE, string.Format("scene %1 walker %2 spawned at %3 (%4)", crew.m_sSceneId, index, marker.GetName(), outfit));
 		return person;

@@ -386,6 +386,8 @@ class LF_ResidentSpawner
 			return false;
 		}
 
+		// The spawner places every resident again at each boot; a saved copy stood beside it after a restart.
+		LF_WorldSaveHold.Hold(entity);
 		LF_NpcSpots.Claim(entity);
 		Dormant(entity);
 		LF_ResidentNeeds.Attach(entity, def);

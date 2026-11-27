@@ -180,6 +180,8 @@ class LF_BuyerNpc
 			return false;
 		}
 
+		// Session state: the buyer is spawned again at each boot, so a saved copy would stand beside him.
+		LF_WorldSaveHold.Hold(entity);
 		LF_NpcSpots.Claim(entity);
 
 		// He stands where he is put: any AI on the character is switched off (no pathing), then he loiters.
