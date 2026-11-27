@@ -48,8 +48,9 @@ reproduces it.
 entity with a known mesh. WARN: the point is more than 0.5 m outside the mesh
 bounds, or the radius does not reach a player standing 0.5 m off the footprint
 at chest height (1.0 m). ERROR (fails validate): the point is more than 3 m
-outside the bounds. Tune with `--tolerance` and `--fail-gap`. Character meshes
-(NPC talk points) show up as reach warnings; they are known and harmless.
+outside the bounds. Tune with `--tolerance` and `--fail-gap`. A character mesh is
+skipped by the radius check (the point-on-mesh check still runs): an NPC talk, quest or witness sphere is picked by the
+aim ray, and `session.mjs npc-talk-reach-proof` shows a 0.6 m resident offering Talk on all four sides at 1 m and 2 m.
 
 Bounds say where the mesh is, not which side faces the street. Choose `--front`
 by looking at the entity in the world, or use `center`.

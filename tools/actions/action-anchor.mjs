@@ -206,6 +206,13 @@ export function anchorEntity(root, target, opts) {
   return { rel, offset, radius };
 }
 
+// A character mesh: its talk, quest and witness spheres sit on the chest bone and the engine picks them by the aim ray,
+// not by how close the player stands. Play proof: `session.mjs npc-talk-reach-proof` (a 0.6 m neighbour and fishmonger
+// offer Talk on all four sides at 1 m and 2 m), so the standing-player radius model does not apply (#validate-warnings).
+export function isCharacterMesh(mesh) {
+  return /(^|\/)Characters\/|(^|\/)Basebody_/i.test(String(mesh ?? ""));
+}
+
 // ---- check mode -------------------------------------------------------------
 
 export function checkContexts(root = ROOT, opts = {}) {
@@ -241,7 +248,7 @@ export function checkContexts(root = ROOT, opts = {}) {
         warnings.push(`${label}: context point ${fmt(point)} is ${num(gap)} m outside ${mesh} bounds (${fmt(bounds.min)} .. ${fmt(bounds.max)}); try --anchor front`);
         continue;
       }
-      if (resolved.radius != null) {
+      if (resolved.radius != null && !isCharacterMesh(resolved.mesh)) {
         const reach = reachDistance(point, bounds.min, bounds.max, resolved.height ?? 0);
         if (reach > resolved.radius) {
           warnings.push(`${label}: radius ${num(resolved.radius)} does not reach a player standing ${STAND} m off ${mesh} (needs ${num(reach)} m)`);
