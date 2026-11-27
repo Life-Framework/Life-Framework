@@ -12409,7 +12409,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6D53E58AC9FADED3}" {
      Id "LF-Org_Hideout"
-     Target_en_us "Alley yard lease"
+     Target_en_us "Yard lease"
      Comment "Ledger row label: the hideout yard off the registry alley."
     }
     CustomStringTableItem "{CF1AB48D810C8C66}" {
@@ -12449,7 +12449,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{FAF2A876ADF64AE5}" {
      Id "LF-Org_LeaseGivenUp"
-     Target_en_us "You gave the alley yard back. Its gate is shut."
+     Target_en_us "You gave the yard back. Its gate is shut."
      Comment "Ledger notice after the lease is given up (#2572)."
     }
     CustomStringTableItem "{22205B2B89D3D298}" {
@@ -12474,7 +12474,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BD09FA58337E3B9B}" {
      Id "LF-Org_Leased"
-     Target_en_us "The alley yard is yours. Members open its gate."
+     Target_en_us "The yard is yours. Members open its gate."
      Comment "Ledger notice after the lease."
     }
     CustomStringTableItem "{7B6C0A4DF16E499F}" {
@@ -12719,22 +12719,22 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{520C10CDD07CEBC1}" {
      Id "LF-OutpostBuyer_Full"
-     Target_en_us "\"I have enough for now. Come back in about %1 minutes.\""
+     Target_en_us "I have enough for now. Come back in about %1 minutes."
      Comment "Toast: the outpost buyer is at its demand cap (#4225). %1 = minutes until it takes another crate."
     }
     CustomStringTableItem "{52AFBF7DB477710B}" {
      Id "LF-OutpostBuyer_FullNever"
-     Target_en_us "\"I have all the crates I need.\""
+     Target_en_us "I have all the crates I need."
      Comment "Toast: the outpost buyer is full and never refills (#4225)."
     }
     CustomStringTableItem "{BC8A7CE6BEE6A4A4}" {
      Id "LF-OutpostBuyer_NoCrate"
-     Target_en_us "\"You have nothing I want.\""
+     Target_en_us "You have nothing I want."
      Comment "Toast: the seller carries no contraband crate (#4225)."
     }
     CustomStringTableItem "{F87785E45E6D35AE}" {
      Id "LF-OutpostBuyer_NoRun"
-     Target_en_us "\"Where did this come from? I only take crates that came up the road on a run.\""
+     Target_en_us "Where did this come from? I only take crates that came up the road on a run."
      Comment "Toast: the seller has no running, driven convoy run to close (#4225)."
     }
     CustomStringTableItem "{42236C5858B2F6DA}" {
@@ -12744,7 +12744,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{FB3E7B610211031D}" {
      Id "LF-OutpostBuyer_Sold"
-     Target_en_us "\"Good. Bring me more when you have it.\" You were paid %1."
+     Target_en_us "Good. Bring me more when you have it. You were paid %1."
      Comment "Toast after the outpost buyer takes crates (#4225). %1 = the cash paid."
     }
     CustomStringTableItem "{C615BD9428C48A36}" {
@@ -12754,12 +12754,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{87240FE872DFA583}" {
      Id "LF-OutpostBuyer_Unavailable"
-     Target_en_us "\"Not now. Come back later.\""
+     Target_en_us "Not now. Come back later."
      Comment "Toast: the outpost buyer could not complete the sale (#4225)."
     }
     CustomStringTableItem "{D52F08A3E91B7C46}" {
      Id "LF-OutpostStock_Bought"
-     Target_en_us "\"Take it. Don't tell anyone where you got it.\" You paid %1."
+     Target_en_us "Take it. Don't tell anyone where you got it. You paid %1."
      Comment "Toast after an outpost crate sale (#4223). %1 = the price paid."
     }
     CustomStringTableItem "{9B41E6D07C2A3F85}" {
@@ -12774,12 +12774,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{E83B5D17A42C9F60}" {
      Id "LF-OutpostStock_NoCash"
-     Target_en_us "\"Cash first. Come back when you have it.\""
+     Target_en_us "Cash first. Come back when you have it."
      Comment "Toast: the buyer carries less cash than the outpost crate's price (#4223)."
     }
     CustomStringTableItem "{61C9A4F2B07E3D58}" {
      Id "LF-OutpostStock_NotKnown"
-     Target_en_us "\"I don't know you well enough for that one. Come back when people talk about you.\""
+     Target_en_us "I don't know you well enough for that one. Come back when people talk about you."
      Comment "Toast: the buyer's underworld standing is below the item's (#4223). Never a number (decision N1)."
     }
     CustomStringTableItem "{B7D43E1A95C06F28}" {
@@ -12814,7 +12814,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{2A96F0C4D3B18E75}" {
      Id "LF-OutpostStock_Unavailable"
-     Target_en_us "\"Not today.\""
+     Target_en_us "Not today."
      Comment "Toast: the outpost crate sale failed for another reason (no room, no item) (#4223)."
     }
     CustomStringTableItem "{6D41A0F3C8B2957E}" {
@@ -14810,7 +14810,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4263DB02B36FDA37}" {
      Id "LF-Property_HouseBought"
-     Target_en_us "You bought house %1. The key is in your inventory."
+     Target_en_us "You bought the house. The key is in your inventory."
      Comment "Toast: the house purchase went through (#3207). %1 = the house id."
     }
     CustomStringTableItem "{D44434DE82747CDF}" {
