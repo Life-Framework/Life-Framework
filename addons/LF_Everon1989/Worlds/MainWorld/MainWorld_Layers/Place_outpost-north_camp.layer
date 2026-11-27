@@ -263,3 +263,15 @@ GenericEntity Fit_outpost_north_camp_outpost_glow_gate_n : "{86D9B6CC9F81ADAF}Pr
 ParticleEffectEntity Fit_outpost_north_camp_outpost_flame_fire : "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et" {
  coords 7661.48 16.37 8395.645
 }
+GenericEntity Fit_outpost_north_camp_approach_lamp_1 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 7466 0 8292
+}
+ParticleEffectEntity Fit_outpost_north_camp_approach_fire_1 : "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et" {
+ coords 7462 43.806 8296
+}
+GenericEntity Fit_outpost_north_camp_approach_lamp_2 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 7560 0 8344
+}
+ParticleEffectEntity Fit_outpost_north_camp_approach_fire_2 : "{670141A8D29E85F2}Prefabs/Props/Lights/LF_CampFlame.et" {
+ coords 7556 31.9 8348
+}
