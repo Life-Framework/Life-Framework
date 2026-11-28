@@ -2520,7 +2520,7 @@ function cmdSessionDown(dir) {
   for (const c of s.clients ?? []) {
     console.log(`session: client ${c.n} pid ${c.pid} ${killTree(c.pid) ? "closed" : "already gone"}`);
   }
-  console.log(`session: server pid ${s.serverPid} ${killTree(s.serverPid) ? "closed" : "already gone"}`);
+  console.log(`session: ${s.host ? "listen server (client 1)" : "server"} pid ${s.serverPid} ${killTree(s.serverPid) ? "closed" : "already gone"}`);
   for (let i = 0; i < 20 && host.pidAlive(s.serverPid); i++) sleepMs(500);
   wt.releaseLock(ROOT, laneLockOf(s), s.serverPid);
   const stoppedAt = new Date().toISOString();
@@ -2636,6 +2636,10 @@ function cmdSessionRejoin(root, dir, flags) {
     console.log("usage: session rejoin <n> on a running session that has client <n>");
     return 1;
   }
+  if (s.host && n === 1) {
+    console.log("session: client 1 is the listen host; closing it ends the server, so it cannot rejoin (rejoin a joiner instead)");
+    return 1;
+  }
   if (!c.identity) recordIdentities(dir, s);
   const before = session.readSession(dir).clients.find((x) => x.n === n)?.identity;
   if (!before) {
@@ -2729,7 +2733,9 @@ function cmdSessionUp(root, dir, flags) {
   // is gone hold no lane; they are reaped further down by their recorded pids.
   const exe = serverExe();
   const game = gameClientExe();
-  for (const f of clients > 0 ? [exe, game] : [exe]) {
+  // --host: client 1 is the listen server, so there is no separate server process (and no server exe).
+  const hostMode = flags.includes("--host");
+  for (const f of hostMode ? [game] : clients > 0 ? [exe, game] : [exe]) {
     if (!existsSync(f)) {
       console.log(`FAIL  not found: ${f}`);
       return 1;
@@ -2791,12 +2797,15 @@ function cmdSessionUp(root, dir, flags) {
   const waitS = Math.round((lane?.queuedMs ?? Date.now() - queuedAt) / 100) / 10;
   resetLease(dir);
   const paths = session.sessionPaths(dir, clients);
+  // The listen host's console.log and profile ARE the server's: every proof that reads the server log or
+  // writes the server profile (owner config, seeds) goes through sessionPaths(dir).server, which reads this.
+  paths.server = hostMode ? paths.clients[0].profile : join(dir, "server");
   sessionLog = join(dir, "up.log");
   try {
     writeFileSync(sessionLog, "");
   } catch {}
   // id names this session's clients (-lfSession); harness commands from other checkouts are refused.
-  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, pack: packArg?.name, res, profile: rp.profile, levers: rp.levers, visible, sound, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
+  const state = { id: session.newSessionId(), lane: { lock: laneLock, port: lanePort }, root, mission, pack: packArg?.name, res, profile: rp.profile, levers: rp.levers, visible, sound, host: hostMode || undefined, startedAt: new Date().toISOString(), serverPid: 0, serverProfile: paths.server, clients: [], expectClients: clients,
     // The hold cap judges only a session that carries holdCap (pool.mjs reapIdleSessions).
     holdCap: true, holdMin: hold.min, heldSince, waitS, priority: pool.resolvePriority(root, priorityFlag(flags)), boots: 1, bootS: [] };
   if (hold.note) console.log(hold.note);
@@ -2964,32 +2973,46 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
     copyFileSync(join(root, "server", "example", "config.json"), join(owner, "config.json"));
     slog(`template: config.json copied to ${owner}`);
   }
-  const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddonsFor(root, state.pack), header: state.pack ? parsePackFlag(["--pack", state.pack], root)?.header : "" });
-  slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
   const before = new Set(existsSync(join(paths.server, "logs")) ? readdirSync(join(paths.server, "logs")) : []);
-  const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
-  srv.unref?.();
-  if (!srv.pid) return fail("server did not start");
-  state.serverPid = srv.pid;
-  wt.transferLock(root, laneLockOf(state), srv.pid);
-  session.writeSession(dir, state);
-
-  // Client 1 starts with the server (tools/lib/session-overlap.mjs): its 28-32 s of engine and script
-  // start-up hide the server's 10-15 s boot. The lane already belongs to the server's pid here.
-  const overlap = overlapPlan({ clients: paths.clients.length });
-  const launchedEarly = new Set();
-  if (overlap.early) {
-    const first = paths.clients[0];
-    const failed = sessionLaunchClient(root, dir, state, first, { game, mission, res, visible, fail, settleMs: 0 });
-    if (failed !== null) return failed;
-    launchedEarly.add(first.n);
-    slog(`client ${first.n} launched with the server (${overlap.reason})`);
-  }
-
+  const hostMode = !!state.host;
   let log = null;
   let readyAt = 0;
+  const launchedEarly = new Set();
+  let serverPid = 0;
+  if (hostMode) {
+    // A listen host: client 1 is the server (one process, its own profile). The lane lock moves to it
+    // like it moves to a dedicated server, and its console.log is the server log.
+    const first = paths.clients[0];
+    const failed = sessionLaunchClient(root, dir, state, first, { game, mission, res, visible, fail, host: true, loadSave });
+    if (failed !== null) return failed;
+    launchedEarly.add(first.n);
+    serverPid = state.serverPid;
+    wt.transferLock(root, laneLockOf(state), serverPid);
+    slog(`listen host launched as client 1 (pid ${serverPid})`);
+  } else {
+    const sArgs = session.serverArgs({ addonsDir: [join(root, "addons"), junction].join(","), profile: paths.server, mission, loadSave, port: state.lane?.port ?? 2001, rp: session.profileOf(state), addons: launchAddonsFor(root, state.pack), header: state.pack ? parsePackFlag(["--pack", state.pack], root)?.header : "" });
+    slog(`launching server: ${exe}\n  ${sArgs.join(" ")}`);
+    const srv = process.env.SSH_CONNECTION ? spawnOutsideSsh(exe, sArgs, dirname(exe)) : spawn(exe, sArgs, { cwd: dirname(exe), detached: true, stdio: "ignore", windowsHide: true });
+    srv.unref?.();
+    if (!srv.pid) return fail("server did not start");
+    serverPid = srv.pid;
+    state.serverPid = srv.pid;
+    wt.transferLock(root, laneLockOf(state), srv.pid);
+    session.writeSession(dir, state);
+    // Client 1 starts with the server (tools/lib/session-overlap.mjs): its 28-32 s of engine and script
+    // start-up hide the server's 10-15 s boot. The lane already belongs to the server's pid here.
+    const overlap = overlapPlan({ clients: paths.clients.length });
+    if (overlap.early) {
+      const first = paths.clients[0];
+      const failed = sessionLaunchClient(root, dir, state, first, { game, mission, res, visible, fail, settleMs: 0 });
+      if (failed !== null) return failed;
+      launchedEarly.add(first.n);
+      slog(`client ${first.n} launched with the server (${overlap.reason})`);
+    }
+  }
+
   const deadline = Date.now() + 300000;
-  while (Date.now() < deadline && host.pidAlive(srv.pid)) {
+  while (Date.now() < deadline && host.pidAlive(serverPid)) {
     sleepMs(500);
     const f = session.newestLog(join(paths.server, "logs"));
     if (f && !before.has(basenameOfLogDir(f))) log = f;
@@ -2999,9 +3022,9 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
     }
   }
   if (!log || !readFileSync(log, "utf8").includes(session.SERVER_READY)) return fail(`server not ready (log ${log ?? "none"})`);
-  slog(`server up (pid ${srv.pid}); log ${log}; ${Math.round((readyAt - Date.parse(state.startedAt)) / 100) / 10} s after the lane was taken`);
+  slog(`${hostMode ? "listen host" : "server"} up (pid ${serverPid}); log ${log}; ${Math.round((readyAt - Date.parse(state.startedAt)) / 100) / 10} s after the lane was taken`);
 
-  if (launchedEarly.has(1)) {
+  if (launchedEarly.has(1) && !hostMode) {
     const failed = sessionFirstClientConnects(root, dir, state, paths.clients[0], { game, mission, res, visible, fail, readyAt });
     if (failed !== null) return failed;
   }
@@ -3025,13 +3048,15 @@ function sessionLaunch(root, dir, state, paths, { exe, game, mission, res, visib
 
 // Launches one session client (its own profile) and records it in the session state. Returns
 // null, or the code fail() returned.
-function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail, settleMs = 3000 }) {
+function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible, fail, settleMs = 3000, host: asHost = false, loadSave = false }) {
   mkdirSync(c.box, { recursive: true });
   const rp = session.profileOf(state);
   // The profile's engine settings go into the client profile before every launch (full clears them).
   session.applyClientSettings(c.profile, rp);
-  const cArgs = session.clientArgs({ n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddonsFor(root, state.pack) });
-  slog(`launching client ${c.n}: ${game}\n  ${cArgs.join(" ")}`);
+  const argOpts = { n: c.n, addonsDir: join(root, "addons"), profile: c.profile, mission, port: state.lane?.port ?? 2001, session: state.id, res, sound: !!state.sound, rp, addons: launchAddonsFor(root, state.pack) };
+  // The listen host (up --host) is client 1 booted as the server; every other client joins it.
+  const cArgs = asHost ? session.hostArgs({ ...argOpts, loadSave, header: state.pack ? parsePackFlag(["--pack", state.pack], root)?.header : "" }) : session.clientArgs(argOpts);
+  slog(`launching ${asHost ? "listen host (client 1)" : `client ${c.n}`}: ${game}\n  ${cArgs.join(" ")}`);
   // Clients render on the hidden LF-Agents desktop; harness screenshots still work.
   // --visible puts them on the user's desktop (with -noFocus) so tools/film can record.
   // Over ssh (a pool machine such as lf-testbox) there is no desktop: the client
@@ -3063,7 +3088,9 @@ function sessionLaunchClient(root, dir, state, c, { game, mission, res, visible,
     }
   }
   if (!child.pid) return fail(`client ${c.n} did not start`);
-  state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs, launchedAt: new Date().toISOString() });
+  state.clients.push({ n: c.n, pid: child.pid, profile: c.profile, box: c.box, logs: c.logs, launchedAt: new Date().toISOString(), ...(asHost ? { host: true } : {}) });
+  // The host process is also the server: its pid is the one that ends the session.
+  if (asHost) state.serverPid = child.pid;
   session.writeSession(dir, state);
   // The next client waits for this one's join line (sessionLaunch); here only a client that dies at once is caught.
   // settleMs 0: a client launched with the server is watched by sessionFirstClientConnects instead.
@@ -3213,6 +3240,10 @@ function cmdSessionRestart(root, dir, flags) {
     console.log("session: no running session to restart; 'node agent-box/session.mjs up --mission playtest' first");
     return 1;
   }
+  if (prev.host) {
+    console.log("session: restart is not offered for an up --host session (the host is client 1: closing it closes the server); down, then up --host again");
+    return 1;
+  }
   if (prev.mission !== "playtest" && prev.mission !== "island") {
     console.log("session: restart needs --mission playtest or island (the bare DebugWorld has no stop file, so no shutdown save)");
     return 1;
@@ -3277,7 +3308,7 @@ function cmdSessionRestart(root, dir, flags) {
   }
 }
 
-const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--hold min (max 45)] [--mission debug|playtest|grid] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--seed file] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait [--timeout s] | join <n> | rejoin <n> | identity [n] | restart | down | status";
+const SESSION_USAGE = "usage: tools\\cli session up [--profile lowspec|full (default lowspec; shots and filming need full)] [--levers a,b] [--clients N (default 1)] [--host (client 1 is a listen server; --clients N then adds N joiners)] [--hold min (max 45)] [--mission debug|playtest|grid] [--res WxH] [--visible] [--sound] [--wait] [--machine any|local|<name>] [--roster ids] [--seed file] [--admin-client n[,n]] [--no-instant-approval] [--skip-playtime-gate] | wait [--timeout s] | join <n> | rejoin <n> | identity [n] | restart | down | status";
 
 function cmdSession(args) {
   const list = args ?? [];

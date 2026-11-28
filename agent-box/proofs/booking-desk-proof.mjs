@@ -2,7 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { ROOT, arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
 import { AMOUNT, MONEY, parseMoney } from "./_money.mjs";
-import { ensureCuffs } from "./_preconditions.mjs";
+import { ensureCuffs, requireBodies } from "./_preconditions.mjs";
 
 // The police booking desk walked end to end on the real island (#4699, #4629 pay now, #4662 licence seizure),
 // two players on a dedicated server under the flagship owner config:
@@ -124,6 +124,7 @@ async function runBookingDeskProof() {
   for (const n of [1, 2]) arrive(on, n, wait);
   for (const n of [1, 2]) { wait(3000); on(n, { verb: "click", widget: "WelcomeGuideDismissButton" }, 10000); }
   wait(8000);
+  if (!requireBodies(on, wait, [1, 2])) return 1;
   applyConfig(0);
   const b = state(2).player;
   const suspect = `Player${b}`;

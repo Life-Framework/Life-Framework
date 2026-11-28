@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { ROOT, arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
-import { ensureCuffs } from "./_preconditions.mjs";
+import { ensureCuffs, requireBodies } from "./_preconditions.mjs";
 
 // The cop path on the real island (rc 0.2.0), two players on a dedicated server, under the flagship owner config:
 //   node agent-box/session.mjs up --mission island --clients 2 --profile full --wait
@@ -52,6 +52,7 @@ async function runIslandCopProof() {
   // The welcome guide opens over a new character and covers every UI picture: dismiss it like a player would.
   for (const n of [1, 2]) { wait(3000); on(n, { verb: "click", widget: "WelcomeGuideDismissButton" }, 10000); }
   wait(8000);
+  if (!requireBodies(on, wait, [1, 2])) return 1;
   applyConfig();
   const b = state(2).player;
   const suspect = `Player${b}`;

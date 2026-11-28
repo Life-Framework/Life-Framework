@@ -15,8 +15,8 @@ const DESK = "Fit_saint_philippe_clinic_lf_medic_duty_desk";
 // joins again inside the window. The taken-back body is still downed, with no flag change to wake the
 // old callback: the line must come back (and its give-up wait is the replicated seconds downed, so a
 // rejoin well past the delay reads the "hold X" text, not a fresh wait).
-// The listen host (the host's own character gets no replication callback) has no session mode here:
-// it stays a manual step in the PR.
+// The listen host (the host's own character gets no replication callback) is `downed-hud-host`, on
+// `up --host --clients 1` (agent-box/README.md "Listen-host session").
 const ROOT = process.cwd();
 
 async function runDownedRejoinProof() {

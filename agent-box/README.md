@@ -264,6 +264,7 @@ the game profile). Hooks:
 - `send checkpoint <hour>` (harness build, #4825) applies `agent-box/checkpoints/hour-<hour>.json`. Every `session up` (and `restart`) mirrors the whole folder to the server's `$profile:LifeFramework/checkpoints/` (the test runner does the same, #4845), so it works in any session with no `--seed`; the reply is only `asked for...`, the verdict is `[LFDebug:Checkpoint] checkpoint applied to <uid>: cash C, bank B, 0 part(s) failed` in the server log. A character must exist first (`arrive`), or the server logs `character NULL`.
 - `state` answering `no_session` is a timeout, not a missing session: the client's main thread freezes 25-30 s when the last carried cash leaves the character (an ATM deposit-all, `checkpoint 0`), and nothing is read from the command file meanwhile. `state` only reads, so `sendCommand` asks again up to 4 times (about 40 s) before reporting it; any other verb sent during the freeze still times out as `no_session` (#4867).
 - `invstore list|put <part>|take <part>|pickup <part>|aim <part>|act <part> <ActionClass>` (client; `LF_InvStoreHarness.c`, playtest 2026-11-27 round 5): the inventory-screen moves a playtest needs, through the same inventory manager calls the screen makes, so the server's access checks decide. `list` names the nearest world storage within 4 m and its items; `put`/`take` move the first item whose prefab path contains `<part>` into or out of it; `pickup` performs the vanilla pick-up on the nearest loose matching item (a dropped house key); `aim` starts "Place where I aim" on a loose placeable (finish with `spikeaim state|turn|place`); `act` starts a carried item's action by class (`act GangRadio LF_GangRadioTuneAction`). Send as `{ verb: "invstore", words: [...] }`.
+- `bodycheck` / `bodycheck fix camera|stand|leave` (client; `LF_BodyCheckHarness.c`, proof-preconditions-2): what a proof's start-of-run check reads on this client's own character that the server's `state` cannot: `camera=<class> stance=<STAND|CROUCH|PRONE> seat=<0|1> weight=<kg> maxload=<kg>`. `fix camera` hands the view back to the player camera (a dialogue, film or clean-shot `SCR_ManualCamera` left on), `fix stand` stands a living body up, `fix leave` gets out of a vehicle. Dev tooling; `agent-box/proofs/_preconditions.mjs` `ensureBody` / `requireBodies` use it with `state` and `resetplayer` (see "Proof preconditions" in `docs/playtest/proof-health-2026-11-27.md`).
 - `itemon <{GUID}path>` / `itemoff <{GUID}path>` (server, dev gate) switch the item's use state (`LF_AssetAnimComponent.SetActive`: the
   handcuffs' strands swing open), looking in the inventory first, then for one lying within 3 m.
 - `itemgive <{GUID}path>` and `itemdrop <{GUID}path>` (server, dev gate) put one item of a prefab in
@@ -694,6 +695,33 @@ Over ssh the client starts through an interactive scheduled task (`tools/lib/int
 after `tools\cli rdb` has built the pack's `resourceDatabase.rdb` (a run folder without it dies at "Unable to initialize Enfusion"). A joiner cannot be added on one PC: a second client is the
 same Steam account, so the same identity; a friend joining stays a manual step.
 
+## Listen-host session (`up --host`)
+
+What only a host's own character shows (a replication callback the server never sends to itself, an RPC
+rule that differs on a listen host, `docs/architecture/rpc-routing.md`) is checked with
+`session up --host [--clients N] [--mission ...] [--profile ...]`. Client 1 boots as the listen server:
+one game process with `-server <mission> -addr 127.0.0.1:<lane port> -a2sPort ...` plus the session's
+script defines (`LF_SESSION_IDENTITY`, and `LF_HARNESS` on playtest, island and everon), `-noBackend`,
+`-lfSession`, its own profile and window. `--clients N` adds N joiners (client 2..N+1), so `--host`
+alone is the host by itself and `--host --clients 1` is two players. It takes a pool session lane like any
+`up` (same ports, queue, hold cap and RAM gate, `--wait`, `--priority`) and needs a machine with the
+`clients` cap. The joiners start as they do for a dedicated server, once the host logs
+`Entered online game state.`.
+
+- The harness addresses the host like any client: `harness.mjs --client 1 <verb>`, `clientBox(dir, 1)`,
+  `arrive(on, 1, wait)`. Because the host is also the server, `sessionPaths(dir).server` is
+  `client1` while the session is live: the server log, the owner `config.json` and the roster seeds a
+  proof reads or writes there are the host's `logs` and `profile`, so existing proofs run unchanged.
+  `session status` prints the host as both `server` and `client 1` (one pid).
+- Closing client 1 ends the server: `restart` and `rejoin 1` refuse on a host session; `join n` and
+  `rejoin n` of a joiner work. `session down` closes everything.
+- Proofs that passed on a dedicated server run with the host as one of the players: `downed-call` (host
+  clocks in as the medic, joiner is downed) passed this way on 2026-11-28. `downed-hud-host` is the
+  host-only case of #5172: the joiner downs the host and the host's own client must read the "Bleeding out"
+  line, its clock, then "Hold X to give up". Both run on `up --host --clients 1 --mission island --profile full`.
+- Not covered: the launcher's online identity (the session runs `-noBackend`; `listen-host.mjs`, the
+  section above, boots that) and a joiner on a different Steam account (every client here is this PC's account).
+
 ## Multi-client session (dedicated server)
 
 One dedicated server and up to three game clients run side by side on one PC
@@ -715,6 +743,7 @@ node agent-box/session.mjs up                 # server and ONE client (the defau
 node agent-box/session.mjs up --clients 2     # server, then clients; waits for both registration forms (only when the proof needs two players)
 node agent-box/session.mjs up --hold 40       # raise this session's hold cap (20 min by default, 45 at most; it only bites while another up queues)
 node agent-box/session.mjs up --clients 2 --mission playtest   # LF_PlaytestTown, harness build
+node agent-box/session.mjs up --host --clients 1 --mission island --profile full   # client 1 is a LISTEN host (one process serves and plays), plus 1 joiner: see "Listen-host session"
 node agent-box/session.mjs up --profile full                  # shots, filming, journey, any picture that goes in a PR (the default is lowspec: 640x360, lowest textures; docs/worktrees.md "Session profiles")
 node agent-box/session.mjs up --clients 2 --res 1920x1080      # evidence size, hidden desktop (implies --profile full)
 node agent-box/session.mjs up --clients 2 --visible            # on the user's desktop, for screen capture

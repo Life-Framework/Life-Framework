@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { ROOT, arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
-import { ensureCuffs } from "./_preconditions.mjs";
+import { ensureCuffs, requireBodies } from "./_preconditions.mjs";
 
 // The crime and police loop played through as two players would, on the real island under the flagship owner config
 // (agent playtest 2026-11-27, docs/playtest/agent-playtest-crime-2026-11-27.md):
@@ -80,6 +80,7 @@ async function runCrimePlaytestProof() {
     for (const n of [CIV, COP]) arrive(on, n, wait);
     for (const n of [CIV, COP]) { wait(3000); on(n, { verb: "click", widget: "WelcomeGuideDismissButton" }, 10000); }
     wait(8000);
+    if (!requireBodies(on, wait, [CIV, COP])) return 1;
     applyConfig(0);
   }
   const civId = state(CIV).player;

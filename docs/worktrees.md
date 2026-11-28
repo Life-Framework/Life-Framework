@@ -1234,6 +1234,14 @@ profile is recorded in `session.json`, kept by `join` and `restart`, and shown b
 `capture` on a lowspec session prints one WARN (the shot still goes out; the proofs capture to
 move the camera, so they run unchanged); `shots`, `journey` and `film` refuse a lowspec session.
 
+**`--host` (listen-host session).** `session up --host [--clients N]` boots client 1 as a listen server
+instead of starting a dedicated server (`agent-box/README.md` "Listen-host session"): `--clients N` adds N
+joiners, so `--host --clients 1` is two players. It takes the same pool lane, port, queue, hold cap and RAM
+gate as any session, runs under either profile, and is recorded as `host: true` in `session.json`
+(`status` shows one pid as both server and client 1). `restart` and `rejoin 1` are refused (closing the
+host closes the server). Use it only for what a host's own character shows; everything else stays on a
+dedicated server.
+
 A profile is a list of levers, each one measured below; `--levers a,b` runs any subset.
 `lowspec` = `res fps tex geom post shadow view`:
 
