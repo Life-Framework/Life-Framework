@@ -29,6 +29,12 @@
 // rejoins the same client profiles in the same order (same player ids, so the
 // same LF_SESSION_IDENTITY accounts).
 //
+// `up --host` boots client 1 as a LISTEN server (one game process: the host plays and serves; `--clients N`
+// adds N joiners, so `--host --clients 1` is two players). Use it for what only a host's own character
+// shows: replication callbacks the server never sends to itself, and RPC rules that differ on a listen host
+// (docs/architecture/rpc-routing.md). Harness verbs address the host as `--client 1`. No restart and no
+// rejoin of client 1 (closing it ends the server); `down` closes everything.
+//
 // `up` and `down` run through `tools\cli session` because the server boot
 // shares the CLI's machine-wide server-2001 lock and addon junction helper.
 // The session dir lives outside every worktree, one per checkout (default
@@ -183,6 +189,11 @@ export function sessionPaths(dir, clients = MAX_CLIENTS) {
     const profile = join(dir, `client${n}`);
     out.clients.push({ n, profile, box: join(profile, "profile", "agent-box"), logs: join(profile, "logs") });
   }
+  // A live `up --host` session: the listen server is client 1, so its logs and profile are the server's.
+  try {
+    const s = JSON.parse(readFileSync(out.state, "utf8"));
+    if (s.host && !s.stoppedAt) out.server = join(dir, "client1");
+  } catch {}
   return out;
 }
 
@@ -255,6 +266,20 @@ export function serverArgs({ addonsDir, profile, mission = "debug", loadSave = f
   return args;
 }
 
+// `up --host`: client 1 is a listen server. One game process hosts the mission (-server, the lane's
+// -addr and -a2sPort) and plays as player 1 with its own profile and window; the other clients join it on
+// the lane port as they do a dedicated server. It carries the same script defines as the joiners (the
+// join is refused on a checksum mismatch) and the -lfSession id, so the harness addresses it as
+// `--client 1`. Its console.log is the server log (state.serverProfile is client 1's profile).
+export function hostArgs(opts) {
+  const world = serverArgs(opts)[1];
+  const rest = clientArgs({ ...opts, n: 1 }).slice(2);
+  const args = ["-server", world, ...rest, ...laneArgs(opts.port ?? 2001)];
+  if (opts.loadSave) args.push("-loadSessionSave");
+  if (process.env.LF_PERF === "1") args.push("-lfPerf");
+  return args;
+}
+
 // Small windows in rows of three along the top of the screen, so the user's desk
 // stays usable. -screenWidth/-screenHeight/-posX/-posY need -window.
 export function windowFor(n, res = WINDOW) {
@@ -321,6 +346,13 @@ export function sessionRes(args, rp) {
 
 export function parseClients(args) {
   const i = args.indexOf("--clients");
+  // --host: client 1 is the listen server itself and --clients N adds N joiners, so the count is 1 + N
+  // (`--host` alone is the host by itself; `--host --clients 1` is two players, the host and client 2).
+  if (args.includes("--host")) {
+    const joiners = i === -1 ? 0 : Number(args[i + 1]);
+    if (!Number.isInteger(joiners) || joiners < 0 || joiners + 1 > MAX_CLIENTS) throw new Error(`--clients with --host is the number of joiners, 0..${MAX_CLIENTS - 1}`);
+    return joiners + 1;
+  }
   // One client by default: a second costs ~18 s of boot and 0.7 to 1.5 GB; ask for --clients 2 when the proof needs two players.
   const n = i === -1 ? 1 : Number(args[i + 1]);
   // 0 is a server-only session (the only kind a remote pool machine runs).
@@ -649,6 +681,21 @@ export function selftestSession() {
     failures.push(`--clients ${MAX_CLIENTS + 1} was accepted`);
   } catch {}
   if (parseClients([]) !== 1) failures.push("default client count is not 1");
+  {
+    // red-proof 2026-11-28: with the --host branch of parseClients removed, `--host` alone read as one client and `--host --clients 1` as one, not two.
+    if (parseClients(["--host"]) !== 1 || parseClients(["--host", "--clients", "1"]) !== 2) failures.push("--host is the listen server itself and --clients N adds N joiners");
+    try {
+      parseClients(["--host", "--clients", String(MAX_CLIENTS)]);
+      failures.push("--host with more joiners than the client limit was accepted");
+    } catch {}
+    const ha = hostArgs({ addonsDir: "A", profile: "P1", mission: "island", port: 2011, session: "ab12" });
+    const word = (a, f) => a[a.indexOf(f) + 1];
+    if (ha[0] !== "-server" || ha.includes("-client") || ha.includes("-noBackend") === false) failures.push("hostArgs is not a -server boot with the session flags");
+    if (ha.filter((a) => a === "-scrDefine").length !== clientArgs({ n: 2, addonsDir: "A", profile: "P2", mission: "island" }).filter((a) => a === "-scrDefine").length || !ha.includes(HARNESS_DEFINE)) failures.push("hostArgs does not carry the joiners' script defines (the join is refused on a checksum mismatch)");
+    if (word(ha, "-addr") !== "127.0.0.1:2011" || word(ha, "-a2sPort") !== String(sessionA2sPort(2011))) failures.push("hostArgs does not listen on the session lane's port");
+    if (word(ha, "-lfSession") !== "ab12" || word(ha, "-profile") !== "P1" || !ha.includes("-window")) failures.push("hostArgs lost the session id, the profile or the window");
+    if (hostArgs({ addonsDir: "A", profile: "P1" }).includes("-addr")) failures.push("hostArgs on the default lane passes -addr");
+  }
   const civ0 = "faction=CIVILIAN duty=0 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none toast=none";
   const civ1 = "faction=CIVILIAN duty=0 wanted=1 rank=0 cash=650 bank=0 job=UNEMPLOYED org=none toast=none";
   const cop = `faction=POLICE duty=1 wanted=0 rank=0 cash=500 bank=0 job=UNEMPLOYED org=none toast=${ROB_ALERT}`;
