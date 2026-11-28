@@ -37,7 +37,6 @@
   "town-map-selftest.mjs": 8.6,
   "validate-tests.ps1": 7.6,
   "validate-enforce-lint.mjs": 7.4,
-  "ship-queue-eperm-selftest.mjs": 7.3,
   "place-tool-selftest.mjs": 7.1,
   "validate-modded-container-props.mjs": 7,
   "validate-us-english.mjs": 6.9,

@@ -1,7 +1,7 @@
 // tools/lib/atomic-file.mjs - write a state file through a temp file and a rename, and read one back,
 // without losing to a concurrent reader on Windows.
 //
-// renameSync over a file another process has open (a `ship-queue status` or `wait` poll, a virus scanner,
+// renameSync over a file another process has open (a status poll, a virus scanner,
 // the search indexer) throws EPERM, EBUSY or EACCES on Windows for as long as the other handle lives, which
 // is a few milliseconds. The writers here retry that for about a second with a synchronous sleep; the
 // readers retry the same codes on open. Anything else (ENOENT on the temp file, a full disk) throws at once.

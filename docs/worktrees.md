@@ -191,9 +191,8 @@ marks the PR ready and merges it (`ship-direct.mjs` `draft`, `wt-ship-draft-self
 reuses it and, because an earlier ship may have left it ready with auto-merge queued, runs `gh pr merge --disable-auto` and
 `gh pr ready --undo` on it; ship prints `draft: auto-merge off (REVIEW-NEEDED)` (#2940). `prs heal` re-queues auto-merge only on a PR
 that already had it. `--pr-only` stops after opening the PR. `--gate` runs the old local tiered gate before the push (`wt gate`). `wt gate
-<slug>` stays as an optional manual check (tiers in `tools/lib/gate-tier.mjs`, `gate-risk.mjs`). The ship queue
-(`tools/ship-queue.mjs`), `wt ship-status`, `wait ship` and the tier selection in ship are retired; their code stays
-on disk until someone deletes it.
+<slug>` stays as an optional manual check (tiers in `tools/lib/gate-tier.mjs`, `gate-risk.mjs`). `wt ship-status`, `wait ship` and the tier selection in ship are retired (`wt ship-status` and `wait ship` only print that); the
+ship queue itself (`tools/ship-queue.mjs`, its worker, `ship-queue` command and file) is deleted.
 
 ### Main guard
 
@@ -842,7 +841,7 @@ machine with RAM and a free Workbench slot runs the steps; if every roomy
 machine's Workbench limit is full, they queue on the best of those. If no
 machine has the RAM, the gate prints why (each machine's free RAM) and
 re-checks every 30 s for up to an hour (`LF_WB_RAM_WAIT_S`), then fails as a
-pool failure, which the ship queue requeues. A pool machine that does not
+pool failure. A pool machine that does not
 answer, or answers and exits 3, leaves the choice to the rest (this PC when
 nothing else answers).
 
@@ -857,8 +856,7 @@ The remote run is `ci --wb-only --local` in a
 (uncommitted state included). ssh is session 0, which has no GPU device, so the box reruns it in its signed-in desktop session (`run-interactive.ps1`); with nobody signed in it exits 3 and the gate chooses again. `ci --local` keeps everything here;
 `ci --remote` uses pool machines only; `ci --remote <name>` / `--machine <name>`
 pin one machine, even a short one. `wt gate` and `wt ship` pass `--local`,
-`--remote [name]` and `--machine <name>` through to that `ci` (the ship queue
-gate included). Agents do not pin; a human or the lead can.
+`--remote [name]` and `--machine <name>` through to that `ci`. Agents do not pin; a human or the lead can.
 The placement audit takes a test lane through the pool like `test` (any
 machine) and on a pool machine runs `audit placement` in the synced run folder.
 
@@ -1876,7 +1874,6 @@ parallel, each with its own timeout; one that fails prints one line and the rest
   5 min (a busy box, lf-cloud's 7 s ssh), `DOWN` otherwise, with `** slow: no answer in 9 s **`; a slow machine never drops the section.
   When the budget itself cuts a machine the section ends with `pool budget N s exceeded ... partial rows for ...`. A machine whose
   free RAM is under the pool floor (`minFreeMb`, 1.5 GB) adds `WARN RAM: <machine> has 0.5 GB free, under its 1.5 GB floor`: it takes no new job.
-- SHIP QUEUE: `SHIP QUEUE 1 gating, 2 queued, oldest wait 14 min (<slug> #<pr>)`, from the same file `ship-queue status` prints.
 - USAGE: one line, the Gaming plan's real 5h and weekly utilization, pace and advice from `usage --plan` (docs/agent-budget.md "Plan utilization"); `USAGE Gaming: plan usage unavailable (why)` when the endpoint or token fails.
 - ACCOUNTS and SLICES appear when `usage --accounts` and `slice list --ready` exist; until then each prints one skip line.
 

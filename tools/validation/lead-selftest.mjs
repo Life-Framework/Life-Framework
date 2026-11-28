@@ -9,8 +9,7 @@
 //   5. PRs sort CONFLICTING first, and the conflict hint says generated-only versus needs-human;
 //   6. the pool section keeps every machine: a fake slow machine (kept answering after its stage-one report, or
 //      never) is cut at its own timeout and shows "slow" or "DOWN" with what it had, the rest print in full, the
-//      overall budget line prints when it cuts someone, and a machine under its RAM floor draws a warning;
-//   7. the ship queue line counts gating and queued entries and names the oldest wait.
+//      overall budget line prints when it cuts someone, and a machine under its RAM floor draws a warning.
 // inputs: tools/**
 // red-proof: 2026-11-14, with mergedVerdict changed to call any merged PR on the branch name a hit (the tip
 // comparison removed) the checks "commits after the merged PR keep it" and "the reason is given" failed; restored.
@@ -18,7 +17,7 @@
 // `pool status` call did) the slow-machine checks failed (the section budget cut it at 2 s instead, the "machine" cut and its 0.2 s note failed); restored.
 import {
   classifyWorktree, conflictHint, issueState, mergedVerdict, milestoneCounts, milestoneKey, milestoneLine,
-  gatherPool, poolLine, poolLines, prLine, shipQueueLine, sortPrs, timeoutHealth, unregisteredDirs, worktreeSummary, IDLE_MS,
+  gatherPool, poolLine, poolLines, prLine, sortPrs, timeoutHealth, unregisteredDirs, worktreeSummary, IDLE_MS,
 } from "../lib/lead.mjs";
 
 const failures = [];
@@ -136,18 +135,6 @@ eq(poolLine(snap("local")), "local       RAM 8/15.6 GB free  lanes 1/4 busy", "p
 eq(timeoutHealth({ okAt: 1000 }, 1000 + 4 * MIN, 5 * MIN), "slow", "answered 4 min ago: slow");
 eq(timeoutHealth({ okAt: 1000 }, 1000 + 6 * MIN, 5 * MIN), "DOWN", "answered 6 min ago: down");
 eq(timeoutHealth(null, 1000, 5 * MIN), "DOWN", "never answered: down");
-
-// 7. ship queue line
-const iso = (minAgo) => new Date(NOW - minAgo * MIN).toISOString();
-const sq = { entries: [
-  { slug: "tier-perf", pr: 1311, state: "gating", enqueuedAt: iso(40), startedAt: iso(20) },
-  { slug: "b-late", pr: 1320, state: "queued", enqueuedAt: iso(3) },
-  { slug: "a-early", pr: 1299, state: "queued", enqueuedAt: iso(14) },
-  { slug: "old", pr: 1, state: "passed", enqueuedAt: iso(500), endedAt: iso(400) },
-] };
-eq(shipQueueLine(sq, NOW), "SHIP QUEUE 1 gating, 2 queued, oldest wait 14 min (a-early #1299)", "gating, queued and the oldest wait");
-eq(shipQueueLine({ entries: [] }, NOW), "SHIP QUEUE 0 gating, 0 queued", "an empty queue");
-eq(shipQueueLine({ entries: [{ slug: "x", state: "merging", enqueuedAt: iso(9) }] }, NOW), "SHIP QUEUE 1 gating, 0 queued", "a gating entry alone has no wait");
 
 if (failures.length) {
   for (const f of failures) console.log(`FAIL lead: ${f}`);

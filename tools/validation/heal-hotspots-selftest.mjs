@@ -1,11 +1,11 @@
 // tools/validation/heal-hotspots-selftest.mjs - the two old hotspots no longer serialize, and old branches heal.
-// inputs: tools/lib/heal-hotspots.mjs, tools/lib/static-reset-hooks.mjs, tools/lib/features-index.mjs, tools/lib/ship-queue.mjs, tools/merge/merge-markdown.mjs, tools/validation/heal-hotspots-selftest.mjs
+// inputs: tools/lib/heal-hotspots.mjs, tools/lib/static-reset-hooks.mjs, tools/lib/features-index.mjs, tools/merge/merge-markdown.mjs, tools/validation/heal-hotspots-selftest.mjs
 //
 // Builds throwaway git repos under the OS temp dir:
 //   1. old main: Core/LF_StaticReset.c with the central list, docs/features.md with two sections.
 //   2. main migrates: per-feature hooks (centralFile + addHooks) and docs/features/<area>.md + index.
-//   3. Two new-style branches off migrated main each register a reset and add a features row. The ship
-//      queue's overlap() finds no shared file (no serialization) and `git merge-tree` merges them cleanly.
+//   3. Two new-style branches off migrated main each register a reset and add a features row. They
+//      share no code file (no serialization) and `git merge-tree` merges them cleanly.
 //   4. A branch cut from old main appends to the central list and to docs/features.md. A plain merge of
 //      main conflicts (the red: that is the DIRTY churn); healBranch merges with no conflict, the hook
 //      lands in the class's own file and the row in its area file.
@@ -21,7 +21,6 @@ import { dirname, join } from "node:path";
 import { CENTRAL, addHooks, centralCalls, centralFile, hookedCalls, registryHooks, staticResetProblems } from "../lib/static-reset-hooks.mjs";
 import { areaPath, renderIndex, splitSections } from "../lib/features-index.mjs";
 import { healBranch } from "../lib/heal-hotspots.mjs";
-import { overlap } from "../lib/ship-queue.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
@@ -102,7 +101,7 @@ try {
   const filesX = branch("pr-x", "Beta", betaArea, "beta row (pr-x)");
   const filesY = branch("pr-y", "Gamma", alphaArea, "alpha row (pr-y)");
   check(!filesX.includes(CENTRAL) && !filesY.includes(CENTRAL), "neither new-style branch touches LF_StaticReset.c");
-  check(overlap(filesX, filesY).length === 0, `ship queue: the two reset PRs share no file, so neither waits (${filesX.join(", ")} | ${filesY.join(", ")})`);
+  check(filesX.filter((p) => !/\.md$/i.test(p) && filesY.includes(p)).length === 0, `the two reset PRs share no code file, so neither waits (${filesX.join(", ")} | ${filesY.join(", ")})`);
   const mt = gitSync(["merge-tree", "--write-tree", "pr-x", "pr-y"], { cwd: dir, encoding: "utf8", windowsHide: true });
   check(mt.status === 0, "git merge-tree: pr-x and pr-y merge cleanly");
   g("checkout", "-q", "main");

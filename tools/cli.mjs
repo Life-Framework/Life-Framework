@@ -4699,13 +4699,10 @@ function wtHelpFull() {
                                        sync/ branch, never a force push); auto-merges when green
   tools\\cli wt ship <slug> [--refs N] [--body-file F] [--pr-only] [--draft] [--skip-gate] [--skip-sync] [--full-gate] [--base B] [--remote <name>|--machine <name>|--local] [--wait] [--no-preflight]
                                        clean-tree and PR-body checks, preflight (merge-tree conflicts, validate of changed
-                                       inputs) -> push -> PR (auto-merge off) -> ship queue: merge origin/<base> once,
-                                       ci --remote on a pool machine, push, auto-merge (docs/worktrees.md "Async ship").
-                                       Returns once queued; --wait blocks until gated (old behaviour); --no-queue gates
-                                       here the old way; a machine pin (humans and the lead only) goes to the gate's ci
-  tools\\cli wt ship-status <slug>     one line: queued|running|passed|failed, PR, why, log (exit 1 when failed)
-  tools\\cli wait ship <slug> [--budget s]   block until the gate ends or the budget (default 540 s) runs out;
-                                       one SUMMARY line, exit 0 passed, 1 failed, 2 still going (re-run it)
+                                       inputs) -> push -> PR -> auto-merge on; GitHub's validate is the gate (docs/worktrees.md
+                                       "Ship"); --gate runs the old local gate first (a machine pin goes to its ci)
+  tools\\cli wt ship-status <slug>     retired: prints how to check the PR with gh
+  tools\\cli wait ship <slug>          retired: prints how to check the PR with gh
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
   tools\\cli wt prune --merged [--yes]  list every worktree with a MERGED PR, clean, idle (30 min), unlocked; --yes prunes them (ancestry alone never counts)
   tools\\cli wt fix-drivers            drop merge drivers the repo no longer declares (lf-regen-tests) from the shared git
@@ -5638,12 +5635,9 @@ async function wtShipCmd(args) {
     }
     if (customBody !== null) customBody = withReview(customBody, reviewText);
   }
-  // The ship queue (tools/ship-queue.mjs, docs/worktrees.md "Ship queue"): push, open the PR with
-  // auto-merge off, enqueue; the queue worker merges main once, gates on the pool, pushes, queues
-  // auto-merge. --no-queue (or LF_SHIP_QUEUE=0) is the old local gate below.
   // No pre-merge gate (maintainer decision 2026-11-15): preflight, push, PR, auto-merge on. GitHub's validate
-  // check gates the merge; the main guard checks main after it (docs/worktrees.md "Ship"). The ship queue
-  // (tools/ship-queue.mjs) is retired from the flow; --gate runs the old local gate before the push.
+  // check gates the merge; the main guard checks main after it (docs/worktrees.md "Ship"). --gate runs
+  // the old local gate before the push.
   if (!flags.includes("--pr-only") && !flags.includes("--gate") && wt.ghAvailable()) return shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody });
   // Merge main only when it conflicts. A clean branch goes up as is: the PR's
   // validate check and auto-merge cover the combination with main.

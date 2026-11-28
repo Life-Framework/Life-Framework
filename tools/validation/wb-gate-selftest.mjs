@@ -1,16 +1,14 @@
 // Offline proof of where `ci` runs its Workbench compile and build (tools/lib/wb-gate.mjs) with mocked
 // machine RAM readings: a RAM-short PC is skipped for a roomy pool machine, roomy machines rank by
 // speed, everyone short means wait, a pin is honoured, a remote that does not answer falls back, an
-// early Workbench death on a short machine is an environment failure, and `wt ship`'s pin reaches the
-// ship queue's gate command.
-// inputs: tools/lib/wb-gate.mjs, tools/lib/pool-queue.mjs, tools/ship-queue.mjs, tools/validation/wb-gate-selftest.mjs
+// early Workbench death on a short machine is an environment failure.
+// inputs: tools/lib/wb-gate.mjs, tools/lib/pool-queue.mjs, tools/validation/wb-gate-selftest.mjs
 // red-proof: 2026-11-14, chooseGate dropping the RAM rule (ready = first ranked row with a free
 // slot, room ignored) failed "everything short: wait", "remote mode, remotes short: wait (not this
 // PC)", "short PC, its slot free, roomy remote busy: queue on the remote", "roomy PC busy, remote
 // short: queue here" and "no workbench cap is not ranked".
 
 import { chooseGate, earlyDeath, parseWbState, ENV_SHORT_CODE, WB_RESERVE_MB } from "../lib/wb-gate.mjs";
-import { gateCommand } from "../ship-queue.mjs";
 
 const failures = [];
 const check = (name, ok) => {
@@ -75,16 +73,10 @@ check("a slow no-verdict is not an early death", earlyDeath({ status: 1, seconds
 check("a pass is never an environment failure", earlyDeath({ status: 0, seconds: 6, text: nv, freeMb: 1500 }) === null);
 check("env code is distinct from 0, 1 and the remote fallback code 3", ![0, 1, 3].includes(ENV_SHORT_CODE));
 
-// 9. wt ship's pin reaches the ship queue's gate; no pin keeps `ci --remote`
-check("no pin: ci --tiered --remote", JSON.stringify(gateCommand(["addons/x.c"], false)) === JSON.stringify(["ci", "--tiered", "--remote"]));
-check("--full-gate: plain ci --remote", JSON.stringify(gateCommand(["addons/x.c"], true)) === JSON.stringify(["ci", "--remote"]));
-check("pin replaces the bare --remote", JSON.stringify(gateCommand(["addons/x.c"], false, ["--remote", "lf-cloud"])) === JSON.stringify(["ci", "--tiered", "--remote", "lf-cloud"]));
-check("no addons change ignores the pin", JSON.stringify(gateCommand(["tools/x.mjs"], false, ["--machine", "lf-cloud"])) === JSON.stringify(["validate", "--all"]));
-
 check("parse box state", JSON.stringify(parseWbState("x\nlf-wb: 1 6123\n", undefined)) === JSON.stringify({ wbAlive: 1, freeMb: 6123, wbLimit: 1 }));
 
 if (failures.length) {
   console.log(`wb-gate-selftest: FAILED\n  ${failures.join("\n  ")}`);
   process.exit(1);
 }
-console.log("wb-gate-selftest: OK (RAM-ranked Workbench machine, speed, wait, pins, fallbacks, early death, ship pin)");
+console.log("wb-gate-selftest: OK (RAM-ranked Workbench machine, speed, wait, pins, fallbacks, early death)");

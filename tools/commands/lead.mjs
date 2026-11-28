@@ -1,6 +1,6 @@
 // tools\cli lead: the lead agent's one-screen dispatch view, so it stops gathering state with ad-hoc commands.
 //
-//   tools\cli lead [--prs N]          milestones, PRs, worktrees, pool, ship queue, accounts, slices (about 40 lines, under 15 s)
+//   tools\cli lead [--prs N]          milestones, PRs, worktrees, pool, accounts, slices (about 40 lines, under 15 s)
 //   tools\cli lead stray [--dry-run]  move untracked files an agent wrote into THIS (main) checkout's addons/, tools/, docs/ ... to the
 //                                     stray folder (C:\LF\lead\stray); the lead view runs it too, unless LF_LEAD_STRAY=0 (#2785)
 //   tools\cli lead prune-safe [--dry-run] [--oldest N]   prune only worktrees whose PR is MERGED on GitHub, clean, idle and unlocked
@@ -19,14 +19,13 @@ import * as wt from "../wt.mjs";
 import { predictConflicts } from "../prs.mjs";
 import {
   classifyWorktree, conflictHint, gatherPool, isConflicting, milestoneCounts, milestoneLine, newestActivityMs, poolLines,
-  prLine, shipQueueLine, sortPrs, timeoutHealth, unregisteredDirs, worktreeSummary,
+  prLine, sortPrs, timeoutHealth, unregisteredDirs, worktreeSummary,
 } from "../lib/lead.mjs";
-import { readQueue } from "../lib/ship-queue.mjs";
 import { diskLines, oldestFirst, parseOldest } from "../lib/disk-guard.mjs";
 import { findStrays, moveStrays, parseStatus, strayRootOf } from "../lib/main-write-guard.mjs";
 import { alertFresh, healBlockedFastForward, noteAlert, readAlert } from "../lib/main-ff-heal.mjs";
 
-export const help = "lead [--prs N] | lead stray [--dry-run] | lead prune-safe [--dry-run] [--oldest N]   one-screen dispatch view: milestones, PRs, worktrees, pool, ship queue, accounts, slices";
+export const help = "lead [--prs N] | lead stray [--dry-run] | lead prune-safe [--dry-run] [--oldest N]   one-screen dispatch view: milestones, PRs, worktrees, pool, accounts, slices";
 
 
 // ---------------------------------------------------------------- process helpers
@@ -349,12 +348,6 @@ async function poolWorker(root, name) {
   return 0;
 }
 
-// ---------------------------------------------------------------- ship queue
-
-async function shipSection(root) {
-  return [shipQueueLine(readQueue(wt.ensureHub(root)), Date.now())];
-}
-
 // ---------------------------------------------------------------- main guard (tools/main-guard.mjs)
 
 async function guardSection(root) {
@@ -522,7 +515,6 @@ export async function main(args, { root }) {
     section("WORKTREES", 14000, () => needGh("WORKTREES", async () => worktreeLines(await gatherWorktrees(root, gh)))),
     section("POOL", 13500, () => poolSection(root)),
     section("USAGE", 13000, () => usageSection(root)),
-    section("SHIP QUEUE", 5000, () => shipSection(root)),
     section("MAIN GUARD", 3000, () => guardSection(root)),
     section("ACCOUNTS", 13000, () => accountsSection(root)),
     section("SLICES", 13000, () => slicesSection(root)),
@@ -530,7 +522,7 @@ export async function main(args, { root }) {
   ]);
   // Disk: its own process (the walk is synchronous), cached sizes refreshed inside a deadline; appended to the worktree block.
   const diskP = sh(process.execPath, [join(root, "tools", "cli.mjs"), "lead", "--disk-worker"], { cwd: root, timeout: 12500 });
-  const [ms, prs, wts, pool, usage, ship, guard, acc, sl, stray] = await sections;
+  const [ms, prs, wts, pool, usage, guard, acc, sl, stray] = await sections;
   let diskLine;
   try {
     const dr = await diskP;
@@ -548,7 +540,7 @@ export async function main(args, { root }) {
     { name: "this PC", freeGb: wt.freeDiskGbAt(wt.mainRootOf(root)) },
     ...poolSnaps.filter((m) => m.via !== "local").map((m) => ({ name: m.name, freeGb: Number.isFinite(m.diskGb) ? m.diskGb : null, note: !m.health || m.health === "up" ? undefined : m.health })),
   ]);
-  const out = [...ms, ...prs, ...wts, ...disk, ...pool, ...usage, ...ship, ...guard, ...acc, ...sl, ...stray];
+  const out = [...ms, ...prs, ...wts, ...disk, ...pool, ...usage, ...guard, ...acc, ...sl, ...stray];
   out.push(`lead ${((Date.now() - t0) / 1000).toFixed(1)} s`);
   console.log(out.join("\n"));
   return 0;
