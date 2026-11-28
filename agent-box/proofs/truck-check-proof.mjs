@@ -75,6 +75,13 @@ export function truckRowIndex(yard, name) {
   return want ? yard.findIndex((r) => String(r.prefab).toLowerCase().includes(want)) : -1;
 }
 
+// The cash `resetplayer` gives before it is all banked: $12,000 without a pinned truck (the first row the account can pay),
+// and with one enough over the dearest row for the $2,000 pocket, the licence and the check fees, so the pinned row's
+// Buy button is on the sheet (the lot offers a row only when the bank covers its price).
+export function startCashFor(wantTruck, dearest) {
+  return wantTruck ? Math.max(12000, Number(dearest) + 3000) : 12000;
+}
+
 // The prefab path of the last `[LFDebug:Vehicle] purchased <prefab> owner=` line in the server log, "" when there is none.
 export function lastPurchased(log) {
   const all = [...String(log).matchAll(/\[LFDebug:Vehicle\] purchased (\S+) owner=/g)];
@@ -128,6 +135,7 @@ function selftest() {
   if (truckRowIndex(rows, "ural") !== 1 || truckRowIndex(rows, "M923A1") !== 0 || truckRowIndex(rows, "nothing") !== -1 || truckRowIndex(rows, "") !== -1) fails.push("truckRowIndex");
   const bought = "01:11:13.000 SCRIPT: [LFDebug:Vehicle] purchased {F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et owner=u1 id=7 plate=CD MU 3665 cash=0 bank=9600\n"
     + "01:12:13.000 SCRIPT: [LFDebug:Vehicle] purchased {F1FBD0972FA5FE0A}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport.et owner=u1 id=8 plate=AB CD 1234 cash=0 bank=100\n";
+  if (startCashFor("", 12000) !== 12000 || startCashFor("M923A1", 12000) !== 15000 || startCashFor("Ural", 9500) !== 12500 || startCashFor("Ural", 5000) !== 12000) fails.push("startCashFor");
   if (!lastPurchased(bought).includes("Ural4320") || lastPurchased("no purchase here") !== "") fails.push("lastPurchased");
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "truck-check-proof selftest: FAIL" : "truck-check-proof selftest: PASS");
@@ -197,7 +205,10 @@ async function run(args = []) {
   const dearest = Math.max(0, ...yard.map((r) => r.price));
 
   // 1. Money: $12,000 in the pocket, all of it into the bank at the island ATM, then $500 back out for the fee.
-  on(1, { verb: "resetplayer", cash: 12000 }, 15000);
+  // A pinned truck must be payable from the bank: the lot's sheet offers a row only when the bank covers its price, and
+  // $12,000 less the fees leaves $11,900, short of the $12,000 M923A1 (`--truck M923A1` found no Buy button, 2026-11-28).
+  const startCash = startCashFor(wantTruck, dearest);
+  on(1, { verb: "resetplayer", cash: startCash }, 15000);
   // The retake wait counts in-game minutes (about one a minute of real time): the clock is set now and jumped past the wait later.
   on(1, { verb: "time", hour: 11 }, 10000);
   wait(2000);

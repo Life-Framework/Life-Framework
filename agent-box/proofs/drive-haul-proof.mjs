@@ -11,10 +11,10 @@ import { driveAndFollow, kv, yes } from "./drive-proof.mjs";
 // --profile full --hold 20`):
 //   node agent-box/session.mjs truck-check-proof --truck Ural
 //   node agent-box/session.mjs drive-haul-proof [--trees N] [--no-merchant]
-// The truck must be the Ural: `truck-check-proof` buys the first row the account can pay, which is the M923A1 for an
-// account with checkpoint-10 money (the RC order) and the Ural for a fresh one. The driven M923A1 leaves the yard and
-// reaches the woodlot but sticks among the woodlot sheds on the way to a tree (rc dry runs 4 to 6, 2026-11-27), so the
-// proof says which truck it drives and fails with that hint rather than passing a truck it was not built for.
+// The truck is whichever `truck-check-proof` bought: `--truck Ural` or `--truck M923A1` pin the row (without the flag it is
+// the first row the account can pay: the M923A1 for an account with checkpoint-10 money, the Ural for a fresh one). Both
+// pass 13 of 13: the M923A1 (8.2 x 2.9 m) turns about on the woodlot pad by a three-point turn that sizes its legs from the
+// vehicle's bounds and wheelbase (it stuck between the woodlot sheds with a one-arc turn, rc dry runs 4 to 6, 2026-11-27).
 //   0 the truck is driven from the truck yard to the woodlot by road (the first leg, not part of a cycle)
 //   1 the truck is driven off the road to a standing hardwood tree, the tree is felled, each log is hoisted and loaded
 //   2 the full truck is driven back to the saw by road, unloaded, every log sawn, the boards sold at the woodlot
@@ -211,7 +211,7 @@ async function run(args) {
   wait(1500);
   const seat0 = kv(on({ verb: "vehicle", words: ["state"] }).detail);
   step("0a the character sits at the wheel of the bought truck and owns it", enter0.status === "ok" && seat0.seat === "pilot" && yes(seat0.owner), `${enter0.status} seat=${seat0.seat} owner=${seat0.owner} veh=${seat0.veh} pos=${seat0.pos}`);
-  if (/M923A1/.test(String(seat0.veh))) console.log("NOTE  the truck is the M923A1 (a rich account's first yard row): the driven legs are known to stick among the woodlot sheds with it; buy the Ural with `truck-check-proof --truck Ural`");
+  if (/M923A1/.test(String(seat0.veh))) console.log("NOTE  the truck is the M923A1 (8.2 x 2.9 m): the drive turns it about in the woodlot's tight pads with a three-point turn (`drive turn about` in the client log); `truck-check-proof --truck Ural` buys the shorter truck");
   // The key row: unlock it from the seat if the lock row is there (the cargo bed follows the vehicle lock).
   const lockUse = on({ verb: "use", className: "LF_VehicleLockAction" }, 10000);
   wait(1500);
