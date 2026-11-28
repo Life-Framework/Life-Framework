@@ -13,7 +13,7 @@ class LF_PackManifest
 
 	//! The running core. `tools\cli release` stamps the .gproj; this stays in step by hand until
 	//! it reads from there.
-	static const string CORE_VERSION = "0.2.0";
+	static const string CORE_VERSION = "0.3.0";
 
 	[Attribute("", desc: "The pack's addon id, for log lines.")]
 	string m_sPackId;
