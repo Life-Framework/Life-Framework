@@ -5,7 +5,8 @@
 > polished and easy to learn, every step marked, every screen simple. After the 0.2.1 wave lands, a full
 > first-two-hours review with two fresh characters; its fixes come before any new system. The wishlist below
 > waits for that. The next major release on `main` is planned in [next-release-0.3.0.md](next-release-0.3.0.md)
-> (the 10-hour arc, the cut and the week plan), waiting for the maintainer's approval.
+> (the 10-hour arc, the cut and the week plan), waiting for the maintainer's approval. What the 0.3.0 playtest
+> week left open, ranked by player impact, is in [after-030-backlog.md](after-030-backlog.md).
 
 The gameplay and release plan. Milestones are the one plan: each ends with a
 public build, and they run in the order below ([direction](../direction.md)). The next
