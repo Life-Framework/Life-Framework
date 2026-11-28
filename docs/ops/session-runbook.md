@@ -9,6 +9,23 @@ is named but not merged yet is marked *(planned)*, and the last section says wha
 `tools/validation/ops-doc-commands-selftest.mjs` fails when this page names a command `host help`
 does not list.
 
+**Which server this page drives.** The live flagship runs on the rented 0grind server (service `298627`, no shell),
+not on a PC. `tools\cli host start|stop|preflight|wipe|restore` below work on a host folder **on this PC** (the
+maintainer's own box, a scratch host, a rented box with a shell); for 0grind use `tools\cli host remote 0grind ...`:
+
+| Job | On a PC host (this page) | On 0grind |
+|---|---|---|
+| Is it up, who is on | `host status`, `host players` | `host remote 0grind status` |
+| Start, stop, restart | `host start --flagship --wait`, `host stop` | `host remote 0grind start\|stop\|restart --yes` (the 06:00 and 18:00 close and start are the panel Workflow) |
+| Config and mod settings | `host config apply` | `host remote 0grind config push` (a diff), then `--yes` |
+| Back up and keep a copy | `host backup` (`start` and `stop` do it) | `host remote 0grind saves pull` before any risky step and after each session |
+| Read the log | `host triage` | `host remote 0grind logs pull`, then `tools\cli server-doctor <log>` and `host triage <log>` |
+| After a game update | `host preflight` (this PC's install) | the panel updates the box; check the version line in a pulled log ([publish page](../playtest/workshop-publish.md) step 3) |
+
+A release (game update, Workshop update, restart, smoke test, Discord) is one page:
+[publish to the Workshop and 0grind](../playtest/workshop-publish.md). The 0grind setup and its API rules are in
+[host the flagship](../owner/host-the-flagship.md#0grind-the-rented-flagship) and [hotfix](hotfix.md).
+
 Rules for the whole page:
 
 - Run `tools\cli` from a worktree or the playtest checkout, never the main checkout:
@@ -42,7 +59,8 @@ then `host ready: GO`, or `host ready: NO-GO` and the names of the failed checks
    - **`--build` is needed on a fresh host.** The command reads the build from the newest host
      save, and a new host has none, so it stops with `no build: pass --build <version>`. The
      number is the installed game build, the file version of `ArmaReforgerServer.exe` (the Steam
-     folder, or `ENFUSION_SERVER_PATH`), for example `1.9.0.37`. After the first save,
+     folder, or `ENFUSION_SERVER_PATH`), for example `1.9.0.42` (the build on 2026-11-28;
+     `tools\cli game-update --check` and `tools\cli status` print it). After the first save,
      `host status` prints `save and game are both <build>` and `--build` can be left out.
    - **It edits a tracked file, even as a draft.** The command rewrites
      `website/content/sessions.json` in your worktree, so the checkout is dirty afterwards. If
@@ -54,7 +72,10 @@ then `host ready: GO`, or `host ready: NO-GO` and the names of the failed checks
    less than 24 hours away. Policy: [wipe policy](../community/wipe-policy.md).
 
 2. **Check what changed.** After any Arma Reforger update, run the preflight before opening the
-   server. It backs the save up, boots it on the new build, and restores it if it does not load:
+   server. It backs the save up, boots it on the new build, and restores it if it does not load.
+   (A host on this PC only. On 0grind: `host remote 0grind saves pull` first, update with 0 players, and read the
+   version and `save loaded:` lines of the next pulled log, as in the
+   [publish page](../playtest/workshop-publish.md).)
 
    ```
    tools\cli host status
@@ -104,10 +125,11 @@ then `host ready: GO`, or `host ready: NO-GO` and the names of the failed checks
 
    It backs the saves up first, continues the latest save, and prints `host: up (pid N)` and the
    join lines. Without `--flagship` it boots the playtest header, which is not the real server.
-   Once 0.1.0 is on the Workshop, the public server is `tools\cli host start --public --wait`
-   (in the Server Browser, with the join password; `--flagship` alone is `-noBackend`, LAN and
-   direct connect only). Use `--public` in every start and restart below then
-   ([host the flagship](../owner/host-the-flagship.md)).
+   Both Workshop items exist, so a host that should be in the Server Browser starts with
+   `tools\cli host start --public --wait` (with the join password; `--flagship` alone is
+   `-noBackend`, LAN and direct connect only). Use `--public` in every start and restart below
+   then ([host the flagship](../owner/host-the-flagship.md)). The live flagship is not this: it is
+   0grind (table above).
 
    Two things to expect that the command does not say:
    - The first `host start` in a new worktree refreshes the resource database on a pool machine

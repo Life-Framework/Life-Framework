@@ -9,6 +9,21 @@ its card names it. Until it lands, do the step by hand as the runbook says. `too
 lists what exists today. Run `tools\cli` from a worktree or the playtest checkout, never the main
 checkout.
 
+## The live flagship is on 0grind
+
+The tables below are for a host on a PC. The real server is the rented 0grind one, driven from a worktree:
+
+| Command | Success looks like |
+|---|---|
+| `tools\cli host remote 0grind status` | `status="running" ... players=N`, an A2S line for `144.76.90.77:3023`, and no `WARNING` about System settings. |
+| `tools\cli host remote 0grind config push` | A masked diff, nothing written. `--yes` writes it; a `password ... -> (empty)` line means this PC has no `secrets.json`: stop. |
+| `tools\cli host remote 0grind restart --yes` | The box restarts (say it in Discord first; 06:00 and 18:00 UTC restarts need nothing). |
+| `tools\cli host remote 0grind saves pull` | The saves copied to `host-0grind\backups\<stamp>-remote`, sizes checked. Before anything risky, and after each session. |
+| `tools\cli host remote 0grind logs pull` | The newest `console.log` path. `tools\cli server-doctor <path>` ends in PASS; its first lines say the game version. |
+| `tools\cli game-update --check` | This PC's client and server builds (`1.9.0.42` on 2026-11-28). It never touches 0grind. |
+
+A release is the one page [publish to the Workshop and 0grind](../playtest/workshop-publish.md).
+
 ## Before
 
 | Command | Success looks like |
@@ -21,7 +36,7 @@ checkout.
 | `tools\cli host verify` | Every backup `ok`, none `empty` or `changed`; exit 0. |
 | `tools\cli host drill` | The newest backup boots on a scratch profile and the log shows `save loaded:`. Weekly and after a preflight. It queues for a pool lane by itself (no `--wait`) and may run on a pool machine. |
 | `tools\cli host applications` | The open police applications, oldest first, then the officers on trial. Read only; approve in game. |
-| `tools\cli host announce --at <time> --build <build>` | The post is printed and the next session is written to `website/content/sessions.json` (a tracked file: `git checkout -- website/content/sessions.json` after a dry run, commit it for a real one). `--build` is the installed game build, e.g. `1.9.0.37`; needed until the host has a save. Post it in Discord ([session playbook](../playtest/session-playbook.md)). |
+| `tools\cli host announce --at <time> --build <build>` | The post is printed and the next session is written to `website/content/sessions.json` (a tracked file: `git checkout -- website/content/sessions.json` after a dry run, commit it for a real one). `--build` is the installed game build, e.g. `1.9.0.42`; needed until the host has a save. Post it in Discord ([session playbook](../playtest/session-playbook.md)). |
 
 ## Start
 
