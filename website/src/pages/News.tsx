@@ -8,7 +8,9 @@ import { PLAYTEST_DOWNLOAD_URL } from "@/lib/release";
 
 type Shot = { id: string; caption: string };
 type Entry = {
-  build: number;
+  anchor: string;
+  title: string;
+  newHeading: string;
   tag: string;
   date: string;
   intro: string;
@@ -19,7 +21,93 @@ type Entry = {
 
 const ENTRIES: Entry[] = [
   {
-    build: 6,
+    anchor: "release-0-3-0",
+    title: "Life Framework 0.3.0 (alpha)",
+    newHeading: "New in 0.3.0",
+    tag: "0.3.0",
+    date: "29 November 2026",
+    intro:
+      "0.3.0 adds iron, coal and lumber jobs, trucks and hauling, medic calls, a police booking desk, gangs and a north outpost. Shops now have goods on their shelves, the town lights up at night, and the pay order changed: police are the lowest paid and high-tier civilian trades pay the most. This is still an alpha, so a wipe can come with 24 hours' notice.",
+    added: [
+      {
+        title: "Iron from mine to furnace",
+        text: "Mine iron at Highstone hill, dig coal at the East Rise seam (it opens at Mining 4) and smelt two nuggets and one coal into an iron bar at the furnace on the east compound.",
+      },
+      {
+        title: "Lumber",
+        text: "Fell trees, saw the logs and sell planks and boards at the timber yard. Planks carry as bundles of four.",
+      },
+      {
+        title: "Tools that wear",
+        text: "Pickaxes, axes and rods come in three tiers and wear down with use. The hardware store's bench repairs and sharpens them for a fee.",
+      },
+      {
+        title: "Levels and perks",
+        text: "Each trade levels with a sound and a card that names what the level opens. At level 10 you pick a perk at the labor office. Your first shift of the day pays double experience for 30 minutes.",
+      },
+      {
+        title: "Truck license and hauling",
+        text: "The truck check costs $300: drive four gates in order. Licensed drivers can buy trucks at the truck yard and haul full loads of logs. At Hauling 10 the dock warehouse board offers export orders.",
+      },
+      {
+        title: "Medic calls",
+        text: "Clock in at the clinic and casualties appear around the island. Draw an ambulance, treat the patient or carry them to a clinic bed, and earn bonuses at clock-out.",
+      },
+      {
+        title: "Police booking desk",
+        text: "Cuff someone and book them at the station. The officer ticks the charges on a charge sheet and signs; the suspect pays the fine or takes the time. Jail tops out at 15 minutes, and officers can run a plate.",
+      },
+      {
+        title: "Gangs and the north outpost",
+        text: "Found a gang at the registry for $250, pick a flag and invite people by scroll. A gang radio costs $60 at the gun counter. The north outpost is a rebel camp with guards, a quartermaster and a chalk board.",
+      },
+      {
+        title: "Homes and cars",
+        text: "Buy a house at its For sale sign and get the key; the sign then reads SOLD. Every car you can buy now draws its license plate. A respray bay at the garage repaints your car for $150.",
+      },
+      {
+        title: "Stocked shops and night lighting",
+        text: "Shops show single items on their shelves. At 22:00 the street lamps, shop fronts and many interiors light up. New signs mark the respray bay, the labor office, the shift boards and the bus timetable.",
+      },
+      {
+        title: "Voices and sounds",
+        text: "The clerk, registrar, barkeepers and outpost people speak. The church bell rings at 07:00, a ship's horn sounds at 19:00 and a whistle starts the shift at the mine and the sawmill.",
+      },
+      {
+        title: "A clearer first hour",
+        text: "One card for your car at the garage, “Find steady work” after you sell your juice at the market, and a What next page in the welcome guide that sends you to F2.",
+      },
+    ],
+    fixed: [
+      "A desk job (miner, lumberjack, farmer) is kept after a restart and after you respawn.",
+      "Paying out your last cash no longer freezes the screen.",
+      "Ambulances can be drawn from the car pool again without an error.",
+      "The felling prompt shows when you hold the axe.",
+      "Messages no longer show a bracketed debug title such as “[INFO]”.",
+      "Level refusals name the trade and the level you need.",
+      "Shelf goods stay on the shelves when the town sweeps up loose items.",
+      "The welcome guide no longer opens in the middle of a conversation.",
+      "The jail's kitchen sink, laundry tub and yard broom, and the clinic's beds, now work for players who join a server.",
+      "Truck rows on a car lot price list say they need the truck license.",
+      "Revive and Load patient show up wherever a medic aims at the body.",
+      "Many props that floated or sat in the grass were moved onto level ground.",
+    ],
+    shots: [
+      { id: "3244/session-5-smelter-prompt-after", caption: "The smelter: two nuggets and one coal make a bar." },
+      { id: "5144/truck-yard-sheet-after", caption: "The truck yard price list marks the trucks that need a truck license." },
+      { id: "5155/revive-menu-open-after", caption: "A medic aiming at a downed player sees Revive first." },
+      { id: "4978/camp-night-after", caption: "The north outpost at night, lit by lanterns and a fire." },
+      { id: "sold-sign-board/sold_buyer_after_purchase", caption: "A SOLD sign beside the door of a house you bought." },
+      { id: "5129/plates-s105-t601-after", caption: "Cars you buy now wear their license plates." },
+      { id: "night-lamps-pub/bar-after", caption: "Inside the pub at night, with the lights on." },
+      { id: "5124/market-find-steady-work-after", caption: "After a sale at the market, a card points you to steady work." },
+      { id: "gun-counter-overlay/gun-counter-list", caption: "The gun counter list, with the firearm permit first." },
+    ],
+  },
+  {
+    anchor: "build-6",
+    title: "Playtest M2, build 6",
+    newHeading: "New in build 6",
     tag: "playtest-m2-6",
     date: "14 November 2026",
     intro:
@@ -132,9 +220,9 @@ const News = () => (
     {ENTRIES.map((e) => (
       <Section
         key={e.tag}
-        id={`build-${e.build}`}
+        id={e.anchor}
         kicker={e.date}
-        title={`Playtest M2, build ${e.build}`}
+        title={e.title}
         aside={
           <a href={PLAYTEST_DOWNLOAD_URL} className="btn btn-download" download>
             Download the playtest
@@ -143,7 +231,7 @@ const News = () => (
       >
         <p className="max-w-3xl">{e.intro}</p>
 
-        <h3 className="heading mt-10 mb-4">New in build {e.build}</h3>
+        <h3 className="heading mt-10 mb-4">{e.newHeading}</h3>
         <ul className="grid gap-x-10 gap-y-6 md:grid-cols-2 max-w-6xl">
           {e.added.map((a) => (
             <li key={a.title}>
