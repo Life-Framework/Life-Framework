@@ -84,7 +84,8 @@ engine's persistence work, then grep the console log for `Persistence` and
 | 1.6.0.119 | Loading save data with deleted prefabs crashed (fixed). |
 | 1.7.0.41 | Persistence UUID generation changed its layout; old save data is ignored. Every server lost its saves. Adds `-persistenceDiag logs`. |
 | 1.8.0.13 | Persistence script rules were not invoked before this build (fixed); earlier builds skipped them silently. |
-| 1.9.0.37 | Installed on 2026-11-14; the current baseline. |
+| 1.9.0.37 | Installed on 2026-11-14; the baseline until 2026-11-27. |
+| 1.9.0.42 | Client 26639613 and server 26634883, installed on this PC 2026-11-27 (`tools\cli game-update` fixed a server Steam would not update while a server ran); the 0grind box logged `version 1.9.0.42` at 06:02 UTC on 2026-11-28. The current baseline. |
 
 Source: Arma Reforger changelogs 1.4.0.53 (Aug 2025) to 1.9.0.37 (Nov 2026), read
 2026-11-14 (#980).
