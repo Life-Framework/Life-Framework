@@ -44,7 +44,6 @@ import { reapOrphansThrottled } from "../lib/ram.mjs";
 import { trimProcs } from "../lib/ws-trim.mjs";
 import { statusLine } from "../lib/wb-lock.mjs";
 import { setMachineHostnameForTest } from "../lib/machine-locks.mjs";
-import * as shipQueue from "../lib/ship-queue.mjs";
 import { writeFileAtomic } from "../lib/atomic-file.mjs";
 
 const POOL_JSON = join(dirname(fileURLToPath(import.meta.url)), "..", "pool.json");
@@ -109,9 +108,6 @@ export function poolSettings(root) {
     // pool.json / lf.local.json "sessionReserveClientVramMb": { "lowspec": MB, "full": MB }, "minFreeVramMb".
     sessionReserveClientVramMb: { ...q.DEFAULTS.sessionReserveClientVramMb, ...(isObj(base.sessionReserveClientVramMb) ? base.sessionReserveClientVramMb : {}), ...(isObj(over.sessionReserveClientVramMb) ? over.sessionReserveClientVramMb : {}) },
     minFreeVramMb: pick("minFreeVramMb", "LF_POOL_MIN_FREE_VRAM_MB"),
-    // The ship queue's gate counts: "shipQueue": { "parallel": N, "light": N } in pool.json or the "pool" key of
-    // lf.local.json (tools/ship-queue.mjs gateSlots; the lf.local.json value wins per key).
-    shipQueue: { ...(isObj(base.shipQueue) ? base.shipQueue : {}), ...(isObj(over.shipQueue) ? over.shipQueue : {}) },
   };
 }
 
@@ -294,7 +290,7 @@ function normalize(m) {
     maxClients: Number(m.maxClients) > 0 ? Number(m.maxClients) : null,
     thermalLog: m.thermalLog ? String(m.thermalLog) : null,
     thermalHoldC: Number(m.thermalHoldC) > 0 ? Number(m.thermalHoldC) : 90,
-    // Workbenches this machine runs at once (the ship queue's gate slots, wb-gate's remote state); 1 when unset.
+    // Workbenches this machine runs at once (wb-gate's remote state); 1 when unset.
     workbenchLimit: Number(m.workbenchLimit) > 0 ? Math.floor(Number(m.workbenchLimit)) : 1,
     disabled: !!m.disabled,
   };
@@ -3135,10 +3131,6 @@ ${q.formatRunsByPurpose(kinds)}`);
     console.log(`  ${localTime(r.at)}  ${String(r.machine).padEnd(11)} ${String(r.slug).padEnd(20)} ${String(r.purpose).padEnd(19)} wait ${String(r.waitS).padStart(6)} s  ran ${String(r.durS).padStart(6)} s  ${r.result}${r.passed !== undefined ? ` ${r.passed}/${r.total}` : ""}`);
   }
   printSessions(runs.filter(isSession), 8);
-  // The ship queue wt ship feeds (tools/ship-queue.mjs): what gates now, what waits and why, the last few done.
-  const sq = shipQueue.readQueue(wt.hubDirOf(root));
-  if (sq.entries.length) for (const l of shipQueue.statusLines(sq, { waits: shipQueue.pickRunnable(sq.entries, { slots: 99, lightSlots: 99 }).wait.filter((w) => !/gate slot/.test(w.why)) })) console.log(l);
-  else console.log("ship queue: empty (tools\\cli ship-queue status)");
   return 0;
 }
 

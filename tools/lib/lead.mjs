@@ -1,7 +1,6 @@
 // Logic behind `tools\cli lead` (tools/commands/lead.mjs): no git, no gh, no ssh; the one clock it uses is
 // gatherPool's timers, and its probe is injected, so tools/validation/lead-selftest.mjs proves it on fixtures.
 import { conflictKind } from "../prs.mjs";
-import { DONE, RUNNING } from "./ship-queue.mjs";
 
 export const IDLE_MS = 30 * 60 * 1000;
 
@@ -250,17 +249,4 @@ export function poolLines({ snaps, queue, exceeded = false, budgetMs = 0, elapse
     lines.push(`  pool budget ${Math.round(budgetMs / 100) / 10} s exceeded after ${(elapsedMs / 1000).toFixed(1)} s: partial rows for ${cut.join(", ")}`);
   }
   return lines;
-}
-
-// ---------------------------------------------------------------- ship queue
-
-// One line from the ship queue file: how many gates run, how many wait, and the longest wait (queued since).
-// q is { entries: [{ slug, pr, state, enqueuedAt }] }, as tools/lib/ship-queue.mjs readQueue returns it.
-export function shipQueueLine(q, now) {
-  const live = (q?.entries ?? []).filter((e) => !DONE.includes(e.state));
-  const gating = live.filter((e) => RUNNING.includes(e.state)).length;
-  const queued = live.filter((e) => e.state === "queued").sort((a, b) => Date.parse(a.enqueuedAt) - Date.parse(b.enqueuedAt));
-  const oldest = queued.find((e) => Number.isFinite(Date.parse(e.enqueuedAt)));
-  const wait = oldest ? `, oldest wait ${Math.max(0, Math.round((now - Date.parse(oldest.enqueuedAt)) / 60000))} min (${oldest.slug}${oldest.pr ? ` #${oldest.pr}` : ""})` : "";
-  return `SHIP QUEUE ${gating} gating, ${queued.length} queued${wait}`;
 }

@@ -4,7 +4,23 @@
 // When GitHub refuses auto-merge because the branch is behind, main is merged in and pushed again.
 // Every side effect is a dependency, so tools/validation/ship-direct-selftest.mjs drives it with fakes.
 
-import { conflictPaths, humanConflicts } from "./ship-queue.mjs";
+import { conflictKind } from "../prs.mjs";
+
+// The local preflight's conflict check: the paths `git merge-tree --write-tree --name-only HEAD <base>`
+// prints after the tree id when it exits 1. Driver-merged files (docs/features.md, the string table, the
+// registry ...) the merge of origin/<base> resolves; anything else needs the agent first, so `wt ship`
+// stops in seconds instead of GitHub reporting the PR CONFLICTING.
+export function conflictPaths(mergeTreeOut) {
+  const out = [];
+  for (const l of String(mergeTreeOut).split(/\r?\n/).slice(1)) {
+    if (!l.trim()) break; // a blank line ends the file list; the messages follow
+    out.push(l.trim().replace(/\\/g, "/"));
+  }
+  return [...new Set(out)];
+}
+export function humanConflicts(paths) {
+  return paths.filter((p) => conflictKind(p) === null);
+}
 
 // Merge origin/<base> for ship the way `prs heal` does (prs.mjs healMerge, passed in as heal): a conflict only
 // in the generated registry or language confs is regenerated and committed instead of failing the ship.

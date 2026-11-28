@@ -21,11 +21,8 @@ export const LOCK_USERS = new Set(["tools/lib/wb-lock.mjs", "tools/lib/wb-route.
 // Rule 2: files that name the executable without launching it (checks, docs of the exe path, the MCP patches).
 export const EXE_NAMERS = new Set([
   "tools/validation/validate-addon-source-isolation.ps1",
-  "tools/validation/ship-queue-selftest.mjs",
   "tools/validation/wb-policy-selftest.mjs",
   "tools/validation/validate-wb-policy.mjs",
-  "tools/ship-queue.mjs",
-  "tools/lib/ship-queue.mjs",
   "agent-box/play-claim.mjs",
 ]);
 // An import of wb-lock.mjs, static or dynamic (a comment naming the file is not one).

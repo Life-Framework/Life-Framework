@@ -2,7 +2,7 @@
 // GitHub, pool or game: preflight then push, PR, auto-merge on, no ship queue; a "behind" refusal merges main in,
 // pushes again and retries; a human conflict or a red validate pushes nothing; and the cli wiring calls
 // shipDirect, never the queue.
-// inputs: tools/lib/ship-direct.mjs, tools/lib/ship-queue.mjs, tools/cli.mjs, tools/commands/wait.mjs
+// inputs: tools/lib/ship-direct.mjs, tools/cli.mjs, tools/commands/wait.mjs
 // red-proof 2026-11-27 (test advice): with the touchedTests call removed from shipDirect it printed "FAIL  advice: the touched-tests lines are logged".
 // red-proof 2026-11-19 (driver overlap): before shipDirect merged main on a both-sides driver-merged edit it printed "FAIL driver overlap: main merged before validate and push".
 // red-proof 2026-11-16: before tools/lib/ship-direct.mjs existed this printed "FAIL cannot load

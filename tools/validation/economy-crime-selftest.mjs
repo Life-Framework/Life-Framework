@@ -8,7 +8,7 @@
 // "Cannot find module .../economy-crime.mjs", so no expectation below could pass.
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { CRIME_LINES, cleanPerHour, crimeSection, plannedInputs, readCrimeReadings } from "./economy-crime.mjs";
+import { CRIME_LINES, cleanPerHour, crimeSection, plannedInputs, readCrimeReadings } from "../lib/economy-crime.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const fails = [];
