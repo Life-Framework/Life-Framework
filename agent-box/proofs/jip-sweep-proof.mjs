@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { ROOT, arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } from "../session.mjs";
-import { ensureCuffs } from "./_preconditions.mjs";
+import { ensureCuffs, requireBodies } from "./_preconditions.mjs";
 
 // Late-joiner sweep before the 0.3.0 RC (2026-11-27, docs/testing/jip-sweep-2026-11-27.md), on the real island on a
 // dedicated server:
@@ -154,6 +154,9 @@ async function runJipSweep() {
   for (const n of [1, 2]) arrive(on, n, wait);
   for (const n of [1, 2]) { wait(3000); on(n, { verb: "click", widget: "WelcomeGuideDismissButton" }, 10000); }
   wait(8000);
+  // Both characters start free of what an earlier proof left (client 2 serving booking-desk-proof's 900 s sentence, a
+  // manual camera on client 1: RC runs 2026-11-28, _preconditions.mjs), so the order of the run does not matter.
+  if (!requireBodies(on, wait, [1, 2])) return 1;
   writeFileSync(ownerFile, JSON.stringify(flagship, null, 2));
   on(1, { verb: "configreload" }, 10000);
   wait(3500);
