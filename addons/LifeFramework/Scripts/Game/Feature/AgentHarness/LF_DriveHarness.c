@@ -84,6 +84,7 @@ class LF_DriveHarness
 	static const float REPLAN_WAIT_S = 8; // lf-fixed: harness guard
 	//! A road drive this far off its route asks for a new one.
 	static const float OFF_ROUTE_M = 15; // lf-fixed: harness geometry
+	static const float REPLAN_GAP_S = 4; // lf-fixed: harness tuning
 	//! Road route points this close behind the car at the start are dropped.
 	static const float TRIM_BEHIND_M = 12; // lf-fixed: harness geometry
 	//! What stands in front of the bumper is looked for this far out.
@@ -175,6 +176,36 @@ class LF_DriveHarness
 	static const float AVOID_DEG = 25; // lf-fixed: harness geometry
 	static const float NEAR_MIN_M = 8; // lf-fixed: harness geometry
 	static const float NEAR_TOL_SHARE = 3; // lf-fixed: harness geometry
+	// A normal drive stuck twice far from its end (more route left than APPROACH_REACH_M) creeps a local stretch of
+	// the route (an escape): this many vehicle lengths, at least ESCAPE_MIN_M, then goes back to the normal drive.
+	static const float ESCAPE_LENGTHS = 5; // lf-fixed: harness geometry
+	static const float ESCAPE_MIN_M = 25; // lf-fixed: harness geometry
+	static const float ESCAPE_DONE_M = 3; // lf-fixed: harness geometry
+	static const int MAX_ESCAPES = 3; // lf-fixed: harness guard
+	// Swept-body look: the body is checked along the arc it drives to turn onto a heading, in steps of this length.
+	static const float SWEEP_STEP_M = 1.5; // lf-fixed: harness geometry
+	static const float SWEEP_MARGIN_M = 0.15; // lf-fixed: harness geometry
+	static const int SWEEP_CANDIDATES = 6; // lf-fixed: harness guard
+	static const float SWEEP_MIN_DEG = 12; // lf-fixed: harness geometry
+	// Turn about: a route that starts (or resumes) more than TURN_ABOUT_DEG off the nose, which the vehicle cannot swing
+	// onto in one full-lock arc without its body meeting something, is turned onto by a three-point turn: forward and
+	// reverse legs, each as long as the body's arc has room for, until the way on is within TURN_DONE_DEG of the nose.
+	static const float TURN_ABOUT_DEG = 75; // lf-fixed: harness geometry
+	static const float TURN_DONE_DEG = 40; // lf-fixed: harness geometry
+	static const float TURN_START_KMH = 6; // lf-fixed: harness tuning
+	static const float TURN_KMH = 5; // lf-fixed: harness tuning
+	static const float TURN_LEG_MAX_M = 14; // lf-fixed: harness geometry
+	static const float TURN_ROOM_MIN_M = 1.5; // lf-fixed: harness geometry
+	static const float TURN_ROOM_STEP_M = 1.5; // lf-fixed: harness geometry
+	static const float TURN_STALL_S = 2; // lf-fixed: harness tuning
+	static const float TURN_PROBE_M = 2; // lf-fixed: harness geometry
+	static const int TURN_MAX_LEGS = 14; // lf-fixed: harness guard
+	static const int TURN_MAX_ABOUTS = 3; // lf-fixed: harness guard
+	static const int TURN_PHASE_FORWARD = 1; // lf-fixed: harness guard
+	static const int TURN_PHASE_REVERSE = 2; // lf-fixed: harness guard
+	static const int TURN_PHASE_STOP = 3; // lf-fixed: harness guard
+	// Smallest turning radius as a share of the wheelbase at full lock (1 / tan(32 degrees) = 1.6) plus slack for the tyres.
+	static const float TURN_RADIUS_PER_WHEELBASE = 1.7; // lf-fixed: harness geometry
 
 	// Drive state, all on the driving client.
 	protected static ref array<vector> s_aRoute = {};
@@ -195,6 +226,7 @@ class LF_DriveHarness
 	protected static float s_fProgressAtMs; // lf-float: world time in ms, harness only
 	protected static float s_fLegStartMs; // lf-float: world time in ms, harness only
 	protected static float s_fReplanUntilMs; // lf-float: world time in ms, harness only
+	protected static float s_fReplanAtMs = -100000; // lf-float: world time in ms, harness only
 	protected static int s_iBackups;
 	protected static int s_iReplans;
 	protected static int s_iReplanId;
@@ -208,6 +240,7 @@ class LF_DriveHarness
 	protected static float s_fBestProgress;
 	protected static float s_fWheelbase = 2.7;
 	protected static float s_fFrontM = 2;
+	protected static float s_fRearM = 2; // bounds behind the origin, metres
 	protected static float s_fHalfWidthM = 0.8;
 	protected static float s_fBottomM;
 	protected static float s_fTopM = 1.8;
@@ -268,6 +301,22 @@ class LF_DriveHarness
 	protected static int s_iStrikes;
 	protected static float s_fStrikeBest;
 	protected static int s_iApproaches;
+	// Turn about state.
+	protected static int s_iTurnPhase; // 0 off
+	protected static int s_iTurnNext; // the leg after the stop (TURN_PHASE_FORWARD or _REVERSE), 0 the turn is done
+	protected static int s_iTurnLegs;
+	protected static int s_iTurnLast; // the kind of the leg just driven
+	protected static int s_iTurnAbouts;
+	protected static float s_fTurnLegM;
+	protected static float s_fTurnLock; // +1 right, -1 left: the way the wheels are turned in this leg
+	protected static float s_fTurnStillMs; // lf-float: world time in ms, harness only
+	protected static float s_fTurnLegAtMs; // lf-float: world time in ms, harness only
+	protected static vector s_vTurnFrom;
+	// An escape: a creep of a local stretch of the route (the goal of the creep is a point on it), ended by progress.
+	protected static bool s_bEscape;
+	protected static vector s_vEscapeGoal;
+	protected static float s_fEscapeUntil; // route metres at which the escape is over
+	protected static int s_iEscapes;
 	protected static ref array<float> s_aAvoid; // yaw, until (ms), yaw, until, ...
 	protected static array<float> LzAvoid()
 	{
@@ -1128,6 +1177,7 @@ class LF_DriveHarness
 		car.GetBounds(mins, maxs);
 		s_fWheelbase = Math.Clamp((maxs[2] - mins[2]) * 0.6, 2.2, 5.5);
 		s_fFrontM = maxs[2];
+		s_fRearM = Math.Max(-mins[2], 0.5);
 		s_fHalfWidthM = Math.Max((maxs[0] - mins[0]) * 0.5 - 0.15, 0.3);
 		s_fBottomM = mins[1];
 		s_fTopM = maxs[1];
@@ -1299,6 +1349,11 @@ class LF_DriveHarness
 		s_iGateBacks = 0;
 		s_fBackupLimitM = BACKUP_M;
 		s_bApproach = false;
+		s_bEscape = false;
+		s_iEscapes = 0;
+		s_fReplanAtMs = -100000;
+		s_iTurnPhase = 0;
+		s_iTurnAbouts = 0;
 		s_iApproaches = 0;
 		s_iApproachBackups = 0;
 		s_iStrikes = 0;
@@ -1335,6 +1390,9 @@ class LF_DriveHarness
 		line += string.Format(" progress=%1m route=%2m leg=%3/%4 replans=%5", Math.Round(s_fProgress), Math.Round(s_fRouteLength), LF_Utils.MinInt(s_iLeg + 1, s_iLegCount), s_iLegCount, s_iReplans);
 		if (s_iApproaches > 0)
 			line += string.Format(" approach=%1m creepbackups=%2 near=%3m", Math.Round(s_fDriven - s_fApproachDriven), s_iApproachBackups, Round1(s_fNear));
+
+		if (s_iEscapes > 0)
+			line += string.Format(" escapes=%1", s_iEscapes);
 
 		if (!s_sWhy.IsEmpty())
 			line += " why=" + s_sWhy;
@@ -1539,6 +1597,14 @@ class LF_DriveHarness
 			return;
 		}
 
+		// A route that starts far off the nose of a long vehicle: a three-point turn when its body has no room to swing
+		// round in one arc (the approach has its own heading rules).
+		if (!s_bApproach && TurnAbout(car, at, forward, right, speed, now))
+		{
+			Push(car);
+			return;
+		}
+
 		// Still rolling backwards after a back-up (or down a bank): the brake pedal is the reverse
 		// pedal in an automatic box, so only the handbrake stops it.
 		if (-ForwardKmh(car, forward) > ROLLBACK_KMH)
@@ -1565,7 +1631,8 @@ class LF_DriveHarness
 
 		// A road drive that has left its route (pushed off it, or took a wrong branch) asks again.
 		float offRoute = vector.DistanceXZ(at, PointAt(s_fProgress));
-		if (s_bRoad && offRoute > OFF_ROUTE_M && s_iReplans < MAX_REPLANS)
+		// (not again for REPLAN_GAP_S after the last ask: a refused answer used to burn all of them in a second)
+		if (s_bRoad && offRoute > OFF_ROUTE_M && s_iReplans < MAX_REPLANS && now - s_fReplanAtMs > REPLAN_GAP_S * 1000)
 		{
 			s_sWhy = string.Format("off_route_%1m", Math.Round(offRoute));
 			RequestReplan(character, at, now);
@@ -1766,6 +1833,15 @@ class LF_DriveHarness
 			return;
 		}
 
+		// Stuck twice far from the end (a long vehicle among sheds at the start of a long route): creep a local
+		// stretch of the route, sized by the vehicle's own length, and take the normal drive up again after it. A road
+		// drive asks the server for a new route first (a wrong branch is the commoner snag); the escape is the next try.
+		if (s_bApproachFallback && s_iBackups >= 2 && s_iEscapes < MAX_ESCAPES && (!s_bRoad || s_iReplans > 0))
+		{
+			BeginEscape(at, now, "stuck_" + s_sWhy);
+			return;
+		}
+
 		SCR_ChimeraCharacter character = Character();
 		if (s_bRoad && s_iBackups >= 2 && s_iReplans < MAX_REPLANS && character)
 		{
@@ -1787,6 +1863,177 @@ class LF_DriveHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	// Turn about
+	//------------------------------------------------------------------------------------------------
+	//! The metres (up to TURN_LEG_MAX_M) the body can drive the smallest-radius circle with the wheels locked toward
+	//! `lock`, forward or in reverse, before a corner of it meets something.
+	protected static float TurnRoom(IEntity car, vector at, float fwdYaw, float lock, float dirSign)
+	{
+		float room = 0;
+		for (float m = TURN_ROOM_STEP_M; m <= TURN_LEG_MAX_M + 0.01; m += TURN_ROOM_STEP_M)
+		{
+			if (!SweepArc(car, at, fwdYaw, lock, m, dirSign))
+				break;
+
+			room = m;
+		}
+
+		return room;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A three-point turn: the vehicle stands (or crawls) with the way on more than TURN_ABOUT_DEG off its nose and a
+	//! full-lock arc onto it would run its body into something. Forward and reverse legs follow, each as long as the
+	//! body's real outline (bounds, wheelbase) has room for on the smallest turn radius, wheels locked toward the way
+	//! on going forward and away from it in reverse, until the way on is within TURN_DONE_DEG of the nose. True while it
+	//! drives (the inputs are set), false when the normal pursuit should steer.
+	protected static bool TurnAbout(IEntity car, vector at, vector forward, vector right, float speed, float now)
+	{
+		float fwdYaw = Math.Atan2(forward[0], forward[2]);
+		float v = speed / 3.6;
+		float look = Math.Clamp(LOOK_BASE_M + LOOK_GAIN_S * v, LOOK_MIN_M, LOOK_MAX_M);
+		vector toTarget = PointAt(s_fProgress + look) - at;
+		toTarget[1] = 0;
+		float alpha = Math.Atan2(vector.Dot(toTarget, right), vector.Dot(toTarget, forward));
+		float side = 1;
+		if (alpha < 0)
+			side = -1;
+
+		if (s_iTurnPhase == 0)
+		{
+			if (s_iTurnAbouts >= TURN_MAX_ABOUTS || speed > TURN_START_KMH || Math.AbsFloat(alpha) < TURN_ABOUT_DEG * Math.DEG2RAD)
+				return false;
+
+			// The room for a plain full-lock arc: with it the normal pursuit turns the car.
+			if (SweptClear(car, at, fwdYaw, fwdYaw + alpha))
+				return false;
+
+			s_iTurnAbouts++;
+			s_iTurnLegs = 0;
+			s_iTurnLast = 0;
+			s_iTurnPhase = TURN_PHASE_STOP;
+			LF_Debug.Info(FEATURE, string.Format("drive turn about at %1: the way on is %2 degrees off the nose and the body's turn is not clear (wheelbase %3, radius %4, body %5 x %6 m)", at, Math.Round(alpha * Math.RAD2DEG), Round1(s_fWheelbase), Round1(TurnRadius()), Round1(s_fFrontM + s_fRearM), Round1(s_fHalfWidthM * 2)));
+		}
+
+		if (s_iTurnPhase == TURN_PHASE_STOP)
+		{
+			StopInputs(car, speed);
+			if (speed >= 1)
+				return true;
+
+			if (Math.AbsFloat(alpha) < TURN_DONE_DEG * Math.DEG2RAD || s_iTurnLegs >= TURN_MAX_LEGS)
+			{
+				EndTurnAbout(at, now, "done");
+				return false;
+			}
+
+			// The next leg: the other direction than the last when it has room, else whichever has.
+			float fwdRoom = TurnRoom(car, at, fwdYaw, side, 1);
+			float revRoom = TurnRoom(car, at, fwdYaw, -side, -1);
+			int kind = TURN_PHASE_FORWARD;
+			float room = fwdRoom;
+			if (revRoom > fwdRoom)
+			{
+				kind = TURN_PHASE_REVERSE;
+				room = revRoom;
+			}
+
+			if (s_iTurnLast == TURN_PHASE_FORWARD && revRoom >= TURN_ROOM_MIN_M)
+			{
+				kind = TURN_PHASE_REVERSE;
+				room = revRoom;
+			}
+			else if (s_iTurnLast == TURN_PHASE_REVERSE && fwdRoom >= TURN_ROOM_MIN_M)
+			{
+				kind = TURN_PHASE_FORWARD;
+				room = fwdRoom;
+			}
+
+			// No room by the body's outline either way (it is a worst case at the smallest radius): a short leg at a
+			// walking pace still, the other way round than the last, and the stall test ends it against the obstacle.
+			if (room < TURN_ROOM_MIN_M)
+			{
+				kind = TURN_PHASE_FORWARD;
+				if (s_iTurnLast == TURN_PHASE_FORWARD)
+					kind = TURN_PHASE_REVERSE;
+
+				room = TURN_PROBE_M + 0.3;
+			}
+
+			s_fTurnLegM = Math.Max(Math.Min(room, TURN_LEG_MAX_M) - 0.3, TURN_PROBE_M);
+			s_fTurnLock = side;
+			if (kind == TURN_PHASE_REVERSE)
+				s_fTurnLock = -side;
+
+			s_vTurnFrom = at;
+			s_fTurnStillMs = 0;
+			s_fTurnLegAtMs = now;
+			s_iTurnLegs++;
+			s_iTurnPhase = kind;
+			string legName = "forward";
+			if (kind == TURN_PHASE_REVERSE)
+				legName = "reverse";
+
+			LF_Debug.Info(FEATURE, string.Format("drive turn about leg %1 at %2 heading %3: %4 for %5 m (room forward %6 m, reverse %7 m, way on %8 degrees off)", s_iTurnLegs, at, Math.Round(fwdYaw * Math.RAD2DEG), legName, Round1(s_fTurnLegM), Round1(fwdRoom), Round1(revRoom), Math.Round(alpha * Math.RAD2DEG)));
+		}
+
+		// A leg under way.
+		bool legOver = vector.DistanceXZ(at, s_vTurnFrom) >= s_fTurnLegM || Math.AbsFloat(alpha) < TURN_DONE_DEG * Math.DEG2RAD;
+		if (!legOver && now - s_fTurnLegAtMs > 2000)
+		{
+			// Standing against something with the pedal down: the leg is over.
+			if (speed < STILL_KMH)
+			{
+				if (s_fTurnStillMs <= 0)
+					s_fTurnStillMs = now;
+				else if (now - s_fTurnStillMs > TURN_STALL_S * 1000)
+					legOver = true;
+			}
+			else
+			{
+				s_fTurnStillMs = 0;
+			}
+		}
+
+		if (legOver)
+		{
+			s_iTurnLast = s_iTurnPhase;
+			s_iTurnPhase = TURN_PHASE_STOP;
+			StopInputs(car, speed);
+			return true;
+		}
+
+		s_fHand = 0;
+		s_fSteer = s_fSteerSign * s_fTurnLock;
+		if (s_iTurnPhase == TURN_PHASE_FORWARD)
+		{
+			s_fBrake = 0;
+			s_fThrust = 0;
+			if (speed < TURN_KMH)
+				s_fThrust = Math.Clamp((TURN_KMH - speed) / 6 + 0.3, 0, 1);
+		}
+		else
+		{
+			// The brake pedal at a standstill is the reverse pedal; held to a walking pace only.
+			s_fThrust = 0;
+			s_fBrake = 1;
+			if (-ForwardKmh(car, forward) > BACKUP_MAX_KMH)
+				s_fBrake = 0;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void EndTurnAbout(vector at, float now, string result)
+	{
+		LF_Debug.Info(FEATURE, string.Format("drive turn about %1 at %2 after %3 leg(s)", result, at, s_iTurnLegs));
+		s_iTurnPhase = 0;
+		s_iTurnLast = 0;
+		Resume(now, Project(at, 1000));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	// Final approach
 	//------------------------------------------------------------------------------------------------
 	//! Leaves the normal drive for the creep: the rest of the route at walking pace, the heading picked
@@ -1798,7 +2045,7 @@ class LF_DriveHarness
 		s_fApproachDriven = s_fDriven;
 		s_fProgress = Project(at, 1000);
 		s_fApproachProgress = s_fProgress;
-		s_fApproachBest = vector.DistanceXZ(at, s_vGoal);
+		s_fApproachBest = vector.DistanceXZ(at, ApproachGoal());
 		s_sTrackMat = SurfaceAt(at);
 		s_fProgressAtMs = now;
 		s_fStillSinceMs = 0;
@@ -1812,11 +2059,81 @@ class LF_DriveHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What the creep is heading for: the drive's goal, or in an escape the point of the route it must clear.
+	protected static vector ApproachGoal()
+	{
+		if (s_bEscape)
+			return s_vEscapeGoal;
+
+		return s_vGoal;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The creep's "close enough to the goal to stop here" distance: none in an escape (it never ends the drive).
+	protected static float ApproachNear()
+	{
+		if (s_bEscape)
+			return 0;
+
+		return s_fNear;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A creep of a local stretch of a long route, the stretch sized by the vehicle's own length (a truck needs more
+	//! room to swing between obstacles than a car): the creep's goal is a point of the route that far on, the normal
+	//! drive takes over once the vehicle is past it (or the creep fails).
+	protected static void BeginEscape(vector at, float now, string why)
+	{
+		float length = s_fFrontM + s_fRearM;
+		float ahead = Math.Max(ESCAPE_MIN_M, length * ESCAPE_LENGTHS);
+		float from = Project(at, 1000);
+		s_fEscapeUntil = Math.Min(from + ahead, s_fRouteLength);
+		s_vEscapeGoal = PointAt(s_fEscapeUntil);
+		s_vEscapeGoal[1] = 0;
+		s_bEscape = true;
+		s_iEscapes++;
+		BeginApproach(at, now, "escape_" + why);
+		// BeginApproach sized the budget on the whole route: an escape only needs its own stretch.
+		s_fApproachEndMs = now + (60 + (s_fEscapeUntil - from) * 4) * 1000;
+		s_fEndMs = Math.Max(s_fEndMs, s_fApproachEndMs); // lf-float: world time in ms, harness only
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The escape is over (the vehicle is past its stretch, or the creep could not make it): the normal drive resumes
+	//! from where the vehicle stands, its back-up count fresh when the escape got through.
+	protected static void EndEscape(vector at, float now, string result)
+	{
+		LF_Debug.Info(FEATURE, string.Format("drive escape %1 at %2 (%3 m of route cleared, %4 of %5)", result, at, Math.Round(Project(at, 1000) - s_fApproachProgress), s_iEscapes, MAX_ESCAPES));
+		s_bApproach = false;
+		s_bEscape = false;
+		s_bFanHeld = false;
+		s_fFanAtMs = 0;
+		s_iStrikes = 0;
+		s_fBackupLimitM = BACKUP_M;
+		s_sStatus = "driving";
+		if (result == "through")
+			s_iBackups = 0;
+
+		Resume(now, Project(at, 1000));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One frame of the creep.
 	protected static void ApproachTick(IEntity car, vector at, vector transform[4], float speed, float now, float toGoal)
 	{
 		vector forward = Vector(transform[2][0], 0, transform[2][2]).Normalized();
 		vector right = Vector(transform[0][0], 0, transform[0][2]).Normalized();
+		if (s_bEscape)
+		{
+			// The distance that counts is the one to the end of the escape's stretch.
+			toGoal = vector.DistanceXZ(at, s_vEscapeGoal);
+			if (s_fProgress >= s_fEscapeUntil - ESCAPE_DONE_M || toGoal <= ESCAPE_DONE_M)
+			{
+				EndEscape(at, now, "through");
+				return;
+			}
+		}
+
 		if (now > s_fApproachEndMs)
 		{
 			ApproachEnd(car, forward, toGoal, "creep_budget_over");
@@ -1842,7 +2159,7 @@ class LF_DriveHarness
 		// The way on: the route point a few metres ahead (on the tail, the goal itself).
 		vector aim = PointAt(s_fProgress + APPROACH_LOOK_M);
 		if (vector.DistanceXZ(aim, at) < 1)
-			aim = s_vGoal;
+			aim = ApproachGoal();
 
 		float aimYaw = Math.Atan2(aim[0] - at[0], aim[2] - at[2]);
 		if (s_fFanAtMs <= 0 || now - s_fFanAtMs > FAN_EVERY_MS)
@@ -1852,7 +2169,7 @@ class LF_DriveHarness
 		}
 
 		// Close enough: near the goal with something right in front of the nose between it and the car.
-		if (toGoal <= s_fNear && s_fGoalClear < Math.Min(3, toGoal - s_fFrontM))
+		if (!s_bEscape && toGoal <= s_fNear && s_fGoalClear < Math.Min(3, toGoal - s_fFrontM))
 		{
 			ApproachEnd(car, forward, toGoal, "near_goal_way_shut");
 			return;
@@ -1935,6 +2252,13 @@ class LF_DriveHarness
 	protected static void ApproachEnd(IEntity car, vector forward, float toGoal, string reason)
 	{
 		s_sWhy = reason + "_" + Blocker(car, forward);
+		// An escape that could not clear its stretch gives the drive back to the normal logic (more back-ups, a new route).
+		if (s_bEscape)
+		{
+			EndEscape(car.GetOrigin(), GetGame().GetWorld().GetWorldTime(), "failed_" + reason); // lf-float: world time in ms, harness only
+			return;
+		}
+
 		if (toGoal <= s_fNear)
 		{
 			s_bStopping = true;
@@ -1989,7 +2313,7 @@ class LF_DriveHarness
 		}
 
 		s_iStrikes++;
-		if (toGoal <= s_fNear || s_iStrikes > MAX_APPROACH_STRIKES)
+		if (toGoal <= ApproachNear() || s_iStrikes > MAX_APPROACH_STRIKES)
 		{
 			ApproachEnd(car, forward, toGoal, "creep_" + reason);
 			return;
@@ -2005,7 +2329,7 @@ class LF_DriveHarness
 		avoid.Insert(heading);
 		avoid.Insert(now + AVOID_S * 1000);
 
-		vector toGoalDir = s_vGoal - at;
+		vector toGoalDir = ApproachGoal() - at;
 		toGoalDir[1] = 0;
 		float side = 1;
 		if (vector.Dot(toGoalDir, right) < 0)
@@ -2038,10 +2362,9 @@ class LF_DriveHarness
 		float step = FAN_STEP_DEG * Math.DEG2RAD;
 		float need = Math.Clamp(toGoal - 0.5, 1.5, FAN_CLEAR_M);
 		float reach = Math.Max(Math.Min(FAN_REACH_M, toGoal + 1), need);
-		float best = 1000000;
-		bool open = false;
-		float bestYaw = aimYaw;
-		float bestClear = 0;
+		array<float> costs = {};
+		array<float> yaws = {};
+		array<float> clears = {};
 		for (int k = -FAN_STEPS; k <= FAN_STEPS; k++)
 		{
 			float yaw = aimYaw + k * step;
@@ -2069,13 +2392,59 @@ class LF_DriveHarness
 			if (IsTrackSurface(SurfaceAt(at + dir * FAN_SURFACE_M)) || IsTrackSurface(SurfaceAt(at + dir * FAN_SURFACE_M * 2)))
 				cost -= FAN_SURFACE_BONUS;
 
-			if (cost < best)
+			costs.Insert(cost);
+			yaws.Insert(yaw);
+			clears.Insert(clear);
+		}
+
+		// The cheapest heading whose turn the whole body can make: the body is swept along the arc it drives to swing
+		// onto the heading (its real length, width and turning radius), so a long truck does not commit to a line that
+		// only the straight rays of its nose like. SWEEP_CANDIDATES headings are tried, cheapest first.
+		bool open = false;
+		float bestYaw = aimYaw;
+		float bestClear = 0;
+		// When no tried heading has a clear sweep the cheapest one is still taken (the sweep is the body's outline
+		// at the smallest radius, a worst case): the stuck handling then backs up and tries again.
+		bool haveFirst = false;
+		float firstYaw = aimYaw;
+		float firstClear = 0;
+		for (int tried = 0; tried < SWEEP_CANDIDATES && !open; tried++)
+		{
+			int pick = -1;
+			float best = 1000000;
+			for (int i = 0; i < costs.Count(); i++)
 			{
-				best = cost;
-				bestYaw = yaw;
-				bestClear = clear;
-				open = true;
+				if (costs[i] < best)
+				{
+					best = costs[i];
+					pick = i;
+				}
 			}
+
+			if (pick < 0)
+				break;
+
+			costs[pick] = 1000001;
+			if (!haveFirst)
+			{
+				haveFirst = true;
+				firstYaw = yaws[pick];
+				firstClear = clears[pick];
+			}
+
+			if (!SweptClear(car, at, fwdYaw, yaws[pick]))
+				continue;
+
+			open = true;
+			bestYaw = yaws[pick];
+			bestClear = clears[pick];
+		}
+
+		if (!open && haveFirst)
+		{
+			open = true;
+			bestYaw = firstYaw;
+			bestClear = firstClear;
 		}
 
 		s_bFanOpen = open;
@@ -2085,6 +2454,114 @@ class LF_DriveHarness
 		s_fFanYaw = bestYaw;
 		s_fFanClear = bestClear;
 		s_bFanHeld = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The smallest turn radius of the vehicle's reference point at full lock, from its wheelbase.
+	protected static float TurnRadius()
+	{
+		return Math.Max(s_fWheelbase * TURN_RADIUS_PER_WHEELBASE, 3);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A heading as a unit vector on the ground.
+	protected static vector YawDir(float yaw)
+	{
+		return Vector(Math.Sin(yaw), 0, Math.Cos(yaw));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The car's right-hand side on the ground for a heading.
+	protected static vector YawRight(float yaw)
+	{
+		return Vector(Math.Cos(yaw), 0, -Math.Sin(yaw));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the whole body clears every obstacle while it turns from the nose (`fwdYaw`) onto the heading `yaw`:
+	//! the reference point drives the arc of the smallest turn radius (a gentler turn needs less room, so this is the
+	//! worst case), the body's corners and side midpoints are traced from each pose to the next at a low and a bumper
+	//! height. The straight run after the turn is the straight rays' business (ClearAlong). A heading within a few
+	//! degrees of the nose needs no turn.
+	protected static bool SweptClear(IEntity car, vector at, float fwdYaw, float yaw)
+	{
+		float diff = yaw - fwdYaw;
+		while (diff > Math.PI)
+			diff -= 2 * Math.PI;
+
+		while (diff < -Math.PI)
+			diff += 2 * Math.PI;
+
+		if (Math.AbsFloat(diff) < SWEEP_MIN_DEG * Math.DEG2RAD)
+			return true;
+
+		float sgn = 1;
+		if (diff < 0)
+			sgn = -1;
+
+		// A turn past a right angle is driven as a right angle: the rest is a straight run.
+		float turn = Math.Min(Math.AbsFloat(diff), Math.PI * 0.5);
+		return SweepArc(car, at, fwdYaw, sgn, TurnRadius() * turn, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the body clears everything while the car drives `arcM` metres of the smallest-radius circle with its
+	//! wheels locked toward `lock` (+1 right, -1 left), forward (`dirSign` 1) or in reverse (-1): the body's corners and
+	//! side midpoints are traced from each pose to the next, at a low and a bumper height, from the car's own bounds.
+	protected static bool SweepArc(IEntity car, vector at, float fwdYaw, float lock, float arcM, float dirSign)
+	{
+		float radius = TurnRadius();
+		float turn = dirSign * arcM / radius;
+		int steps = Math.Max(Math.Ceil(arcM / SWEEP_STEP_M), 2);
+		vector center = at + YawRight(fwdYaw) * (radius * lock);
+		center[1] = 0;
+		float halfWidth = s_fHalfWidthM + SWEEP_MARGIN_M;
+		// Body points in the car's frame: (sideways, forward). Both ends, and the middle of each side for a long body.
+		array<float> localX = {-halfWidth, halfWidth, -halfWidth, halfWidth, -halfWidth, halfWidth};
+		array<float> localZ = {s_fFrontM, s_fFrontM, -s_fRearM, -s_fRearM, 0, 0};
+		BaseWorld world = GetGame().GetWorld();
+		array<float> heights = {0.55, 1.2};
+		array<vector> previous = {};
+		for (int step = 0; step <= steps; step++)
+		{
+			float theta = turn * step / steps;
+			float heading = fwdYaw + lock * theta;
+			vector pose = center - YawRight(heading) * (radius * lock);
+			vector forward = YawDir(heading);
+			vector side = YawRight(heading);
+			for (int p = 0; p < localX.Count(); p++)
+			{
+				vector corner = pose + side * localX[p] + forward * localZ[p];
+				if (step > 0)
+				{
+					foreach (float h : heights)
+					{
+						TraceParam trace = new TraceParam();
+						trace.Start = Vector(previous[p][0], world.GetSurfaceY(previous[p][0], previous[p][2]) + h, previous[p][2]);
+						trace.End = Vector(corner[0], world.GetSurfaceY(corner[0], corner[2]) + h, corner[2]);
+						trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+						trace.LayerMask = EPhysicsLayerPresets.Main;
+						trace.Exclude = car;
+						float fraction = world.TraceMove(trace, null);
+						if (fraction >= 1)
+							continue;
+
+						// The ground itself is the slope test's business.
+						if (!trace.TraceEnt || GenericTerrainEntity.Cast(trace.TraceEnt))
+							continue;
+
+						return false;
+					}
+				}
+
+				if (step == 0)
+					previous.Insert(corner);
+				else
+					previous[p] = corner;
+			}
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2111,9 +2588,15 @@ class LF_DriveHarness
 	//! the ground. Entities only: the ground itself is the slope test's business.
 	protected static float ClearAlong(IEntity car, vector at, vector dir, float reach)
 	{
+		return ClearAlongFrom(car, at, dir, reach, Math.Max(s_fFrontM * 0.85, 1.2));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ClearAlong with the rays starting `lead` metres from the car's origin along `dir` (the rear's own for a reverse).
+	protected static float ClearAlongFrom(IEntity car, vector at, vector dir, float reach, float lead)
+	{
 		BaseWorld world = GetGame().GetWorld();
 		vector perp = Vector(dir[2], 0, -dir[0]);
-		float lead = Math.Max(s_fFrontM * 0.85, 1.2);
 		float width = s_fHalfWidthM + 0.2;
 		float groundHere = world.GetSurfaceY(at[0], at[2]);
 		float floor = Math.Max(at[1] + s_fBottomM, groundHere);
@@ -2279,6 +2762,7 @@ class LF_DriveHarness
 		s_iReplanSeq++;
 		s_iReplanId = -s_iReplanSeq;
 		s_fReplanUntilMs = now + REPLAN_WAIT_S * 1000;
+		s_fReplanAtMs = now;
 		LF_Debug.Info(FEATURE, string.Format("drive re-plans from %1 (%2)", at, s_sWhy));
 		character.LF_AskDriveRoute(s_iReplanId, at, s_vGoal);
 	}
