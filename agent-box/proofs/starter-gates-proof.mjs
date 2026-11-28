@@ -1,5 +1,5 @@
 import { arrive, clientBox, sessionDir } from "../session.mjs";
-import { hasPapers, papersMove, resetTrades } from "./_preconditions.mjs";
+import { hasPapers, papersMove, requireBodies, resetTrades } from "./_preconditions.mjs";
 
 // F2 "What to do next": the four island starters are gated (#4771).
 //   node agent-box/session.mjs up --mission island --profile full
@@ -42,6 +42,7 @@ async function runStarterGatesProof() {
   wait(12000);
   on(1, { verb: "guide", words: ["close"] });
   wait(500);
+  if (!requireBodies(on, wait, [1])) return 1;
 
   // Its own precondition, so the run order does not matter (rc-proof-order): a "new civilian" is a character with its
   // papers and every trade at level 1. The levels are set here (an earlier proof may have raised Hauling or a trade).

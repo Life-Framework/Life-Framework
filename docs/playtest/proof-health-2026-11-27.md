@@ -85,6 +85,22 @@ Two side findings: (1) a character that a failed haul leaves lying prone (`stanc
 | `vault-offer-proof` | N/A on the island | targets the annex vault (`Annex_Bank_Vault`), a grid-world proof |
 | `tracker-rejoin-proof`, `drill-scene-proof` and the shot scripts | not run | not on an X-6 hour |
 
+## Proof preconditions (proof-preconditions-2, 2026-11-28)
+
+The RC runs failed `jip-sweep-proof` on state an earlier proof left: client 2 still serving the 900 s sentence `booking-desk-proof` gave it (`jail=781`), and once client 1 looking through `SCR_ManualCamera`. `agent-box/proofs/_preconditions.mjs` now has `ensureBody(on, wait, n, want)` and `requireBodies(on, wait, [clients], want)`: a proof calls it right after the welcome guide is dismissed, it reads `state` (jail, cuffs, downed or dead, duty) and `bodycheck` (camera, stance, seat, pack weight against the limit), repairs what it finds and ends the proof with `FAIL  precondition` and the named leftover when a repair does not take, instead of a cascade of failed rows.
+
+| Leftover | Read | Repair |
+|---|---|---|
+| serving a sentence, cuffed or escorted (the detain is the restraint) | `state` `jail=`, `cuffed=` | `resetplayer` keeping the pack (serves or releases the sentence, takes off the cuffs) |
+| downed or dead | `state` `downed=`, `life=` | the per-proof reset's body phase (`giveup`, respawn) |
+| on duty when the proof needs off duty, off duty when it needs on | `state` `duty=` | `resetplayer` clocks out; `want.duty: "on"` with a `dutyDesk` clocks in at that desk (without one the proof clocks in itself) |
+| camera is not `PlayerCamera` | `bodycheck` `camera=` | `clean` (ends a clean shot), then `bodycheck fix camera` |
+| prone | `bodycheck` `stance=` | `bodycheck fix stand`, re-read up to four times |
+| seated in a vehicle | `bodycheck` `seat=` | `bodycheck fix leave` |
+| pack heavier than `maxload` | `bodycheck` `weight=` `maxload=` | `resetplayer` that empties the pack; the cash carried stays |
+
+Called by the proofs the RC order runs: `booking-desk-proof`, `island-cop-proof`, `crime-playtest-proof` (not with `--from arrest`), `jip-sweep-proof` and `starter-gates-proof`. `bodycheck` is a new client harness verb (`LF_BodyCheckHarness.c`), dev tooling only. Selftest cases are in `selftestPreconditions` (`session.mjs selftest`). Live proof, one `up --mission island --clients 2 --profile lowspec` session: `booking-desk-proof` (PASS, 24 steps) then `jip-sweep-proof` straight after: `ok rows=22 failed=0`. Its start printed client 2 `jail=859` and client 1 `duty=1` (left by the booking proof), `reset player (pack kept): ok sentence=1` repaired both; the same order failed 11 rows on 2026-11-28 (`jail=781`). **So `jip-sweep-proof` no longer needs a fresh session of its own**; it still wants characters that have not been through the heist or a second crew run, since it founds a crew and buys a house.
+
 ## Order for Saturday's run (what the table implies)
 
 1. The first-two-hours flow, then `starter-gates-proof` on the same character, in any order: the proof sets up its own precondition (`_preconditions.mjs`, rc-proof-order). It puts every trade back to level 1 and skips the clerk when `arrival_register` is already turned in (the gate is the quest, not the card; `resetplayer` empties the pack but the quest stays). The one thing it cannot reset is a criminal record (no harness verb clears one), so it still goes before the police and jail proofs.
@@ -115,9 +131,10 @@ Docs only: this branch ran none of them; each was run by the PR that added it (a
     session next to step 5: the cop signs up at the duty desk and the civilian robs the fuel till, as in
     `island-cop-proof`, so it follows the same rule, a fresh session or characters that have not used the cop kit. It
     books the suspect and the civilian pays bail at the cell phone, so it ends with the suspect free.
-12. **`jip-sweep-proof`** goes last of the two-client proofs, in a fresh lowspec session with `up --clients 2`: client 1
+12. **`jip-sweep-proof`** goes last of the two-client proofs, in a lowspec session with `up --clients 2`: client 1
     buys a car and a house and is cuffed, and the proof does not reset the character (`noReset`), so no later proof
-    in that session wants it. It joins client 3 itself. `--selftest` runs its token parsers with no game.
+    in that session wants it. Since proof-preconditions-2 it starts by freeing both clients of a leftover sentence,
+    cuffs, duty or camera (see "Proof preconditions"), so `booking-desk-proof` may run before it in the same session. It joins client 3 itself. `--selftest` runs its token parsers with no game.
 13. Before every `session down` in this run: `session.mjs pull <dir>`. `down` deletes the client screenshot folders.
 
 ## Files changed
